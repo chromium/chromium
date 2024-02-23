@@ -335,12 +335,6 @@ const char
         "Apply Family Link parental control settings for extension "
         "installation. "
         "The enable-family-link-supervision flag must also be enabled.";
-
-const char kEnableManagedByParentUiName[] = "Enable Family Link management UI";
-const char kEnableManagedByParentUiDescription[] =
-    "Enables UI indicating if a Profile is managed by Family Link parental "
-    "controls."
-    "The enable-family-link-supervision flag must also be enabled.";
 #endif  // ENABLE_SUPERVISED_USERS
 
 const char kUseAndroidStagingSmdsName[] = "Use Android staging SM-DS";

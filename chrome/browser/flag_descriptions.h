@@ -224,9 +224,6 @@ extern const char kUseClientGmbInterfaceDescription[];
 extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
 extern const char
     kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];
-
-extern const char kEnableManagedByParentUiName[];
-extern const char kEnableManagedByParentUiDescription[];
 #endif  // ENABLE_SUPERVISED_USERS
 
 extern const char kUseAndroidStagingSmdsName[];
