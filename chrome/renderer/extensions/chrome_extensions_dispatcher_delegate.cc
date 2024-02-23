@@ -146,8 +146,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("enterprise.platformKeys",
                              IDR_ENTERPRISE_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("enterprise.platformKeys.KeyPair",
-                             IDR_ENTERPRISE_PLATFORM_KEYS_KEY_PAIR_JS);
+  source_map->RegisterSource("enterprise.platformKeys.CryptoKey",
+                             IDR_ENTERPRISE_PLATFORM_KEYS_CRYPTO_KEY_JS);
   source_map->RegisterSource("enterprise.platformKeys.SubtleCrypto",
                              IDR_ENTERPRISE_PLATFORM_KEYS_SUBTLE_CRYPTO_JS);
   source_map->RegisterSource("enterprise.platformKeys.Token",

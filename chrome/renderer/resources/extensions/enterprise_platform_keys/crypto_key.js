@@ -37,4 +37,28 @@ utils.expose(KeyPair, KeyPairImpl, {
   ],
 });
 
+/**
+ * Implementation of WebCrypto.CryptoKey used in enterprise.platformKeys.
+ * @param {ArrayBuffer} keyIdentifier The key identifier. For symmetric keys,
+ *     it corresponds to the internally generated symKeyId.
+ * @param {KeyAlgorithm} algorithm The algorithm identifier.
+ * @param {KeyUsage[]} usages The allowed key usages.
+ * @constructor
+ */
+function SymKeyImpl(keyIdentifier, algorithm, usages) {
+  this.key = new Key(
+      KeyType.secret, keyIdentifier, algorithm, usages, /*extractable=*/ false);
+}
+$Object.setPrototypeOf(SymKeyImpl.prototype, null);
+
+function SymKey() {
+  privates(SymKey).constructPrivate(this, arguments);
+}
+utils.expose(SymKey, SymKeyImpl, {
+  readonly: [
+    'key',
+  ],
+});
+
 exports.$set('KeyPair', KeyPair);
+exports.$set('SymKey', SymKey);
