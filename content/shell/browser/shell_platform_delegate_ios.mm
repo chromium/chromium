@@ -298,10 +298,17 @@ static const char kAllTracingCategories[] = "*";
 
   UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
   [_contentView addSubview:web_contents_view];
+
+  if (@available(ios 17.0, *)) {
+    NSArray<UITrait>* traits = @[ UITraitUserInterfaceStyle.self ];
+    [self registerForTraitChanges:traits
+                       withTarget:self
+                           action:@selector(darkModeDidChange)];
+  }
+  [self darkModeDidChange];
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
+- (void)darkModeDidChange {
   BOOL darkModeEnabled =
       (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
   _field.backgroundColor =
