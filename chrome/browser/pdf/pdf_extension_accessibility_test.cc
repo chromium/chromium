@@ -307,9 +307,8 @@ class PDFExtensionAccessibilityTestWithOopifOverride
   bool UseOopif() const override { return GetParam(); }
 };
 
-// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       DISABLED_PdfAccessibility) {
+                       PdfAccessibility) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
 
   ASSERT_TRUE(
@@ -345,9 +344,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       DISABLED_PdfAccessibilityInIframe) {
+                       PdfAccessibilityInIframe) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
@@ -537,17 +535,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   EXPECT_EQ(kExepectedPDFSelection, selected_text);
 }
 
-// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+                       RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+  base::HistogramTester histograms;
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   ASSERT_TRUE(
       LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(contents);
 
-  base::HistogramTester histograms;
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   WaitForAccessibilityTreeToContainNodeWithName(contents,
                                                 "1 First Section\r\n");
 
@@ -558,15 +555,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                               /*expected_count=*/1);
 }
 
-// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       DISABLED_RecordInaccessiblePdfUKM) {
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
-      "/pdf/accessibility/hello-world-in-image.pdf")));
-
-  WebContents* contents = GetActiveWebContents();
-  ASSERT_TRUE(contents);
-
+                       RecordInaccessiblePdfUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::TestFuture<void> ukm_recorded;
   ukm_recorder.SetOnAddEntryCallback(
@@ -574,6 +564,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
       ukm_recorded.GetRepeatingCallback());
 
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/hello-world-in-image.pdf")));
+
+  WebContents* contents = GetActiveWebContents();
+  ASSERT_TRUE(contents);
+
   // This string is defined as `IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION` in
   // blink_accessibility_strings.grd.
 #if BUILDFLAG(IS_WIN)
@@ -586,17 +582,17 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   ASSERT_TRUE(ukm_recorded.Wait());
 }
 
-// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       DISABLED_RecordHasAccessibleTextToUmaWithInaccessible) {
+                       RecordHasAccessibleTextToUmaWithInaccessible) {
+  base::HistogramTester histograms;
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL(
       "/pdf/accessibility/hello-world-in-image.pdf")));
 
   WebContents* contents = GetActiveWebContents();
   ASSERT_TRUE(contents);
 
-  base::HistogramTester histograms;
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   // This string is defined as `IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION` in
   // blink_accessibility_strings.grd.
 #if BUILDFLAG(IS_WIN)
