@@ -22,6 +22,9 @@ class CORE_EXPORT DOMNodeIds {
   // Return a DOMNodeID or 0 if one hasn't been assigned.
   static DOMNodeId ExistingIdForNode(Node*);
 
+  // Return a DOMNodeID or 0 if one hasn't been assigned.
+  static DOMNodeId ExistingIdForNode(const Node*);
+
   // Return the existing DOMNodeID if it has already been assigned, otherwise,
   // assign a new DOMNodeID and return that.
   static DOMNodeId IdForNode(Node*);

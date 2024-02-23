@@ -858,7 +858,10 @@ BrowserAccessibility::GetSourceNodesForReverseRelations(
 const ui::AXUniqueId& BrowserAccessibility::GetUniqueId() const {
   // This is not the same as GetData().id which comes from Blink, because
   // those ids are only unique within the Blink process. We need one that is
-  // unique for the browser process.
+  // unique per OS window.
+  // For example, Windows ATs use this to retrieve IA2 event targets for events
+  // that are fired on an OS-level window with an id. They also use it to
+  // save positions via IAccessible2::get_uniqueID().
   return unique_id_;
 }
 

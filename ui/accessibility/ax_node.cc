@@ -1482,7 +1482,7 @@ AXNode::GetExtraMacNodes() const {
 }
 
 bool AXNode::IsGenerated() const {
-  bool is_generated_node = id() < 0;
+  bool is_generated_node = id() < 0 && id() > kInitialEmptyDocumentRootNodeID;
 #if DCHECK_IS_ON()
   // Currently, the only generated nodes are columns and table header
   // containers, and when those roles occur, they are always extra mac nodes.

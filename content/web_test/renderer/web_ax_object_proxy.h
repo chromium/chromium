@@ -57,11 +57,11 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
       const std::vector<ui::AXEventIntent>& event_intents);
   void Reset();
 
- protected:
   const blink::WebAXObject& accessibility_object() const {
     return accessibility_object_;
   }
 
+ protected:
   Factory* factory() const { return factory_; }
 
   bool IsDetached() const { return !factory_ || !factory_->GetAXContext(); }

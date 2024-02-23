@@ -2458,12 +2458,19 @@ GType AXPlatformNodeAuraLinux::GetAccessibilityGType() {
 }
 
 void AXPlatformNodeAuraLinux::SetDocumentParentOnFrameIfNecessary() {
-  if (GetAtkRole() != ATK_ROLE_DOCUMENT_WEB)
+  if (GetRole() != ax::mojom::Role::kRootWebArea) {
     return;
+  }
 
   if (!GetDelegate()->IsWebContent())
     return;
 
+  // If there is a parent, then this is not the root document.
+  if (GetDelegate()->node()->GetUnignoredParent()) {
+    return;
+  }
+
+  // Get the ATK parent, which will cross over into the UI hierarchy.
   AtkObject* parent_atk_object = GetParent();
   AXPlatformNodeAuraLinux* parent =
       AXPlatformNodeAuraLinux::FromAtkObject(parent_atk_object);

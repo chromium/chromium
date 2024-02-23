@@ -2107,19 +2107,22 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
     return v8::Local<v8::Object>();
   }
 
-  // Return existing object if there is a match.
+  // Return existing object if there is a match and it hasn't been detached.
+  bool found = false;
   auto persistent = ax_objects_.find(object.AxID());
   if (persistent != ax_objects_.end()) {
-    auto local = v8::Local<v8::Object>::New(isolate_, persistent->second);
-
-#if DCHECK_IS_ON()
+    found = true;
     WebAXObjectProxy* proxy = nullptr;
+    // TODO(accessibility): Can this detached check be simplified?
+    auto local = v8::Local<v8::Object>::New(isolate_, persistent->second);
     bool ok = gin::ConvertFromV8(isolate_, local, &proxy);
     DCHECK(ok);
-    DCHECK(proxy->IsEqualToObject(object));
+    if (!proxy->accessibility_object().IsDetached()) {
+#if DCHECK_IS_ON()
+      DCHECK(proxy->IsEqualToObject(object));
 #endif
-
-    return local;
+      return local;
+    }
   }
 
   // Create a new object.
@@ -2128,6 +2131,10 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
   v8::Local<v8::Object> handle;
   if (value_handle.IsEmpty() ||
       !value_handle->ToObject(isolate_->GetCurrentContext()).ToLocal(&handle)) {
+    if (found) {
+      // Remove old detached object.
+      ax_objects_.erase(object.AxID());
+    }
     return {};
   }
 

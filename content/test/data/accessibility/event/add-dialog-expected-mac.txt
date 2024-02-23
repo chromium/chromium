@@ -1,1 +1,2 @@
+AXTitleChanged on AXHeading AXTitle='Dialog title' AXValue=2
 AXValueChanged on AXTextField
