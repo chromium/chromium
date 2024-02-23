@@ -185,4 +185,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Storage Access permission prompts are not supported on WebView.
   aw_feature_overrides.DisableFeature(
       permissions::features::kPermissionStorageAccessAPI);
+
+  // Disable enhanced track-pad features until WebView's experiment
+  // is fully rolled out to stable.
+  aw_feature_overrides.DisableFeature(ui::kConvertTrackpadEventsToMouse);
+  aw_feature_overrides.DisableFeature(
+      ::features::kMouseAndTrackpadDropdownMenu);
 }
