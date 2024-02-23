@@ -25,7 +25,9 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/time/time.h"
@@ -173,6 +175,9 @@ void PickerSearchController::PublishBurnInResults() {
     sections.push_back(PickerSearchResults::Section(
         u"Matching links", std::move(omnibox_results_)));
   }
+  if (!local_file_results_.empty()) {
+    sections.emplace_back(u"Matching files", std::move(local_file_results_));
+  }
   if (!gif_results_.empty()) {
     sections.push_back(PickerSearchResults::Section(u"Other expressions",
                                                     std::move(gif_results_)));
@@ -209,18 +214,43 @@ void PickerSearchController::HandleCrosSearchResults(
   if (IsSearchStopped()) {
     return;
   }
+  switch (type) {
+    case AppListSearchResultType::kOmnibox:
+      if (cros_search_start_.has_value()) {
+        base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
+        base::UmaHistogramTimes("Ash.Picker.Search.OmniboxProvider.QueryTime",
+                                elapsed);
+      }
 
-  if (cros_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.OmniboxProvider.QueryTime",
-                            elapsed);
-  }
+      omnibox_results_ = std::move(results);
 
-  omnibox_results_ = std::move(results);
+      if (IsPostBurnIn()) {
+        AppendPostBurnInResults(PickerSearchResults::Section(
+            u"Matching links", std::move(omnibox_results_)));
+      }
+      break;
+    case AppListSearchResultType::kFileSearch: {
+      if (cros_search_start_.has_value()) {
+        base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
+        base::UmaHistogramTimes("Ash.Picker.Search.FileProvider.QueryTime",
+                                elapsed);
+      }
+      local_file_results_ = std::move(results);
+      size_t files_to_remove =
+          std::max<size_t>(local_file_results_.size(), 3) - 3;
+      local_file_results_.erase(local_file_results_.end() - files_to_remove,
+                                local_file_results_.end());
 
-  if (IsPostBurnIn()) {
-    AppendPostBurnInResults(PickerSearchResults::Section(
-        u"Matching links", std::move(omnibox_results_)));
+      if (IsPostBurnIn()) {
+        AppendPostBurnInResults(PickerSearchResults::Section(
+            u"Matching files", std::move(local_file_results_)));
+      }
+      break;
+    }
+    default:
+      LOG(DFATAL) << "Got unexpected search result type "
+                  << static_cast<int>(type);
+      break;
   }
 }
 

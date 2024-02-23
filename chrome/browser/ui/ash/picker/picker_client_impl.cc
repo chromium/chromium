@@ -17,11 +17,13 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
@@ -153,14 +155,27 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
   picker_results.reserve(results.size());
   for (std::unique_ptr<ChromeSearchResult>& result : results) {
     CHECK(result);
-    // TODO: b/316936687 - Handle results for each provider.
-    std::optional<GURL> result_url =
-        app_list_controller_delegate_.GetUrlForSearchResult(*result);
-    if (result_url.has_value()) {
-      picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
-          *result_url, result->title(), result->icon().icon));
-    } else {
-      picker_results.push_back(ash::PickerSearchResult::Text(result->title()));
+    switch (result->result_type()) {
+      case ash::AppListSearchResultType::kOmnibox: {
+        std::optional<GURL> result_url =
+            app_list_controller_delegate_.GetUrlForSearchResult(*result);
+        if (result_url.has_value()) {
+          picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
+              *result_url, result->title(), result->icon().icon));
+        } else {
+          picker_results.push_back(
+              ash::PickerSearchResult::Text(result->title()));
+        }
+        break;
+      }
+      case ash::AppListSearchResultType::kFileSearch:
+        picker_results.push_back(
+            ash::PickerSearchResult::Text(result->title()));
+        break;
+      default:
+        LOG(DFATAL) << "Got unexpected search result type "
+                    << static_cast<int>(result->result_type());
+        break;
     }
   }
 
@@ -208,6 +223,9 @@ void PickerClientImpl::SetProfile(Profile* profile) {
     search_engine_->AddProvider(std::make_unique<app_list::OmniboxProvider>(
         profile_, &app_list_controller_delegate_, AutocompleteProviderTypes()));
   }
+
+  search_engine_->AddProvider(
+      std::make_unique<app_list::FileSearchProvider>(profile_));
 }
 
 PickerClientImpl::PickerAppListControllerDelegate::

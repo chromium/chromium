@@ -93,6 +93,7 @@ class ASH_EXPORT PickerSearchController {
   std::vector<PickerSearchResult> omnibox_results_;
   std::vector<PickerSearchResult> gif_results_;
   std::vector<PickerSearchResult> emoji_results_;
+  std::vector<PickerSearchResult> local_file_results_;
 
   PickerSearchDebouncer gif_search_debouncer_;
 
