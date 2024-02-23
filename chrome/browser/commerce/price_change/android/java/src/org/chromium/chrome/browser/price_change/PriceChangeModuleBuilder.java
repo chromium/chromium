@@ -74,7 +74,9 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
 
     @Override
     public boolean isEligible() {
-        assert mProfileSupplier.hasValue();
+        // This function may be called by MainSettings when a profile hasn't been initialized yet.
+        // See b/324138242.
+        if (!mProfileSupplier.hasValue()) return false;
 
         return PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfileSupplier.get());
     }
