@@ -46,4 +46,16 @@ TEST(SimpleComboboxModelTest, ComboboxItems) {
   EXPECT_EQ(20, model.GetIconAt(1).Size().width());
 }
 
+TEST(SimpleComboboxModelTest, GetDefaultIndex) {
+  SimpleComboboxModel model{/*items=*/{}};
+  EXPECT_EQ(std::nullopt, model.GetDefaultIndex());
+
+  ui::SimpleComboboxModel::Item item(u"Text16");
+  model.UpdateItemList(/*items=*/{item});
+  EXPECT_EQ(0u, model.GetDefaultIndex());
+
+  model.UpdateItemList(/*items=*/{});
+  EXPECT_EQ(std::nullopt, model.GetDefaultIndex());
+}
+
 }  // namespace ui

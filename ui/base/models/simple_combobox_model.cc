@@ -66,7 +66,7 @@ bool SimpleComboboxModel::IsItemSeparatorAt(size_t index) const {
 }
 
 std::optional<size_t> SimpleComboboxModel::GetDefaultIndex() const {
-  return size_t{0};
+  return items_.empty() ? std::nullopt : std::make_optional(0u);
 }
 
 }  // namespace ui
