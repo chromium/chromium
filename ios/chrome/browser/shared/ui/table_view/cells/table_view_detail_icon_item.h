@@ -54,6 +54,10 @@ enum class BadgeType {
 // to horizontal. 1 by default.
 @property(nonatomic, assign) NSInteger detailTextNumberOfLines;
 
+// YES if the icon is centered vertically within the cell. NO if the icon is
+// aligned with the top of the cell. YES by default.
+@property(nonatomic, assign) BOOL iconCenteredVertically;
+
 @end
 
 // TableViewDetailIconCell implements an TableViewCell subclass containing an
@@ -79,6 +83,10 @@ enum class BadgeType {
 // the detailText UILabel. Value is ignored if the layout constraint axis is set
 // to horizontal. 1 by default.
 @property(nonatomic, assign) NSInteger detailTextNumberOfLines;
+
+// YES if the icon is centered vertically within the cell. NO if the icon is
+// aligned with the top of the cell. YES by default.
+@property(nonatomic, assign) BOOL iconCenteredVertically;
 
 // Sets the `image` that should be displayed at the leading edge of the cell
 // with a `tintColor`. If set to nil, the icon will be hidden and the text

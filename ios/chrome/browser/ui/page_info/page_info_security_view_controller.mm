@@ -173,6 +173,7 @@ enum ItemIdentifier {
                 tintColor:UIColor.whiteColor
           backgroundColor:_pageInfoSecurityDescription.iconBackgroundColor
              cornerRadius:kColorfulBackgroundSymbolCornerRadius];
+      securityHeaderCell.iconCenteredVertically = NO;
       securityHeaderCell.textLayoutConstraintAxis =
           UILayoutConstraintAxisVertical;
       return securityHeaderCell;
