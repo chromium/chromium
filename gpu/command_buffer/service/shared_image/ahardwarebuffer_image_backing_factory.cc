@@ -981,4 +981,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
                            std::move(debug_label), std::move(handle));
 }
 
+SharedImageBackingType AHardwareBufferImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kAHardwareBuffer;
+}
+
 }  // namespace gpu

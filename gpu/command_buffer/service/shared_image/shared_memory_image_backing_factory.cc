@@ -139,4 +139,8 @@ bool SharedMemoryImageBackingFactory::IsSupported(
   return true;
 }
 
+SharedImageBackingType SharedMemoryImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kSharedMemory;
+}
+
 }  // namespace gpu

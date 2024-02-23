@@ -333,4 +333,8 @@ bool ExternalVkImageBackingFactory::IsSupported(
   return true;
 }
 
+SharedImageBackingType ExternalVkImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kExternalVkImage;
+}
+
 }  // namespace gpu

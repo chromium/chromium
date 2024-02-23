@@ -66,6 +66,7 @@ class RawDrawImageBackingFactory : public SharedImageBackingFactory {
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
+  SharedImageBackingType GetBackingType() override;
 
  private:
   bool CanUseRawDrawImageBacking(uint32_t usage,

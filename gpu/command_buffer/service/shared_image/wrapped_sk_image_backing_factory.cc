@@ -268,4 +268,12 @@ bool WrappedSkImageBackingFactory::IsSupported(
   return true;
 }
 
+SharedImageBackingType WrappedSkImageBackingFactory::GetBackingType() {
+  if (use_graphite_) {
+    return SharedImageBackingType::kWrappedGraphiteTexture;
+  } else {
+    return SharedImageBackingType::kWrappedSkImage;
+  }
+}
+
 }  // namespace gpu

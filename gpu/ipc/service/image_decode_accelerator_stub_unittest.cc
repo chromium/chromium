@@ -218,6 +218,9 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
                    base::span<const uint8_t> pixel_data) override {
     return true;
   }
+  SharedImageBackingType GetBackingType() override {
+    return SharedImageBackingType::kTest;
+  }
 };
 
 }  // namespace

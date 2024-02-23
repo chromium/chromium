@@ -89,6 +89,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
+  SharedImageBackingType GetBackingType() override;
 
   void EnableSupportForAllMetalUsagesForTesting();
 

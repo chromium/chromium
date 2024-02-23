@@ -647,4 +647,8 @@ D3DImageBackingFactory::CreateSharedImageGMBs(
   return backing;
 }
 
+SharedImageBackingType D3DImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kD3D;
+}
+
 }  // namespace gpu

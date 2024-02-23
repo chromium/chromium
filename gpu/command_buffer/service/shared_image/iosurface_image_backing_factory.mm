@@ -518,4 +518,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
       gr_context_type_, std::move(buffer_usage));
 }
 
+SharedImageBackingType IOSurfaceImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kIOSurface;
+}
+
 }  // namespace gpu

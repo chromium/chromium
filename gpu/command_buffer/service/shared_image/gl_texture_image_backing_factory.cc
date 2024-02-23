@@ -255,4 +255,8 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   return std::move(result);
 }
 
+SharedImageBackingType GLTextureImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kGLTexture;
+}
+
 }  // namespace gpu

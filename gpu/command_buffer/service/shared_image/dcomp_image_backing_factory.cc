@@ -164,4 +164,8 @@ bool DCompImageBackingFactory::IsSupported(
   return true;
 }
 
+SharedImageBackingType DCompImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kDCompSurface;
+}
+
 }  // namespace gpu

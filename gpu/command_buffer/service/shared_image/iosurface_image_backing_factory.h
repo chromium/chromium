@@ -104,6 +104,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
+  SharedImageBackingType GetBackingType() override;
 
  private:
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(

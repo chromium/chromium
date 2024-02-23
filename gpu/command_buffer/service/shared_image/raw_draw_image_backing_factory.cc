@@ -115,4 +115,8 @@ bool RawDrawImageBackingFactory::IsSupported(
   return true;
 }
 
+SharedImageBackingType RawDrawImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kRawDraw;
+}
+
 }  // namespace gpu

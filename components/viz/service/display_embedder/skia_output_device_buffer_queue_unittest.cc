@@ -225,6 +225,9 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
                    base::span<const uint8_t> pixel_data) override {
     return true;
   }
+  gpu::SharedImageBackingType GetBackingType() override {
+    return gpu::SharedImageBackingType::kTest;
+  }
 
   void SetPurgeableCallbacks(gpu::TestImageBacking* backing) {
     if (enable_purge_mocks_) {

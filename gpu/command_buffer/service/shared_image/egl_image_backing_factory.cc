@@ -192,4 +192,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
       use_passthrough_, pixel_data);
 }
 
+SharedImageBackingType EGLImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kEGLImage;
+}
+
 }  // namespace gpu

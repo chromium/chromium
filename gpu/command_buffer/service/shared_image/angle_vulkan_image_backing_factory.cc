@@ -189,4 +189,8 @@ bool AngleVulkanImageBackingFactory::IsSupported(
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
 }
 
+SharedImageBackingType AngleVulkanImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kAngleVulkan;
+}
+
 }  // namespace gpu

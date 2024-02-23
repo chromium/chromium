@@ -423,4 +423,8 @@ bool OzoneImageBackingFactory::CanWebGPUSynchronizeGpuFence() {
 #endif
 }
 
+SharedImageBackingType OzoneImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kOzone;
+}
+
 }  // namespace gpu
