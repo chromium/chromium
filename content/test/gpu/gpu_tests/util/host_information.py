@@ -181,6 +181,12 @@ def _lspci() -> List[List[str]]:
         'when running on a host for a remote platform such as Android and can '
         'be safely ignored in those cases.')
     return []
+  except subprocess.CalledProcessError:
+    logging.warning(
+        'Running lspci failed, cannot enumerate GPUs. This is expected to '
+        'happen when running on a host for a remote platform such as Fuchsia '
+        'and can be safely ignored in those cases.')
+    return []
   return [shlex.split(line) for line in process.stdout.splitlines()]
 
 
