@@ -132,7 +132,9 @@ public class SigninAndHistoryOptInActivity extends AsyncInitializationActivity
 
     @Override
     protected void onDestroy() {
-        mCoordinator.destroy();
+        if (mCoordinator != null) {
+            mCoordinator.destroy();
+        }
         super.onDestroy();
     }
 

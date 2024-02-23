@@ -22,6 +22,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -45,7 +48,7 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
-    // TODO(https://crbug.com/1520783): Start different flow according to the modes set.
+    // TODO(crbug.com/1520783): Start different flow according to the modes set.
     private final @NoAccountSigninMode int mNoAccountSigninMode;
     private final @HistoryOptInMode int mHistoryOptInMode;
 
@@ -126,19 +129,22 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.signin_history_opt_in_container, null);
 
-        // TODO(https://crbug.com/1520783): Implement loading state UI when async
-        // initialization will be supported.
+        // TODO(crbug.com/41493768): Implement the loading state UI.
     }
 
     /** Called when the sign-in successfully finishes. */
     @Override
     public void onSignInComplete() {
-        showHistoryOptInDialog();
+        mAccountPickerCoordinator.destroy();
+        mAccountPickerCoordinator = null;
+        showHistoryOptInOrFinish();
     }
 
     /** Called when the sign-in is aborted. */
     @Override
     public void onSignInCancel() {
+        mAccountPickerCoordinator.destroy();
+        mAccountPickerCoordinator = null;
         onFlowComplete();
     }
 
@@ -153,7 +159,10 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
      * hosting activity is destroyed.
      */
     public void destroy() {
-        mAccountPickerCoordinator.destroy();
+        if (mAccountPickerCoordinator != null) {
+            mAccountPickerCoordinator.destroy();
+            mAccountPickerCoordinator = null;
+        }
     }
 
     private void onProfileAvailable(Profile profile) {
@@ -162,6 +171,42 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
                     "Sign-in & history opt-in flow is using incognito profile");
         }
 
+        AccountManagerFacadeProvider.getInstance()
+                .getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            // The history opt-in screen should be shown after the coreAccountInfos
+                            // become available to avoid showing additional loading UI after history
+                            // opt-in screen is shown.
+                            IdentityManager identityManager =
+                                    IdentityServicesProvider.get()
+                                            .getIdentityManager(mProfileSupplier.get());
+                            if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                                showHistoryOptInOrFinish();
+                                return;
+                            }
+
+                            if (!coreAccountInfos.isEmpty()) {
+                                showSigninBottomSheet();
+                                return;
+                            }
+
+                            switch (mNoAccountSigninMode) {
+                                case NoAccountSigninMode.BOTTOM_SHEET:
+                                    showSigninBottomSheet();
+                                    break;
+                                case NoAccountSigninMode.ADD_ACCOUNT:
+                                    showAddAccount();
+                                    break;
+                                case NoAccountSigninMode.NO_SIGNIN:
+                                    // TODO(crbug.com/41493768): Implement the error state UI.
+                                    onFlowComplete();
+                                    break;
+                            }
+                        });
+    }
+
+    private void showSigninBottomSheet() {
         SigninManager signinManager =
                 IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
         mAccountPickerCoordinator =
@@ -173,6 +218,25 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
                         mDeviceLockActivityLauncher,
                         signinManager,
                         mSigninAccessPoint);
+    }
+
+    private void showAddAccount() {
+        // TODO(crbug.com/41493767): Implement the no-account sign-in flow.
+        assert false : "Not implemented.";
+        onFlowComplete();
+    }
+
+    private void showHistoryOptInOrFinish() {
+        switch (mHistoryOptInMode) {
+            case HistoryOptInMode.NONE:
+                onFlowComplete();
+                break;
+            case HistoryOptInMode.OPTIONAL:
+                // TODO(crbug.com/40944119): Show history opt-in only if it's not suppressed.
+            case HistoryOptInMode.REQUIRED:
+                showHistoryOptInDialog();
+                break;
+        }
     }
 
     private void showHistoryOptInDialog() {
@@ -192,14 +256,14 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
                                     @Override
                                     public void onClick(
                                             PropertyModel model, @ButtonType int buttonType) {
-                                        // TODO(https://crbug.com/1520783): To implement.
+                                        // TODO(crbug.com/41493758): To implement.
                                     }
 
                                     @Override
                                     public void onDismiss(
                                             PropertyModel model,
                                             @DialogDismissalCause int dismissalCause) {
-                                        // TODO(https://crbug.com/1520783): Better handle dismissal.
+                                        // TODO(crbug.com/41493758): Better handle dismissal.
                                         onFlowComplete();
                                     }
                                 })
@@ -208,7 +272,7 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
                                 new OnBackPressedCallback(true) {
                                     @Override
                                     public void handleOnBackPressed() {
-                                        // TODO(https://crbug.com/1520783): Better handle dismissal.
+                                        // TODO(crbug.com/41493758): Better handle dismissal.
                                         onFlowComplete();
                                     }
                                 })
@@ -221,7 +285,7 @@ public class SigninAndHistoryOptInCoordinator implements SigninAccountPickerCoor
     }
 
     private @NonNull View getDialogContentView() {
-        // TODO(https://crbug.com/1520783): Remove the lines below and use the new history-sync
+        // TODO(crbug.com/41493766): Remove the lines below and use the new history-sync
         // opt-in view in the dialog.
         View dialogContentView = new View(mActivity);
         dialogContentView.setLayoutParams(
