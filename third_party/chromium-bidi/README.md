@@ -51,7 +51,7 @@ and returns the result.
 
 ```cddl
 CdpGetSessionCommand = {
-   method: "cdp.sendCommand",
+   method: "cdp.getSession",
    params: ScriptEvaluateParameters,
 }
 
