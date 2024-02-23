@@ -110,11 +110,10 @@ MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
   result->fake_frame_captured_callback_ = std::move(frame_captured_callback);
 
   auto* raw_result_ptr = result.get();
-  ON_CALL(*result, ReserveOutputBuffer(_, _, _, _, _, _))
+  ON_CALL(*result, ReserveOutputBuffer(_, _, _, _))
       .WillByDefault(
           Invoke([](const gfx::Size& dimensions, VideoPixelFormat format, int,
-                    VideoCaptureDevice::Client::Buffer* buffer,
-                    int* require_new_buffer_id, int* retire_old_buffer_id) {
+                    VideoCaptureDevice::Client::Buffer* buffer) {
             EXPECT_GT(dimensions.GetArea(), 0);
             const VideoCaptureFormat frame_format(dimensions, 0.0, format);
             *buffer = CreateStubBuffer(

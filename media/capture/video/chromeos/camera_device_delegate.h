@@ -113,13 +113,6 @@ class CAPTURE_EXPORT StreamCaptureInterface {
       cros::mojom::Camera3CaptureRequestPtr request,
       base::OnceCallback<void(int32_t)> callback) = 0;
 
-  // Registers a new buffer in the camera HAL buffer object pool.
-  virtual void OnNewBuffer(ClientType client_type,
-                           cros::mojom::CameraBufferHandlePtr buffer) = 0;
-
-  // Retires a buffer from the camera HAL buffer object pool.
-  virtual void OnBufferRetired(ClientType client_type, uint64_t buffer_id) = 0;
-
   // Send flush to cancel all pending requests to the camera HAL.
   virtual void Flush(base::OnceCallback<void(int32_t)> callback) = 0;
 };
@@ -166,16 +159,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // rotation in degrees, and is passed to |client_| along with the captured
   // frames.
   void SetRotation(int rotation);
-
-  // Receives the buffer update message from video capture buffer pool and
-  // notifies the camera HAL to synchronize the maintained buffer pool.
-  void OnNewBuffer(ClientType client_type,
-                   cros::mojom::CameraBufferHandlePtr buffer);
-  void OnBufferRetired(ClientType client_type, uint64_t buffer_id);
-  void OnAllBufferRetired(ClientType client_type);
-  void OnNewBufferResult(ClientType client_type,
-                         uint64_t buffer_id,
-                         int32_t ret);
 
   base::WeakPtr<CameraDeviceDelegate> GetWeakPtr();
 
@@ -306,12 +289,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   std::optional<PortraitModeCallbacks> take_portrait_photo_callbacks_;
 
   std::unique_ptr<RequestManager> request_manager_;
-
-  // A map for client type and VCD buffer ids known by camera HAL.
-  base::flat_map<ClientType, base::flat_set<uint64_t>> buffer_ids_known_by_hal_;
-  // Stores the pending retire buffer id which are underway to register
-  // to HAL but haven't complete.
-  base::flat_set<uint64_t> pending_retire_ids_;
 
   std::unique_ptr<Camera3AController> camera_3a_controller_;
 

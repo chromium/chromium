@@ -293,11 +293,10 @@ class DesktopCaptureDeviceTest : public testing::Test {
   CreateMockVideoCaptureDeviceClient() {
     auto result =
         std::make_unique<NiceMock<media::MockVideoCaptureDeviceClient>>();
-    ON_CALL(*result, ReserveOutputBuffer(_, _, _, _, _, _))
+    ON_CALL(*result, ReserveOutputBuffer(_, _, _, _))
         .WillByDefault(Invoke([](const gfx::Size&,
                                  media::VideoPixelFormat format, int,
-                                 media::VideoCaptureDevice::Client::Buffer*,
-                                 int*, int*) {
+                                 media::VideoCaptureDevice::Client::Buffer*) {
           EXPECT_TRUE(format == media::PIXEL_FORMAT_I420);
           return media::VideoCaptureDevice::Client::ReserveResult::kSucceeded;
         }));

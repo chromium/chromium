@@ -151,9 +151,7 @@ bool CameraDeviceContext::ReserveVideoCaptureBufferFromPool(
     ClientType client_type,
     gfx::Size size,
     VideoPixelFormat format,
-    VideoCaptureDevice::Client::Buffer* buffer,
-    int* require_new_buffer_id,
-    int* retire_old_buffer_id) {
+    VideoCaptureDevice::Client::Buffer* buffer) {
   base::AutoLock lock(client_lock_);
   auto client = clients_.find(client_type);
   if (client == clients_.end()) {
@@ -163,8 +161,7 @@ bool CameraDeviceContext::ReserveVideoCaptureBufferFromPool(
   // Use a dummy frame feedback id as we don't need it.
   constexpr int kDummyFrameFeedbackId = 0;
   auto result = client->second->ReserveOutputBuffer(
-      size, format, kDummyFrameFeedbackId, buffer, require_new_buffer_id,
-      retire_old_buffer_id);
+      size, format, kDummyFrameFeedbackId, buffer);
   return result == VideoCaptureDevice::Client::ReserveResult::kSucceeded;
 }
 

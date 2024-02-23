@@ -160,16 +160,12 @@ class CAPTURE_EXPORT CameraDeviceContext {
   bool IsCameraFrameRotationEnabledAtSource();
 
   // Reserves a video capture buffer from the buffer pool provided by the video
-  // |client_|. |require_new_buffer_id| and |retire_old_buffer_id| returns the
-  // new buffer id and retired buffer id in the VCD buffer pool. Returns true if
-  // the operation succeeds; false otherwise.
+  // |client_|.  Returns true if the operation succeeds; false otherwise.
   bool ReserveVideoCaptureBufferFromPool(
       ClientType client_type,
       gfx::Size size,
       VideoPixelFormat format,
-      VideoCaptureDevice::Client::Buffer* buffer,
-      int* require_new_buffer_id = nullptr,
-      int* retire_old_buffer_id = nullptr);
+      VideoCaptureDevice::Client::Buffer* buffer);
 
   // Returns true if there is a client.
   bool HasClient();

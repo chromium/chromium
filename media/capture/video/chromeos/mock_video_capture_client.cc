@@ -82,9 +82,7 @@ MockVideoCaptureClient::ReserveOutputBuffer(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     int frame_feedback_id,
-    VideoCaptureDevice::Client::Buffer* buffer,
-    int* require_new_buffer_id,
-    int* retire_old_buffer_id) {
+    VideoCaptureDevice::Client::Buffer* buffer) {
   DoReserveOutputBuffer();
   NOTREACHED() << "This should never be called";
   return ReserveResult::kSucceeded;
