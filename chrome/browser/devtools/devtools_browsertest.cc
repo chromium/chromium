@@ -2990,6 +2990,23 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
   CloseDevToolsWindow();
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenSearchResultsInNewTab) {
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  DevToolsUIBindings::Delegate* bindings_delegate_ =
+      static_cast<DevToolsUIBindings::Delegate*>(window_);
+
+  TabStripModel* tabs = browser()->tab_strip_model();
+
+  bindings_delegate_->OpenSearchResultsInNewTab("test query");
+
+  std::string opened_url = tabs->GetWebContentsAt(1)->GetVisibleURL().spec();
+  EXPECT_EQ(
+      opened_url,
+      "https://www.google.com/search?q=test+query&sourceid=chrome&ie=UTF-8");
+
+  CloseDevToolsWindow();
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
   std::string file_url =
       "file://" + base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
