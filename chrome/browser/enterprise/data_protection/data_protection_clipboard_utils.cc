@@ -170,6 +170,23 @@ void PasteIfAllowedByContentAnalysis(
   }
 }
 
+void OnDataControlsPasteWarning(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const content::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback,
+    bool bypassed) {
+  if (!bypassed || SkipDataControlOrContentAnalysisChecks(destination)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  PasteIfAllowedByContentAnalysis(destination.web_contents(), destination,
+                                  metadata, std::move(clipboard_paste_data),
+                                  std::move(callback));
+}
+
 void PasteIfAllowedByDataControls(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
@@ -190,12 +207,20 @@ void PasteIfAllowedByDataControls(
         std::move(verdict));
   }
 
-  // TODO(b/302340176): Add support for verdicts other than "block".
+  // TODO(b/302340176): Add support for verdicts other than "block" and "warn".
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     data_controls::DataControlsDialog::Show(
         destination.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
     std::move(callback).Run(std::nullopt);
+    return;
+  } else if (verdict.level() == data_controls::Rule::Level::kWarn) {
+    data_controls::DataControlsDialog::Show(
+        destination.web_contents(),
+        data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
+        base::BindOnce(&OnDataControlsPasteWarning, source, destination,
+                       metadata, std::move(clipboard_paste_data),
+                       std::move(callback)));
     return;
   }
 
