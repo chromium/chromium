@@ -515,8 +515,6 @@ class OrderfileGenerator:
 
     Returns:
       (Device with given serial ID) : if the --device flag is set.
-      (Device running Android[K,L]) : if --use-legacy-chrome-apk flag is set or
-                                      no device running Android N+ was found.
       (Device running Android N+) : Otherwise.
 
     Raises Error:
@@ -529,17 +527,6 @@ class OrderfileGenerator:
       devices = device_utils.DeviceUtils.HealthyDevices()
 
     assert devices, 'Expected at least one connected device'
-
-    if self._options.use_legacy_chrome_apk:
-      self._monochrome = False
-      for device in devices:
-        device_version = device.build_version_sdk
-        if (version_codes.KITKAT <= device_version <=
-            version_codes.LOLLIPOP_MR1):
-          return device
-
-    assert not self._options.use_legacy_chrome_apk, \
-      'No device found running suitable android version for Chrome.apk.'
 
     preferred_device = None
     for device in devices:
@@ -599,7 +586,7 @@ class OrderfileGenerator:
           '--pregenerated-profiles cannot be used with --skip-profile')
       assert not options.profile_save_dir, (
           '--profile-save-dir cannot be used with --skip-profile')
-      self._monochrome = not self._options.use_legacy_chrome_apk
+      self._monochrome = True
 
     # Outlined function handling enabled by default for all architectures.
     self._order_outlined_functions = not options.noorder_outlined_functions
@@ -1123,9 +1110,6 @@ def CreateArgumentParser():
                       help=('Create an orderfile based on an about:blank '
                             'startup benchmark instead of system health '
                             'benchmarks.'))
-  parser.add_argument(
-      '--use-legacy-chrome-apk', action='store_true', default=False,
-      help=('Compile and instrument chrome for [L, K] devices.'))
   parser.add_argument('--manual-symbol-offsets', default=None, type=str,
                       help=('File of list of ordered symbol offsets generated '
                             'by manual profiling. Must set other --manual* '
