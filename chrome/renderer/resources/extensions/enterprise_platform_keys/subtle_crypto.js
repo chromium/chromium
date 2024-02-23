@@ -48,7 +48,7 @@ function isSupportedAesAlgorithmName(normalizedAlgorithmParams) {
   return normalizedAlgorithmParams.name === 'AES-CBC';
 }
 
-// Returns true if the |normalizedAlgorithmParams| returned by
+// Returns true if the `normalizedAlgorithmParams` returned by
 // normalizeAlgorithm() is supported by platform keys subtle crypto internal
 // API.
 function isSupportedGenerateKeyAlgorithm(normalizedAlgorithmParams) {
@@ -70,21 +70,23 @@ function isSupportedGenerateKeyAlgorithm(normalizedAlgorithmParams) {
   return false;
 }
 
-// Returns true if |array| is a BigInteger describing the standard public
+// Returns true if `array` is a BigInteger describing the standard public
 // exponent 65537. In particular, it ignores leading zeros as required by the
 // BigInteger definition in WebCrypto.
 function equalsStandardPublicExponent(array) {
   var expected = [0x01, 0x00, 0x01];
-  if (array.length < expected.length)
+  if (array.length < expected.length) {
     return false;
+  }
   for (var i = 0; i < array.length; i++) {
     var expectedDigit = 0;
     if (i < expected.length) {
-      // |expected| is symmetric, endianness doesn't matter.
+      // `expected` is symmetric, endianness doesn't matter.
       expectedDigit = expected[i];
     }
-    if (array[array.length - 1 - i] !== expectedDigit)
+    if (array[array.length - 1 - i] !== expectedDigit) {
       return false;
+    }
   }
   return true;
 }
@@ -133,8 +135,8 @@ EnterpriseSubtleCryptoImpl.prototype.generateKey =
     }
 
     if (isSupportedRsaAlgorithmName(normalizedAlgorithmParams)) {
-      // normalizeAlgorithm returns an array, but publicExponent should be a
-      // Uint8Array.
+      // `normalizeAlgorithm` returns an ArrayBuffer, but publicExponent should
+      // be a Uint8Array.
       normalizedAlgorithmParams.publicExponent =
           new Uint8Array(normalizedAlgorithmParams.publicExponent);
     }

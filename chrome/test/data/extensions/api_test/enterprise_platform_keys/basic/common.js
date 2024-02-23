@@ -780,6 +780,26 @@ async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
   }
 }
 
+// Call generate RSA key with invalid algorithm param, missing publicExponent.
+async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
+  var algorithm = {
+    name: 'RSASSA-PKCS1-v1_5',
+    modulusLength: 512,
+    hash: {
+      name: 'SHA-1',
+    }
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
 // Call generate RSA key with invalid algorithm param, missing hash.
 async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
   var algorithm = {
@@ -819,9 +839,42 @@ async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
   }
 }
 
+async function testGenerateEcKeyParamMissingNamedCurve(subtleCrypto) {
+  var algorithm = {
+    name: 'ECDSA',
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('A required parameter was missing or out-of-range', error.message);
+    succeed();
+  }
+}
+
+async function testGenerateEcKeyParamUnsupportedNamedCurve(subtleCrypto) {
+  var algorithm = {
+    name: 'ECDSA',
+    namedCurve: 'P-384',
+  };
+
+  try {
+    await subtleCrypto.generateKey(algorithm, false, ['sign']);
+    fail('generateKey was expected to fail');
+  } catch (error) {
+    assertTrue(error instanceof Error);
+    assertEq('The algorithm is not supported', error.message);
+    succeed();
+  }
+}
+
 // Call generate AES key with invalid algorithm param, missing length.
 async function testGenerateAesKeyParamMissingLength(subtleCrypto) {
-  var algorithm = {name: 'AES-CBC'};
+  var algorithm = {
+    name: 'AES-CBC',
+  };
 
   try {
     await subtleCrypto.generateKey(algorithm, false, []);
@@ -835,7 +888,10 @@ async function testGenerateAesKeyParamMissingLength(subtleCrypto) {
 
 // Call generate AES key with invalid algorithm param, unsupported length.
 async function testGenerateAesKeyParamUnsupportedLength(subtleCrypto) {
-  var algorithm = {name: 'AES-CBC', length: 128};
+  var algorithm = {
+    name: 'AES-CBC',
+    length: 128,
+  };
 
   try {
     await subtleCrypto.generateKey(algorithm, false, []);
@@ -911,8 +967,11 @@ function getTestsForSubtleCrypto(subtleCrypto, signMultipleTimes) {
     testHasSubtleCryptoMethods,
     testGenerateRsaKeyAndSignOtherParams,
     testGenerateRsaKeyParamMissingModulusLength,
+    testGenerateRsaKeyParamMissingPublicExponent,
     testGenerateRsaKeyParamMissingHash,
     testGenerateRsaKeyParamUnsupportedPublicExponent,
+    testGenerateEcKeyParamMissingNamedCurve,
+    testGenerateEcKeyParamUnsupportedNamedCurve,
     testGenerateAesKey,
     testGenerateAesKeyParamMissingLength,
     testGenerateAesKeyParamUnsupportedLength,
