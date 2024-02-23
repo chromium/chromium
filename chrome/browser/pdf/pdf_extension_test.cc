@@ -1214,6 +1214,8 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    PDFExtensionTest::SetUpCommandLine(command_line);
+
     // Smooth scrolling confuses the test cases that reads the scroll bar
     // position.
     command_line->AppendSwitch(switches::kDisableSmoothScrolling);
@@ -1222,10 +1224,10 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
  protected:
   class ScrollEventWaiter {
    public:
-    explicit ScrollEventWaiter(content::ToRenderFrameHost guest_main_frame)
-        : message_queue_(guest_main_frame.render_frame_host()) {
+    explicit ScrollEventWaiter(content::ToRenderFrameHost extension_host)
+        : message_queue_(extension_host.render_frame_host()) {
       content::ExecuteScriptAsync(
-          guest_main_frame,
+          extension_host,
           R"(viewer.shadowRoot.querySelector('#scroller').onscroll = () => {
             if (viewer.viewport.scrollContent_.unackedScrollsToRemote_ === 0) {
               window.domAutomationController.send('dispatchedScrollEvent');
@@ -1260,42 +1262,37 @@ class PDFExtensionScrollTest : public PDFExtensionTest {
   // difference.
   static constexpr float kScrollPositionEpsilon = 2.0f;
 
-  static int GetViewportHeight(content::ToRenderFrameHost guest_main_frame) {
-    return content::EvalJs(guest_main_frame, "viewer.viewport.size.height;")
+  static int GetViewportHeight(content::RenderFrameHost* extension_host) {
+    return content::EvalJs(extension_host, "viewer.viewport.size.height;")
         .ExtractInt();
   }
 
   static int GetViewportScrollPositionX(
-      content::ToRenderFrameHost guest_main_frame) {
-    return content::EvalJs(guest_main_frame, "viewer.viewport.position.x;")
+      content::RenderFrameHost* extension_host) {
+    return content::EvalJs(extension_host, "viewer.viewport.position.x;")
         .ExtractInt();
   }
 
   static int GetViewportScrollPositionY(
-      content::ToRenderFrameHost guest_main_frame) {
-    return content::EvalJs(guest_main_frame, "viewer.viewport.position.y;")
+      content::RenderFrameHost* extension_host) {
+    return content::EvalJs(extension_host, "viewer.viewport.position.y;")
         .ExtractInt();
   }
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-
-  SetInputFocusOnPlugin(guest);
-  ASSERT_EQ(0, GetViewportScrollPositionY(guest_mainframe));
+  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Get the viewport height, since the scroll distance is based on it.
-  const int viewport_height = GetViewportHeight(guest_mainframe);
+  const int viewport_height = GetViewportHeight(extension_host);
   ASSERT_GT(viewport_height, 0);
 
   // For web content, page down / page up scrolling only scrolls by a fraction
@@ -1304,14 +1301,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
       viewport_height * cc::kMinFractionToStepWhenPaging;
 
   // Press Space to scroll down.
-  ScrollEventWaiter scroll_waiter(guest_mainframe);
+  ScrollEventWaiter scroll_waiter(extension_host);
   content::SimulateKeyPress(GetActiveWebContents(),
                             ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
                             ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_mainframe),
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 
   // Press Space to scroll down again.
@@ -1322,7 +1319,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(guest_mainframe),
+  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 
   // Press Shift+Space to scroll up.
@@ -1333,27 +1330,23 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
                             /*control=*/false, /*shift=*/true, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_mainframe),
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-
-  SetInputFocusOnPlugin(guest);
-  ASSERT_EQ(0, GetViewportScrollPositionY(guest_mainframe));
+  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Get the viewport height, since the scroll distance is based on it.
-  const int viewport_height = GetViewportHeight(guest_mainframe);
+  const int viewport_height = GetViewportHeight(extension_host);
   ASSERT_GT(viewport_height, 0);
 
   // For web content, page down / page up scrolling only scrolls by a fraction
@@ -1362,7 +1355,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
       viewport_height * cc::kMinFractionToStepWhenPaging;
 
   // Press PageDown to scroll down.
-  ScrollEventWaiter scroll_waiter(guest_mainframe);
+  ScrollEventWaiter scroll_waiter(extension_host);
   content::SimulateKeyPressWithoutChar(GetActiveWebContents(),
                                        ui::DomKey::PAGE_DOWN,
                                        ui::DomCode::PAGE_DOWN, ui::VKEY_NEXT,
@@ -1370,7 +1363,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_mainframe),
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 
   // Press PageDown to scroll down again.
@@ -1382,7 +1375,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(guest_mainframe),
+  EXPECT_NEAR(scroll_height * 2, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 
   // Press PageUp to scroll up.
@@ -1393,28 +1386,23 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
       /*control=*/false, /*shift=*/false, /*alt=*/false,
       /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(guest_mainframe),
+  EXPECT_NEAR(scroll_height, GetViewportScrollPositionY(extension_host),
               kScrollPositionEpsilon);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(LoadPdf(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200"));
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-
-  SetInputFocusOnPlugin(guest);
-  ASSERT_EQ(0, GetViewportScrollPositionY(guest_mainframe));
+  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowRight to scroll right.
-  ScrollEventWaiter scroll_waiter(guest_mainframe);
+  ScrollEventWaiter scroll_waiter(extension_host);
   content::SimulateKeyPressWithoutChar(GetActiveWebContents(),
                                        ui::DomKey::ARROW_RIGHT,
                                        ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT,
@@ -1422,7 +1410,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(guest_mainframe));
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(extension_host));
 
   // Press ArrowRight to scroll right again.
   scroll_waiter.Reset();
@@ -1433,7 +1421,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(kScrollIncrement * 2, GetViewportScrollPositionX(guest_mainframe));
+  EXPECT_EQ(kScrollIncrement * 2, GetViewportScrollPositionX(extension_host));
 
   // Press ArrowLeft to scroll left.
   scroll_waiter.Reset();
@@ -1444,27 +1432,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(guest_mainframe));
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(extension_host));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  ASSERT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
-  ASSERT_TRUE(guest);
+  content::RenderFrameHost* extension_host =
+      GetOnlyPdfExtensionHostEnsureValid();
+  ASSERT_TRUE(extension_host);
 
-  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
-  ASSERT_TRUE(guest_mainframe);
-
-  SetInputFocusOnPlugin(guest);
-  ASSERT_EQ(0, GetViewportScrollPositionY(guest_mainframe));
+  SetInputFocusOnPlugin(extension_host, GetEmbedderWebContents());
+  ASSERT_EQ(0, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowDown to scroll down.
-  ScrollEventWaiter scroll_waiter(guest_mainframe);
+  ScrollEventWaiter scroll_waiter(extension_host);
   content::SimulateKeyPressWithoutChar(GetActiveWebContents(),
                                        ui::DomKey::ARROW_DOWN,
                                        ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN,
@@ -1472,7 +1455,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(guest_mainframe));
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowDown to scroll down again.
   scroll_waiter.Reset();
@@ -1483,7 +1466,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(kScrollIncrement * 2, GetViewportScrollPositionY(guest_mainframe));
+  EXPECT_EQ(kScrollIncrement * 2, GetViewportScrollPositionY(extension_host));
 
   // Press ArrowUp to scroll up.
   scroll_waiter.Reset();
@@ -1494,7 +1477,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
                                        /*alt=*/false,
                                        /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(guest_mainframe));
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(extension_host));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {

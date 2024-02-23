@@ -207,6 +207,23 @@ void PDFExtensionTestBase::CreateTestPdfViewerStreamManager() {
           browser()->tab_strip_model()->GetActiveWebContents());
 }
 
+content::RenderFrameHost*
+PDFExtensionTestBase::GetOnlyPdfExtensionHostEnsureValid() {
+  auto* web_contents = GetActiveWebContents();
+  content::RenderFrameHost* extension_host =
+      pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
+
+  if (!UseOopif()) {
+    auto* guest_view = GetGuestViewManager()->GetLastGuestViewCreated();
+    if (!guest_view) {
+      return nullptr;
+    }
+    EXPECT_EQ(guest_view->GetGuestMainFrame(), extension_host);
+    EXPECT_NE(web_contents->GetPrimaryMainFrame(), extension_host);
+  }
+  return extension_host;
+}
+
 content::RenderFrameHost* PDFExtensionTestBase::GetPluginFrame(
     MimeHandlerViewGuest* guest) const {
   return pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());

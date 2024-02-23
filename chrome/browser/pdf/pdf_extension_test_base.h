@@ -84,6 +84,8 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   void CreateTestPdfViewerStreamManager();
 
+  content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
+
   content::RenderFrameHost* GetPluginFrame(
       extensions::MimeHandlerViewGuest* guest) const;
 
