@@ -44,7 +44,8 @@ declare_args() {
   # * CertificateManagement/CAHintCertificates.yaml
   # * CertificateManagement/CAPlatformIntegrationEnabled.yaml
   #
-  chrome_certificate_policies_supported = is_mac || is_win || is_linux
+  chrome_certificate_policies_supported =
+      is_mac || is_win || is_linux || is_android
 
   # Enables support for background apps.
   enable_background_contents = !is_android

@@ -44,5 +44,6 @@ future_on:
 - chrome.linux
 - chrome.mac
 - chrome.win
+- android
 tags: []
 type: dict
