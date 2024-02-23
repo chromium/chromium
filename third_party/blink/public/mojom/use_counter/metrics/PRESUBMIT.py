@@ -56,6 +56,6 @@ def CheckHistograms(input_api, output_api):  # pylint: disable=C0103
             **_VALIDATE_HISTOGRAM_ARGS[f.LocalPath()])
         if presubmit_error:
             results.append(
-                output_api.PresubmitPromptWarning(presubmit_error,
-                                                  items=[f.LocalPath()]))
+                output_api.PresubmitError(presubmit_error,
+                                          items=[f.LocalPath()]))
     return results

@@ -42,8 +42,7 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
         strip_k_prefix=True)
     if presubmit_error:
         return [
-            output_api.PresubmitPromptWarning(
-                presubmit_error, items=[source_path])
+            output_api.PresubmitError(presubmit_error, items=[source_path])
         ]
     return []
 
