@@ -202,8 +202,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This enum describes the outcome of the pop-up window and is used for
   // histograms. Do not remove or modify existing values, but you may add new
   // values at the end. This enum should be kept in sync with
-  // FedCmPopupWindowResult in
-  // tools/metrics/histograms/metadata/blink/enums.xml.
+  // FedCmPopupWindowResult in tools/metrics/histograms/enums.xml.
   enum class PopupWindowResult {
     kAccountsReceivedAndPopupClosedByIdp,
     kAccountsReceivedAndPopupNotClosedByIdp,
@@ -231,9 +230,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnGotIt(const ui::Event& event) override;
   void OnMoreDetails(const ui::Event& event) override;
 
-  // Returns false if `this` got deleted. In that case, the caller should not
-  // access any further member variables.
-  bool ShowVerifyingSheet(const Account& account,
+  void ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);
 
   // Returns the SheetType to be used for metrics reporting.
@@ -316,8 +313,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   base::TimeTicks idp_close_popup_time_;
 
   // The current state of the IDP sign-in pop-up window, if initiated by user.
-  // This is nullopt when no popup window has been opened.
-  std::optional<PopupWindowResult> popup_window_state_;
+  PopupWindowResult popup_window_state_;
 
   // An AccountSelectionViewBase to render bubble dialogs for widget flows,
   // otherwise returns an AccountSelectionViewBase to render modal dialogs

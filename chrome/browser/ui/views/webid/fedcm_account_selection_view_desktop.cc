@@ -152,12 +152,8 @@ void FedCmAccountSelectionView::Show(
     // account and its IDP.
     DCHECK_EQ(idp_display_data_list_.size(), 1u);
     DCHECK_EQ(idp_display_data_list_[0].accounts.size(), 1u);
-    // If ShowVerifyingSheet returns false, `this` got deleted, so just
-    // return.
-    if (!ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
-                            idp_display_data_list_[0])) {
-      return;
-    }
+    ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
+                       idp_display_data_list_[0]);
   } else if (new_account_idp) {
     // When we just logged in to an account, show that account right away.
     // TODO(crbug.com/41490360): verify this works on modal dialog.
@@ -200,14 +196,7 @@ void FedCmAccountSelectionView::Show(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  // The popup_window_state_ check is for the case when we received new accounts
-  // while the modal dialog is visible and we are called from CloseModalDialog.
-  // Because the modal dialog is now closed, we should show the account chooser
-  // now.
-  if (create_view || is_modal_closed_but_accounts_fetch_pending_ ||
-      (popup_window_state_ &&
-       *popup_window_state_ ==
-           PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp)) {
+  if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
@@ -650,8 +639,10 @@ void FedCmAccountSelectionView::CloseModalDialog() {
 
   if (show_accounts_dialog_callback_) {
     std::move(show_accounts_dialog_callback_).Run();
-    // `this` might be deleted now, do not access member variables
-    // after this point.
+    if (is_web_contents_visible_) {
+      input_protector_->VisibilityChanged(true);
+      GetDialogWidget()->Show();
+    }
   }
 }
 
@@ -664,7 +655,7 @@ void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
   Close();
 }
 
-bool FedCmAccountSelectionView::ShowVerifyingSheet(
+void FedCmAccountSelectionView::ShowVerifyingSheet(
     const Account& account,
     const IdentityProviderDisplayData& idp_display_data) {
   DCHECK(state_ == State::VERIFYING || state_ == State::AUTO_REAUTHN);
@@ -677,7 +668,7 @@ bool FedCmAccountSelectionView::ShowVerifyingSheet(
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.
   if (!weak_ptr) {
-    return false;
+    return;
   }
 
   const std::u16string title =
@@ -685,7 +676,6 @@ bool FedCmAccountSelectionView::ShowVerifyingSheet(
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
           : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
   account_selection_view_->ShowVerifyingSheet(account, idp_display_data, title);
-  return true;
 }
 
 FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
@@ -743,9 +733,9 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   // Pop-up window can only be opened through clicking the "Continue" button on
   // the mismatch dialog. Hence, we record the outcome only after the dialog is
   // closed.
-  if (is_mismatch_continue_clicked_ && popup_window_state_) {
+  if (is_mismatch_continue_clicked_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.PopupWindowResult",
-                              *popup_window_state_);
+                              popup_window_state_);
   }
 
   ResetAccountSelectionView();
