@@ -122,7 +122,9 @@ class ExtensionMessagePort : public MessagePort {
   // there are no registered frames any more, the port closes via
   // CloseChannel().
   // It returns if the port and the associated channel is closed.
-  bool UnregisterFramesUnderMainFrame(content::RenderFrameHost* main_frame);
+  bool UnregisterFramesUnderMainFrame(
+      content::RenderFrameHost* main_frame,
+      std::optional<std::string> error_message = std::nullopt);
 
   // Methods to register/unregister a Service Worker endpoint for this port.
   void RegisterWorker(const WorkerId& worker_id);
@@ -130,7 +132,7 @@ class ExtensionMessagePort : public MessagePort {
   void UnregisterWorker(int render_process_id, int worker_thread_id);
 
   // Immediately close the port and its associated channel.
-  void CloseChannel();
+  void CloseChannel(std::optional<std::string> error_message = std::nullopt);
 
   using SendCallback = base::RepeatingCallback<void(mojom::MessagePort*)>;
   void SendToPort(SendCallback send_callback);

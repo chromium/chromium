@@ -365,7 +365,14 @@ chrome.test.getConfig(function(config) {
       }
       listenOnce(chrome.runtime.onConnect, function(portFromTab) {
         listenOnce(portFromTab.onDisconnect, function() {
-          chrome.test.assertNoLastError();
+          if (config.customArg === 'bfcache') {
+            chrome.test.assertLastError(
+              'The page keeping the extension port is moved into ' +
+              'back/forward cache, so the message channel is closed.'
+            );
+          } else {
+            chrome.test.assertNoLastError();
+          }
         });
         portFromTab.postMessage('unloadTabContent');
       });
