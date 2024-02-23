@@ -694,8 +694,6 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponsesAnimated) {
        compose::features::kComposeTextOutputAnimation},
       {});
 
-  base::HistogramTester histogram_tester;
-
   const std::string input = "a user typed this";
   optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = ComposePageMetadata();
@@ -751,19 +749,19 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponsesAnimated) {
   EXPECT_TRUE(complete_result->on_device_evaluation_used);
 
   // Check that a single request result OK metric was emitted.
-  histogram_tester.ExpectUniqueSample(compose::kComposeRequestStatus,
-                                      compose::mojom::ComposeStatus::kOk, 1);
-  histogram_tester.ExpectUniqueSample("Compose.OnDevice.Request.Status",
-                                      compose::mojom::ComposeStatus::kOk, 1);
+  histograms().ExpectUniqueSample(compose::kComposeRequestStatus,
+                                  compose::mojom::ComposeStatus::kOk, 1);
+  histograms().ExpectUniqueSample("Compose.OnDevice.Request.Status",
+                                  compose::mojom::ComposeStatus::kOk, 1);
   // Check that a single request duration OK metric was emitted.
-  histogram_tester.ExpectTotalCount(
+  histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 1);
-  histogram_tester.ExpectTotalCount(
+  histograms().ExpectTotalCount(
       base::StrCat(
           {"Compose.OnDevice", compose::kComposeRequestDurationOkSuffix}),
       1);
   // Check that no request duration Error metric was emitted.
-  histogram_tester.ExpectTotalCount(
+  histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
       0);
 }
@@ -772,7 +770,6 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResultAnimation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {optimization_guide::features::kOptimizationGuideOnDeviceModel}, {});
-  base::HistogramTester histogram_tester;
 
   const std::string input = "a user typed this";
   optimization_guide::proto::ComposeRequest context_request;
@@ -812,7 +809,6 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
       {optimization_guide::features::kOptimizationGuideOnDeviceModel,
        compose::features::kComposeTextOutputAnimation},
       {});
-  base::HistogramTester histogram_tester;
 
   const std::string input = "a user typed this";
   const std::string input2 = "another input";
@@ -872,13 +868,13 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
   EXPECT_EQ("Cucumbers", complete_response.Get()->result);
 
   // Check that a single request result OK metric was emitted.
-  histogram_tester.ExpectUniqueSample(compose::kComposeRequestStatus,
-                                      compose::mojom::ComposeStatus::kOk, 1);
+  histograms().ExpectUniqueSample(compose::kComposeRequestStatus,
+                                  compose::mojom::ComposeStatus::kOk, 1);
   // Check that a single request duration OK metric was emitted.
-  histogram_tester.ExpectTotalCount(
+  histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 1);
   // Check that no request duration Error metric was emitted.
-  histogram_tester.ExpectTotalCount(
+  histograms().ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
       0);
 }
