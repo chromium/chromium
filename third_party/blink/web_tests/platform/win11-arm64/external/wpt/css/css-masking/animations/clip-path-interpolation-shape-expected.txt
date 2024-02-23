@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 284 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 340 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (0) should be [shape(from 5px 5px, line to 10px 10%)]
@@ -39,6 +39,34 @@ Found 284 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Web Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1) should be [shape(from -5px 5px, line to 20px 20%)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from neutral to [shape(from -5px 5px, line to 20px 20%)] at (1.5) should be [shape(from -10px 5px, line to 25px 25%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (-0.3) should be [initial]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0) should be [initial]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0.3) should be [initial]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0.5) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0.6) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (1) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (1.5) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (-0.3) should be [initial]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0) should be [initial]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0.3) should be [initial]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0.5) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (0.6) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (1) should be [shape(from 8px 5px, line to 7px 7%)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (1.5) should be [shape(from 8px 5px, line to 7px 7%)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [initial] to [shape(from 8px 5px, line to 7px 7%)] at (-0.3) should be [shape(from 8px 5px, line to 7px 7%)]
   assert_true: 'to' value should be supported expected true got false
@@ -136,6 +164,34 @@ Found 284 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [inherit] to [shape(from 15% 15px, move to 20% -10px)] at (1.5) should be [shape(from calc(22.5% + 2.5px) 20px, move to 27.5% -15.5px)]
   assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (-0.3) should be [unset]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0) should be [unset]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0.3) should be [unset]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (-0.3) should be [unset]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0) should be [unset]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0.3) should be [unset]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, close)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, close)]
@@ -191,6 +247,34 @@ Found 284 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Web Animations: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [unset] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (-0.3) should be [none]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0) should be [none]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0.3) should be [none]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (-0.3) should be [none]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0) should be [none]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0.3) should be [none]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
   assert_true: 'to' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, close)]
   assert_true: 'to' value should be supported expected true got false
@@ -248,6 +332,34 @@ Found 284 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: 'to' value should be supported expected true got false
 [FAIL] Web Animations: property <clip-path> from [none] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
   assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, move to 10% 10%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, move to 10% 10%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.3) should be [shape(from 10px 10px, move to 10% 10%)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0.6) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (1.5) should be [shape(from 10px 10px, close)]
+  assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (-0.3) should be [shape(from 10px 10px, close)]
   assert_true: 'from' value should be supported expected true got false
 [FAIL] CSS Transitions: property <clip-path> from [shape(from 10px 10px, move to 10% 10%)] to [shape(from 10px 10px, close)] at (0) should be [shape(from 10px 10px, close)]
