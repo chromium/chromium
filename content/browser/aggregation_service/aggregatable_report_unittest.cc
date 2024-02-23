@@ -24,12 +24,14 @@
 #include "components/aggregation_service/features.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/distributed_point_functions/shim/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -227,7 +229,9 @@ TEST_P(AggregatableReportTest,
       request.payload_contents();
   AggregatableReportSharedInfo expected_shared_info =
       request.shared_info().Clone();
-  size_t expected_num_processing_urls = request.processing_urls().size();
+
+  [[maybe_unused]] size_t expected_num_processing_urls =
+      request.processing_urls().size();
 
   std::vector<aggregation_service::TestHpkeKey> hpke_keys;
   hpke_keys.emplace_back("id123");
@@ -238,12 +242,16 @@ TEST_P(AggregatableReportTest,
           std::move(request),
           {hpke_keys[0].GetPublicKey(), hpke_keys[1].GetPublicKey()});
 
+#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/std::nullopt,
                    /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
+#else
+  EXPECT_FALSE(report.has_value());
+#endif
 }
 
 TEST_P(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {

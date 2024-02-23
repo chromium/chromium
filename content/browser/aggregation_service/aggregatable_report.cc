@@ -42,17 +42,17 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
-#include "third_party/distributed_point_functions/dpf/distributed_point_function.pb.h"
-#include "third_party/distributed_point_functions/shim/distributed_point_function_shim.h"
+#include "third_party/distributed_point_functions/shim/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
+#include "third_party/distributed_point_functions/shim/distributed_point_function_shim.h"
+#endif
 
 namespace content {
 
 namespace {
-
-using DpfKey = distributed_point_functions::DpfKey;
-using DpfParameters = distributed_point_functions::DpfParameters;
 
 // Payload contents:
 constexpr char kHistogramValue[] = "histogram";
@@ -84,6 +84,10 @@ std::vector<GURL> GetDefaultProcessingUrls(
       return {GURL("https://server1.example"), GURL("https://server2.example")};
   }
 }
+
+#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
+using DpfKey = distributed_point_functions::DpfKey;
+using DpfParameters = distributed_point_functions::DpfParameters;
 
 // Returns parameters that support each possible prefix length in
 // `[1, kBucketDomainBitLength]` with the same element_bitsize of
@@ -164,6 +168,7 @@ ConstructUnencryptedExperimentalPoplarPayloads(
 
   return unencrypted_payloads;
 }
+#endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 
 // TODO(crbug.com/1298196): Replace with `base::WriteBigEndian()` when available
 template <typename T>
@@ -843,9 +848,16 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
       break;
     }
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar: {
+#if BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
       unencrypted_payloads = ConstructUnencryptedExperimentalPoplarPayloads(
           report_request.payload_contents());
       break;
+#else
+      LOG(WARNING)
+          << "Cannot create AggregatableReport for kExperimentalPoplar because "
+             "Chrome was compiled with use_distributed_point_functions=false";
+      return std::nullopt;
+#endif  // BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
     }
   }
 

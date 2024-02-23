@@ -3066,6 +3066,7 @@ test("content_unittests") {
     "//third_party/blink/public:test_support",
     "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/blink/public/common:headers",
+    "//third_party/distributed_point_functions/shim:buildflags",
     "//third_party/icu",
     "//third_party/inspector_protocol:crdtp",
     "//third_party/inspector_protocol:crdtp_test",

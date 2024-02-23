@@ -5,6 +5,12 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_DISTRIBUTED_POINT_FUNCTION_SHIM_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_DISTRIBUTED_POINT_FUNCTION_SHIM_H_
 
+#include "third_party/distributed_point_functions/shim/buildflags.h"
+
+static_assert(BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS),
+              "This header must not be included when "
+              "distributed_point_functions is omitted from the build");
+
 #include <optional>
 #include <utility>
 #include <vector>

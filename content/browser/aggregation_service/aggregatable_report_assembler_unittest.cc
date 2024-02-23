@@ -23,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/distributed_point_functions/shim/buildflags.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -207,6 +208,9 @@ TEST_F(AggregatableReportAssemblerTest,
   std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request, public_keys);
+#if !BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
+  ASSERT_FALSE(report.has_value());
+#else
   ASSERT_TRUE(report.has_value());
 
   EXPECT_CALL(*fetcher(), GetPublicKey(processing_urls[0], _))
@@ -232,6 +236,7 @@ TEST_F(AggregatableReportAssemblerTest,
   histograms.ExpectUniqueSample(
       kReportAssemblerStatusHistogramName,
       AggregatableReportAssembler::AssemblyStatus::kOk, 1);
+#endif  // !BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 }
 
 TEST_F(AggregatableReportAssemblerTest,
@@ -308,6 +313,9 @@ TEST_F(AggregatableReportAssemblerTest,
   std::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           request, public_keys);
+#if !BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
+  ASSERT_FALSE(report.has_value());
+#else
   ASSERT_TRUE(report.has_value());
 
   std::vector<FetchCallback> pending_callbacks(2);
@@ -335,6 +343,7 @@ TEST_F(AggregatableReportAssemblerTest,
   histograms.ExpectUniqueSample(
       kReportAssemblerStatusHistogramName,
       AggregatableReportAssembler::AssemblyStatus::kOk, 1);
+#endif  // !BUILDFLAG(USE_DISTRIBUTED_POINT_FUNCTIONS)
 }
 
 TEST_F(AggregatableReportAssemblerTest,

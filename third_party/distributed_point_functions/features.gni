@@ -1,0 +1,9 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  use_distributed_point_functions = is_debug
+  dpf_abseil_cpp_dir = "//third_party/abseil-cpp"
+  dpf_highway_cpp_dir = "//third_party/highway"
+}
