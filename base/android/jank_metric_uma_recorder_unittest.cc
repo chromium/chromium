@@ -62,6 +62,9 @@ const int kMissedVsyncs[] = {
 };
 const size_t kMissedVsyncsLen = kDurationsLen;
 
+static_assert(kDurationsLen == kMissedVsyncsLen);
+const size_t kNumFrames = kDurationsLen;
+
 struct ScrollTestCase {
   JankScenario scenario;
   std::string test_name;
@@ -135,6 +138,64 @@ TEST(JankMetricUMARecorder, TestUMARecording) {
                             Bucket(FrameJankStatus::kNonJanky, 6)))
         << kJankyName;
   }
+}
+
+TEST(JankMetricUMARecorder, TestWebviewScrollingScenario) {
+  JNIEnv* env = AttachCurrentThread();
+
+  jlongArray java_durations =
+      GenerateJavaLongArray(env, kDurations, kDurationsLen);
+  jintArray java_missed_vsyncs =
+      GenerateJavaIntArray(env, kMissedVsyncs, kMissedVsyncsLen);
+
+  const int scenario = static_cast<int>(JankScenario::WEBVIEW_SCROLLING);
+  HistogramTester histogram_tester;
+  RecordJankMetrics(
+      env,
+      /* java_durations_ns= */
+      base::android::JavaParamRef<jlongArray>(env, java_durations),
+      /* java_missed_vsyncs = */
+      base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
+      /* java_reporting_interval_start_time = */ 0,
+      /* java_reporting_interval_duration = */ 1000, scenario);
+
+  const std::string kDurationName =
+      "Android.FrameTimelineJank.Duration.WebviewScrolling";
+  const std::string kJankyName =
+      "Android.FrameTimelineJank.FrameJankStatus.WebviewScrolling";
+  histogram_tester.ExpectTotalCount(kDurationName, 0);
+  histogram_tester.ExpectTotalCount(kJankyName, 0);
+}
+
+TEST(JankMetricUMARecorder, TestCombinedWebviewScrollingScenario) {
+  JNIEnv* env = AttachCurrentThread();
+
+  jlongArray java_durations =
+      GenerateJavaLongArray(env, kDurations, kDurationsLen);
+  jintArray java_missed_vsyncs =
+      GenerateJavaIntArray(env, kMissedVsyncs, kMissedVsyncsLen);
+
+  const int scenario =
+      static_cast<int>(JankScenario::COMBINED_WEBVIEW_SCROLLING);
+  HistogramTester histogram_tester;
+  RecordJankMetrics(
+      env,
+      /* java_durations_ns= */
+      base::android::JavaParamRef<jlongArray>(env, java_durations),
+      /* java_missed_vsyncs = */
+      base::android::JavaParamRef<jintArray>(env, java_missed_vsyncs),
+      /* java_reporting_interval_start_time = */ 0,
+      /* java_reporting_interval_duration = */ 1000, scenario);
+
+  // |COMBINED_WEBVIEW_SCROLLING| scenario uses 'WebviewScrolling' suffix for
+  // emitting the per frame metrics.
+  const std::string kDurationName =
+      "Android.FrameTimelineJank.Duration.WebviewScrolling";
+  const std::string kJankyName =
+      "Android.FrameTimelineJank.FrameJankStatus.WebviewScrolling";
+
+  histogram_tester.ExpectTotalCount(kDurationName, kNumFrames);
+  histogram_tester.ExpectTotalCount(kJankyName, kNumFrames);
 }
 
 class JankMetricUMARecorderPerScrollTests

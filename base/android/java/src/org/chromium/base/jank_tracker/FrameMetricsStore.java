@@ -75,6 +75,8 @@ public class FrameMetricsStore {
                 return "FeedScrolling";
             case JankScenario.Type.WEBVIEW_SCROLLING:
                 return "WebviewScrolling";
+            case JankScenario.Type.COMBINED_WEBVIEW_SCROLLING:
+                return "CombinedWebviewScrolling";
             default:
                 throw new IllegalArgumentException("Invalid scenario value");
         }

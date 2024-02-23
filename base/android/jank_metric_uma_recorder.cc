@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/base_jni/JankMetricUMARecorder_jni.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "jank_metric_uma_recorder.h"
@@ -217,8 +218,14 @@ const char* GetAndroidFrameTimelineJankHistogramName(JankScenario scenario) {
       return HISTOGRAM_NAME(FeedScrolling);
     case JankScenario::WEBVIEW_SCROLLING:
       return HISTOGRAM_NAME(WebviewScrolling);
+    case JankScenario::COMBINED_WEBVIEW_SCROLLING:
+      // Emit per frame metrics for combined scrolling scenario with same
+      // histogram name as webview scrolling. This is fine since we don't emit
+      // per frame metrics for |WEBVIEW_SCROLLING| scenario.
+      return HISTOGRAM_NAME(WebviewScrolling);
     default:
-      return HISTOGRAM_NAME(UNKNOWN);
+      NOTREACHED();
+      return "";
   }
 #undef HISTOGRAM_NAME
 }
@@ -247,8 +254,14 @@ const char* GetAndroidFrameTimelineDurationHistogramName(
       return HISTOGRAM_NAME(FeedScrolling);
     case JankScenario::WEBVIEW_SCROLLING:
       return HISTOGRAM_NAME(WebviewScrolling);
+    case JankScenario::COMBINED_WEBVIEW_SCROLLING:
+      // Emit per frame metrics for combined scrolling scenario with same
+      // histogram name as webview scrolling. This is fine since we don't emit
+      // per frame metrics for |WEBVIEW_SCROLLING| scenario.
+      return HISTOGRAM_NAME(WebviewScrolling);
     default:
-      return HISTOGRAM_NAME(UNKNOWN);
+      NOTREACHED();
+      return "";
   }
 #undef HISTOGRAM_NAME
 }
@@ -289,9 +302,19 @@ void RecordJankMetrics(
   const char* janky_frames_per_scenario_histogram_name =
       GetAndroidFrameTimelineJankHistogramName(scenario);
 
-  for (const int64_t frame_duration_ns : durations_ns) {
-    base::UmaHistogramTimes(frame_duration_histogram_name,
-                            base::Nanoseconds(frame_duration_ns));
+  // We don't want to emit per frame metircs for WEBVIEW SCROLLING scenario
+  // which tracks individual scrolls differentiated by gesture_scroll_id.
+  // Scroll related per frame metrics are emitted from
+  // COMBINED_WEBVIEW_SCROLLING scenario to avoid emitting duplicate metrics for
+  // overlapping scrolls.
+  const bool emit_per_frame_metrics =
+      scenario != JankScenario::WEBVIEW_SCROLLING;
+
+  if (emit_per_frame_metrics) {
+    for (const int64_t frame_duration_ns : durations_ns) {
+      base::UmaHistogramTimes(frame_duration_histogram_name,
+                              base::Nanoseconds(frame_duration_ns));
+    }
   }
 
   int janky_frame_count = 0;
@@ -306,9 +329,11 @@ void RecordJankMetrics(
     }
     missed_vsyncs_sum += curr_frame_missed_vsyncs;
 
-    base::UmaHistogramEnumeration(
-        janky_frames_per_scenario_histogram_name,
-        is_janky ? FrameJankStatus::kJanky : FrameJankStatus::kNonJanky);
+    if (emit_per_frame_metrics) {
+      base::UmaHistogramEnumeration(
+          janky_frames_per_scenario_histogram_name,
+          is_janky ? FrameJankStatus::kJanky : FrameJankStatus::kNonJanky);
+    }
     if (is_janky) {
       ++janky_frame_count;
     }

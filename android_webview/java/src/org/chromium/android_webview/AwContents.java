@@ -187,6 +187,10 @@ public class AwContents implements SmartClipProvider {
     private static final String SAMSUNG_WORKAROUND_BASE_URL = "email://";
     private static final int SAMSUNG_WORKAROUND_DELAY = 200;
 
+    private static int sLastId;
+    // Unique id given to each AwContents object, starting from 1.
+    private final int mId;
+
     @VisibleForTesting
     public static final String LOAD_URL_SCHEME_HISTOGRAM_NAME = "Android.WebView.LoadUrl.UrlScheme";
 
@@ -897,14 +901,16 @@ public class AwContents implements SmartClipProvider {
         public void onScrollStarted(int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
             mZoomControls.invokeZoomPicker();
             if (mAwFrameMetricsListener != null) {
-                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(/* isScrolling= */ true);
+                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
+                        /* isScrolling= */ true, mId);
             }
         }
 
         @Override
         public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
             if (mAwFrameMetricsListener != null) {
-                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(/* isScrolling= */ false);
+                mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
+                        /* isScrolling= */ false, mId);
             }
         }
 
@@ -1106,6 +1112,8 @@ public class AwContents implements SmartClipProvider {
         private JankTracker mJankTracker;
         private WeakReference<Window> mWindow;
 
+        private static final WeakHashMap<Window, Integer> sNumActiveScrolls = new WeakHashMap<>();
+
         public AwFrameMetricsListener() {
             FrameMetricsStore metricsStore = new FrameMetricsStore();
             mController =
@@ -1141,14 +1149,34 @@ public class AwContents implements SmartClipProvider {
             mController.stopPeriodicReporting();
         }
 
-        public void onWebContentsScrollStateUpdate(boolean isScrolling) {
+        public void onWebContentsScrollStateUpdate(boolean isScrolling, long scrollId) {
+            // scrollIds are unique across multiple webviews in a window.
+            Window window = mWindow.get();
+            if (window == null) return;
+            int numActiveScrolls = sNumActiveScrolls.getOrDefault(window, 0);
             if (isScrolling) {
-                mJankTracker.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+                numActiveScrolls += 1;
+                mJankTracker.startTrackingScenario(
+                        new JankScenario(JankScenario.Type.WEBVIEW_SCROLLING, scrollId));
             } else {
+                assert numActiveScrolls >= 1;
+                numActiveScrolls -= 1;
                 mJankTracker.finishTrackingScenario(
-                        JankScenario.WEBVIEW_SCROLLING,
+                        new JankScenario(JankScenario.Type.WEBVIEW_SCROLLING, scrollId),
                         TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
             }
+
+            if (numActiveScrolls == 0) {
+                mJankTracker.finishTrackingScenario(
+                        JankScenario.COMBINED_WEBVIEW_SCROLLING,
+                        TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
+                sNumActiveScrolls.remove(window);
+                return;
+            }
+            if (numActiveScrolls == 1 && isScrolling) {
+                mJankTracker.startTrackingScenario(JankScenario.COMBINED_WEBVIEW_SCROLLING);
+            }
+            sNumActiveScrolls.put(window, numActiveScrolls);
         }
     }
 
@@ -1199,6 +1227,8 @@ public class AwContents implements SmartClipProvider {
             AwSettings settings,
             DependencyFactory dependencyFactory) {
         assert browserContext != null;
+        sLastId += 1;
+        mId = sLastId;
         if (!browserContext.isDefaultAwBrowserContext()) {
             // The browser context has been explicitly set by the application.
             mBrowserContextSetExplicitly = true;

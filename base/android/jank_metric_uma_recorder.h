@@ -32,9 +32,10 @@ enum class JankScenario {
   START_SURFACE_TAB_SWITCHER = 8,
   FEED_SCROLLING = 9,
   WEBVIEW_SCROLLING = 10,
+  COMBINED_WEBVIEW_SCROLLING = 11,
   // This value should always be last and is not persisted to logs, exposed only
   // for testing.
-  MAX_VALUE = WEBVIEW_SCROLLING + 1
+  MAX_VALUE = COMBINED_WEBVIEW_SCROLLING + 1
 };
 
 // Resolves the above name to a histogram value.

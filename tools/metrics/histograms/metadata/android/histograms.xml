@@ -55,7 +55,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".Startup" summary=""/>
   <variant name=".TabSwitcher" summary=""/>
   <variant name=".Total" summary=""/>
-  <variant name=".WebviewScrolling" summary=""/>
+  <variant name=".WebviewScrolling"
+      summary="In case of multiple webviews being scrolled in a window, we
+               emit this histogram just once. From Android perspective there
+               is just a single frame being produced and it reports back
+               metrics for that one frame which could potentially have
+               updates from multiple webviews."/>
 </variants>
 
 <variants name="AndroidNavigationOrSuggestionPrefetch">
@@ -167,8 +172,13 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ScrollScenarios">
-  <variant name="FeedScrolling" summary="feed"/>
-  <variant name="WebviewScrolling" summary="web contents"/>
+  <variant name="FeedScrolling" summary="feed scroll."/>
+  <variant name="WebviewScrolling"
+      summary="webview scroll. In case of multiple webviews being scrolled in
+               a window, the overlapping parts of scrolls will share the
+               metrics reported from Android. A janky frame during multiple
+               scrolls scenario will be reported in all the scrolls and vice
+               a versa."/>
 </variants>
 
 <variants name="TaskType">
@@ -1651,6 +1661,8 @@ chromium-metrics-reviews@google.com.
     field would report only 2 frames per second due to the cursor blink
     animation. Scrolling through a web page may record no frames if no Android
     UI (like the address bar) updates.
+
+    {JankScenario}
   </summary>
   <token key="JankScenario" variants="AndroidFrameTimelineJankScenario"/>
 </histogram>
@@ -1671,6 +1683,8 @@ chromium-metrics-reviews@google.com.
     the NonJanky bucket for all other frames. This metric is recorded at the
     same time as Android.Jank.FrameDuration histogram.
 
+    {JankScenario}
+
     Known caveats of this metric: 1) During a staggered scroll where finger
     could be stationary for some time, any janks during the period when finger
     was stationary would still be marked as scroll janks even when we wouldn't
@@ -1685,7 +1699,7 @@ chromium-metrics-reviews@google.com.
   <owner>kartarsingh@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
-    Percentage of janky frames in a {Scenario} scroll.
+    Percentage of janky frames in a {Scenario}
 
     This metric is computed based on Android FrameMetrics. A frame is deemed
     janky if time taken to render frame(FrameMetrics.TOTAL_DURATION) exceeds the
@@ -1705,7 +1719,7 @@ chromium-metrics-reviews@google.com.
   <owner>kartarsingh@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
-    This metric reports the {Operator} in {Scenario} scroll.
+    This metric reports the {Operator} in {Scenario}
 
     This metric is computed based on Android FrameMetrics. Missed vsyncs of
     janky frame is estimated as `ceil((total_duration -

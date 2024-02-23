@@ -29,7 +29,8 @@ public class JankScenario {
         Type.START_SURFACE_HOMEPAGE,
         Type.START_SURFACE_TAB_SWITCHER,
         Type.FEED_SCROLLING,
-        Type.WEBVIEW_SCROLLING
+        Type.WEBVIEW_SCROLLING,
+        Type.COMBINED_WEBVIEW_SCROLLING
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
@@ -43,6 +44,7 @@ public class JankScenario {
         int START_SURFACE_TAB_SWITCHER = 8;
         int FEED_SCROLLING = 9;
         int WEBVIEW_SCROLLING = 10;
+        int COMBINED_WEBVIEW_SCROLLING = 11;
     }
 
     public static final JankScenario PERIODIC_REPORTING =
@@ -60,6 +62,8 @@ public class JankScenario {
     public static final JankScenario FEED_SCROLLING = new JankScenario(Type.FEED_SCROLLING, -1);
     public static final JankScenario WEBVIEW_SCROLLING =
             new JankScenario(Type.WEBVIEW_SCROLLING, -1);
+    public static final JankScenario COMBINED_WEBVIEW_SCROLLING =
+            new JankScenario(Type.COMBINED_WEBVIEW_SCROLLING, -1);
 
     private final @Type int mType;
     private final long mId;
