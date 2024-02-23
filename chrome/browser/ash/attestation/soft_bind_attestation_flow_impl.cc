@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -163,8 +164,8 @@ void SoftBindAttestationFlowImpl::Session::ReportSuccess(
 SoftBindAttestationFlowImpl::SoftBindAttestationFlowImpl()
     : attestation_client_(AttestationClient::Get()) {
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
-  attestation_flow_ =
-      std::make_unique<AttestationFlow>(std::move(attestation_ca_client));
+  attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
+      std::move(attestation_ca_client));
 }
 
 SoftBindAttestationFlowImpl::~SoftBindAttestationFlowImpl() = default;
