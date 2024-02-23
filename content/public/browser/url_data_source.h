@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/template_expressions.h"
 
 class GURL;
