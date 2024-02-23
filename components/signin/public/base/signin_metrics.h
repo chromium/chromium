@@ -325,10 +325,14 @@ enum class AccountConsistencyPromoAction : int {
 // Enum values which enumerates all reasons to start sign in process.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Please keep in Sync with "SigninReason" in
+// Please keep in sync with "SigninReason" in
 // src/tools/metrics/histograms/enums.xml.
 enum class Reason : int {
+  // Used only for the Sync flows, i.e. the user will be proposed to enable Sync
+  // after sign-in.
   kSigninPrimaryAccount = 0,
+  // Used for signing in without enabling Sync. This might also be used for
+  // adding a new primary account without enabling Sync.
   kAddSecondaryAccount = 1,
   kReauthentication = 2,
   // REASON_UNLOCK = 3,  // DEPRECATED, profile unlocking was removed.
@@ -336,7 +340,7 @@ enum class Reason : int {
   kUnknownReason = 4,
   kForcedSigninPrimaryAccount = 5,
   // Used to simply login and acquire a login scope token without actually
-  // signing into any profiles on Chrome. This allows the chrome signin page to
+  // signing into any profiles on Chrome. This allows the Chrome sign-in page to
   // work in incognito mode.
   kFetchLstOnly = 6,
   kMaxValue = kFetchLstOnly,

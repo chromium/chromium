@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -338,7 +339,8 @@ void SigninViewController::ShowDiceSigninTab(
           : redirect_url;
 
   GURL signin_url =
-      signin_reason == signin_metrics::Reason::kAddSecondaryAccount
+      (signin_reason == signin_metrics::Reason::kAddSecondaryAccount ||
+       signin_reason == signin_metrics::Reason::kReauthentication)
           ? signin::GetAddAccountURLForDice(email_hint, continue_url)
           : signin::GetChromeSyncURLForDice({email_hint, continue_url});
 
@@ -400,6 +402,7 @@ void SigninViewController::ShowDiceEnableSyncTab(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // Avoids asking for the Sync consent as it has been already given.
     reason = signin_metrics::Reason::kReauthentication;
     email_to_use =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
@@ -413,7 +416,18 @@ void SigninViewController::ShowDiceEnableSyncTab(
 void SigninViewController::ShowDiceAddAccountTab(
     signin_metrics::AccessPoint access_point,
     const std::string& email_hint) {
-  ShowDiceSigninTab(signin_metrics::Reason::kAddSecondaryAccount, access_point,
+  signin_metrics::Reason reason = signin_metrics::Reason::kAddSecondaryAccount;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  if (!email_hint.empty() &&
+      !identity_manager->FindExtendedAccountInfoByEmailAddress(email_hint)
+           .IsEmpty()) {
+    // Use more precise `signin_metrics::Reason` if we know that it's a reauth.
+    // This only has an impact on metrics.
+    reason = signin_metrics::Reason::kReauthentication;
+  }
+
+  ShowDiceSigninTab(reason, access_point,
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
                     email_hint, /*redirect_url=*/GURL());
 }

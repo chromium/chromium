@@ -632,10 +632,9 @@ TEST_F(SigninUiUtilTest, ShowReauthTab) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   content::WebContents* active_contents = tab_strip->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_TRUE(
-      base::StartsWith(active_contents->GetVisibleURL().spec(),
-                       GaiaUrls::GetInstance()->add_account_url().spec(),
-                       base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_THAT(
+      active_contents->GetVisibleURL().spec(),
+      testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
 
 TEST_F(SigninUiUtilTest,

@@ -88,6 +88,8 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
@@ -681,10 +683,9 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_EQ(1, tab_strip->active_index());
   content::WebContents* reauth_page = tab_strip->GetActiveWebContents();
-  EXPECT_TRUE(
-      base::StartsWith(reauth_page->GetURL().spec(),
-                       GaiaUrls::GetInstance()->add_account_url().spec(),
-                       base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_THAT(
+      reauth_page->GetURL().spec(),
+      testing::StartsWith(GaiaUrls::GetInstance()->add_account_url().spec()));
 }
 #endif
 
