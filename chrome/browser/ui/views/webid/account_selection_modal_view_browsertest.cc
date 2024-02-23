@@ -94,17 +94,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                                          idp_data);
   }
 
-  void ShowVerifyingSheet() {
-    const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
-    IdentityProviderDisplayData idp_data(
-        kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-        CreateTestClientMetadata(/*terms_of_service_url=*/""), {account},
-        /*request_permission=*/true, /*has_login_status_mismatch=*/false);
-    dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
-  }
-
   void PerformHeaderChecks(views::View* header,
                            const std::u16string& expected_title,
                            const std::u16string& expected_body) {
@@ -217,7 +206,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   void TestRequestPermission(const std::u16string& expected_title,
-                             const std::u16string& expected_body = u"") {
+                             const std::u16string& expected_body) {
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
@@ -226,45 +215,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
-    // Order: Header, single account chooser, button row
-    ASSERT_EQ(children.size(), 3u);
+    ASSERT_EQ(children.size(), 4u);
     PerformHeaderChecks(children[0], expected_title, expected_body);
 
-    views::View* single_account_chooser = children[1];
-    // Order: Account row, disclosure text
-    ASSERT_EQ(single_account_chooser->children().size(), 2u);
+    views::View* account_rows = children[1];
+    ASSERT_EQ(account_rows->children().size(), 1u);
 
-    CheckNonHoverableAccountRow(single_account_chooser->children()[0],
-                                kAccountSuffix);
-    CheckDisclosureText(single_account_chooser->children()[1],
-                        /*expect_terms_of_service=*/true,
+    CheckNonHoverableAccountRow(account_rows->children()[0], kAccountSuffix);
+    CheckDisclosureText(children[2], /*expect_terms_of_service=*/true,
                         /*expect_privacy_policy=*/true);
-    CheckButtonRow(children[2], /*expect_continue_button=*/true);
-  }
-
-  void TestVerifyingSheet(const std::u16string& expected_title,
-                          const std::u16string& expected_body = u"",
-                          bool has_multiple_accounts = false) {
-    // Order: Progress bar, header, account chooser, button row
-    std::vector<std::string> expected_class_names = {
-        "ProgressBar", "View", has_multiple_accounts ? "ScrollView" : "View",
-        "View"};
-    EXPECT_THAT(GetChildClassNames(dialog()),
-                testing::ElementsAreArray(expected_class_names));
-
-    PerformHeaderChecks(dialog()->children()[1], expected_title, expected_body);
-
-    std::vector<raw_ptr<views::View, VectorExperimental>> account_chooser =
-        dialog()->children()[2]->children();
-    for (const auto& account : account_chooser) {
-      ASSERT_FALSE(static_cast<HoverButton*>(account)->GetEnabled());
-    }
-
-    std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
-        dialog()->children()[3]->children();
-    for (const auto& button : button_row) {
-      ASSERT_FALSE(static_cast<views::MdTextButton*>(button)->GetEnabled());
-    }
+    CheckButtonRow(children[3], /*expect_continue_button=*/true);
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
@@ -281,44 +241,14 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-// Tests that the single account dialog is rendered correctly.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, SingleAccount) {
   TestSingleAccount(kTitleSignIn, kBodySignIn);
 }
 
-// Tests that the multiple accounts dialog is rendered correctly.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccounts) {
   TestMultipleAccounts(kTitleSignIn, kBodySignIn);
 }
 
-// Tests that the request permission dialog is rendered correctly.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, RequestPermission) {
-  TestRequestPermission(kTitleRequestPermission);
-}
-
-// Tests that the verifying sheet is rendered correctly, when it is shown after
-// the single account dialog.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       VerifyingAfterSingleAccount) {
-  TestSingleAccount(kTitleSignIn, kBodySignIn);
-  ShowVerifyingSheet();
-  TestVerifyingSheet(kTitleSignIn, kBodySignIn);
-}
-
-// Tests that the verifying sheet is rendered correctly, when it is shown after
-// the multiple accounts dialog.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       VerifyingAfterMultipleAccounts) {
-  TestMultipleAccounts(kTitleSignIn, kBodySignIn);
-  ShowVerifyingSheet();
-  TestVerifyingSheet(kTitleSignIn, kBodySignIn, /*has_multiple_accounts=*/true);
-}
-
-// Tests that the verifying sheet is rendered correctly, when it is shown after
-// the request permission dialog.
-IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       VerifyingAfterRequestPermission) {
-  TestRequestPermission(kTitleRequestPermission);
-  ShowVerifyingSheet();
-  TestVerifyingSheet(kTitleRequestPermission);
+  TestRequestPermission(kTitleRequestPermission, /*expected_body=*/u"");
 }

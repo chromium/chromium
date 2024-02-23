@@ -17,7 +17,6 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/progress_bar.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class AccountSelectionModalView : public views::DialogDelegateView,
@@ -88,12 +87,10 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Returns a View for single account chooser. It contains a row of account
   // information. `The size of the `idp_display_data.accounts` vector must be 1.
   // `should_hover` determines whether the row is clickable.
-  // `show_disclosure_label` determines whether disclosure text is shown.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
       const IdentityProviderDisplayData& idp_display_data,
       const content::IdentityRequestAccount& account,
-      bool should_hover,
-      bool show_disclosure_label);
+      bool should_hover);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
@@ -113,15 +110,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // Resizes the modal dialog to the size of its contents.
   void UpdateModalPositionAndTitle();
-
-  // View containing the modal dialog header.
-  raw_ptr<views::View> header_view_ = nullptr;
-
-  // View containing the modal dialog button row.
-  raw_ptr<views::View> button_row_ = nullptr;
-
-  // View containing the modal dialog account chooser.
-  raw_ptr<views::View> account_chooser_ = nullptr;
 
   // View containing the modal dialog title.
   raw_ptr<views::Label> title_label_ = nullptr;
