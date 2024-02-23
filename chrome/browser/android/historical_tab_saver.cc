@@ -35,7 +35,7 @@ namespace historical_tab_saver {
 namespace {
 
 // Defined in TabGroupModelFilter.java
-constexpr int kInvalidGroupId = -1;
+constexpr int kInvalidRootId = -1;
 
 void CreateHistoricalTab(
     TabAndroid* tab_android,
@@ -138,7 +138,7 @@ void CreateHistoricalBulkClosure(
   std::map<int, tab_groups::TabGroupId> tab_id_to_group_id;
   for (size_t i = 0; i < tabs.size(); ++i) {
     TabAndroid* tab = tabs[i];
-    if (per_tab_root_id[i] != kInvalidGroupId) {
+    if (per_tab_root_id[i] != kInvalidRootId) {
       int root_id = per_tab_root_id[i];
       auto it = group_id_mapping.find(root_id);
       DCHECK(it != group_id_mapping.end());
@@ -206,7 +206,6 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
       content::WebContents::Create(params));
 }
 
-// static
 static std::vector<WebContentsStateByteBuffer>
 AllTabsWebContentsStateByteBuffer(
     JNIEnv* env,
@@ -230,7 +229,6 @@ AllTabsWebContentsStateByteBuffer(
 
 // Static JNI methods.
 
-// static
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab_android,
@@ -242,7 +240,6 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
                       std::move(web_contents_state));
 }
 
-// static
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab_model,
@@ -266,7 +263,6 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
                         std::move(web_contents_states));
 }
 
-// static
 static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab_model,

@@ -310,8 +310,9 @@ RecentlyClosedTabsBridge::RecentlyClosedTabsBridge(
       tab_restore_service_(nullptr) {}
 
 RecentlyClosedTabsBridge::~RecentlyClosedTabsBridge() {
-  if (tab_restore_service_)
+  if (tab_restore_service_) {
     tab_restore_service_->RemoveObserver(this);
+  }
 }
 
 void RecentlyClosedTabsBridge::Destroy(JNIEnv* env) {
@@ -323,8 +324,9 @@ jboolean RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
     const JavaParamRef<jobject>& jentries_list,
     jint max_entry_count) {
   EnsureTabRestoreService();
-  if (!tab_restore_service_)
+  if (!tab_restore_service_) {
     return false;
+  }
 
   JNI_RecentlyClosedBridge_AddEntriesToList(
       env, tab_restore_service_->entries(), jentries_list, max_entry_count);
@@ -336,8 +338,9 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
     const JavaParamRef<jobject>& jtab_model,
     jint tab_session_id,
     jint j_disposition) {
-  if (!tab_restore_service_)
+  if (!tab_restore_service_) {
     return false;
+  }
 
   SessionID entry_id = SessionID::FromSerializedValue(tab_session_id);
   // Ensure the corresponding tab entry from TabRestoreService is a tab.
@@ -365,8 +368,9 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
     jint entry_session_id) {
   // This should only be called when in bulk restore mode otherwise per-tab
   // restore should always be used.
-  if (!tab_restore_service_)
+  if (!tab_restore_service_) {
     return false;
+  }
 
   auto* model = TabModelList::FindNativeTabModelForJavaObject(
       ScopedJavaLocalRef<jobject>(env, jtab_model.obj()));
@@ -414,8 +418,9 @@ jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
 
 void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries(JNIEnv* env) {
   EnsureTabRestoreService();
-  if (tab_restore_service_)
+  if (tab_restore_service_) {
     tab_restore_service_->ClearEntries();
+  }
 }
 
 void RecentlyClosedTabsBridge::TabRestoreServiceChanged(
@@ -429,8 +434,9 @@ void RecentlyClosedTabsBridge::TabRestoreServiceDestroyed(
 }
 
 void RecentlyClosedTabsBridge::EnsureTabRestoreService() {
-  if (tab_restore_service_)
+  if (tab_restore_service_) {
     return;
+  }
 
   tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile_);
 

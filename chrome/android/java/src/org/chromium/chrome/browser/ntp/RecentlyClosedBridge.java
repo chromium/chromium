@@ -103,8 +103,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @CalledByNative
-    private void restoreTabGroup(TabModel tabModel, int groupId, String title, int[] tabIds) {
-        // Can't restore empty or size 1 group. Note groupId is a tab in the group.
+    private void restoreTabGroup(TabModel tabModel, int rootId, String title, int[] tabIds) {
+        // Can't restore empty or size 1 group. Note rootId is the tab ID of a tab in the group.
         if (tabIds.length < 1) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
@@ -117,14 +117,14 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
         for (int id : tabIds) {
             // This shouldn't happen, but as a precaution skip.
-            if (id == groupId) continue;
+            if (id == rootId) continue;
 
-            groupFilter.mergeTabsToGroup(id, groupId);
+            groupFilter.mergeTabsToGroup(id, rootId);
         }
 
         if (title == null || title.isEmpty()) return;
 
-        TabGroupTitleUtils.storeTabGroupTitle(groupId, title);
+        TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
     }
 
     /**
