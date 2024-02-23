@@ -897,25 +897,24 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       // marker. This is seen -seldom- from venus driver (QC) when entering a
       // dynamic resolution mode: the driver flushes the queue with errored
       // buffers before sending the IsLast() buffer.
-      scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
-      CHECK(video_frame);
+      scoped_refptr<FrameResource> frame = dequeued_buffer->GetFrameResource();
+      CHECK(frame);
 
-      video_frame->set_timestamp(
-          TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
+      frame->set_timestamp(TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
 
-      //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to
-      //  return |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled".
-      //  For a V4L2_MEMORY_DMABUF |CAPTURE_queue_|, we don't do that because
-      //  the VideoFrames are pooled in |client_|s;
+      //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |frame| to return
+      //  |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled". For a
+      //  V4L2_MEMORY_DMABUF |CAPTURE_queue_|, we don't do that because the
+      //  VideoFrames are pooled in |client_|s;
       //  TryAndEnqueueCAPTUREQueueBuffers() will find them there.
       if (queue_type == V4L2_MEMORY_MMAP) {
         // Don't query |CAPTURE_queue_|'s GetVisibleRect() here because it races
         // with hypothetical resolution changes.
-        CHECK(gfx::Rect(video_frame->coded_size()).Contains(visible_rect_));
-        CHECK(video_frame->visible_rect().Contains(visible_rect_));
-        auto wrapped_frame = VideoFrame::WrapVideoFrame(
-            video_frame, video_frame->format(), visible_rect_,
-            /*natural_size=*/visible_rect_.size());
+        CHECK(gfx::Rect(frame->coded_size()).Contains(visible_rect_));
+        CHECK(frame->visible_rect().Contains(visible_rect_));
+        auto wrapped_frame =
+            frame->CreateWrappingFrame(visible_rect_,
+                                       /*natural_size=*/visible_rect_.size());
 
         // Make sure |dequeued_buffer| stays alive and its reference released as
         // |wrapped_frame| is destroyed, allowing -maybe- for it to get back to
@@ -936,16 +935,16 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
                 weak_ptr_factory_for_CAPTURE_availability_.GetWeakPtr())));
         CHECK(wrapped_frame);
         VLOGF(3) << wrapped_frame->AsHumanReadableString();
-        output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
+        output_cb_.Run(std::move(wrapped_frame));
       } else {
         DCHECK_EQ(queue_type, V4L2_MEMORY_DMABUF);
-        VLOGF(3) << video_frame->AsHumanReadableString();
-        framerate_control_->AttachToVideoFrame(video_frame);
-        output_cb_.Run(VideoFrameResource::Create(std::move(video_frame)));
+        VLOGF(3) << frame->AsHumanReadableString();
+        framerate_control_->AttachToFrameResource(frame);
+        output_cb_.Run(std::move(frame));
       }
 
-      // We just dequeued one decoded |video_frame|; try to reclaim
-      // |OUTPUT_queue| resources that might just have been released.
+      // We just dequeued one decoded |frame|; try to reclaim |OUTPUT_queue|
+      // resources that might just have been released.
       if (!DrainOUTPUTQueue()) {
         LOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
       }
@@ -1000,8 +999,9 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
                 weak_ptr_factory_for_CAPTURE_availability_.GetWeakPtr())));
         return;
       }
-      auto video_frame = client_->GetVideoFramePool()->GetFrame();
-      CHECK(video_frame);
+      auto frame =
+          VideoFrameResource::Create(client_->GetVideoFramePool()->GetFrame());
+      CHECK(frame);
 
       // TODO(mcasas): Consider using GetFreeBufferForFrame().
       auto v4l2_buffer = CAPTURE_queue_->GetFreeBuffer();
@@ -1010,7 +1010,7 @@ void V4L2StatefulVideoDecoder::TryAndEnqueueCAPTUREQueueBuffers() {
         return;
       }
 
-      if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(video_frame))) {
+      if (!std::move(*v4l2_buffer).QueueDMABuf(std::move(frame))) {
         LOG(ERROR) << "CAPTURE queue failed to enqueue a DmaBuf buffer.";
         return;
       }
