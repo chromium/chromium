@@ -810,6 +810,7 @@
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="250346157641628208">પેપર (ઇંકજેટ)</translation>
 <translation id="2505268675989099013">એકાઉન્ટ સુરક્ષિત કરો</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (શરતો લાગુ)</translation>
 <translation id="2512101340618156538">કોઈ મંજૂરી નથી (ડિફૉલ્ટ)</translation>
 <translation id="2512413427717747692">'Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો' બટન, iOS સેટિંગમાં Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે Enter કી દબાવો</translation>
 <translation id="2514548229949738417">ઘર અને બગીચો</translation>
@@ -1158,6 +1159,7 @@
 <translation id="3229277193950731405">વર્ઝનની સ્ટ્રિંગ કૉપિ કરો</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> માટે CVC દાખલ કરો</translation>
 <translation id="3234666976984236645">હંમેશાં આ સાઇટ પરનું મહત્ત્વનું કન્ટેન્ટ શોધો</translation>
+<translation id="3236212803136366317">કાર્ડના લાભ</translation>
 <translation id="3238395604961564389">છૂપી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="3240791268468473923">ચુકવણીની સુરક્ષિત લૉગ ઇન વિગત, મેળ ખાતી લૉગ ઇન વિગતની કોઈપણ શીટ ખોલવામાં આવી નથી</translation>
@@ -1194,6 +1196,7 @@
 <translation id="33073482541490531">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Password Manager હમણાં જ આ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
 <translation id="3307649904964670439">'Chromeને કસ્ટમાઇઝ કરો' બટન, તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરવા માટે સક્રિય કરો</translation>
 <translation id="3308006649705061278">ઑર્ગેનાઇઝેશનલ યૂનિટ (OU)</translation>
+<translation id="3310047144791481950">કયા કાર્ડ વડે ચુકવણી કરવી તે પસંદ કરવામાં તમને સહાય કરે તેવી માહિતી જુઓ. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />કાર્ડના લાભ વિશે જાણો<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">ટીવી કૉમેડી</translation>
 <translation id="3324687287337751929">4 x 6 ઇંચ</translation>
 <translation id="3324983252691184275">કિરમજી</translation>

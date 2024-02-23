@@ -113,6 +113,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="3032706164202344641">Chromium getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
 <translation id="3032787606318309379">Bætir við Chromium...</translation>
 <translation id="3038232873781883849">Bíður eftir uppsetningu...</translation>
+<translation id="3068187312562070417">Aðrir Chromium-prófílar</translation>
 <translation id="3068515742935458733">Hjálpaðu til við að bæta Chromium með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Ein eða fleiri Chromium-viðbætur fengu aðgang að 1 USB-tæki}=1{Ein eða fleiri Chromium-viðbætur hafa aðgang að 1 USB-tæki}one{Ein eða fleiri Chromium-viðbætur hafa aðgang að # USB-tæki}other{Ein eða fleiri Chromium-viðbætur hafa aðgang að # USB-tækjum}}</translation>
 <translation id="3101560983689755071">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chromium áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
@@ -230,6 +231,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5294316920224716406">Þegar vafrað er í huliðsstillingu mun Chromium vara þig við áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="5296845517486664001">Þegar kveikt er á prufuútgáfum og Chromium hefur skráð þig af handahófi í virka prufuútgáfu hefur vafraferillinn þinn áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chromium áhugamálunum þínum sjálfkrafa mánaðarlega.</translation>
 <translation id="5352264705793813212">Chromium fann öryggistillögur sem þú þarft að fara yfir</translation>
+<translation id="5352361688875342522">Aðrir Chromium-prófílar</translation>
 <translation id="5358375970380395591">Þú ert að skrá þig inn með stýrðum reikningi og veitir stjórnanda hans vald yfir Chromium prófílnum þínum. Chromium gögnin þín, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Viðbótarkóði: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Kynntu þér hvers vegna Chromium lokar á sumar skrár</translation>

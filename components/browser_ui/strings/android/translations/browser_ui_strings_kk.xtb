@@ -5,6 +5,7 @@
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1044891598689252897">Сайттар қалыпты күйде жұмыс істейді.</translation>
 <translation id="1073417869336441572">Үшінші тарап cookie файлдарын рұқсат ету себебін айтып, Chrome браузерін жақсартуға көмектесіңіз. <ph name="BEGIN_LINK" />Пікір жіберу<ph name="END_LINK" /></translation>
+<translation id="1113435009358629918">Баға түсуінің картасын жасыру</translation>
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1192844206376121885"><ph name="ORIGIN" /> сақтаған барлық дерек пен cookie файлы жойылады.</translation>
@@ -92,6 +93,7 @@
 <translation id="2498359688066513246">Анықтама және пікір</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
 <translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
+<translation id="2550801787432930915">Баға түсуінің картасы</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie файлы бөгелді.}other{# cookie файлы бөгелді.}}</translation>
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
@@ -481,6 +483,7 @@
 <translation id="8803526663383843427">Қосулы кезде</translation>
 <translation id="8805385115381080995">Шолу жылдамырақ, себебі сайт сізден шынайы адам екеніңізді растауды сұрамайды.</translation>
 <translation id="8816026460808729765">Сайттардың датчиктерді пайдалануына тыйым салу</translation>
+<translation id="8843699287283948910">Басқа құрылғылардағы қойындыларды жасыру</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Үшінші тарап cookie файлдарына уақытша рұқсат беріп көріңіз. Бұл жағдайда қорғаныс дәрежесі төмен болады, бірақ сайт функцияларының ойдағыдай жұмыс істеу ықтималдығы артады.</translation>
 <translation id="8889294078294184559">Шолуды жалғастыра отырып, сайттар Chrome-мен тексеріп, шынайы адам екеніңізді алдыңғы кірген сайтпен растай алады</translation>

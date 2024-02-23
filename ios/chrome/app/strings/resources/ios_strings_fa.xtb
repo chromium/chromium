@@ -702,6 +702,7 @@
 <translation id="4619564267100705184">تأیید کنید این شمایید</translation>
 <translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620246317052452550">صفحه‌هایی که خوانده‌اید</translation>
+<translation id="4620845369664293551">می‌توانید این صفحه را در اینجا هم‌رسانی کنید.</translation>
 <translation id="4620888520263267479">نمایش پیش‌نمایش‌های پیوند</translation>
 <translation id="4630540211544979320">ترجمه صفحات</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
@@ -851,6 +852,7 @@
 <translation id="5339316356165661760">روشن کردن همگام‌سازی</translation>
 <translation id="5343472494710226394">اخبار، ورزش، و محتوا براساس علایق شما.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{این بسته ردیابی شود؟}one{‫{COUNT} بسته ردیابی شود؟}other{‫{COUNT} بسته ردیابی شوند؟}}</translation>
+<translation id="5348775987281903912">می‌توانید این صفحه را ازطریق دکمه هم‌رسانی در اینجا هم‌رسانی کنید.</translation>
 <translation id="536067926684072644">نمایش نشانک‌ها</translation>
 <translation id="5360976571138293719">‏برای تنظیمات بیشتر مرتبط با حریم خصوصی، امنیت، و جمع‌آوری داده، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را ببینید.</translation>
 <translation id="5379352933722332597">{count,plural, =1{نشانک در «{title}» ذخیره شد. این نشانک فقط در این دستگاه ذخیره می‌شود.}one{{count} نشانک در «{title}» ذخیره شد. این نشانک‌ها فقط در این دستگاه ذخیره می‌شود.}other{{count} نشانک در «{title}» ذخیره شد. این نشانک‌ها فقط در این دستگاه ذخیره می‌شود.}}</translation>

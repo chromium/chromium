@@ -810,6 +810,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2501278716633472235">Retour</translation>
 <translation id="250346157641628208">Papier (jet d'encre)</translation>
 <translation id="2505268675989099013">Protéger le compte</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (offre soumise à conditions)</translation>
 <translation id="2512101340618156538">Non autorisée (par défaut)</translation>
 <translation id="2512413427717747692">Bouton pour choisir Chrome comme navigateur par défaut ; appuyez sur Entrée pour définir Chrome comme navigateur par défaut dans les réglages iOS</translation>
 <translation id="2514548229949738417">Maison et jardinage</translation>
@@ -1158,6 +1159,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3229277193950731405">Copier la chaîne de la version</translation>
 <translation id="323107829343500871">Saisir le code CVC de la carte <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Toujours détecter du contenu important sur ce site</translation>
+<translation id="3236212803136366317">Avantages des cartes</translation>
 <translation id="3238395604961564389">Ouvrir le lien dans la fenêtre de navigation privée</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, puis Tabulation, puis Entrée pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3240791268468473923">La bottom sheet indiquant qu'aucun identifiant ne correspond pour le paiement sécurisé est ouverte</translation>
@@ -1194,6 +1196,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
 <translation id="3307649904964670439">Bouton "Personnaliser Chrome" à activer pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité d'organisation (OU)</translation>
+<translation id="3310047144791481950">Consultez des infos qui vous aident à choisir avec quelle carte payer. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />En savoir plus sur les avantages des cartes<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Comédies (films TV)</translation>
 <translation id="3324687287337751929">4 x 6 pouces</translation>
 <translation id="3324983252691184275">Pourpre</translation>

@@ -2316,6 +2316,7 @@
 <translation id="2721695630904737430">Профілі падкантрольных карыстальнікаў выключаны адміністратарам.</translation>
 <translation id="2722540561488096675">Прылада завершыць працу праз <ph name="TIME_LEFT" /> Перш чым уключаць яе паўторна, выміце USB-прыладу. Пасля гэтага вы можаце пачаць працаваць з <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Ідэнтыфікатар: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Адкрыць гасцявы профіль</translation>
 <translation id="2723819893410108315">Лімонная цэдра</translation>
 <translation id="2724841811573117416">Журналы WebRTC</translation>
 <translation id="272488616838512378">Перавод адзінак вымярэння</translation>
@@ -3109,6 +3110,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" прапануе выдаліць гэта пашырэнне.</translation>
 <translation id="3345634917232014253">Праверка бяспекі выконвалася толькі што</translation>
 <translation id="3345886924813989455">Браўзераў, якія падтрымліваюцца, не знойдзена</translation>
+<translation id="3346306152660142597">Наладзіць гэту старонку з дапамогай штучнага інтэлекту</translation>
 <translation id="3347086966102161372">К&amp;апіраваць адрас відарыса</translation>
 <translation id="3348038390189153836">Выяўлена здымная прылада</translation>
 <translation id="3348131053948466246">Прапануюцца эмодзі. Для навігацыі карыстайцеся клавішамі "ўверх" і "ўніз". Для ўстаўкі націсніце Enter.</translation>
@@ -9005,6 +9007,7 @@
 <translation id="7940265372707990269">Параметр сартавання: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Гатоўнасць рэжыму мадэма:</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
+<translation id="7942846369224063421">Папярэдне загружаны працэс візуалізацыі карыстальніцкага інтэрфейсу</translation>
 <translation id="7943349879009553083">Недаступна ў гасцявым рэжыме</translation>
 <translation id="7943368935008348579">Спампоўваць PDF-файлы</translation>
 <translation id="7943837619101191061">Дадаць размяшчэнне...</translation>

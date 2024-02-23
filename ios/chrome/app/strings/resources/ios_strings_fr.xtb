@@ -702,6 +702,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4620246317052452550">Pages lues</translation>
+<translation id="4620845369664293551">Vous pouvez partager cette page ici.</translation>
 <translation id="4620888520263267479">Afficher les aperçus des liens</translation>
 <translation id="4630540211544979320">Traduire les pages</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> mots de passe réutilisés</translation>
@@ -851,6 +852,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis ?}one{Suivre {COUNT} colis ?}other{Suivre {COUNT} colis ?}}</translation>
+<translation id="5348775987281903912">Vous pouvez partager cette page ici à l'aide du bouton "Partager".</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la page <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}one{{count} favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}other{{count} favoris enregistrés dans "{title}". Ils ne sont enregistrés que sur cet appareil.}}</translation>
@@ -1585,6 +1587,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. En cas d'activité suspecte sur une page, des URL et des extraits de son contenu sont envoyés à la navigation sécurisée Google.</translation>
+<translation id="9025203546212508704">Balayez l'écran pour découvrir comment personnaliser votre menu</translation>
 <translation id="9029650858822697271">Vous avez été déconnecté</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>

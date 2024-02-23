@@ -702,6 +702,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4620246317052452550">Teie loetud lehed</translation>
+<translation id="4620845369664293551">Saate seda lehte siin jagada.</translation>
 <translation id="4620888520263267479">Kuva linkide eelvaated</translation>
 <translation id="4630540211544979320">Tõlgi lehed</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> korduvalt kasutatud parooli</translation>
@@ -851,6 +852,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5339316356165661760">Lülita sünkroonimine sisse</translation>
 <translation id="5343472494710226394">Teie huvidel põhinevad uudised, sport ja sisu.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Kas jälgida seda saadetist?}other{Kas jälgida {COUNT} saadetist?}}</translation>
+<translation id="5348775987281903912">Saate seda lehte siin jagamisnupu abil jagada.</translation>
 <translation id="536067926684072644">Järjehoidjate kuvamine</translation>
 <translation id="5360976571138293719">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotist <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Järjehoidja salvestati kausta „{title}“. See salvestatakse ainult selles seadmes.}other{{count} järjehoidja salvestati kausta „{title}“. Need salvestatakse ainult selles seadmes.}}</translation>
@@ -1584,6 +1586,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9000089900434778519">Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="9008201768610948239">Eira</translation>
 <translation id="9012585441087414258">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui leht teeb midagi kahtlast, saadetakse URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
+<translation id="9025203546212508704">Pühkige menüü kohandamise õppimiseks</translation>
 <translation id="9029650858822697271">Teid logiti välja</translation>
 <translation id="9034759925968272072">Teid ei logita Google'i kontolt välja. Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="9037965129289936994">Kuva originaal</translation>

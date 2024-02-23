@@ -698,6 +698,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4619564267100705184">Thibitisha kwamba ni wewe</translation>
 <translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
 <translation id="4620246317052452550">Kurasa Ulizosoma</translation>
+<translation id="4620845369664293551">Unaweza kutuma ukurasa huu hapa.</translation>
 <translation id="4620888520263267479">Onyesha Maonyesho ya Kukagua Viungo</translation>
 <translation id="4630540211544979320">Tafsiri Kurasa</translation>
 <translation id="4631335160486397366">Manenosiri <ph name="COUNT" /> yaliyotumiwa kwingine</translation>
@@ -847,6 +848,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="5339316356165661760">Washa Kipengele cha Kusawazisha</translation>
 <translation id="5343472494710226394">Habari, michezo na maudhui kulingana na mapendeleo yako.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Ungependa Kufuatilia Kifurushi Hiki?}other{Ungependa Kufuatilia Vifurushi {COUNT}?}}</translation>
+<translation id="5348775987281903912">Unaweza kutuma ukurasa huu hapa kutoka kwenye kitufe cha kutuma.</translation>
 <translation id="536067926684072644">Onyesha Alamisho</translation>
 <translation id="5360976571138293719">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}". Inahifadhiwa katika kifaa hiki pekee.}other{Alamisho {count} zimehifadhiwa kwenye "{title}" katika kifaa hiki pekee.}}</translation>
@@ -1573,6 +1575,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9000089900434778519">Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
 <translation id="9008201768610948239">Puuza</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>
+<translation id="9025203546212508704">Telezesha kidole ili upate maelezo kuhusu jinsi ya kuweka mapendeleo kwenye menyu yako</translation>
 <translation id="9029650858822697271">Uliondolewa kwenye akaunti</translation>
 <translation id="9034759925968272072">Hutaondolewa katika Akaunti yako ya Google. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Onyesha Asili</translation>

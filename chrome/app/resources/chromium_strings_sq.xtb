@@ -113,6 +113,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3032706164202344641">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>
 <translation id="3032787606318309379">Po shton në Chromium...</translation>
 <translation id="3038232873781883849">Në pritje të instalimit...</translation>
+<translation id="3068187312562070417">Profilet e tjera të Chromium</translation>
 <translation id="3068515742935458733">Ndihmo në përmirësimin e Chromium duke dërguar te Google raportet e ndërprerjeve aksidentale dhe <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chromium kanë pasur qasje në 1 pajisje USB}=1{Një ose disa shtesa të Chromium kanë qasje në 1 pajisje USB}other{Një ose disa shtesa të Chromium kanë qasje në # pajisje USB}}</translation>
 <translation id="3101560983689755071">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chromium fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
@@ -230,6 +231,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5294316920224716406">Kur shfleton në "Modalitetin 'e fshehtë'", Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="5296845517486664001">Kur provat janë aktive dhe nëse Chromium të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chromium fshin interesat e tua në vazhdimësi çdo muaj.</translation>
 <translation id="5352264705793813212">Chromium gjeti disa rekomandime për sigurinë për t'u rishikuar nga ti</translation>
+<translation id="5352361688875342522">Profilet e tjera të Chromium</translation>
 <translation id="5358375970380395591">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontroll mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, siç janë aplikacionet, faqeshënuesit, fjalëkalimet dhe cilësime të tjera do të lidhen në mënyrë të përhershme me <ph name="USER_NAME" />. Ti do të jesh në gjendje t'i fshish këto të dhëna përmes Panelit të llogarive të Google, por nuk do të jesh në gjendje t'i shoqërosh këto të dhëna me një llogari tjetër. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Kodi shtesë: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Mëso se pse Chromium i bllokon disa skedarë</translation>

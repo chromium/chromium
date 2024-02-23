@@ -810,6 +810,7 @@
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="250346157641628208">කඩදාසි (ඉන්ක්ජෙට්)</translation>
 <translation id="2505268675989099013">ගිණුම ආරක්‍ෂා කරන්න</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (නියම යෙදෙයි)</translation>
 <translation id="2512101340618156538">ඉඩ නොදේ (පෙරනිමි)</translation>
 <translation id="2512413427717747692">Chrome පෙරනිමි බ්‍රවුසර බොත්තම ලෙස සකසන්න, iOS සැකසීම් තුළ Chrome පද්ධතියේ පෙරනිමි බ්‍රවුසරය ලෙස සැකසීමට Enter ඔබන්න</translation>
 <translation id="2514548229949738417">නිවස සහ වත්ත</translation>
@@ -1158,6 +1159,7 @@
 <translation id="3229277193950731405">අනුවාද තන්තුව පිටපත් කරන්න</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> සඳහා CVC ඇතුළු කරන්න</translation>
 <translation id="3234666976984236645">මෙම අඩවිය මත වැදගත් අන්තර්ගත සෑම වඉටම හඳුනාගන්න</translation>
+<translation id="3236212803136366317">කාඩ්පත් ප්‍රතිලාභ</translation>
 <translation id="3238395604961564389">සබැඳිය අප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ බ්‍රවුසරයේ පෙනුම අභිරුචිකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="3240791268468473923">සුරක්ෂිත ගෙවීම් අක්තපත්‍ර ගැළපෙන අක්තපත්‍ර පත්‍රය විවෘත කර නැත</translation>
@@ -1194,6 +1196,7 @@
 <translation id="33073482541490531">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. මුරපද කළමනාකරු මෙම මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="3307649904964670439">Chrome අභිරුචිකරණය කරන්න බොත්තම, ඔබේ බ්‍රව්සරයෙහි පෙනුම අභිරුචිකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="3308006649705061278">සංවිධාන එ්කකය (OU)</translation>
+<translation id="3310047144791481950">ක්‍රීඩ කළ යුත්තේ කුමන කාඩ්පතදැයි තේරීමට ඔබට උපකාර වන තොරතුරු බලන්න. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />කාඩ්පත් ප්‍රතිලාභ ගැන දැන ගන්න<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">රූපවාහිනී විකට කතා</translation>
 <translation id="3324687287337751929">අඟ 4 x 6</translation>
 <translation id="3324983252691184275">ක්‍රිම්සන්</translation>

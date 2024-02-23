@@ -2313,6 +2313,7 @@
 <translation id="2721695630904737430">તમારા વ્યવસ્થાપક દ્વારા નિરીક્ષિત વપરાશકર્તાઓ અક્ષમ કરવામાં આવ્યાં છે.</translation>
 <translation id="2722540561488096675">તમારું ડિવાઇસ <ph name="TIME_LEFT" />માં શટ ડાઉન થઈ જશે. તમારા ડિવાઇસને ફરી ચાલુ કરતા પહેલાં USB કાઢી નાખો. ત્યાર પછી તમે <ph name="DEVICE_OS" />નો ઉપયોગ કરવાનું શરૂ કરી શકો છો.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">અતિથિની પ્રોફાઇલ ખોલો</translation>
 <translation id="2723819893410108315">સિટ્રન</translation>
 <translation id="2724841811573117416">WebRTC લૉગ્સ</translation>
 <translation id="272488616838512378">એકમ રૂપાંતરણ</translation>
@@ -3106,6 +3107,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" આ એક્સ્ટેંશનને કાઢી નાખવા માગે છે.</translation>
 <translation id="3345634917232014253">એક પળ પહેલાં સલામતી માટે તપાસ થઈ</translation>
 <translation id="3345886924813989455">સપોર્ટેડ બ્રાઉઝર મળ્યું નથી</translation>
+<translation id="3346306152660142597">AI વડે આ પેજને કસ્ટમાઇઝ કરો</translation>
 <translation id="3347086966102161372">છબી સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="3348038390189153836">કાઢી નાખવા યોગ્ય ઉપકરણ મળ્યું</translation>
 <translation id="3348131053948466246">સૂચવેલા ઇમોજી. નૅવિગેટ કરવા માટે ઉપર અથવા નીચેની ઍરો કી દબાવો અને મનપસંદ ઇમોજીને શામેલ કરવા enter કી દબાવો.</translation>
@@ -9004,6 +9006,7 @@ USB ડિવાઇસ</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="7941179291434537290">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા:</translation>
 <translation id="7942349550061667556">લાલ</translation>
+<translation id="7942846369224063421">પહેલેથી લોડ કરેલા UI રેન્ડરર</translation>
 <translation id="7943349879009553083">અતિથિ મોડમાં ઉપલબ્ધ નથી</translation>
 <translation id="7943368935008348579">PDFs ડાઉનલોડ કરો</translation>
 <translation id="7943837619101191061">સ્થાન ઉમેરો...</translation>

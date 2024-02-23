@@ -2327,6 +2327,7 @@
 <translation id="2721695630904737430">निगरानी में रखे गए उपयोगकर्ताओं को आपके व्यवस्थापक ने अक्षम कर दिया है.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> में आपका डिवाइस शट डाउन हो जाएगा. अपने डिवाइस को फिर से चालू करने से पहले, उससे जुड़ा यूएसबी डिवाइस हटाएं. इसके बाद, <ph name="DEVICE_OS" /> का इस्तेमाल शुरू किया जा सकता है.</translation>
 <translation id="2722547199758472013">आईडी: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">मेहमान प्रोफ़ाइल खोलें</translation>
 <translation id="2723819893410108315">सिट्रन</translation>
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">यूनिट कन्वर्ज़न</translation>
@@ -3118,6 +3119,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" इस एक्सटेंशन को हटाना चाहता है.</translation>
 <translation id="3345634917232014253">सुरक्षा जांच कुछ देर पहले की गई है</translation>
 <translation id="3345886924813989455">कोई समर्थित ब्राउज़र नहीं मिला</translation>
+<translation id="3346306152660142597">एआई की मदद से, इस पेज को पसंद के मुताबिक बनाएं</translation>
 <translation id="3347086966102161372">इमेज के पते को कॉपी करें</translation>
 <translation id="3348038390189153836">निकालने योग्‍य डिवाइस का पता चला</translation>
 <translation id="3348131053948466246">सुझाए गए इमोजी. नेविगेट करने के लिए, ऊपर या नीचे वाला तीर का निशान दबाएं. इमोजी डालने के लिए enter दबाएं.</translation>
@@ -8999,6 +9001,7 @@
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> के हिसाब से क्रम में लगाएं</translation>
 <translation id="7941179291434537290">टेदरिंग की जा सकती या नहीं:</translation>
 <translation id="7942349550061667556">लाल</translation>
+<translation id="7942846369224063421">पहले से लोड किया गया यूज़र इंटरफ़ेस (यूआई) रेंडरर</translation>
 <translation id="7943349879009553083">मेहमान मोड में उपलब्ध नहीं है</translation>
 <translation id="7943368935008348579">पीडीएफ़ डाउनलोड करें</translation>
 <translation id="7943837619101191061">स्थान जोड़ें...</translation>

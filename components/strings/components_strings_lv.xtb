@@ -810,6 +810,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="250346157641628208">Papīrs (tintes strūklai)</translation>
 <translation id="2505268675989099013">Aizsargāt kontu</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (ir spēkā noteikumi)</translation>
 <translation id="2512101340618156538">Atļauja nav piešķirta (noklusējums)</translation>
 <translation id="2512413427717747692">Poga “Iestatīt Chrome kā noklusējuma pārlūku”; nospiediet taustiņu Enter, lai iestatītu Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos.</translation>
 <translation id="2514548229949738417">Māja un dārzs</translation>
@@ -1158,6 +1159,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3229277193950731405">Kopēt versijas virkni</translation>
 <translation id="323107829343500871">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> CVC</translation>
 <translation id="3234666976984236645">Vienmēr noteikt nozīmīgu saturu šajā vietnē</translation>
+<translation id="3236212803136366317">Kartes priekšrocības</translation>
 <translation id="3238395604961564389">Atvērt saiti inkognito režīma logā</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pielāgotu pārlūka izskatu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
@@ -1194,6 +1196,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="33073482541490531">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Paroļu pārvaldnieks iesaka nekavējoties nomainīt šo paroli.</translation>
 <translation id="3307649904964670439">Poga “Pielāgot pārlūkprogrammu Chrome”. Aktivizējiet, lai pielāgotu pārlūkprogrammas izskatu.</translation>
 <translation id="3308006649705061278">Organizacionālā vienība (OU)</translation>
+<translation id="3310047144791481950">Skatiet informāciju, kas palīdz izvēlēties, ar kuru karti maksāt. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Uzziniet vairāk par kartes priekšrocībām.<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV komēdijas</translation>
 <translation id="3324687287337751929">4 x 6 collas</translation>
 <translation id="3324983252691184275">Tumši sarkana</translation>

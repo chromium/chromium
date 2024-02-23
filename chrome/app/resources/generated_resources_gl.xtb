@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Utilizar o micrófono e a cámara</translation>
 <translation id="1005333234656240382">Queres activar a depuración de ADB?</translation>
 <translation id="1005671386794704751">Rosa</translation>
+<translation id="1006033052970139968">As aplicacións, os sitios web co permiso correspondente e os servizos do sistema poden acceder ao micrófono</translation>
 <translation id="1006557561787696884">Usar claves de acceso nos teus dispositivos Apple</translation>
 <translation id="1006873397406093306">Esta extensión pode ler e cambiar os teus datos nos sitios. Podes controlar os sitios aos que pode acceder a extensión.</translation>
 <translation id="1007057452468855774">Activar Google Play Store</translation>
@@ -1277,6 +1278,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
 <translation id="1944921356641260203">Encontrouse unha actualización</translation>
 <translation id="1947136734041527201">Permíteche iniciar sesión en sitios web coa conta que teñas cun servizo de identidade</translation>
+<translation id="1948528728718281125">As aplicacións, os sitios web co permiso correspondente e os servizos do sistema poden acceder á cámara</translation>
 <translation id="1949332606889020901">Identificador de fallo</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
 <translation id="1949849604471335579">Personaliza o fondo de pantalla, o protector de pantalla, as cores de énfase e moito máis</translation>
@@ -2312,6 +2314,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2721695630904737430">O administrador desactivou os usuarios supervisados.</translation>
 <translation id="2722540561488096675">O dispositivo apagarase en <ph name="TIME_LEFT" />. Antes de acendelo de novo, quita o dispositivo USB. Despois poderás comezar a usar <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Código de identificación: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Abrir perfil de convidado</translation>
 <translation id="2723819893410108315">Cidra</translation>
 <translation id="2724841811573117416">Rexistros de WebRTC</translation>
 <translation id="272488616838512378">Conversión de unidades</translation>
@@ -2469,6 +2472,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2822910719211888134">Produciuse un erro ao crear a copia de seguranza de Linux</translation>
 <translation id="2823176412251649407">Cambia a túa conexión a Internet e escolle Tentar de novo, ou, se queres usar as opcións de edición e de visualización limitadas, selecciona Abrir no editor sen conexión.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> utiliza a configuración de proxy do teu administrador</translation>
+<translation id="2825151610926840364">Deixa que todas as aplicacións e sitios web co permiso correspondente accedan á cámara. Para usala, pode que teñas que reiniciar a aplicación ou actualizar a páxina.</translation>
 <translation id="2825758591930162672">Clave pública de entidade</translation>
 <translation id="2828375943530438449">Ir atrás desde a páxina de inicio de sesión</translation>
 <translation id="2828650939514476812">Conectarse a unha rede wifi</translation>
@@ -3104,6 +3108,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3342361181740736773">Á extensión "<ph name="TRIGGERING_EXTENSION_NAME" />" gustaríalle eliminar esta extensión.</translation>
 <translation id="3345634917232014253">A Comprobación de seguranza executouse hai un momento</translation>
 <translation id="3345886924813989455">Non se atopou ningún navegador compatible</translation>
+<translation id="3346306152660142597">Personalizar esta páxina con IA</translation>
 <translation id="3347086966102161372">C&amp;opiar enderezo da imaxe</translation>
 <translation id="3348038390189153836">Dispositivo extraíble detectado</translation>
 <translation id="3348131053948466246">Emojis suxeridos. Preme arriba e abaixo para desprazarte, e Intro para inserilo.</translation>
@@ -3988,6 +3993,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4001540981461989979">Destacar cursor ao movelo</translation>
 <translation id="4002347779798688515">É posible que o perfil descargado non se poida utilizar se o provedor de rede de telefonía móbil está bloqueado. Ponte en contacto co provedor para obter asistencia.</translation>
 <translation id="4002440992267487163">Configuración do PIN</translation>
+<translation id="4003647532210142956">Agora mesmo o horario está definido de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Para que se actualice automaticamente o horario do amencer e solpor, <ph name="BEGIN_LINK" />activa o acceso á localización<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Método de detección de fuso horario</translation>
 <translation id="4007856537951125667">Ocultar atallos</translation>
 <translation id="4010746393007464819">Está dispoñible unha actualización a Debian 12 (Bookworm)</translation>
@@ -4026,6 +4032,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4036778507053569103">A política descargada do servidor non é válida.</translation>
 <translation id="4037084878352560732">Cabalo</translation>
 <translation id="403725336528835653">Probar antes</translation>
+<translation id="4039966970282098406">Controla o acceso ao micrófono e á cámara, entre outras cousas, para xestionar a túa privacidade</translation>
 <translation id="4040041015953651705">Idioma do que traducir</translation>
 <translation id="4042660782729322247">Estás compartindo a pantalla</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
@@ -4397,6 +4404,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="434198521554309404">Rápido. Seguro. Sinxelo.</translation>
 <translation id="4342417854108207000">Permiso para editar os ficheiros ou os cartafoles do teu dispositivo</translation>
 <translation id="4343250402091037179">Para realizar buscas nunha parte ou sitio específico de Chrome, escribe o seu atallo na barra de enderezos, seguido do atallo de teclado que prefiras.</translation>
+<translation id="4343283008857332996">As aplicacións, os sitios web co permiso correspondente e os servizos do sistema poden acceder á cámara. Para usala, pode que teñas que reiniciar a aplicación ou actualizar a páxina.</translation>
 <translation id="4345457680916430965">&amp;Abrir en <ph name="APP" /></translation>
 <translation id="4345587454538109430">Configurar...</translation>
 <translation id="4345732373643853732">O servidor non recoñece o nome de usuario</translation>
@@ -4703,6 +4711,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4576541033847873020">Sincronizar dispositivo Bluetooth</translation>
 <translation id="4576763597586015380">Para seguir gardando contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - Pestana inactiva</translation>
+<translation id="4577995939477504370">As aplicacións e sitios web co permiso correspondente, así como os servizos do sistema, poden usar o micrófono</translation>
 <translation id="4579453506923101210">Esquecer teléfono conectado</translation>
 <translation id="4579581181964204535">Non se puido emitir <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Para acceder ás notificacións do navegador, vai á <ph name="LINK_BEGIN" />configuración do navegador Chrome<ph name="LINK_END" /></translation>
@@ -5697,6 +5706,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5385628342687007304">Este contrasinal está gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google.</translation>
 <translation id="5387116558048951800">Editar <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Modificouse a política de empresa. Engadiuse á barra de ferramentas o botón Experiments. Fai clic nel para abrir un cadro de diálogo que permite activar os experimentos.</translation>
+<translation id="5388436023007579456">As aplicacións e sitios web co permiso correspondente, así como os servizos do sistema, poden utilizar a cámara. Para usala, pode que teñas que reiniciar a aplicación ou actualizar a páxina.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Atopouse 1 sitio con moitas notificacións}other{Atopáronse {NUM_SITES} sitios con moitas notificacións}}</translation>
 <translation id="5388885445722491159">Sincronizado</translation>
 <translation id="5389626883706033615">Os sitios non poderán pedirche usar a información que garden sobre ti</translation>
@@ -5797,6 +5807,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Bloquear notas da pantalla</translation>
 <translation id="5459864179070366255">Continuar e instalar</translation>
+<translation id="5460641065520325899">Xestiona os tipos de información que poderán usar os sitios para facer un seguimento da túa actividade mentres navegas.</translation>
 <translation id="5460861858595506978">Inspiración</translation>
 <translation id="5461050611724244538">Perdeuse a conexión co teléfono</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
@@ -6879,6 +6890,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="630292539633944562">Suxestións de información persoal</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Manter o volume de reprodución aínda que ChromeVox estea falando</translation>
+<translation id="6307268917612054609">As aplicacións e os sitios web co permiso correspondente, así como os servizos do sistema, poden usar a cámara</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Inicio de sesión fornecido por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Gardar liga&amp;zón como...</translation>
@@ -8204,6 +8216,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7367714965999718019">Xerador de códigos QR</translation>
 <translation id="7368695150573390554">Eliminaranse todos os datos sen conexión</translation>
 <translation id="736877393389250337">O sitio <ph name="URL" /> non se puido abrir no explorador <ph name="ALTERNATIVE_BROWSER_NAME" />. Contacta coa persoa que administra o sistema.</translation>
+<translation id="7368927539449986686">Editar a busca do sitio</translation>
 <translation id="7370592524170198497">EAP de Ethernet:</translation>
 <translation id="7371490947952970241">Para desactivar a localización, desactiva a opción principal de localización deste dispositivo. Tamén podes desactivar o uso de sensores e redes wifi ou de telefonía móbil para determinar a localización na configuración da localización.</translation>
 <translation id="7371917887111892735">As pestanas redúcense á anchura da pestana fixada</translation>
@@ -8470,6 +8483,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="756583107125124860">Algunhas funcións poden usar o contido das páxinas abertas e páxinas recentes relacionadas para fornecer máis información ou suxestións útiles</translation>
 <translation id="7566118625369982896">Xestionar ligazóns da aplicación Play</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">Crear combinación de teclas</translation>
 <translation id="756809126120519699">Borráronse os datos de Chrome</translation>
 <translation id="756876171895853918">Personalizar avatar</translation>
 <translation id="7568790562536448087">Actualizando</translation>
@@ -8731,6 +8745,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7757787379047923882">O texto compartiuse desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Axusta os límites da pantalla</translation>
+<translation id="7758884017823246335">Engadir unha busca do sitio</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7762024824096060040">Non se pode usar esta conta</translation>
 <translation id="7762243782113123335">Vaia, produciuse un erro. Envía un comentario que inclúa "#bruschetta" na descrición. Código de erro: <ph name="ERROR" />.</translation>
@@ -8988,6 +9003,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación para conexión compartida:</translation>
 <translation id="7942349550061667556">Vermello</translation>
+<translation id="7942846369224063421">Renderizador da interface precargado</translation>
 <translation id="7943349879009553083">Esta opción non está dispoñible no modo Convidados</translation>
 <translation id="7943368935008348579">Descargar PDF</translation>
 <translation id="7943837619101191061">Engadir localización...</translation>
@@ -10596,6 +10612,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9153274276370926498">Información do sistema Lacros</translation>
 <translation id="9153367754133725216">Móstranse suxestións de aplicacións novas e contido web no menú de aplicacións e nos resultados de busca. Mandaranse estatísticas para mellorar as suxestións só se tes activada a opción de enviar informes de fallos e datos de uso e diagnóstico a ChromeOS.</translation>
 <translation id="9154194610265714752">Actualizado</translation>
+<translation id="915485121129452731">Lapis da tableta</translation>
 <translation id="9155344700756733162">Anular a selección de cor</translation>
 <translation id="9157096865782046368">0,8 segundos</translation>
 <translation id="9157697743260533322">Non se puideron configurar as actualizacións automáticas para todos os usuarios (erro de inicio da comprobación preliminar: <ph name="ERROR_NUMBER" />)</translation>

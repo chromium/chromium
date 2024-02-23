@@ -621,6 +621,7 @@ Si cette règle est activée, le sélecteur d'emoji prend en charge les emoji GI
 Si cette règle est désactivée ou n'est pas configurée, le sélecteur d'emoji ne sera pas compatible avec les emoji GIF.
 Si cette règle n'est pas configurée, l'outil de sélection d'emoji est activé pour les utilisateurs standards, mais désactivé pour les utilisateurs gérés.</translation>
 <translation id="1494138678487405397">Désactiver le contraste élevé sur l'écran de connexion</translation>
+<translation id="1497797462580613666">Le gestionnaire de téléchargement proposera l'option d'enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Permet de lister les formats d'URL indiquant les sites dont l'accès aux imprimantes locales est automatiquement refusé via l'API WebPrinting.
 
 Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
@@ -3535,6 +3536,7 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="3838094946886335701">Cette règle (recommandation uniquement) permet d'enregistrer une liste de gestionnaires de protocoles combinée à ceux enregistrés par l'utilisateur, afin que les deux ensembles s'appliquent. Définissez la propriété "protocole" sur le schéma (par exemple, "mailto") et la propriété "URL" sur le format d'URL de l'application qui gère le schéma spécifié dans le champ "protocole". Le schéma peut inclure un espace réservé "%s" remplacé par l'URL gérée.
 
       Les utilisateurs ne peuvent pas supprimer un gestionnaire de protocoles enregistré par une règle. Toutefois, l'installation d'un nouveau gestionnaire par défaut leur permet de modifier les gestionnaires de protocoles installés par une règle.</translation>
+<translation id="3842619997238271109">Empêche l'hôte d'accès à distance d'utiliser des authentifications par code ou association lorsqu'il accepte des connexions client</translation>
 <translation id="3851443303439635700">Contrôlez le seuil d'imbrication avant que la fonction JavaScript setTimeout() commence à être limitée</translation>
 <translation id="3858658082795336534">Impression recto verso par défaut</translation>
 <translation id="3859780406608282662">Permet d'ajouter un paramètre à la récupération de la valeur de départ des variantes dans <ph name="PRODUCT_OS_NAME" />.
@@ -3680,6 +3682,13 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas activé pour l'appareil.</translation>
 <translation id="3973371701361892765">Ne jamais masquer automatiquement l'étagère</translation>
 <translation id="3977304360459208438">Utiliser le paramètre par défaut pour les suites de chiffrement 3DES dans TLS</translation>
+<translation id="3977906634350977040">Si cette règle est activée, l'hôte d'accès à distance peut utiliser des authentifications par code ou association lorsqu'il accepte des connexions client.
+
+Si cette règle est désactivée, les authentifications par code ou association ne sont pas autorisées.
+
+Si cette règle n'est pas configurée, l'hôte décide si l'authentification par code et/ou par association peut être utilisée.
+
+Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentification n'est acceptée à la fois par l'hôte et le client, la connexion sera refusée.</translation>
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3982322576186033243">Ne pas autoriser les hachages non sécurisés lors de handshakes TLS</translation>
 <translation id="3982465141749620677">Inviter à s'authentifier de nouveau dans un onglet</translation>
@@ -4617,6 +4626,7 @@ Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement a
 Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4739596156184678950">Autoriser l'enregistrement de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Limiter le mode d'impression d'images de fond</translation>
 <translation id="4744467872051608680">À partir de M119, si cette règle est définie sur "False" ou n'est pas configurée, WebSQL est désactivé, mais peut être activé via le flag Chrome "web-sql-access". Si cette règle est définie sur "True", l'accès WebSQL est activé.</translation>
 <translation id="4745232963710538589">Activer l'extension des insights pour transmettre des statistiques d'utilisation</translation>
@@ -5464,6 +5474,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       S'il est désactivé, les utilisateurs ne seront pas autorisés à se servir de cette fonctionnalité. Si la règle PhoneHubAllowed est désactivée, ils ne seront pas non plus autorisés à utiliser cette fonctionnalité.
 
       Si cette règle n'est pas définie, le paramètre par défaut est autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
+<translation id="5488268615614906498">Cette règle détermine si l'utilisateur est autorisé ou non à enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" /> directement depuis le gestionnaire de téléchargement.
+Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" /> depuis le gestionnaire de téléchargement. Si cette règle est désactivée, les utilisateurs ne voient pas l'option dans le gestionnaire de téléchargement.
+Elle n'empêche pas les utilisateurs d'enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" /> par d'autres moyens que le gestionnaire de téléchargement.</translation>
 <translation id="5494322570831642650">Permet de spécifier si l'utilisateur peut ouvrir ou non des pages en mode navigation privée dans <ph name="PRODUCT_NAME" />.
 
       Si la règle est activée ou n'est pas définie, l'utilisateur peut ouvrir des pages en mode navigation privée.
@@ -5733,6 +5746,7 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> le sera également.
 
       Remarque : S'il y a plusieurs valeurs, séparez-les par une virgule.</translation>
 <translation id="5693469654327063861">Autoriser la migration de données</translation>
+<translation id="56936613186060503">Le gestionnaire de téléchargement ne proposera pas l'option d'enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5695209488612697377">Permet d'utiliser un moteur de recherche par défaut dans le menu contextuel.
 
           Si vous désactivez cette règle, l'élément de menu contextuel de recherche qui dépend de votre moteur de recherche par défaut ne sera pas disponible.
@@ -9161,6 +9175,7 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
       Avertissement : Il est déconseillé de configurer des restrictions de version, car cela pourrait empêcher les utilisateurs de recevoir des mises à jour logicielles et des correctifs de sécurité essentiels. Limiter les mises à jour à une version spécifique pourrait constituer un risque pour les utilisateurs.</translation>
 <translation id="8519617069657262768">Activer la synchronisation Google Drive</translation>
 <translation id="8520064498689833152">Forcez l'utilisation de SafeSearch dans la recherche Google et le mode restreint à être au moins modéré sur YouTube</translation>
+<translation id="8520950040439618600">Autoriser les méthodes d'authentification par code ou association pour les hôtes d'accès à distance</translation>
 <translation id="8524334245528364388">URL vers un fichier JSON contenant une liste de serveurs d'impression.</translation>
 <translation id="8525526490824335042">Conteneur Linux</translation>
 <translation id="8526745614158856826">Cette règle permet de dresser la liste des sites automatiquement autorisés à accéder à tous les appareils disponibles.
@@ -9189,6 +9204,7 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
 <translation id="8544375438507658205">Moteur de rendu HTML par défaut pour <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Autoriser la synchronisation des SMS entre le téléphone et le Chromebook</translation>
 <translation id="8549906780629620346">Activer la récupération de compte</translation>
+<translation id="8553491595730354263">Permet à l'hôte d'accès à distance d'utiliser des authentifications par code ou association lorsqu'il accepte des connexions client</translation>
 <translation id="8553955290407912156">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent demander aux utilisateurs de leur accorder l'accès à un appareil HID.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.

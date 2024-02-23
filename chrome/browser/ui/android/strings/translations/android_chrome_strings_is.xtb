@@ -276,6 +276,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> atriðum eytt</translation>
 <translation id="2536728043171574184">Skoðar ótengt afrit af þessari síðu</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
+<translation id="254973855621628293">Aðgangsorð vistuð í þessu tæki</translation>
 <translation id="2567385386134582609">MYND</translation>
 <translation id="2567545343356994513">Hraðari forvirk vörn gegn hættulegum vefsvæðum, niðurhali og viðbótum</translation>
 <translation id="2569733278091928697">Þú getur auðveldlega stjórnað efnisstýringum, huliðslotum, niðurhali og fleira</translation>
@@ -1287,6 +1288,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7665369617277396874">Bæta við reikningi</translation>
 <translation id="766587987807204883">Greinar birtast hér. Þú getur lesið þær jafnvel þótt nettenging sé ekki til staðar</translation>
+<translation id="7670101447063278728">Aðgangsorð vistuð á <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Prófaðu eftirfarandi: Gakktu úr skugga um að nóg pláss sé á tækinu og reyndu að flytja út aftur.</translation>
 <translation id="7686086654630106285">Nánar um auglýsingar sem vefsvæði leggja til</translation>
 <translation id="768618399695552958">Sumar síður sem þú opnar eru forhlaðnar. Síður kunna að forhlaðast í gegnum netþjóna Google þegar þær eru tengdar Google vefsvæði.</translation>

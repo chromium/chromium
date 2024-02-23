@@ -276,6 +276,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
 <translation id="2536728043171574184">Viendo una copia sin conexión de esta página</translation>
 <translation id="2546283357679194313">Cookies y datos de sitios</translation>
+<translation id="254973855621628293">Contraseñas guardadas en este dispositivo</translation>
 <translation id="2567385386134582609">IMAGEN</translation>
 <translation id="2567545343356994513">Protección más rápida y proactiva frente a sitios web, descargas y extensiones peligrosos.</translation>
 <translation id="2569733278091928697">Podrás gestionar fácilmente los controles multimedia, las sesiones de incógnito, las descargas y más</translation>
@@ -1287,6 +1288,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="766587987807204883">Los artículos se muestran aquí y los puedes leer aunque no tengas conexión a Internet</translation>
+<translation id="7670101447063278728">Contraseñas guardadas en <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Prueba los siguientes consejos: deja suficiente espacio en el dispositivo y vuelve a exportar las contraseñas.</translation>
 <translation id="7686086654630106285">Más información sobre anuncios sugeridos por sitios</translation>
 <translation id="768618399695552958">Algunas de las páginas que visitas están precargadas. Es posible que las páginas se precarguen a través de los servidores de Google cuando se enlacen desde un sitio de Google.</translation>

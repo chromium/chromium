@@ -93,7 +93,7 @@
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="143681031165817424">La dirección se guardó únicamente en este dispositivo</translation>
 <translation id="1449835205994625556">Ocultar contraseña</translation>
-<translation id="1450170672351507823">Se activó la protección estándar. Para obtener más seguridad, usa la Protección mejorada.</translation>
+<translation id="1450170672351507823">Se activó la protección estándar. Para obtener más seguridad, usa la protección mejorada.</translation>
 <translation id="1469381646033328562">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1491277525950327607">Presiona dos veces para activar o desactivar la configuración</translation>
@@ -287,6 +287,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2473876017985765807">Ya guardaste una contraseña para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Sin seleccionar</translation>
 <translation id="2479148705183875116">Configurar</translation>
+<translation id="2480445180439820402">Historial</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2484459871750294497">¿Cómo habilito esta función?</translation>
 <translation id="2496626742194544812">Ir a la primera pestaña</translation>
@@ -577,6 +578,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Administrar intereses</translation>
+<translation id="3976922811715736829">Pestañas recientes</translation>
 <translation id="3989635538409502728">Salir</translation>
 <translation id="3994422733891749358">Elige las notificaciones que quieres recibir</translation>
 <translation id="3995521777587992544">Barra de progreso de la carga de la página; se cargó <ph name="EMAIL" />.</translation>
@@ -635,6 +637,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4282944936010261425">No hay problemas de seguridad que debas corregir.</translation>
 <translation id="4286718549648564014">La dirección se transfirió a tu cuenta <ph name="USER_EMAIL" /></translation>
+<translation id="428768789042547925">Novedades</translation>
 <translation id="4293080268407233932">Buscar</translation>
 <translation id="4302248187517737842">Sin nombre de usuario ••••••••</translation>
 <translation id="4302415908542657649">Compartiendo contraseña</translation>
@@ -689,6 +692,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4588014171431912783">La configuración de sincronización se restablecerá en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" />.</translation>
 <translation id="4592368184551360546">Teclado</translation>
+<translation id="4596899661486753028">Lista de lectura</translation>
 <translation id="4601095002996233687">Análisis detallados de descargas sospechosas.</translation>
 <translation id="4606247758155004938">Tu organización administra el navegador.</translation>
 <translation id="4607887340472970274">Seguimiento de precios</translation>
@@ -698,6 +702,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4620246317052452550">Páginas que leíste</translation>
+<translation id="4620845369664293551">Puedes compartir esta página aquí.</translation>
 <translation id="4620888520263267479">Mostrar las vistas previas de vínculos</translation>
 <translation id="4630540211544979320">Traducir páginas</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> contraseñas reutilizadas</translation>
@@ -847,6 +852,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5339316356165661760">Activar la sincronización</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{¿Quieres realizar el seguimiento de este paquete?}other{¿Quieres realizar el seguimiento de {COUNT} paquetes?}}</translation>
+<translation id="5348775987281903912">Puedes compartir esta página aquí desde el botón para compartir.</translation>
 <translation id="536067926684072644">Ver Favoritos</translation>
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{El favorito se guardó en "{title}". Solo se guarda en este dispositivo.}other{{count} favoritos se guardaron en "{title}". Se guardan solo en este dispositivo.}}</translation>
@@ -1153,6 +1159,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6822587385560699678">Si la activas, se guardarán las contraseñas en <ph name="ACCOUNT" />. Cuando está desactivada, las contraseñas se guardan solo en este dispositivo.</translation>
+<translation id="6824350924364057989">Configuración</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de que siempre puedas acceder a tus contraseñas guardadas, verifica tu identidad.</translation>
 <translation id="6851516051005285358">Solicitar versión de escritorio</translation>
@@ -1191,6 +1198,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7004499039102548441">Pestañas recientes</translation>
 <translation id="7006788746334555276">Configuración de contenido</translation>
 <translation id="7016070607649558507">Tienes 1 contraseña poco segura. Cámbiala ahora para mantener tu cuenta segura.</translation>
+<translation id="7022197654033719543">Información del sitio</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="704692552158601232">App del navegador predeterminado</translation>
 <translation id="7062545763355031412">Aceptar y cambiar de cuenta</translation>
@@ -1290,6 +1298,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7603852183842204213">Vent.emerg.bloq. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grupos de pestañas</translation>
 <translation id="7607521702806708809">Borrar contraseña</translation>
+<translation id="7609559547731036746">Favoritos</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="7640669552036055091">Pestañas de Android</translation>
 <translation id="7646263789464975852">Menú → Configuración → Verificación de seguridad</translation>
@@ -1327,8 +1336,10 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7781069478569868053">Página Nueva pestaña</translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Después de 1 día}other{Después de {COUNT} días}}</translation>
+<translation id="7788868432173225918">Descartar vista expandida</translation>
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="7792549458069452436">OBTENER LA APP</translation>
+<translation id="7800723706644914607">Administrador de contraseñas</translation>
 <translation id="7807060072011926525">Proporcionado por Google</translation>
 <translation id="7812377703891978671">Puedes acceder a todo tu historial de navegación seleccionando <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Descargas</translation>
@@ -1401,6 +1412,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="81313319706244542">2. Presiona Contraseñas</translation>
 <translation id="8132598642024322408">El precio actual es <ph name="PRICE" />; antes costaba <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Usa una contraseña única para cada sitio o app. Si otra persona descubre una contraseña reutilizada, podrá usarla para acceder a otras cuentas. Haz clic para abrir el sitio web y cambiarlas ahora.</translation>
+<translation id="814463369662540460">Seguir precio</translation>
 <translation id="8156478151976189188">No funciona la Sincronización de contraseñas.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
 <translation id="8159358225423560600">recién</translation>
@@ -1508,6 +1520,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8703536910991780768">Tus cont. parecen seguras</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8709409604518538305">Se cerraron las pestañas</translation>
+<translation id="8709773186849937451">Descargas</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8717864919010420084">Copiar vínculo</translation>
 <translation id="8721297211384281569">Menú "Herramientas"</translation>
@@ -1573,6 +1586,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9000089900434778519">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
+<translation id="9025203546212508704">Desliza el dedo para aprender a personalizar tu menú</translation>
 <translation id="9029650858822697271">Saliste de tu cuenta</translation>
 <translation id="9034759925968272072">No saldrás de tu cuenta de Google. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>

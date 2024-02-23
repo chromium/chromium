@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">在 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1183189057400844278">為確保你隨時可以使用 Google 帳戶中的密碼，請驗證身分</translation>
 <translation id="1193729455103054076">要使用安全性強的密碼嗎？</translation>
 <translation id="1197267115302279827">移動書籤</translation>
 <translation id="1197761954713363183">密鑰確認工作表閂咗</translation>
@@ -210,6 +211,7 @@
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2155214902713132423">此裝置不支援此驗證方法。請在另一部裝置上採用其他選項。</translation>
 <translation id="2158408438301413340">Chrome 無法檢查所有密碼</translation>
+<translation id="2163089732491971196">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語</translation>
 <translation id="2172688499998841696">圖片描述功能已關閉</translation>
 <translation id="2172905120685242547">要關閉視窗嗎？</translation>
 <translation id="2173302385160625112">檢查互聯網連線</translation>
@@ -274,7 +276,7 @@
 <translation id="2534155362429831547">已刪除 <ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
-<translation id="254973855621628293">密碼已儲存到這部裝置</translation>
+<translation id="254973855621628293">密碼已儲存至此裝置</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
 <translation id="2569733278091928697">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
@@ -520,6 +522,7 @@
 <translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="3872520701277728051">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3899682235662194879">關閉所有無痕式分頁</translation>
@@ -605,6 +608,7 @@
 <translation id="4307992518367153382">基本</translation>
 <translation id="4311652497846705514">要開啟 PDF 嗎？</translation>
 <translation id="4320177379694898372">沒有互聯網連線</translation>
+<translation id="4326079409704643112">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請驗證身分</translation>
 <translation id="433213510553688132">正在設定為追蹤…</translation>
 <translation id="4335835283689002019">「安全瀏覽」功能已關閉</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
@@ -656,6 +660,7 @@
 <translation id="4587589328781138893">網站</translation>
 <translation id="4594952190837476234">此離線網頁在 <ph name="CREATION_TIME" />建立，且可能與網上版本不同。</translation>
 <translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
+<translation id="4609429330876432068">Chrome 和 <ph name="CHROME_CHANNEL" /> 儲存的密碼清單已合併，這兩個應用程式仍可自動填入所有已儲存的密碼。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
@@ -849,6 +854,8 @@
 <translation id="5590372121997663538">記住此電腦</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599455543593328020">無痕模式</translation>
+<translation id="5605283439565877834">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
+只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕，喺「下載」主畫面搵您嘅檔案同網頁</translation>
 <translation id="562289928968387744">管理回應</translation>
@@ -959,6 +966,7 @@
 <translation id="6140709049082532940">強化保護功能：</translation>
 <translation id="6140912465461743537">國家/地區</translation>
 <translation id="6150320133806434356">已儲存書籤</translation>
+<translation id="6150706324143004339">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請更新 Chrome</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>
 <translation id="6162892189396105610">預先載入 Chrome 認為您可能瀏覽的網頁。</translation>
 <translation id="6186394685773237175">找不到被盜用的密碼</translation>
@@ -1122,6 +1130,7 @@
 <translation id="688738109438487280">將現有資料新增至 <ph name="TO_ACCOUNT" />。</translation>
 <translation id="6891726759199484455">解鎖即可複製您的密碼</translation>
 <translation id="6896758677409633944">複製</translation>
+<translation id="6898797562238201317">使用通關密語加密 Google 帳戶中的所有 Chrome 資料</translation>
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
 <translation id="6906448540340261898">請確保您可隨時使用 Google 帳戶中的密碼</translation>
@@ -1247,6 +1256,7 @@
 <translation id="750228856503700085">無法取得更新</translation>
 <translation id="7507207699631365376">查看此供應商的<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" /></translation>
 <translation id="7514365320538308">下載</translation>
+<translation id="7517292544534877198">使用 Google 的預設方式加密 Google 帳戶中的密碼</translation>
 <translation id="7518079994230200553">目前無法使用此選項。</translation>
 <translation id="751961395872307827">無法連接網站</translation>
 <translation id="752220631458524187">請在完成後拔除連接線</translation>
@@ -1278,7 +1288,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章在這裡顯示，即使處於離線狀態也可閱讀</translation>
-<translation id="7670101447063278728">密碼已儲存到 <ph name="USERNAME" />。</translation>
+<translation id="7670101447063278728">密碼已儲存至 <ph name="USERNAME" />。</translation>
 <translation id="7682724950699840886">請嘗試按照以下提示操作：確保您的裝置上有足夠的儲存空間，然後嘗試重新匯出。</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>
 <translation id="768618399695552958">系統會預先載入您瀏覽的部分網頁。當您從 Google 網站連至這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
@@ -1353,6 +1363,7 @@
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8013372441983637696">一併清除您在此裝置上的 Chrome 資料</translation>
 <translation id="8015452622527143194">將網頁中的所有內容回復到預設大小</translation>
+<translation id="8026238112629815203">我們調整了這部裝置的密碼儲存方式</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="8027863900915310177">請選擇下載位置</translation>
 <translation id="8030852056903932865">核准</translation>
@@ -1390,6 +1401,7 @@
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8135406045838672858">自動使用「<ph name="APP_NAME" />」開啟已下載的 PDF</translation>
 <translation id="8137562778192957619">您不需記住此密碼。系統會將密碼儲存至「Google 密碼管理工具」。</translation>
+<translation id="8163820386638255770">如要將密碼儲存到 Google 帳戶，或使用帳戶中的密碼，請驗證身分</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>
 <translation id="8190358571722158785">尚餘 1 天</translation>
@@ -1539,6 +1551,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
+<translation id="8992769679401294069">系統會使用通關密語加密資料。如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請輸入通關密語。</translation>
 <translation id="8993760627012879038">在無痕模式中開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>

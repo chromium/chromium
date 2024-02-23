@@ -811,6 +811,7 @@
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="250346157641628208">পেপার (ইঙ্কজেট)</translation>
 <translation id="2505268675989099013">অ্যাকাউন্ট সুরক্ষিত রাখা</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (শর্তাবলী প্রযোজ্য)</translation>
 <translation id="2512101340618156538">অনুমতি নেই (ডিফল্ট)</translation>
 <translation id="2512413427717747692">Chrome-কে ডিফল্ট ব্রাউজার বোতাম হিসেবে সেট করুন, iOS সেটিংসে Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করতে Enter কী প্রেস করুন</translation>
 <translation id="2514548229949738417">বাড়ি ও বাগান</translation>
@@ -1159,6 +1160,7 @@
 <translation id="3229277193950731405">ভার্সন স্ট্রিং কপি করুন</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-এর CVC লিখুন</translation>
 <translation id="3234666976984236645">এই সাইটে সবসময় গুরুত্বপূর্ণ কন্টেন্ট শনাক্ত করুন</translation>
+<translation id="3236212803136366317">কার্ডের বিভিন্ন সুবিধা</translation>
 <translation id="3238395604961564389">লিঙ্কটি ছদ্মবেশী উইন্ডোতে খুলুন</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার ব্রাউজার কেমন দেখাবে তা কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
 <translation id="3240791268468473923">সুরক্ষিত পেমেন্ট ক্রেডেনশিয়ালের সাথে মিল নেই এমন পেমেন্ট ক্রেডেনশিয়ালের শিট খোলা আছে</translation>
@@ -1195,6 +1197,7 @@
 <translation id="33073482541490531">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। Password Manager এখনই আপনার পাসওয়ার্ড পরিবর্তন করতে সাজেস্ট করছে।</translation>
 <translation id="3307649904964670439">'Chrome কাস্টমাইজ করুন' বোতাম, আপনার ব্রাউজারের লুক কাস্টমাইজ করতে এটি চালু করুন</translation>
 <translation id="3308006649705061278">অর্গানাইজেশনাল ইউনিট (OU) </translation>
+<translation id="3310047144791481950">কোন কার্ড ব্যবহার করে পেমেন্ট করবেন তা বেছে নেওয়ার জন্য তথ্য দেখুন। <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />কার্ডের বিভিন্ন সুবিধা সম্পর্কে আরও জানুন<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">টিভি কমেডি</translation>
 <translation id="3324687287337751929">৪ x ৬ ইঞ্চি</translation>
 <translation id="3324983252691184275">টকটকে লাল</translation>

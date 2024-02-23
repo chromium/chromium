@@ -763,6 +763,7 @@
 <translation id="2501278716633472235">Назад</translation>
 <translation id="250346157641628208">Хартия (мастиленоструен печат)</translation>
 <translation id="2505268675989099013">Защита на профила</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (прилагат се определени условия)</translation>
 <translation id="2512101340618156538">Не е разрешено (по подразбиране)</translation>
 <translation id="2512413427717747692">Бутон за задаване на Chrome като браузър по подразбиране. Натиснете Enter за задаване на Chrome като браузъра по подразбиране за системата в настройките на iOS</translation>
 <translation id="2514548229949738417">Дом и градина</translation>
@@ -1089,6 +1090,7 @@
 <translation id="3229277193950731405">Копиране на низа за версията</translation>
 <translation id="323107829343500871">Въведете кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Важното съдържание на този сайт да се открива винаги</translation>
+<translation id="3236212803136366317">Предимства на картата</translation>
 <translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
@@ -1125,6 +1127,7 @@
 <translation id="33073482541490531">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
 <translation id="3307649904964670439">Бутон за персонализиране на Chrome. Активирайте, за да персонализирате облика на браузъра си</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
+<translation id="3310047144791481950">Вижте информация, с чиято помощ да изберете карта, с която да платите. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Научете повече за предимствата на картата<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3324687287337751929">4 x 6 инча</translation>
 <translation id="3324983252691184275">пурпурно</translation>
 <translation id="3325027355611702542">Кемпери и каравани</translation>

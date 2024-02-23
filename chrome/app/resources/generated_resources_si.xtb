@@ -2319,6 +2319,7 @@
 <translation id="2721695630904737430">පාලිත පරිශීලකයන් ඔබේ පරිපාලක විසින් අබල කර ඇත.</translation>
 <translation id="2722540561488096675">ඔබගේ උපාංගය <ph name="TIME_LEFT" />කින් වසා දමනු ඇත. ඔබගේ උපාංගය නැවත ක්‍රියාත්මක කිරීමට පෙර USB ඉවත් කරන්න. අනතුරුව ඔබට <ph name="DEVICE_OS" /> භාවිත කිරීම ආරම්භ කළ හැකිය.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">අමුත්තන්ගේ පැතිකඩ විවෘත කරන්න</translation>
 <translation id="2723819893410108315">සිට්‍රන්</translation>
 <translation id="2724841811573117416">WebRTC වාර්ථා</translation>
 <translation id="272488616838512378">ඒකක පරිවර්තනය</translation>
@@ -3112,6 +3113,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" මෙම දිගුව ඉවත් කිරීමට කැමතියි.</translation>
 <translation id="3345634917232014253">ආරක්‍ෂක පරීක්‍ෂාව මොහොතකයට පෙර ධාවන විය</translation>
 <translation id="3345886924813989455">සහය නොදක්වන බ්‍රව්සරයක් හමුවිය</translation>
+<translation id="3346306152660142597">AI සමග මෙම පිටුව අභිරුචි කරන්න</translation>
 <translation id="3347086966102161372">පින්තූර ලිපිනය පිටපත් කරන්න</translation>
 <translation id="3348038390189153836">ඉවත් කළ හැකි උපාංගය අනාවරණය විය</translation>
 <translation id="3348131053948466246">ඉමොජි යෝජනා කරන ලදි. සංචාලනය කිරීමට ඉහළට හෝ පහළට ඔබන්න සහ ඇතුළු කිරීමට enter ඔබන්න.</translation>
@@ -9007,6 +9009,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="7941179291434537290">ටෙදරින් සූදානම:</translation>
 <translation id="7942349550061667556">රතු</translation>
+<translation id="7942846369224063421">පූර්ව පූරණය කළ UI විදහීම</translation>
 <translation id="7943349879009553083">ආගන්තුක ප්‍රකාරයේ නොමැත</translation>
 <translation id="7943368935008348579">PDF බාගන්න</translation>
 <translation id="7943837619101191061">පිහිටීම එක් කරන්න...</translation>

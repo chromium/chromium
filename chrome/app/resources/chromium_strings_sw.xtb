@@ -113,6 +113,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="3032706164202344641">Chromium imeshindwa kukagua manenosiri yako. Jaribu tena baadaye.</translation>
 <translation id="3032787606318309379">Inaongeza kwenye Chromium...</translation>
 <translation id="3038232873781883849">Inasubiri kusakinisha...</translation>
+<translation id="3068187312562070417">Wasifu nyingine za Chromium</translation>
 <translation id="3068515742935458733">Saidia kuboresha Chromium kwa kutuma ripoti za kuacha kufanya kazi na <ph name="UMA_LINK" /> kwenda Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Kiendelezi kimoja au zaidi cha Chromium kilikuwa kinafikia kifaa 1 cha USB}=1{Kiendelezi kimoja au zaidi cha Chromium kinafikia kifaa 1 cha USB}other{Kiendelezi kimoja au zaidi cha Chromium kinafikia vifaa # vya USB}}</translation>
 <translation id="3101560983689755071">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chromium inafuta mambo yako yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
@@ -230,6 +231,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5294316920224716406">Unapovinjari katika hali fiche, Chromium itakutahadharisha kabla ya kupakia tovuti kwa kutumia muunganisho usio salama</translation>
 <translation id="5296845517486664001">Vipindi vya kujaribu vinapowashwa na iwapo Chromium imekuweka kwa unasibu katika kipindi cha kujaribu kinachoendelea, historia ya kuvinjari huathiri mambo yanayokuvutia na matangazo unayoyaona kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chromium hufuta mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi.</translation>
 <translation id="5352264705793813212">Chromium imepata baadhi ya mapendekezo ya usalama unayopaswa kukagua</translation>
+<translation id="5352361688875342522">Wasifu Nyingine za Chromium</translation>
 <translation id="5358375970380395591">Unaingia katika akaunti inayodhibitiwa na kumpa msimamizi wa akaunti hiyo udhibiti wa wasifu wako kwenye Chromium. Data yako ya Chromium, kama vile programu zako, alamisho, historia, manenosiri, na mipangilio miingine itahusishwa na <ph name="USER_NAME" /> kabisa. Utaweza kufuta data hii kupitia Dashibodi ya Akaunti za Google, lakini hutaweza  kuunganisha data hii na akaunti nyingine. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Msimbo wa ziada: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Fahamu kwa nini Chromium huzuia baadhi ya faili</translation>

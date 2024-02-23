@@ -2324,6 +2324,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2721695630904737430">Функцията за контролирани потребители е деактивирана от администратора ви.</translation>
 <translation id="2722540561488096675">Устройството ви ще се изключи след <ph name="TIME_LEFT" />. Преди да го включите отново, премахнете USB кабела. След това можете да започнете да използвате <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Отваряне на потребителския профил на гост</translation>
 <translation id="2723819893410108315">лимоненожълто</translation>
 <translation id="2724841811573117416">Регистрационни файлове за WebRTC</translation>
 <translation id="272488616838512378">Преобразуване на мерни единици</translation>
@@ -3116,6 +3117,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" /> иска да премахне това разширение.</translation>
 <translation id="3345634917232014253">Проверката на безопасността бе изпълнена преди малко</translation>
 <translation id="3345886924813989455">Не е открит поддържан браузър</translation>
+<translation id="3346306152660142597">Персонализиране на страницата чрез AI</translation>
 <translation id="3347086966102161372">К&amp;опиране на адреса на изображението</translation>
 <translation id="3348038390189153836">Установено бе изваждащо се устройство</translation>
 <translation id="3348131053948466246">Предложено е емоджи. За придвижване натиснете клавиша със стрелка нагоре или надолу, за вмъкване на предложението използвайте Enter.</translation>
@@ -9004,6 +9006,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7940265372707990269">Сортиране по: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Готовност за тетъринг:</translation>
 <translation id="7942349550061667556">червено</translation>
+<translation id="7942846369224063421">Предварително зареден процес за рендериране на ПИ</translation>
 <translation id="7943349879009553083">Не е налице в режим на гост</translation>
 <translation id="7943368935008348579">Изтегляне на PDF файловете</translation>
 <translation id="7943837619101191061">Добавяне на местоположение...</translation>

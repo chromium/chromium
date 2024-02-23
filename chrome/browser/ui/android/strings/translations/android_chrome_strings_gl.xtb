@@ -36,6 +36,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1177863135347784049">Personalizada</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1183189057400844278">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="1193729455103054076">Queres usar un contrasinal seguro?</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
 <translation id="1197761954713363183">Pechouse a folla de confirmación da clave de acceso</translation>
@@ -210,6 +211,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155214902713132423">Este método de verificación non está dispoñible para este dispositivo. Escolle unha opción distinta no outro dispositivo.</translation>
 <translation id="2158408438301413340">Chrome non puido comprobar todos os contrasinais</translation>
+<translation id="2163089732491971196">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso</translation>
 <translation id="2172688499998841696">As descricións das imaxes están desactivadas</translation>
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
 <translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
@@ -274,6 +276,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> elementos eliminados</translation>
 <translation id="2536728043171574184">Visualización dunha copia sen conexión desta páxina</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
+<translation id="254973855621628293">Contrasinais gardados neste dispositivo</translation>
 <translation id="2567385386134582609">IMAXE</translation>
 <translation id="2567545343356994513">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos</translation>
 <translation id="2569733278091928697">Poderás xestionar con facilidade os controis multimedia, as sesións do modo de incógnito, as descargas e moito máis</translation>
@@ -519,6 +522,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="3847319713229060696">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3872520701277728051">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
 <translation id="3899682235662194879">Pecha todas as pestanas do modo de incógnito</translation>
@@ -604,6 +608,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4311652497846705514">Queres abrir o PDF?</translation>
 <translation id="4320177379694898372">Non hai conexión a Internet</translation>
+<translation id="4326079409704643112">Para usar e gardar os datos de Chrome na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="433213510553688132">Seguindo...</translation>
 <translation id="4335835283689002019">A navegación segura está desactivada</translation>
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
@@ -655,6 +660,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="4587589328781138893">Sitios</translation>
 <translation id="4594952190837476234">Esta páxina sen conexión creouse o <ph name="CREATION_TIME" /> e pode ser diferente da versión en liña.</translation>
 <translation id="4601095002996233687">Análises minuciosas para detectar descargas sospeitosas.</translation>
+<translation id="4609429330876432068">Combináronse as túas listas de contrasinais gardados de Chrome e <ph name="CHROME_CHANNEL" />. Podes seguir autocompletando os contrasinais gardados en ambas as dúas aplicacións.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
@@ -848,6 +854,8 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="5590372121997663538">Memorizar este ordenador</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
+<translation id="5605283439565877834">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chrome.
+Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se a esqueces ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Non hai contrasinais gardados</translation>
 <translation id="5620928963363755975">A través do botón Máis opcións, atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
 <translation id="562289928968387744">Xestionar reaccións</translation>
@@ -958,6 +966,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="6140709049082532940">Protección mellorada:</translation>
 <translation id="6140912465461743537">País/rexión</translation>
 <translation id="6150320133806434356">Gardouse o marcador</translation>
+<translation id="6150706324143004339">Para usar e gardar os datos de Chrome na túa Conta de Google, actualiza Chrome</translation>
 <translation id="6154478581116148741">Activa o bloqueo de pantalla en Configuración para exportar os teus contrasinais deste dispositivo</translation>
 <translation id="6162892189396105610">Precarga aquelas páxinas que Chrome considera que é probable que visites.</translation>
 <translation id="6186394685773237175">Non se atoparon contrasinais vulnerados</translation>
@@ -1121,6 +1130,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="688738109438487280">Engade os datos existentes a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Desbloquea a pantalla para copiar o teu contrasinal</translation>
 <translation id="6896758677409633944">Copiar</translation>
+<translation id="6898797562238201317">Usa a túa propia frase de acceso para encriptar todos os datos de Chrome na túa Conta de Google</translation>
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de poder usar sempre os contrasinais na túa Conta de Google</translation>
@@ -1246,6 +1256,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="750228856503700085">Non hai actualizacións dispoñibles</translation>
 <translation id="7507207699631365376">Consulta a <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> deste fornecedor</translation>
 <translation id="7514365320538308">Descargar</translation>
+<translation id="7517292544534877198">Usa a encriptación predeterminada de Google para os contrasinais na túa Conta de Google</translation>
 <translation id="7518079994230200553">Esta opción non está dispoñible neste momento.</translation>
 <translation id="751961395872307827">Non se puido establecer conexión co sitio</translation>
 <translation id="752220631458524187">Cando remates, desconéctao</translation>
@@ -1277,6 +1288,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>
+<translation id="7670101447063278728">Contrasinais gardados en <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="768618399695552958">Precárganse algunhas das páxinas que visitas. As páxinas poden precargarse a través dos nosos servidores se están vinculadas a un sitio de Google.</translation>
@@ -1351,6 +1363,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Borrar tamén deste dispositivo os teus datos de Chrome</translation>
 <translation id="8015452622527143194">Recuperar o tamaño predeterminado da páxina</translation>
+<translation id="8026238112629815203">Cambiamos o modo no que se gardan os contrasinais neste dispositivo</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8027863900915310177">Escolle onde queres gardar o ficheiro</translation>
 <translation id="8030852056903932865">Aprobar</translation>
@@ -1388,6 +1401,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="813082847718468539">Consulta a información do sitio</translation>
 <translation id="8135406045838672858">Os PDF descargados abriranse automaticamente con <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google.</translation>
+<translation id="8163820386638255770">Para usar e gardar os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
 <translation id="8190358571722158785">Queda 1 día</translation>
@@ -1537,6 +1551,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8972098258593396643">Queres gardar a descarga no cartafol predeterminado?</translation>
+<translation id="8992769679401294069">Os teus datos están encriptados cunha frase de acceso. Escríbea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
 <translation id="8993760627012879038">Abrir unha nova pestana no modo de incógnito</translation>
 <translation id="8996847606757455498">Escoller outro provedor</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>

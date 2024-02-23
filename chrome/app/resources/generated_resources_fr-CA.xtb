@@ -3112,6 +3112,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3342361181740736773">« <ph name="TRIGGERING_EXTENSION_NAME" /> » souhaite désinstaller cette extension.</translation>
 <translation id="3345634917232014253">La vérification de sécurité s'est exécutée il y a un moment</translation>
 <translation id="3345886924813989455">Aucun navigateur compatible trouvé</translation>
+<translation id="3346306152660142597">Personnaliser cette page avec l'IA</translation>
 <translation id="3347086966102161372">C&amp;opier l'adresse de l'image</translation>
 <translation id="3348038390189153836">Appareil amovible détecté</translation>
 <translation id="3348131053948466246">Émojis suggérés. Appuyez sur la flèche vers le haut ou vers le bas pour naviguer, et appuyez sur la touche Entrée pour en insérer un.</translation>
@@ -9008,6 +9009,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7940265372707990269">Trier par <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Préparation du partage de connexion :</translation>
 <translation id="7942349550061667556">Rouge</translation>
+<translation id="7942846369224063421">Moteur de rendu de l'IU préchargé</translation>
 <translation id="7943349879009553083">Non accessible en mode Invité</translation>
 <translation id="7943368935008348579">Télécharger les PDF</translation>
 <translation id="7943837619101191061">Ajouter un dossier...</translation>

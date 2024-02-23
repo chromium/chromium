@@ -621,6 +621,7 @@ Si se habilita esta política, el selector de emojis admitirá GIFs.
 Si se inhabilita esta política o no se le asigna ningún valor, el selector de emojis no admitirá GIFs.
 Si no se asigna ningún valor a esta política, el selector de emojis estará habilitado para los usuarios estándar, pero estará inhabilitado para los usuarios gestionados.</translation>
 <translation id="1494138678487405397">Inhabilitar el contraste alto en la pantalla de inicio de sesión</translation>
+<translation id="1497797462580613666">El administrador de descargas tendrá la opción de guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="1498640472634891941">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique a qué sitios se denegará automáticamente el acceso a impresoras locales a través de la API WebPrinting.
 
 Si no se establece la política, <ph name="DEFAULT_WEB_PRINTING_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no, se aplicará la configuración personal del usuario.
@@ -3543,6 +3544,7 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 <translation id="3838094946886335701">Si se establece esta política (solo según lo recomendado), podrás registrar una lista de controladores de protocolo, la cual se combinará con las listas que registre el usuario (se usarán ambos conjuntos). Establece la propiedad protocol según el esquema (por ejemplo, mailto) y la propiedad URL según el patrón de URL de la aplicación que controla el esquema especificado en el campo protocol. El patrón puede incluir un marcador de posición %s, que se sustituye por la URL controlada.
 
       Los usuarios no pueden quitar un controlador de protocolo registrado por la política. Sin embargo, si instalan un controlador predeterminado nuevo, podrán cambiar los controladores de protocolo instalados por la política.</translation>
+<translation id="3842619997238271109">No permite que el host de acceso remoto utilice autenticaciones con PIN ni con emparejamiento al aceptar conexiones de cliente</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes del cual se empezará a redondear la función setTimeout() de JavaScript</translation>
 <translation id="3858658082795336534">Modo predeterminado de impresión por las dos caras</translation>
 <translation id="3859780406608282662">Permite añadir un parámetro para la obtención de la base de las variaciones en <ph name="PRODUCT_OS_NAME" />.
@@ -3689,6 +3691,13 @@ Esta política es temporal y se eliminará más adelante.</translation>
       Si se inhabilita esta política o no se le asigna ningún valor, no se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo.</translation>
 <translation id="3973371701361892765">No ocultar automáticamente los archivos</translation>
 <translation id="3977304360459208438">Utilizar el valor predeterminado para los paquetes de cifrado 3DES en TLS</translation>
+<translation id="3977906634350977040">Si se habilita esta política, el host de acceso remoto podrá usar autenticaciones con PIN y con emparejamiento al aceptar conexiones de cliente.
+
+Si se inhabilita esta política, no se permitirán las autenticaciones con PIN ni con emparejamiento.
+
+Si no se define la política, el host podrá decidir si se pueden usar autenticaciones con PIN o emparejamiento.
+
+Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de autenticación que no son compatibles mutuamente, la conexión se rechazará.</translation>
 <translation id="3979738908158213640">Direcciones URL a las que se otorgará acceso para realizar la atestación del dispositivo durante la autenticación de SAML</translation>
 <translation id="3982322576186033243">No permitir hashes no seguros en handshakes de TLS</translation>
 <translation id="3982465141749620677">Solicitar reautenticación en una pestaña</translation>
@@ -4628,6 +4637,7 @@ Esta política asociará un ID de extensión o una URL de actualización únicam
 En instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones externas a Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="4739596156184678950">Permitir que se guarden archivos directamente en <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="4742973303930120836">Restringir el modo de impresión con gráficos de fondo</translation>
 <translation id="4744467872051608680">A partir de la versión M119, si se le asigna el valor false a esta política o no se define, WebSQL se inhabilitará, pero se podrá habilitar mediante la marca de Chrome "web-sql-access". Si se le asigna el valor true, se habilitará el acceso a WebSQL.</translation>
 <translation id="4745232963710538589">Habilitar la extensión de estadísticas para informar sobre métricas de uso</translation>
@@ -5479,6 +5489,9 @@ Si se inhabilita la política o no se establece, la configuración de restauraci
       Si se inhabilita esta opción, los usuarios no podrán usar esta función. Si se inhabilita la política PhoneHubAllowed, los usuarios tampoco podrán usar esta función.
 
       Si no se establece esta política, el comportamiento predeterminado será permitir que utilicen esta función tanto los usuarios gestionados por empresas como los no gestionados.</translation>
+<translation id="5488268615614906498">Esta política controla si el usuario tiene permiso para guardar archivos en <ph name="GOOGLE_DRIVE_NAME" /> directamente desde el administrador de descargas.
+Si se habilita esta política o no se define, el usuario podrá guardar archivos en <ph name="GOOGLE_DRIVE_NAME" /> desde el administrador de descargas. Si se inhabilita esta política, los usuarios no podrán ver esa opción en el administrador de descargas.
+Esta política no impide que los usuarios puedan guardar archivos en <ph name="GOOGLE_DRIVE_NAME" /> de otras formas distintas al administrador de descargas.</translation>
 <translation id="5494322570831642650">Especifica si el usuario podrá abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
 
       Si se habilita esta política o no se le asigna ningún valor, se podrán abrir páginas en modo Incógnito.
@@ -5748,6 +5761,7 @@ Si se inhabilita esta política, se desactivará <ph name="PRODUCT_NAME" />.</tr
 
       Nota: Si hay varios valores, se deben separar con comas.</translation>
 <translation id="5693469654327063861">Permitir la migración de datos</translation>
+<translation id="56936613186060503">El administrador de descargas no tendrá la opción de guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5695209488612697377">Habilita el uso de un proveedor de búsqueda predeterminado en el menú contextual.
 
           Si se inhabilita esta política, no se mostrará la opción de búsqueda del menú contextual que depende de tu proveedor de búsqueda predeterminado.
@@ -9211,6 +9225,7 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
       Advertencia: No se recomienda configurar las restricciones de versiones, ya que podrían impedir que los usuarios reciban actualizaciones de software y correcciones de seguridad críticas. Limitar las actualizaciones a una versión concreta puede poner en riesgo a los usuarios.</translation>
 <translation id="8519617069657262768">Habilitar la sincronización de Google Drive</translation>
 <translation id="8520064498689833152">Forzar el uso de Búsqueda Segura en la Búsqueda de Google y que el modo Restringido de YouTube se aplique en la opción moderada como mínimo</translation>
+<translation id="8520950040439618600">Permitir métodos de autenticación con PIN y con emparejamiento para los hosts de acceso remoto</translation>
 <translation id="8524334245528364388">URL de un archivo JSON con una lista de servidores de impresión.</translation>
 <translation id="8525526490824335042">Contenedor de Linux</translation>
 <translation id="8526745614158856826">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los dispositivos disponibles.
@@ -9239,6 +9254,7 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
 <translation id="8544375438507658205">Procesador de HTML predeterminado de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite que los SMS del teléfono se sincronicen con Chromebook.</translation>
 <translation id="8549906780629620346">Activar recuperación de cuenta</translation>
+<translation id="8553491595730354263">Permite que el host de acceso remoto utilice autenticaciones con PIN y con emparejamiento al aceptar conexiones de cliente</translation>
 <translation id="8553955290407912156">Si estableces esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les permitan acceder a un dispositivo HID.
 
       Si no se establece la política, <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios (si se ha definido). De lo contrario, se aplicará la configuración personal del usuario.

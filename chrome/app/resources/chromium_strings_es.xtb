@@ -113,6 +113,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="3032706164202344641">Chromium no puede comprobar tus contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="3032787606318309379">Añadiendo a Chromium...</translation>
 <translation id="3038232873781883849">Esperando para instalar...</translation>
+<translation id="3068187312562070417">Otros perfiles de Chromium</translation>
 <translation id="3068515742935458733">Ayudar a mejorar Chromium enviando informes sobre fallos y <ph name="UMA_LINK" /> a Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Una o varias extensiones de Chromium estaban accediendo a 1 dispositivo USB}=1{Una o varias extensiones de Chromium están accediendo a 1 dispositivo USB}other{Una o varias extensiones de Chromium están accediendo a # dispositivos USB}}</translation>
 <translation id="3101560983689755071">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chromium elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
@@ -230,6 +231,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5294316920224716406">Cuando navegues en modo Incógnito, Chromium te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="5296845517486664001">Si las pruebas están activas y Chromium te ha incluido aleatoriamente en alguna, tu historial de navegación influirá en los anuncios que veas y en los intereses que se estimen abajo. Para proteger tu privacidad, Chromium elimina tus intereses cada mes.</translation>
 <translation id="5352264705793813212">Chromium ha encontrado algunas recomendaciones de seguridad para que las revises</translation>
+<translation id="5352361688875342522">Otros perfiles de Chromium</translation>
 <translation id="5358375970380395591">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Chromium. Tus datos de Chromium como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociarlos a otra cuenta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5383439451358640070">Averigua por qué bloquea Chromium algunos archivos</translation>

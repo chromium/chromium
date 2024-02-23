@@ -2331,6 +2331,7 @@
 <translation id="2721695630904737430">তত্ত্বাবধানে থাকা ব্যবহারকারীদেরকে আপনার প্রশাসক দ্বারা অক্ষম করা হয়েছে।</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" />-এর মধ্যে আপনার ডিভাইস বন্ধ হয়ে যাবে। আপনার ডিভাইস আবার চালু করার আগে ইউএসবি সরিয়ে দিন। এরপর আপনি <ph name="DEVICE_OS" /> ব্যবহার শুরু করতে পারবেন।</translation>
 <translation id="2722547199758472013">আইডি: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">অতিথি প্রোফাইল খুলুন</translation>
 <translation id="2723819893410108315">সিট্রন</translation>
 <translation id="2724841811573117416">WebRTC লগগুলি</translation>
 <translation id="272488616838512378">ইউনিট কনর্ভাসন</translation>
@@ -3124,6 +3125,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" এই এক্সটেনশনটি সরিয়ে দিতে চাইছে।</translation>
 <translation id="3345634917232014253">নিরাপত্তা সংক্রান্ত পরীক্ষা কিছুক্ষণ আগে হয়ে গেছে</translation>
 <translation id="3345886924813989455">কোন সমর্থিত ব্রাউজার খুঁজে পাওয়া যায় নি</translation>
+<translation id="3346306152660142597">AI ব্যবহার করে এই পৃষ্ঠা কাস্টমাইজ করুন</translation>
 <translation id="3347086966102161372">ছবি অ্যাড্রেস কপি করুন</translation>
 <translation id="3348038390189153836">সরানোযোগ্য ডিভাইস শনাক্ত করা হয়েছে</translation>
 <translation id="3348131053948466246">ইমোজি সাজেস্ট করা হয়েছে। নেভিগেট করতে ঊর্ধ্বমুখী বা নিম্নমুখী তীরচিহ্ন আঁকা বোতাম প্রেস করুন। ইমোজি যোগ করতে Enter প্রেস করুন।</translation>
@@ -9024,6 +9026,7 @@
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> অনুসারে সাজান</translation>
 <translation id="7941179291434537290">টেথারিং রেডিনেস:</translation>
 <translation id="7942349550061667556">লাল</translation>
+<translation id="7942846369224063421">প্রিলোড করা UI রেন্ডার</translation>
 <translation id="7943349879009553083">'গেস্ট মোডে' উপলভ্য নেই</translation>
 <translation id="7943368935008348579">পিডিএফ ফাইল ডাউনলোড করুন</translation>
 <translation id="7943837619101191061">লোকেশন যোগ করুন...</translation>

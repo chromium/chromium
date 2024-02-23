@@ -810,6 +810,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="250346157641628208">Papir (blæk)</translation>
 <translation id="2505268675989099013">Beskyt konto</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (vilkår er gældende)</translation>
 <translation id="2512101340618156538">Ikke tilladt (standard)</translation>
 <translation id="2512413427717747692">Knappen Angiv Chrome som standardbrowser, tryk på Enter for at angive Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
 <translation id="2514548229949738417">Hus og have</translation>
@@ -1158,6 +1159,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3229277193950731405">Kopiér versionsstreng</translation>
 <translation id="323107829343500871">Angiv CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Registrer altid vigtigt indhold på dette website</translation>
+<translation id="3236212803136366317">Kortfordele</translation>
 <translation id="3238395604961564389">Åbn link i inkognitovindue</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at tilpasse din browsers udseende</translation>
 <translation id="3240791268468473923">Regneark uden matchende loginoplysninger til sikker betaling er åbent</translation>
@@ -1194,6 +1196,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="33073482541490531">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. Adgangskodeadministrator anbefaler, at du ændrer denne adgangskode nu.</translation>
 <translation id="3307649904964670439">Knappen Tilpas Chrome, aktivér for at tilpasse din browsers udseende</translation>
 <translation id="3308006649705061278">Organisationsenhed (OU)</translation>
+<translation id="3310047144791481950">Se oplysninger, der hjælper dig med at vælge, hvilket kort du skal betale med. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Få flere oplysninger om kortfordele<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Tv-komedier</translation>
 <translation id="3324687287337751929">4 x 6 tommer</translation>
 <translation id="3324983252691184275">Højrød</translation>

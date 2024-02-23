@@ -2316,6 +2316,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2721695630904737430">Votre administrateur a désactivé les utilisateurs supervisés.</translation>
 <translation id="2722540561488096675">Votre appareil s'éteindra dans <ph name="TIME_LEFT" />. Retirez l'USB avant de rallumer l'appareil. Vous pourrez ensuite commencer à utiliser <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID : <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Ouvrir le profil invité</translation>
 <translation id="2723819893410108315">Citron</translation>
 <translation id="2724841811573117416">Journaux WebRTC</translation>
 <translation id="272488616838512378">Conversion d'unités</translation>
@@ -3109,6 +3110,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" souhaite supprimer cette extension.</translation>
 <translation id="3345634917232014253">Contrôle de sécurité effectué il y a peu</translation>
 <translation id="3345886924813989455">Impossible de trouver un navigateur pris en charge.</translation>
+<translation id="3346306152660142597">Personnaliser cette page avec l'IA</translation>
 <translation id="3347086966102161372">C&amp;opier l'adresse de l'image</translation>
 <translation id="3348038390189153836">Nouveau matériel détecté</translation>
 <translation id="3348131053948466246">Emoji suggérés. Appuyez sur la flèche vers le haut ou vers le bas pour sélectionner un emoji, puis sur Entrée pour l'insérer.</translation>
@@ -9007,6 +9009,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7940265372707990269">Trier par <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Aptitude au partage de connexion :</translation>
 <translation id="7942349550061667556">Rouge</translation>
+<translation id="7942846369224063421">Moteur de rendu d'UI préchargé</translation>
 <translation id="7943349879009553083">Non disponible en mode Invité</translation>
 <translation id="7943368935008348579">Télécharger les PDF</translation>
 <translation id="7943837619101191061">Ajouter un emplacement…</translation>

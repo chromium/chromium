@@ -702,6 +702,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4619615317237390068">Cilnes no citām ierīcēm</translation>
 <translation id="4620246317052452550">Lapas, kuras esat lasījis</translation>
+<translation id="4620845369664293551">Šeit varat kopīgot šo lapu.</translation>
 <translation id="4620888520263267479">Rādīt saišu priekšskatījumus</translation>
 <translation id="4630540211544979320">Tulkot lapas</translation>
 <translation id="4631335160486397366">Atkārtoti izmantoto paroļu skaits: <ph name="COUNT" /></translation>
@@ -851,6 +852,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5339316356165661760">Ieslēgt sinhronizāciju</translation>
 <translation id="5343472494710226394">Ziņas, sports un jūsu interesēm atbilstošs saturs.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vai izsekot šo sūtījumu?}zero{Vai izsekot {COUNT} sūtījumus?}one{Vai izsekot {COUNT} sūtījumu?}other{Vai izsekot {COUNT} sūtījumus?}}</translation>
+<translation id="5348775987281903912">Šeit varat kopīgot šo lapu, izmantojot kopīgošanas pogu.</translation>
 <translation id="536067926684072644">Rādīt grāmatzīmes</translation>
 <translation id="5360976571138293719">Papildu iestatījumus, kas attiecas uz konfidencialitāti, drošību un datu vākšanu, skatiet sadaļā <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Grāmatzīme tika saglabāta šeit: “{title}”. Tā ir saglabāta tikai šajā ierīcē.}zero{{count} grāmatzīmes tika saglabātas šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}one{{count} grāmatzīme tika saglabāta šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}other{{count} grāmatzīmes tika saglabātas šeit: “{title}”. Tās ir saglabātas tikai šajā ierīcē.}}</translation>

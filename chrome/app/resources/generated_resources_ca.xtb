@@ -2315,6 +2315,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2721695630904737430">L'administrador ha desactivat els usuaris supervisats.</translation>
 <translation id="2722540561488096675">El dispositiu s'apagarà d'aquí a <ph name="TIME_LEFT" />. Desconnecta l'USB abans de tornar a encendre el dispositiu. A continuació, pots començar a utilitzar <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Identificador: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Obre el perfil de convidat</translation>
 <translation id="2723819893410108315">Groc verdós</translation>
 <translation id="2724841811573117416">Registres de WebRTC</translation>
 <translation id="272488616838512378">Conversió d'unitats</translation>
@@ -3108,6 +3109,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" vol suprimir aquesta extensió.</translation>
 <translation id="3345634917232014253">S'ha executat una comprovació de seguretat fa una estona</translation>
 <translation id="3345886924813989455">No s'ha trobat cap navegador compatible</translation>
+<translation id="3346306152660142597">Personalitza aquesta pàgina amb IA</translation>
 <translation id="3347086966102161372">C&amp;opia l'adreça de la imatge</translation>
 <translation id="3348038390189153836">S'ha detectat un dispositiu extraïble</translation>
 <translation id="3348131053948466246">Se suggereixen emojis. Prem les tecles amunt i avall per navegar-hi i Retorn per inserir-ne un.</translation>
@@ -9001,6 +9003,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7940265372707990269">Ordena per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparació de la compartició de xarxa:</translation>
 <translation id="7942349550061667556">Vermell</translation>
+<translation id="7942846369224063421">Renderitzador de la IU precarregat</translation>
 <translation id="7943349879009553083">No disponible en mode de convidat</translation>
 <translation id="7943368935008348579">Baixa els fitxers PDF</translation>
 <translation id="7943837619101191061">Afegeix una ubicació...</translation>
