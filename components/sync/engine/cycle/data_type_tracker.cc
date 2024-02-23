@@ -79,6 +79,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case AUTOFILL_WALLET_METADATA:
     case AUTOFILL_WALLET_OFFER:
     case AUTOFILL_WALLET_USAGE:
+    case COLLABORATION_GROUP:
     case CONTACT_INFO:
     case THEMES:
     case EXTENSIONS:
@@ -174,6 +175,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case INCOMING_PASSWORD_SHARING_INVITATION:
     case OUTGOING_PASSWORD_SHARING_INVITATION:
     case SHARED_TAB_GROUP_DATA:
+    case COLLABORATION_GROUP:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

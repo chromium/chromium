@@ -398,13 +398,14 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(49 == GetNumModelTypes(),
+  static_assert(50 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   if (prefs_->IsLocalSyncEnabled()) {
     types.Remove(APP_LIST);
     types.Remove(AUTOFILL_WALLET_OFFER);
     types.Remove(AUTOFILL_WALLET_USAGE);
+    types.Remove(COLLABORATION_GROUP);
     types.Remove(CONTACT_INFO);
     types.Remove(HISTORY);
     types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);

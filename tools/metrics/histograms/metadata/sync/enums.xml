@@ -835,6 +835,7 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="Autofill Wallet Credential"/>
   <int value="62" label="WebAPKs"/>
   <int value="63" label="Shared Tab Group Data"/>
+  <int value="64" label="Collaboration Groups"/>
 </enum>
 
 <enum name="SyncPassphraseType">

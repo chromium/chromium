@@ -86,9 +86,11 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(49 == syncer::GetNumModelTypes(),
+    static_assert(50 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
-                  "well (assuming it is already enabled).");
+                  "well (assuming it is already enabled). Check similar "
+                  "function in "
+                  "ios/c/b/sync/model/sync_service_factory_unittest.cc");
 
     syncer::ModelTypeSet datatypes;
 
@@ -185,6 +187,7 @@ class SyncServiceFactoryTest : public testing::Test {
     }
     if (base::FeatureList::IsEnabled(
             data_sharing::features::kDataSharingFeature)) {
+      datatypes.Put(syncer::COLLABORATION_GROUP);
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
 #if BUILDFLAG(IS_ANDROID)

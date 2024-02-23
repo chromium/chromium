@@ -156,7 +156,11 @@ enum ModelType {
   // Data related to tab group sharing.
   SHARED_TAB_GROUP_DATA,
 
-  LAST_USER_MODEL_TYPE = SHARED_TAB_GROUP_DATA,
+  // Special datatype to notify client about People Group changes. Read-only on
+  // the client.
+  COLLABORATION_GROUP,
+
+  LAST_USER_MODEL_TYPE = COLLABORATION_GROUP,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -248,7 +252,8 @@ enum class ModelTypeForHistograms {
   kAutofillWalletCredential = 61,
   kWebApks = 62,
   kSharedTabGroupData = 63,
-  kMaxValue = kSharedTabGroupData,
+  kCollaborationGroup = 64,
+  kMaxValue = kCollaborationGroup,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.

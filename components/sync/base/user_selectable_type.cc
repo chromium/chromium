@@ -39,7 +39,7 @@ constexpr char kSharedTabGroupDataTypeName[] = "sharedTabGroupData";
 constexpr char kPaymentsTypeName[] = "payments";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(49 == syncer::GetNumModelTypes(),
+  static_assert(50 == syncer::GetNumModelTypes(),
                 "Almost always when adding a new ModelType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -90,9 +90,11 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kSavedTabGroups:
       return {kSavedTabGroupsTypeName, SAVED_TAB_GROUP, {SAVED_TAB_GROUP}};
     case UserSelectableType::kSharedTabGroupData:
+      // Note: COLLABORATION_GROUP might be re-used for other features. If this
+      // happens, it should probably be in AlwaysPreferredUserTypes().
       return {kSharedTabGroupDataTypeName,
               SHARED_TAB_GROUP_DATA,
-              {SHARED_TAB_GROUP_DATA}};
+              {SHARED_TAB_GROUP_DATA, COLLABORATION_GROUP}};
     case UserSelectableType::kPayments:
       return {kPaymentsTypeName,
               AUTOFILL_WALLET_DATA,
