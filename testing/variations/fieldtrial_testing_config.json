@@ -12268,6 +12268,9 @@
             "experiments": [
                 {
                     "name": "Enabled_From_121_Dogfood",
+                    "params": {
+                        "ime_allowlist": "[\"xkb:es::spa\"]"
+                    },
                     "enable_features": [
                         "MantaService",
                         "OrcaDogfood",
