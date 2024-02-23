@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 
 @class TabSwitcherItem;
+@class GridItemIdentifier;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -25,7 +27,7 @@ class WebStateID;
 // Tells the consumer to replace its current set of items with `items` and
 // update the selected item ID to be `selectedItemID`. It's an error to pass
 // an `items` array containing items without unique IDs.
-- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
+- (void)populateItems:(NSArray<GridItemIdentifier*>*)items
        selectedItemID:(web::WebStateID)selectedItemID;
 
 // Tells the consumer to insert `item` at `index` and update the selected item

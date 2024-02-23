@@ -1072,9 +1072,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 #pragma mark - TabCollectionConsumer
 
-- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
+- (void)populateItems:(NSArray<GridItemIdentifier*>*)items
        selectedItemID:(web::WebStateID)selectedItemID {
-  CHECK(!HasDuplicateIdentifiers(items));
+  CHECK(!HasDuplicatGroupsAndTabsIdentifiers(items));
   // Call self.view to ensure that the collection view is created.
   [self view];
   CHECK(self.diffableDataSource);
@@ -1085,12 +1085,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Open Tabs section.
   [snapshot appendSectionsWithIdentifiers:@[ kGridOpenTabsSectionIdentifier ]];
-  NSMutableArray<GridItemIdentifier*>* itemIdentifiers =
-      [NSMutableArray arrayWithCapacity:items.count];
-  for (TabSwitcherItem* item in items) {
-    [itemIdentifiers addObject:[GridItemIdentifier tabIdentifier:item]];
-  }
-  [snapshot appendItemsWithIdentifiers:itemIdentifiers];
+  [snapshot appendItemsWithIdentifiers:items];
 
   // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {

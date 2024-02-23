@@ -8,9 +8,10 @@
 #import <Foundation/Foundation.h>
 
 @class TabSwitcherItem;
+@class GridItemIdentifier;
 class WebStateList;
 
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list);
+NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list);
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_UTILS_H_

@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
@@ -743,8 +744,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
         for (const TabsSearchService::TabsSearchBrowserResults& browserResults :
              results) {
           for (web::WebState* webState : browserResults.web_states) {
-            TabSwitcherItem* item =
-                [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+            GridItemIdentifier* item = [GridItemIdentifier
+                tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                                  initWithWebState:webState]];
+
             if (browserResults.browser == self.browser) {
               [currentBrowserItems addObject:item];
             } else {

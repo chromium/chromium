@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+#import "base/check.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
@@ -19,12 +21,13 @@
   // No-op.
 }
 
-- (void)populateItems:(NSArray<TabSwitcherItem*>*)items
+- (void)populateItems:(NSArray<GridItemIdentifier*>*)items
        selectedItemID:(web::WebStateID)selectedItemID {
   self.selectedItemID = selectedItemID;
   _items.clear();
-  for (TabSwitcherItem* item in items) {
-    _items.push_back(item.identifier);
+  for (GridItemIdentifier* item in items) {
+    CHECK(item.type == GridItemType::Tab);
+    _items.push_back(item.tabSwitcherItem.identifier);
   }
 }
 

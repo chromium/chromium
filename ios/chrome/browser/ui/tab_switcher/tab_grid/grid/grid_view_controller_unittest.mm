@@ -110,9 +110,14 @@ class BaseGridViewControllerTest : public RootViewControllerTest,
     // source and loads the initial snapshot.
     [view_controller_ loadView];
     [view_controller_ contentWillAppearAnimated:NO];
+    TabSwitcherItem* item_a =
+        [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_];
+    TabSwitcherItem* item_b =
+        [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_];
+
     NSArray* items = @[
-      [[TabSwitcherItem alloc] initWithIdentifier:identifier_a_],
-      [[TabSwitcherItem alloc] initWithIdentifier:identifier_b_],
+      [GridItemIdentifier tabIdentifier:item_a],
+      [GridItemIdentifier tabIdentifier:item_b],
     ];
     [view_controller_ populateItems:items selectedItemID:identifier_a_];
     delegate_ = [[FakeGridViewControllerDelegate alloc] init];
@@ -148,7 +153,8 @@ TEST_P(BaseGridViewControllerTest, InitializeItems) {
   web::WebStateID newItemID = web::WebStateID::NewUnique();
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
-  [view_controller_ populateItems:@[ item ] selectedItemID:newItemID];
+  [view_controller_ populateItems:@[ [GridItemIdentifier tabIdentifier:item] ]
+                   selectedItemID:newItemID];
   EXPECT_EQ(newItemID, IdentifierForIndex(0));
   EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);

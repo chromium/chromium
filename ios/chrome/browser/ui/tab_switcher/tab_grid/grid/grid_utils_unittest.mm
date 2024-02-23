@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -54,12 +55,13 @@ TEST_F(GridUtilsTest, CreateValidItemsList) {
   AddWebState();
   AddWebState();
 
-  NSArray<TabSwitcherItem*>* itemsList = CreateItems(web_state_list_);
+  NSArray<GridItemIdentifier*>* itemsList = CreateItems(web_state_list_);
   ASSERT_EQ(base::checked_cast<NSUInteger>(web_state_list_->count()),
             [itemsList count]);
   for (NSUInteger i = 0; i < [itemsList count]; i++) {
+    EXPECT_EQ(GridItemType::Tab, itemsList[i].type);
     EXPECT_EQ(web_state_list_->GetWebStateAt(i)->GetUniqueIdentifier(),
-              itemsList[i].identifier);
+              itemsList[i].tabSwitcherItem.identifier);
   }
 }
 
@@ -74,13 +76,17 @@ TEST_F(GridUtilsTest, CreateValidItemsListWithoutPinnedTabs) {
   AddWebState();
   AddPinnedWebState();
 
-  NSArray<TabSwitcherItem*>* itemsList = CreateItems(web_state_list_);
+  NSArray<GridItemIdentifier*>* itemsList = CreateItems(web_state_list_);
   ASSERT_EQ(base::checked_cast<NSUInteger>(web_state_list_->count()) -
                 web_state_list_->pinned_tabs_count(),
             [itemsList count]);
-  for (NSUInteger i = web_state_list_->pinned_tabs_count();
-       i < [itemsList count]; i++) {
-    EXPECT_EQ(web_state_list_->GetWebStateAt(i)->GetUniqueIdentifier(),
-              itemsList[i].identifier);
+  NSInteger number_of_pinned_tabs = web_state_list_->pinned_tabs_count();
+  for (NSUInteger i = 0; i < [itemsList count]; i++) {
+    web::WebState* web_state =
+        web_state_list_->GetWebStateAt(i + number_of_pinned_tabs);
+    GridItemIdentifier* item = itemsList[i];
+    EXPECT_EQ(GridItemType::Tab, item.type);
+    EXPECT_EQ(web_state->GetUniqueIdentifier(),
+              itemsList[i].tabSwitcherItem.identifier);
   }
 }

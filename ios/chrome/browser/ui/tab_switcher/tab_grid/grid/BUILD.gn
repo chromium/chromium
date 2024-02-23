@@ -30,6 +30,7 @@ source_set("grid_mediator") {
   ]
   deps = [
     ":grid_consumer",
+    ":grid_item_identifier",
     ":grid_mediator_delegate",
     ":grid_mediator_item_provider",
     ":grid_toolbars_mutator",
@@ -85,6 +86,19 @@ source_set("grid_ui_constants") {
   ]
 }
 
+source_set("grid_item_identifier") {
+  sources = [
+    "grid_item_identifier.h",
+    "grid_item_identifier.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/web/public",
+  ]
+}
+
 source_set("grid_utils") {
   sources = [
     "grid_utils.h",
@@ -92,6 +106,7 @@ source_set("grid_utils") {
   ]
 
   deps = [
+    ":grid_item_identifier",
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model:features",
@@ -117,8 +132,6 @@ source_set("grid_ui") {
     "grid_empty_view.h",
     "grid_header.h",
     "grid_header.mm",
-    "grid_item_identifier.h",
-    "grid_item_identifier.mm",
     "grid_layout.h",
     "grid_layout.mm",
     "grid_shareable_items_provider.h",
@@ -136,6 +149,7 @@ source_set("grid_ui") {
   ]
 
   deps = [
+    ":grid_item_identifier",
     ":grid_mediator_item_provider",
     ":grid_ui_constants",
     ":grid_view_controller_mutator",
@@ -224,6 +238,7 @@ source_set("unit_tests") {
 
   deps = [
     ":grid",
+    ":grid_item_identifier",
     ":grid_mediator",
     ":grid_ui",
     ":grid_utils",

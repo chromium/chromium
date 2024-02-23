@@ -8,6 +8,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state.h"
@@ -124,6 +126,20 @@ int SetWebStatePinnedState(WebStateList* web_state_list,
   }
 
   return web_state_list->SetWebStatePinnedAt(index, pin_state);
+}
+
+bool HasDuplicatGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
+  std::set<web::WebStateID> identifiers;
+  for (GridItemIdentifier* item in items) {
+    switch (item.type) {
+      case GridItemType::Tab:
+        identifiers.insert(item.tabSwitcherItem.identifier);
+        break;
+      case GridItemType::SuggestedActions:
+        NOTREACHED_NORETURN();
+    }
+  }
+  return identifiers.size() != items.count;
 }
 
 bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items) {

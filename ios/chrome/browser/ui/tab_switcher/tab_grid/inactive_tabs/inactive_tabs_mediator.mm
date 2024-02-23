@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -53,8 +54,9 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
             });
 
   for (web::WebState* web_state : web_states) {
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
+    WebStateTabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+    [items addObject:[GridItemIdentifier tabIdentifier:item]];
   }
   return items;
 }

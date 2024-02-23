@@ -6,10 +6,11 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 
-NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
-  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
+NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
+  NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
 
   int first_index = web_state_list->pinned_tabs_count();
   DCHECK(first_index == 0 || IsPinnedTabsEnabled());
@@ -17,8 +18,9 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   for (int i = first_index; i < web_state_list->count(); i++) {
     DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+    [items addObject:[GridItemIdentifier tabIdentifier:item]];
   }
   return items;
 }

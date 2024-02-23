@@ -10,6 +10,7 @@
 #import "ios/web/public/web_state_id.h"
 
 @class TabSwitcherItem;
+@class GridItemIdentifier;
 @class TabItem;
 class WebStateList;
 
@@ -62,6 +63,10 @@ TabItem* GetTabItem(WebStateList* web_state_list,
 int SetWebStatePinnedState(WebStateList* web_state_list,
                            web::WebStateID identifier,
                            bool pin_state);
+
+// Returns whether `items` has items (of type group or tab) with the same
+// identifier.
+bool HasDuplicatGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items);
 
 // Returns whether `items` has items with the same identifier.
 bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items);
