@@ -16,6 +16,7 @@ source_set("tangible_sync") {
     ":signin_ui",
     "//base",
     "//components/consent_auditor",
+    "//components/signin/public/base:signin_switches",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//components/unified_consent",

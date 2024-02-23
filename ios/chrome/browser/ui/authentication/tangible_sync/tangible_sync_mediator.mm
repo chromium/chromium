@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_mediator.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/unified_consent_service.h"
@@ -181,7 +183,10 @@
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
+  if (!base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    _accountCapabilitiesLatencyTracker->OnExtendedAccountInfoUpdated(info);
+  }
 }
 
 #pragma mark - Private
