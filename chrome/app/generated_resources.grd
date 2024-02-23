@@ -9144,10 +9144,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Hidden toolbar buttons
       </message>
       <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED" desc="The tooltip for the extensions button when all the extensions are blocked on the current site.">
-        Extensions are blocked on this site
+        Extensions not allowed on this site
       </message>
       <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS" desc="The tooltip for the extensions button when any extension has access to the current site.">
-        Extensions are allowed on this site
+        Extensions allowed on this site
       </message>
       <message name="IDS_TOOLTIP_EXTENSIONS_SITE_ACCESS_BUTTON" desc="The tooltip for the extensions site access button">
         Extension permissions
