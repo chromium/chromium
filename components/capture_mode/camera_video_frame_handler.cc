@@ -444,9 +444,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     DCHECK(!frame_info->is_premapped);
 #endif
 
-    auto buffer_texture_target =
-        gpu::GetBufferTextureTarget(GetBufferUsage(), GetBufferFormat(),
-                                    context_provider_->ContextCapabilities());
+    auto buffer_texture_target = shared_images_[0]->GetTextureTarget(
+        GetBufferUsage(), GetBufferFormat());
 
     gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
     for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
