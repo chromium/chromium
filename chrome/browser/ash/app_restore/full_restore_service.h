@@ -127,14 +127,13 @@ class FullRestoreService : public KeyedService,
       std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler);
 
  private:
-  friend class FullRestoreServiceMultipleUsersTest;
-  friend class FullRestoreServiceTest;
+  friend class FullRestoreTestHelper;
   FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
                            RestoreChromeApp);
   FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                            RestoreArcApp);
 
-  // KeyedService overrides.
+  // KeyedService:
   void Shutdown() override;
 
   // Returns true if `Init` can be called to show the notification or restore
