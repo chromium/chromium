@@ -153,6 +153,46 @@ TEST_F(SessionIdGeneratorTest, ShouldHandleOverflowDuringPadding) {
   EXPECT_EQ(kExpectedIdPadding + 1, generator->NewUnique().id());
 }
 
+TEST_F(SessionIdGeneratorTest, HighestRestoredID) {
+  base::MockCallback<SessionIdGenerator::RandomGenerator> random_generator;
+  SessionIdGenerator* generator = SessionIdGenerator::GetInstance();
+  generator->SetRandomGeneratorForTest(random_generator.Get());
+
+  // Highest restored ID is lower than the next value.
+  EXPECT_CALL(random_generator, Run()).WillOnce(Return(123));
+  generator->Init(&prefs_);
+
+  SessionID highest = SessionID::FromSerializedValue(123 + kExpectedIdPadding);
+  generator->SetHighestRestoredID(highest);
+
+  EXPECT_EQ(123 + 1 + kExpectedIdPadding, generator->NewUnique().id());
+
+  // Highest restored ID is higher than the next value.
+  generator->Shutdown();
+  WriteLastValueToPrefs(-1);
+  EXPECT_CALL(random_generator, Run()).WillOnce(Return(123));
+  generator->Init(&prefs_);
+
+  highest = SessionID::FromSerializedValue(200);
+  generator->SetHighestRestoredID(highest);
+
+  EXPECT_EQ(201, generator->NewUnique().id());
+
+  // Highest restored ID is higher than the next value because it overflown.
+  generator->Shutdown();
+  WriteLastValueToPrefs(-1);
+  EXPECT_CALL(random_generator, Run()).WillOnce(Return(123));
+  generator->Init(&prefs_);
+
+  SessionID::id_type very_high_restore =
+      std::numeric_limits<SessionID::id_type>::max() / 2 + 123 +
+      kExpectedIdPadding + 2;
+  highest = SessionID::FromSerializedValue(very_high_restore);
+  generator->SetHighestRestoredID(highest);
+
+  EXPECT_EQ(123 + 1 + kExpectedIdPadding, generator->NewUnique().id());
+}
+
 // Verifies correctness of the test-only codepath.
 TEST(SessionIdGeneratorWithoutInitTest, ShouldStartFromOneAndIncrement) {
   SessionIdGenerator* generator = SessionIdGenerator::GetInstance();

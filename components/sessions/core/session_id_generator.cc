@@ -66,6 +66,17 @@ SessionID SessionIdGenerator::NewUnique() {
   return SessionID::FromSerializedValue(last_value_);
 }
 
+void SessionIdGenerator::SetHighestRestoredID(SessionID highest_restored_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (last_value_ < highest_restored_id.id() &&
+      highest_restored_id.id() - last_value_ <
+          std::numeric_limits<SessionID::id_type>::max() / 2) {
+    // Only do the check if the two numbers are not too far apart to prevent
+    // issues when the `last_value_` is looping back to 0.
+    IncrementValueBy(highest_restored_id.id() - last_value_);
+  }
+}
+
 // static
 std::string SessionIdGenerator::GetLastValuePrefNameForTest() {
   return kLastValuePref;
