@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
-<title>click event target during capture</title>
+<title>Target of click-like events with pointer capture</title>
 <link rel="help" href="https://w3c.github.io/pointerevents/#event-dispatch" />
-<meta name="variant" content="?mouse">
+<meta name="variant" content="?mouse-click">
+<meta name="variant" content="?mouse-auxclick">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -33,7 +34,12 @@
 
 <script>
   'use strict';
-  const pointer_type = location.search.substring(1);
+
+  const [pointer_type, event_to_test] = location.search.substring(1).split("-");
+  assert_true(["click", "auxclick"].includes(event_to_test));
+  assert_equals(pointer_type, "mouse");
+  // Other pointer types can generate click/auxclick and should be tested here.
+
   const test_pointer = pointer_type + 'TestPointer';
 
   let event_log = [];
@@ -51,7 +57,7 @@
 
   let logged_events = [
     'gotpointercapture', 'lostpointercapture',
-    'pointerdown', 'pointerup', 'click'
+    'pointerdown', 'pointerup', event_to_test
   ];
   logged_events.forEach(ename => {
     [parent, child2, child1].forEach(target => {
@@ -60,12 +66,17 @@
   });
 
   function dragBetweenChildrenAndClickOnDone(from_child, to_child, test) {
-    let actions_promise = new test_driver.Actions()
-      .addPointer(test_pointer, pointer_type)
+    let actions_promise = new test_driver.Actions();
+
+    const button_type = (event_to_test === "click")
+        ? actions_promise.ButtonType.LEFT
+        : actions_promise.ButtonType.MIDDLE;
+
+    actions_promise.addPointer(test_pointer, pointer_type)
       .pointerMove(0, 0, {origin:from_child})
-      .pointerDown()
+      .pointerDown({button:button_type})
       .pointerMove(0, 0, {origin:to_child})
-      .pointerUp()
+      .pointerUp({button:button_type})
       .pointerMove(0, 0, {origin:done})
       .pointerDown()
       .pointerUp();
@@ -81,7 +92,7 @@
     await dragBetweenChildrenAndClickOnDone(child1, child1, test);
 
     assert_equals(event_log.join(','),
-      'pointerdown@child1,pointerup@child1,click@child1');
+      `pointerdown@child1,pointerup@child1,${event_to_test}@child1`);
   }, 'pointerdown/up at child1, no capture');
 
   promise_test(async test => {
@@ -93,7 +104,7 @@
 
     assert_equals(event_log.join(','),
       'pointerdown@child1,gotpointercapture@child1,' +
-      'pointerup@child1,click@child1,lostpointercapture@child1');
+      `pointerup@child1,lostpointercapture@child1,${event_to_test}@child1`);
   }, 'pointerdown/up at child1, capture at child1');
 
   promise_test(async test => {
@@ -105,7 +116,7 @@
 
     assert_equals(event_log.join(','),
       'pointerdown@child1,gotpointercapture@child2,' +
-      'pointerup@child2,click@child2,lostpointercapture@child2');
+      `pointerup@child2,lostpointercapture@child2,${event_to_test}@child2`);
   }, 'pointerdown/up at child1, capture at child2');
 
   promise_test(async test => {
@@ -114,7 +125,7 @@
     await dragBetweenChildrenAndClickOnDone(child1, child2, test);
 
     assert_equals(event_log.join(','),
-      'pointerdown@child1,pointerup@child2,click@parent');
+      `pointerdown@child1,pointerup@child2,${event_to_test}@parent`);
   }, 'pointerdown at child1, pointerup at child2, no capture');
 
   promise_test(async test => {
@@ -126,7 +137,7 @@
 
     assert_equals(event_log.join(','),
       'pointerdown@child1,gotpointercapture@child1,' +
-      'pointerup@child1,click@child1,lostpointercapture@child1');
+      `pointerup@child1,lostpointercapture@child1,${event_to_test}@child1`);
   }, 'pointerdown at child1, pointerup at child2, capture at child1');
 
   promise_test(async test => {
@@ -138,7 +149,7 @@
 
     assert_equals(event_log.join(','),
       'pointerdown@child1,gotpointercapture@child2,' +
-      'pointerup@child2,click@child2,lostpointercapture@child2');
+      `pointerup@child2,lostpointercapture@child2,${event_to_test}@child2`);
   }, 'pointerdown at child1, pointerup at child2, capture at child2');
 </script>
 <html>
