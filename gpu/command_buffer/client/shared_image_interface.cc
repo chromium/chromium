@@ -29,21 +29,12 @@ SharedImageInterface::SharedImageInterface()
 SharedImageInterface::~SharedImageInterface() = default;
 
 scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   NOTREACHED();
   return base::MakeRefCounted<ClientSharedImage>(
-      Mailbox(),
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(), holder_);
+      Mailbox(), si_info.meta, GenUnverifiedSyncToken(), holder_);
 }
 
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
@@ -62,8 +53,8 @@ SharedImageInterface::AddReferenceToSharedImage(
     uint32_t usage) {
   return ImportSharedImage(ExportedSharedImage(
       mailbox,
-      ClientSharedImage::Metadata{format, size, color_space, surface_origin,
-                                  alpha_type, usage},
+      SharedImageMetadata{format, size, color_space, surface_origin, alpha_type,
+                          usage},
       sync_token));
 }
 

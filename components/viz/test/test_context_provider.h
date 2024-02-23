@@ -44,76 +44,36 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   TestSharedImageInterface();
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       base::span<const uint8_t> pixel_data) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
 
   SharedImageInterface::SharedImageMapping CreateSharedImage(
-      SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override;
+      const gpu::SharedImageInfo& si_info) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override;
+      const gpu::SharedImageInfo& si_info) override;
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;

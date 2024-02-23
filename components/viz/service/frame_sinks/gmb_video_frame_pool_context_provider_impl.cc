@@ -84,8 +84,8 @@ class GmbVideoFramePoolContext
       uint32_t usage,
       gpu::SyncToken& sync_token) override {
     auto client_shared_image = sii_in_process_->CreateSharedImage(
-        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-        alpha_type, usage, "VizGmbVideoFramePool",
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "VizGmbVideoFramePool"},
         gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
     sync_token = sii_in_process_->GenVerifiedSyncToken();
@@ -104,8 +104,9 @@ class GmbVideoFramePoolContext
       uint32_t usage,
       gpu::SyncToken& sync_token) override {
     auto client_shared_image = sii_in_process_->CreateSharedImage(
-        gpu_memory_buffer, gpu_memory_buffer_manager_, plane, color_space,
-        surface_origin, alpha_type, usage, "VizGmbVideoFramePool");
+        gpu_memory_buffer, gpu_memory_buffer_manager_, plane,
+        {color_space, surface_origin, alpha_type, usage,
+         "VizGmbVideoFramePool"});
     CHECK(client_shared_image);
     sync_token = sii_in_process_->GenVerifiedSyncToken();
     return client_shared_image;

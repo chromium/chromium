@@ -493,16 +493,17 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     // resolved.
 
     client_shared_image = shared_image_interface->CreateSharedImage(
-        GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
-        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
+        {GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
+         surface_alpha_type, shared_image_usage_flags,
+         "CanvasResourceRasterGmb"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     if (!client_shared_image) {
       return;
     }
   } else {
     client_shared_image = shared_image_interface->CreateSharedImage(
-        GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
-        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster",
+        {GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
+         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
   }

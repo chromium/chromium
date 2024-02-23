@@ -252,11 +252,11 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
   // actually done in the linear space. So set up our shared image to be linear.
   // Note that this matches the behavior in the D3D11 graphics binding as well.
   swap_chain_info.shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, transfer_size,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::LINEAR),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-      "OpenXrGraphicsBinding", std::move(gmb_handle));
+      {viz::SinglePlaneFormat::kRGBA_8888, transfer_size,
+       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                       gfx::ColorSpace::TransferID::LINEAR),
+       shared_image_usage, "OpenXrGraphicsBinding"},
+      std::move(gmb_handle));
   CHECK(swap_chain_info.shared_image);
   swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
   DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format));

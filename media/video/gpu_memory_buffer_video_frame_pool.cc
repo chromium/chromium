@@ -1327,15 +1327,16 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
             plane_resource.needs_external_sampler = true;
           }
         }
-        plane_resource.shared_image = sii->CreateSharedImage(
-            si_format, gpu_memory_buffer->GetSize(), color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
-            gpu_memory_buffer->CloneHandle());
+        plane_resource.shared_image =
+            sii->CreateSharedImage({si_format, gpu_memory_buffer->GetSize(),
+                                    color_space, usage, kDebugLabel},
+                                   gpu_memory_buffer->CloneHandle());
       } else {
         plane_resource.shared_image = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
-            GetSharedImageBufferPlane(output_format_, plane), color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel);
+            GetSharedImageBufferPlane(output_format_, plane),
+            {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+             kDebugLabel});
       }
       CHECK(plane_resource.shared_image);
     } else if (plane_resource.shared_image) {

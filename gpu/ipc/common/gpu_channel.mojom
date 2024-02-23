@@ -527,11 +527,8 @@ struct SetDefaultFramebufferSharedImageParams {
   bool needs_stencil;
 };
 
-// Creates a new shared image.
-struct CreateSharedImageParams {
-  // The mailbox used to identify the shared image.
-  Mailbox mailbox;
-
+// Metadata describing a shared image.
+struct SharedImageMetadata {
   // The pixel format of the image.
   viz.mojom.SharedImageFormat format;
 
@@ -541,22 +538,37 @@ struct CreateSharedImageParams {
   // Color space.
   gfx.mojom.ColorSpace color_space;
 
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
-  // The fence to release once the image is created.
-  uint32 release_id;
-
   // Which corner is considered the origin of the new image.
   skia.mojom.SurfaceOrigin surface_origin;
 
   // Indicates how the alpha component of each pixel is interpreted.
   skia.mojom.AlphaType alpha_type;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+};
+
+// Common params used when creating a new shared image.
+struct SharedImageInfo {
+  // Metadata about the shared image being created.
+  SharedImageMetadata meta;
+
+  // Retained for heap dumps and passed to graphics APIs for tracing tools.
+  // Pick a name that is unique to the allocation site.
+  string debug_label;
+};
+
+// Creates a new shared image.
+struct CreateSharedImageParams {
+  // The mailbox used to identify the shared image.
+  Mailbox mailbox;
+
+  // Information about the shared image.
+  SharedImageInfo si_info;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
 };
 
 // Creates a new shared image and populates it with pixel data from a shared
@@ -565,22 +577,8 @@ struct CreateSharedImageWithDataParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // The fence to release once the image is created.
   uint32 release_id;
@@ -595,12 +593,6 @@ struct CreateSharedImageWithDataParams {
   // If `true`, this is the last usage of the current image upload shared memory
   // region, so the region can be discarded after servicing this request.
   bool done_with_shm;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Creates a new shared image with an existing GPU memory buffer.
@@ -609,34 +601,14 @@ struct CreateSharedImageWithBufferParams {
   // The mailbox used to identify the shared image.
   Mailbox mailbox;
 
+  // Information about the shared image.
+  SharedImageInfo si_info;
+
   // A handle to the existing GPU memory buffer.
   gfx.mojom.GpuMemoryBufferHandle buffer_handle;
 
-  // The pixel format of the image.
-  viz.mojom.SharedImageFormat format;
-
-  // Size in pixels.
-  gfx.mojom.Size size;
-
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
-
   // The fence to release once the image is created.
   uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Creates a new shared image from an existing GPU memory buffer.
@@ -656,25 +628,11 @@ struct CreateGMBSharedImageParams {
   // Plane for which to create the shared image.
   gfx.mojom.BufferPlane plane;
 
-  // Color space.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Retained for heap dumps and passed to graphics APIs for tracing tools.
-  // Pick a name that is unique to the allocation site.
-  string debug_label;
+  // Information about the shared image.
+  SharedImageInfo si_info;
 
   // The fence to release once the image is created.
   uint32 release_id;
-
-  // Which corner is considered the origin of the new image.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
 };
 
 // Updates the contents of a shared image from whatever is backing it, if

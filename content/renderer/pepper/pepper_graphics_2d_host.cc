@@ -711,8 +711,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       if (overlays_supported)
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       shared_image = sii->CreateSharedImage(
-          format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, usage, "PepperGraphics2DHost",
+          {format, size, gfx::ColorSpace(), usage, "PepperGraphics2DHost"},
           gpu::kNullSurfaceHandle);
       CHECK(shared_image);
       in_sync_token = sii->GenUnverifiedSyncToken();

@@ -67,70 +67,30 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
 
   // SharedImageInterface:
   scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       base::span<const uint8_t> pixel_data) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override;
   SharedImageInterface::SharedImageMapping CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override;
+      const SharedImageInfo& si_info) override;
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override;
+      const SharedImageInfo& si_info) override;
   void UpdateSharedImage(const SyncToken& sync_token,
                          const Mailbox& mailbox) override;
   void UpdateSharedImage(const SyncToken& sync_token,
@@ -203,58 +163,30 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       base::WaitableEvent* completion);
 
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
-                                    viz::SharedImageFormat format,
+                                    SharedImageInfo si_info,
                                     gpu::SurfaceHandle surface_handle,
-                                    const gfx::Size& size,
-                                    const gfx::ColorSpace& color_space,
-                                    GrSurfaceOrigin surface_origin,
-                                    SkAlphaType alpha_type,
-                                    uint32_t usage,
-                                    std::string debug_label,
                                     const SyncToken& sync_token);
   void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
-                                            viz::SharedImageFormat format,
-                                            const gfx::Size& size,
-                                            const gfx::ColorSpace& color_space,
-                                            GrSurfaceOrigin surface_origin,
-                                            SkAlphaType alpha_type,
-                                            uint32_t usage,
-                                            std::string debug_label,
+                                            SharedImageInfo si_info,
                                             const SyncToken& sync_token,
                                             std::vector<uint8_t> pixel_data);
   void CreateSharedImageWithBufferUsageOnGpuThread(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      std::string debug_label,
+      SharedImageInfo si_info,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
       const SyncToken& sync_token);
   void CreateSharedImageWithBufferOnGpuThread(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageInfo si_info,
       gfx::GpuMemoryBufferHandle buffer_handle,
-      std::string debug_label,
       const SyncToken& sync_token);
   void CreateGMBSharedImageOnGpuThread(const Mailbox& mailbox,
                                        gfx::GpuMemoryBufferHandle handle,
                                        gfx::BufferFormat format,
                                        gfx::BufferPlane plane,
                                        const gfx::Size& size,
-                                       const gfx::ColorSpace& color_space,
-                                       GrSurfaceOrigin surface_origin,
-                                       SkAlphaType alpha_type,
-                                       uint32_t usage,
-                                       std::string debug_label,
+                                       SharedImageInfo si_info,
                                        const SyncToken& sync_token);
   void UpdateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     const SyncToken& sync_token);

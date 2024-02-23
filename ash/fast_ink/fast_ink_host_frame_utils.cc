@@ -110,9 +110,9 @@ scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     uint32_t shared_image_usage,
     gfx::BufferUsage buffer_usage) {
   return GetContextProvider()->SharedImageInterface()->CreateSharedImage(
-      kFastInkSharedImageFormat, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-      "FastInkHostUIResource", gpu::kNullSurfaceHandle, buffer_usage);
+      {kFastInkSharedImageFormat, size, gfx::ColorSpace(), shared_image_usage,
+       "FastInkHostUIResource"},
+      gpu::kNullSurfaceHandle, buffer_usage);
 }
 
 std::unique_ptr<UiResource> CreateUiResource(

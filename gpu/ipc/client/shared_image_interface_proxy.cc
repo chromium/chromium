@@ -75,6 +75,26 @@ std::vector<SyncToken> GenerateDependenciesFromSyncToken(
   return dependencies;
 }
 
+mojom::SharedImageMetadataPtr CreateSharedImageMetadata(
+    const SharedImageMetadata& meta) {
+  auto meta_ptr = mojom::SharedImageMetadata::New();
+  meta_ptr->format = meta.format;
+  meta_ptr->size = meta.size;
+  meta_ptr->color_space = meta.color_space;
+  meta_ptr->surface_origin = meta.surface_origin;
+  meta_ptr->alpha_type = meta.alpha_type;
+  meta_ptr->usage = meta.usage;
+  return meta_ptr;
+}
+
+mojom::SharedImageInfoPtr CreateSharedImageInfo(
+    const SharedImageInfo& si_info) {
+  auto info = mojom::SharedImageInfo::New();
+  info->meta = CreateSharedImageMetadata(si_info.meta);
+  info->debug_label = si_info.debug_label;
+  return info;
+}
+
 }  // namespace
 
 SharedImageInterfaceProxy::SharedImageInterfaceProxy(
@@ -86,26 +106,14 @@ SharedImageInterfaceProxy::SharedImageInterfaceProxy(
 SharedImageInterfaceProxy::~SharedImageInterfaceProxy() = default;
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label) {
+    const SharedImageInfo& si_info) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto params = mojom::CreateSharedImageParams::New();
   params->mailbox = mailbox;
-  params->format = format;
-  params->size = size;
-  params->color_space = color_space;
-  params->usage = usage;
-  params->debug_label = std::string(debug_label);
-  params->surface_origin = surface_origin;
-  params->alpha_type = alpha_type;
+  params->si_info = CreateSharedImageInfo(si_info);
   {
     base::AutoLock lock(lock_);
-    AddMailbox(mailbox, usage);
+    AddMailbox(mailbox, si_info.meta.usage);
     params->release_id = ++next_release_id_;
     // Note: we enqueue the IPC under the lock to guarantee monotonicity of the
     // release ids as seen by the service.
@@ -119,21 +127,15 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle* handle_to_populate) {
   // Create a GMB here first on IO thread via sync IPC. Then create a mailbox
   // from it.
   {
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync_call;
-    host_->CreateGpuMemoryBuffer(size, format, buffer_usage,
-                                 handle_to_populate);
+    host_->CreateGpuMemoryBuffer(si_info.meta.size, si_info.meta.format,
+                                 buffer_usage, handle_to_populate);
   }
 
   if (handle_to_populate->is_null()) {
@@ -149,19 +151,11 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   // GpuChannelMessageFilter::CreateGpuMemoryBuffer() call in service side can
   // itself can post a task from IO thread to gpu main thread to create a
   // mailbox from handle and then return the handle back to SIIProxy.
-  return CreateSharedImage(format, size, color_space, surface_origin,
-                           alpha_type, usage, std::move(debug_label),
-                           handle_to_populate->Clone());
+  return CreateSharedImage(si_info, handle_to_populate->Clone());
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
   // Pixel data's size must fit into a uint32_t to be sent in
   // CreateSharedImageWithDataParams.
@@ -186,47 +180,29 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto params = mojom::CreateSharedImageWithDataParams::New();
   params->mailbox = mailbox;
-  params->format = format;
-  params->size = size;
-  params->color_space = color_space;
-  params->usage = usage;
-  params->debug_label = std::string(debug_label);
+  params->si_info = CreateSharedImageInfo(si_info);
   params->pixel_data_offset = shm_offset;
   params->pixel_data_size = pixel_data.size();
   params->done_with_shm = done_with_shm;
   params->release_id = ++next_release_id_;
-  params->surface_origin = surface_origin;
-  params->alpha_type = alpha_type;
   last_flush_id_ = host_->EnqueueDeferredMessage(
       mojom::DeferredRequestParams::NewSharedImageRequest(
           mojom::DeferredSharedImageRequest::NewCreateSharedImageWithData(
               std::move(params))));
-  AddMailbox(mailbox, usage);
+  AddMailbox(mailbox, si_info.meta.usage);
   return mailbox;
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   // TODO(kylechar): Verify buffer_handle works for size+format.
   auto mailbox = Mailbox::GenerateForSharedImage();
 
   auto params = mojom::CreateSharedImageWithBufferParams::New();
   params->mailbox = mailbox;
+  params->si_info = CreateSharedImageInfo(si_info);
   params->buffer_handle = std::move(buffer_handle);
-  params->size = size;
-  params->format = format;
-  params->color_space = color_space;
-  params->usage = usage;
-  params->debug_label = std::string(debug_label);
-  params->surface_origin = surface_origin;
-  params->alpha_type = alpha_type;
 
   base::AutoLock lock(lock_);
   params->release_id = ++next_release_id_;
@@ -238,7 +214,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
               std::move(params))));
   host_->EnsureFlush(last_flush_id_);
 
-  AddMailbox(mailbox, usage);
+  AddMailbox(mailbox, si_info.meta.usage);
   return mailbox;
 }
 
@@ -246,11 +222,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     gfx::BufferFormat format,
     gfx::BufferPlane plane,
     const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   auto mailbox = Mailbox::GenerateForSharedImage();
 
@@ -260,11 +232,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params->size = size;
   params->format = format;
   params->plane = plane;
-  params->color_space = color_space;
-  params->usage = usage;
-  params->debug_label = std::string(debug_label);
-  params->surface_origin = surface_origin;
-  params->alpha_type = alpha_type;
+  params->si_info = CreateSharedImageInfo(si_info);
 
   // TODO(piman): DCHECK GMB format support.
   DCHECK(gpu::IsImageSizeValidForGpuMemoryBufferFormat(params->size,
@@ -280,7 +248,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
               std::move(params))));
   host_->EnsureFlush(last_flush_id_);
 
-  AddMailbox(mailbox, usage);
+  AddMailbox(mailbox, si_info.meta.usage);
   return mailbox;
 }
 
@@ -658,13 +626,13 @@ void SharedImageInterfaceProxy::NotifyMailboxAdded(const Mailbox& mailbox,
   AddMailbox(mailbox, usage);
 }
 
-SharedImageInterfaceProxy::SharedImageInfo::SharedImageInfo() = default;
-SharedImageInterfaceProxy::SharedImageInfo::~SharedImageInfo() = default;
+SharedImageInterfaceProxy::SharedImageRefData::SharedImageRefData() = default;
+SharedImageInterfaceProxy::SharedImageRefData::~SharedImageRefData() = default;
 
-SharedImageInterfaceProxy::SharedImageInfo::SharedImageInfo(SharedImageInfo&&) =
-    default;
-SharedImageInterfaceProxy::SharedImageInfo&
-SharedImageInterfaceProxy::SharedImageInfo::operator=(SharedImageInfo&&) =
+SharedImageInterfaceProxy::SharedImageRefData::SharedImageRefData(
+    SharedImageRefData&&) = default;
+SharedImageInterfaceProxy::SharedImageRefData&
+SharedImageInterfaceProxy::SharedImageRefData::operator=(SharedImageRefData&&) =
     default;
 
 }  // namespace gpu

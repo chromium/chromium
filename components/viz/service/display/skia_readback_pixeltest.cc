@@ -581,8 +581,8 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
         child_context_provider_->SharedImageInterface();
     DCHECK(sii);
     auto client_shared_image = sii->CreateSharedImage(
-        format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestPixels",
+        {format, size, gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+         "TestPixels"},
         pixels);
     gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
@@ -777,10 +777,10 @@ TEST_P(SkiaReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
   std::vector<uint8_t> pixels =
       GeneratePixels(format.EstimatedSizeInBytes(source_size), pattern);
   scoped_refptr<gpu::ClientSharedImage> blit_dest_shared_image =
-      sii->CreateSharedImage(format, source_size, color_space,
-                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
-                             gpu::kNullSurfaceHandle);
+      sii->CreateSharedImage(
+          {format, source_size, color_space,
+           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels"},
+          gpu::kNullSurfaceHandle);
 
   ASSERT_TRUE(blit_dest_shared_image);
   gpu::Mailbox mailbox = blit_dest_shared_image->mailbox();
@@ -1130,9 +1130,8 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
     if (!use_multiplanar_si() || i == 0) {
       shared_images[i] = sii->CreateSharedImage(
-          format, plane_size, gfx::ColorSpace::CreateREC709(),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
+          {format, plane_size, gfx::ColorSpace::CreateREC709(),
+           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels"},
           gpu::kNullSurfaceHandle);
       DCHECK(shared_images[i]);
       mailboxes[i].mailbox = shared_images[i]->mailbox();

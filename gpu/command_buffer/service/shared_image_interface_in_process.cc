@@ -211,15 +211,9 @@ bool SharedImageInterfaceInProcess::LazyCreateSharedImageFactory() {
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle) {
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
     base::AutoLock lock(lock_);
@@ -230,29 +224,18 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     ScheduleGpuTask(
         base::BindOnce(
             &SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread,
-            base::Unretained(this), mailbox, format, surface_handle, size,
-            color_space, surface_origin, alpha_type, usage,
-            std::string(debug_label),
+            base::Unretained(this), mailbox, si_info, surface_handle,
             MakeSyncToken(next_fence_sync_release_++)),
         {});
   }
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    SharedImageInfo si_info,
     gpu::SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label,
     const SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!LazyCreateSharedImageFactory())
@@ -263,8 +246,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, format, size, color_space, surface_origin, alpha_type,
-          surface_handle, usage, std::string(debug_label))) {
+          mailbox, si_info.meta.format, si_info.meta.size,
+          si_info.meta.color_space, si_info.meta.surface_origin,
+          si_info.meta.alpha_type, surface_handle, si_info.meta.usage,
+          std::string(si_info.debug_label))) {
     context_state_->MarkContextLost();
     return;
   }
@@ -273,15 +258,9 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   std::vector<uint8_t> pixel_data_copy(pixel_data.begin(), pixel_data.end());
   {
@@ -292,29 +271,18 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     // time, cancelling tasks, before |this| is destroyed.
     ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
                                        CreateSharedImageWithDataOnGpuThread,
-                                   base::Unretained(this), mailbox, format,
-                                   size, color_space, surface_origin,
-                                   alpha_type, usage, std::string(debug_label),
+                                   base::Unretained(this), mailbox, si_info,
                                    MakeSyncToken(next_fence_sync_release_++),
                                    std::move(pixel_data_copy)),
                     {});
   }
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label,
+    SharedImageInfo si_info,
     const SyncToken& sync_token,
     std::vector<uint8_t> pixel_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
@@ -326,8 +294,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-          std::move(debug_label), pixel_data)) {
+          mailbox, si_info.meta.format, si_info.meta.size,
+          si_info.meta.color_space, si_info.meta.surface_origin,
+          si_info.meta.alpha_type, si_info.meta.usage,
+          std::move(si_info.debug_label), pixel_data)) {
     context_state_->MarkContextLost();
     return;
   }
@@ -336,16 +306,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
     base::AutoLock lock(lock_);
@@ -356,29 +320,19 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcess::
                            CreateSharedImageWithBufferUsageOnGpuThread,
-                       base::Unretained(this), mailbox, format, size,
-                       color_space, surface_origin, alpha_type, usage,
-                       std::string(debug_label), surface_handle, buffer_usage,
-                       MakeSyncToken(next_fence_sync_release_++)),
+                       base::Unretained(this), mailbox, si_info, surface_handle,
+                       buffer_usage, MakeSyncToken(next_fence_sync_release_++)),
         {});
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(), GetGpuMemoryBufferHandleInfo(mailbox), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(),
+      GetGpuMemoryBufferHandleInfo(mailbox), holder_);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label,
+    SharedImageInfo si_info,
     SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     const SyncToken& sync_token) {
@@ -400,8 +354,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithBufferUsageOnGpuThread(
   // which creates native buffer/shared memory on IO thread and then creates a
   // mailbox from it on GPU thread.
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, format, size, color_space, surface_origin, alpha_type,
-          surface_handle, usage, std::move(debug_label), buffer_usage)) {
+          mailbox, si_info.meta.format, si_info.meta.size,
+          si_info.meta.color_space, si_info.meta.surface_origin,
+          si_info.meta.alpha_type, surface_handle, si_info.meta.usage,
+          std::move(si_info.debug_label), buffer_usage)) {
     context_state_->MarkContextLost();
     return;
   }
@@ -463,46 +419,30 @@ void SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfoOnGpuThread(
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   auto client_buffer_handle = buffer_handle.Clone();
   auto mailbox =
-      CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
-                        usage, debug_label, std::move(buffer_handle))
-          ->mailbox();
+      CreateSharedImage(si_info, std::move(buffer_handle))->mailbox();
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(),
-      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), format, size,
+      mailbox, si_info.meta, GenUnverifiedSyncToken(),
+      GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
+                                si_info.meta.format, si_info.meta.size,
                                 buffer_usage),
       holder_);
 }
 
 scoped_refptr<ClientSharedImage>
 SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label,
+    const SharedImageInfo& si_info,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  CHECK(!format.PrefersExternalSampler());
+  CHECK(!si_info.meta.format.PrefersExternalSampler());
 #endif
 
   auto mailbox = Mailbox::GenerateForSharedImage();
@@ -515,40 +455,29 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     // time, cancelling tasks, before |this| is destroyed.
     ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
                                        CreateSharedImageWithBufferOnGpuThread,
-                                   base::Unretained(this), mailbox, format,
-                                   size, color_space, surface_origin,
-                                   alpha_type, usage, std::move(buffer_handle),
-                                   std::string(debug_label), sync_token),
+                                   base::Unretained(this), mailbox, si_info,
+                                   std::move(buffer_handle), sync_token),
                     {});
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
 }
 SharedImageInterface::SharedImageMapping
 SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label) {
-  DCHECK(gpu::IsValidClientUsage(usage));
-  DCHECK_EQ(usage, gpu::SHARED_IMAGE_USAGE_CPU_WRITE);
+    const SharedImageInfo& si_info) {
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
+  DCHECK_EQ(si_info.meta.usage, gpu::SHARED_IMAGE_USAGE_CPU_WRITE);
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  CHECK(!format.PrefersExternalSampler());
+  CHECK(!si_info.meta.format.PrefersExternalSampler());
 #endif
 
   SharedImageInterface::SharedImageMapping shared_image_mapping;
   gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
+      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
   const size_t buffer_size =
-      gfx::BufferSizeForBufferFormat(size, buffer_format);
+      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
   auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
   if (!shared_memory_region.IsValid()) {
@@ -568,7 +497,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   handle.type = gfx::SHARED_MEMORY_BUFFER;
   handle.offset = 0;
   handle.stride = static_cast<int32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
+      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
   handle.region = std::move(shared_memory_region);
 
   auto mailbox = Mailbox::GenerateForSharedImage();
@@ -579,33 +508,22 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     // the release ids as seen by the service. Unretained is safe because
     // InProcessCommandBuffer synchronizes with the GPU thread at destruction
     // time, cancelling tasks, before |this| is destroyed.
-    ScheduleGpuTask(
-        base::BindOnce(&SharedImageInterfaceInProcess::
-                           CreateSharedImageWithBufferOnGpuThread,
-                       base::Unretained(this), mailbox, format, size,
-                       color_space, surface_origin, alpha_type, usage,
-                       std::move(handle), std::string(debug_label), sync_token),
-        {});
+    ScheduleGpuTask(base::BindOnce(&SharedImageInterfaceInProcess::
+                                       CreateSharedImageWithBufferOnGpuThread,
+                                   base::Unretained(this), mailbox, si_info,
+                                   std::move(handle), sync_token),
+                    {});
   }
   shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox,
-      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
-                                  alpha_type, usage),
-      GenUnverifiedSyncToken(), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
 
   return shared_image_mapping;
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageInfo si_info,
     gfx::GpuMemoryBufferHandle buffer_handle,
-    std::string debug_label,
     const SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!LazyCreateSharedImageFactory()) {
@@ -618,8 +536,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithBufferOnGpuThread(
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-          std::move(debug_label), std::move(buffer_handle))) {
+          mailbox, si_info.meta.format, si_info.meta.size,
+          si_info.meta.color_space, si_info.meta.surface_origin,
+          si_info.meta.alpha_type, si_info.meta.usage,
+          std::move(si_info.debug_label), std::move(buffer_handle))) {
     context_state_->MarkContextLost();
     return;
   }
@@ -631,12 +551,8 @@ SharedImageInterfaceInProcess::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::BufferPlane plane,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::StringPiece debug_label) {
-  DCHECK(gpu::IsValidClientUsage(usage));
+    const SharedImageInfo& si_info) {
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   // TODO(piman): DCHECK GMB format support.
   DCHECK(IsImageSizeValidForGpuMemoryBufferFormat(
       gpu_memory_buffer->GetSize(), gpu_memory_buffer->GetFormat()));
@@ -657,17 +573,17 @@ SharedImageInterfaceInProcess::CreateSharedImage(
             &SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread,
             base::Unretained(this), mailbox, std::move(handle),
             gpu_memory_buffer->GetFormat(), plane, gpu_memory_buffer->GetSize(),
-            color_space, surface_origin, alpha_type, usage,
-            std::string(debug_label), sync_token),
+            si_info, sync_token),
         {});
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox,
-      ClientSharedImage::Metadata(
+      SharedImageMetadata(
           viz::GetSinglePlaneSharedImageFormat(gpu_memory_buffer->GetFormat()),
-          gpu_memory_buffer->GetSize(), color_space, surface_origin, alpha_type,
-          usage),
+          gpu_memory_buffer->GetSize(), si_info.meta.color_space,
+          si_info.meta.surface_origin, si_info.meta.alpha_type,
+          si_info.meta.usage),
       GenUnverifiedSyncToken(), holder_);
 }
 
@@ -677,11 +593,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
     gfx::BufferFormat format,
     gfx::BufferPlane plane,
     const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label,
+    SharedImageInfo si_info,
     const SyncToken& sync_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (!LazyCreateSharedImageFactory())
@@ -692,8 +604,10 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, std::move(handle), format, plane, size, color_space,
-          surface_origin, alpha_type, usage, std::move(debug_label))) {
+          mailbox, std::move(handle), format, plane, size,
+          si_info.meta.color_space, si_info.meta.surface_origin,
+          si_info.meta.alpha_type, si_info.meta.usage,
+          std::move(si_info.debug_label))) {
     context_state_->MarkContextLost();
     return;
   }

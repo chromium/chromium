@@ -1995,14 +1995,16 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         scoped_refptr<gpu::ClientSharedImage> client_shared_image;
         if (disallow_gmb) {
           client_shared_image = sii->CreateSharedImage(
-              color_buffer_format_, size, color_space_, origin,
-              back_buffer_alpha_type, usage | additional_usage_flags,
-              "WebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+              {color_buffer_format_, size, color_space_, origin,
+               back_buffer_alpha_type, usage | additional_usage_flags,
+               "WebGLDrawingBuffer"},
+              gpu::kNullSurfaceHandle);
         } else {
           client_shared_image = sii->CreateSharedImage(
-              color_buffer_format_, size, color_space_, origin,
-              back_buffer_alpha_type, usage | additional_usage_flags,
-              "WebGLDrawingBuffer", gpu::kNullSurfaceHandle, buffer_usage);
+              {color_buffer_format_, size, color_space_, origin,
+               back_buffer_alpha_type, usage | additional_usage_flags,
+               "WebGLDrawingBuffer"},
+              gpu::kNullSurfaceHandle, buffer_usage);
         }
         if (client_shared_image) {
           created_mappable_si = true;
@@ -2040,10 +2042,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         back_buffer_alpha_type = kUnpremul_SkAlphaType;
       }
 
-      back_buffer_shared_image =
-          sii->CreateSharedImage(color_buffer_format_, size, color_space_,
-                                 origin, back_buffer_alpha_type, usage,
-                                 "WebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+      back_buffer_shared_image = sii->CreateSharedImage(
+          {color_buffer_format_, size, color_space_, origin,
+           back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
+          gpu::kNullSurfaceHandle);
       CHECK(back_buffer_shared_image);
     }
   }

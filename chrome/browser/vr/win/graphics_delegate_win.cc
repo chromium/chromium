@@ -144,11 +144,11 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
   // followed by having their underlying GMBHandle sent off to be displayed in
   // an overlay.
   client_shared_image_ = sii_->CreateSharedImage(
-      format, buffer_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-          gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
-      "VRGraphicsDelegate", gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
+      {format, buffer_size, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+           gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT,
+       "VRGraphicsDelegate"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT);
   if (!client_shared_image_) {
     return false;
   }

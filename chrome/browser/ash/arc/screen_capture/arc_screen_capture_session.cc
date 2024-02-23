@@ -226,17 +226,18 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   CHECK(!si_format.IsLegacyMultiplanar());
 
   auto client_shared_image = sii->CreateSharedImage(
-      si_format, size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType,
-      // NOTE: This SI will be used as the destination of a copy of the desktop
-      // texture via the raster interface. Hence, it needs RASTER_WRITE usage as
-      // well as GLES2_WRITE usage for the case where the raster interface is
-      // going over GLES2.
-      // TODO(crbug.com/1508447): Remove GLES2_WRITE usage once the browser main
-      // thread using the RasterDecoder implementation has definitively landed.
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
-      "ArcScreenCapture", std::move(handle));
+      {si_format, size_, gfx::ColorSpace(),
+       // NOTE: This SI will be used as the destination of a copy of the desktop
+       // texture via the raster interface. Hence, it needs RASTER_WRITE usage
+       // as well as GLES2_WRITE usage for the case where the raster interface
+       // is going over GLES2.
+       // TODO(crbug.com/1508447): Remove GLES2_WRITE usage once the browser
+       // main thread using the RasterDecoder implementation has definitively
+       // landed.
+       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+           gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+       "ArcScreenCapture"},
+      std::move(handle));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 

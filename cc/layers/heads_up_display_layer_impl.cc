@@ -324,9 +324,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       }
       backing->shared_image = sii->CreateSharedImage(
-          pool_resource.format(), pool_resource.size(),
-          pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, flags, "HeadsUpDisplayLayer",
+          {pool_resource.format(), pool_resource.size(),
+           pool_resource.color_space(), flags, "HeadsUpDisplayLayer"},
           gpu::kNullSurfaceHandle);
       CHECK(backing->shared_image);
       auto* ri = raster_context_provider->RasterInterface();
@@ -352,10 +351,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         auto backing = std::make_unique<HudSoftwareBacking>();
         backing->layer_tree_frame_sink = layer_tree_frame_sink;
         auto shared_image_mapping = sii->CreateSharedImage(
-            pool_resource.format(), pool_resource.size(),
-            pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
-            "HeadsUpDisplayLayer");
+            {pool_resource.format(), pool_resource.size(),
+             pool_resource.color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
+             "HeadsUpDisplayLayer"});
 
         backing->shared_image = std::move(shared_image_mapping.shared_image);
         backing->shared_mapping = std::move(shared_image_mapping.mapping);

@@ -77,22 +77,13 @@ class GPU_EXPORT ClientSharedImage
     raw_ptr<gfx::GpuMemoryBuffer> buffer_;
   };
 
-  struct Metadata {
-    viz::SharedImageFormat format;
-    gfx::Size size;
-    gfx::ColorSpace color_space;
-    GrSurfaceOrigin surface_origin;
-    SkAlphaType alpha_type;
-    uint32_t usage;
-  };
-
   explicit ClientSharedImage(
       const Mailbox& mailbox,
-      const Metadata& metadata,
+      const SharedImageMetadata& metadata,
       const SyncToken& sync_token,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder);
   ClientSharedImage(const Mailbox& mailbox,
-                    const Metadata& metadata,
+                    const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     GpuMemoryBufferHandleInfo handle_info,
                     scoped_refptr<SharedImageInterfaceHolder> sii_holder);
@@ -141,13 +132,13 @@ class GPU_EXPORT ClientSharedImage
 
   static scoped_refptr<ClientSharedImage> CreateForTesting() {
     return base::MakeRefCounted<ClientSharedImage>(
-        Mailbox::GenerateForSharedImage(), Metadata(), gpu::SyncToken(),
-        nullptr);
+        Mailbox::GenerateForSharedImage(), SharedImageMetadata(),
+        gpu::SyncToken(), nullptr);
   }
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const Mailbox& mailbox,
-      const Metadata& metadata,
+      const SharedImageMetadata& metadata,
       const SyncToken& sync_token,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
@@ -162,7 +153,7 @@ class GPU_EXPORT ClientSharedImage
   ~ClientSharedImage();
 
   const Mailbox mailbox_;
-  const Metadata metadata_;
+  const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
@@ -176,11 +167,11 @@ struct GPU_EXPORT ExportedSharedImage {
   friend class viz::TestSharedImageInterface;
 
   ExportedSharedImage(const Mailbox& mailbox,
-                      const ClientSharedImage::Metadata& metadata,
+                      const SharedImageMetadata& metadata,
                       const SyncToken& sync_token);
 
   const Mailbox mailbox_;
-  const ClientSharedImage::Metadata metadata_;
+  const SharedImageMetadata metadata_;
   SyncToken sync_token_;
 };
 

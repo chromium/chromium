@@ -140,9 +140,8 @@ RoundedDisplayFrameFactory::CreateUiResource(const gfx::Size& size,
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
-  auto client_shared_image = sii->CreateSharedImage(
-      format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, usage, "RoundedDisplayFrameUi",
+  auto client_shared_image = sii->CreateSharedImage({
+      format, size, gfx::ColorSpace(), usage, "RoundedDisplayFrameUi"},
       gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
   if (!client_shared_image) {
     LOG(ERROR) << "Failed to create MappableSharedImage";

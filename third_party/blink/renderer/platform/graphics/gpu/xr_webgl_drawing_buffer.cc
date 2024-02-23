@@ -500,10 +500,10 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   auto client_shared_image = sii->CreateSharedImage(
-      alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
-             : viz::SinglePlaneFormat::kRGBX_8888,
-      size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      usage, "XRWebGLDrawingBuffer", gpu::kNullSurfaceHandle);
+      {alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
+              : viz::SinglePlaneFormat::kRGBX_8888,
+       size_, gfx::ColorSpace(), usage, "XRWebGLDrawingBuffer"},
+      gpu::kNullSurfaceHandle);
   CHECK(client_shared_image);
 
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();

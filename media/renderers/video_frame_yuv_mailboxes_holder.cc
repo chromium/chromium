@@ -189,9 +189,10 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     // exist already.
     if (!created_shared_images_) {
       auto client_shared_image = sii->CreateSharedImage(
-          format, video_frame->coded_size(), video_frame->ColorSpace(),
-          kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
-          "VideoFrameYUV", gpu::kNullSurfaceHandle);
+          {format, video_frame->coded_size(), video_frame->ColorSpace(),
+           kTopLeft_GrSurfaceOrigin, kPlaneAlphaType, mailbox_usage,
+           "VideoFrameYUV"},
+          gpu::kNullSurfaceHandle);
       CHECK(client_shared_image);
       holders_[0].mailbox = client_shared_image->mailbox();
       holders_[0].texture_target = GL_TEXTURE_2D;
@@ -229,10 +230,11 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
       int num_channels = yuva_info_.numChannelsInPlane(plane);
       viz::SharedImageFormat format =
           PlaneSharedImageFormat(num_channels, caps.texture_rg);
-      auto client_shared_image = sii->CreateSharedImage(
-          format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
-          kPlaneAlphaType, mailbox_usage, "VideoFrameYUV",
-          gpu::kNullSurfaceHandle);
+      auto client_shared_image =
+          sii->CreateSharedImage({format, tex_size, video_frame->ColorSpace(),
+                                  kTopLeft_GrSurfaceOrigin, kPlaneAlphaType,
+                                  mailbox_usage, "VideoFrameYUV"},
+                                 gpu::kNullSurfaceHandle);
       CHECK(client_shared_image);
       holders_[plane].mailbox = client_shared_image->mailbox();
       holders_[plane].texture_target = GL_TEXTURE_2D;

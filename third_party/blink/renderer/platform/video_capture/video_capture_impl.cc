@@ -648,10 +648,10 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
       scoped_refptr<gpu::ClientSharedImage> client_shared_image;
       if (create_multiplanar_image) {
         client_shared_image = sii->CreateSharedImage(
-            multiplanar_si_format, gpu_memory_buffer->GetSize(),
-            video_frame_init_data.ready_buffer->info->color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-            "VideoCaptureFrameBuffer", gpu_memory_buffer->CloneHandle());
+            {multiplanar_si_format, gpu_memory_buffer->GetSize(),
+             video_frame_init_data.ready_buffer->info->color_space, usage,
+             "VideoCaptureFrameBuffer"},
+            gpu_memory_buffer->CloneHandle());
 
       } else {
         client_shared_image = sii->CreateSharedImage(
@@ -659,9 +659,9 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
             video_frame_init_data.buffer_context->gpu_factories()
                 ->GpuMemoryBufferManager(),
             planes[plane],
-            video_frame_init_data.ready_buffer->info->color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-            "VideoCaptureFrameBuffer");
+            {video_frame_init_data.ready_buffer->info->color_space,
+             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+             "VideoCaptureFrameBuffer"});
       }
       CHECK(client_shared_image);
       video_frame_init_data.buffer_context->gmb_resources()

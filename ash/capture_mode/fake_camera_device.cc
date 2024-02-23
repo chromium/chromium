@@ -49,11 +49,10 @@ scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       ->context_factory()
       ->SharedMainThreadRasterContextProvider()
       ->SharedImageInterface()
-      ->CreateSharedImage(viz::SinglePlaneFormat::kBGRA_8888, frame_size,
-                          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                          kPremul_SkAlphaType, shared_image_usage,
-                          "FakeCameraDevice", gpu::kNullSurfaceHandle,
-                          gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      ->CreateSharedImage(
+          {viz::SinglePlaneFormat::kBGRA_8888, frame_size, gfx::ColorSpace(),
+           shared_image_usage, "FakeCameraDevice"},
+          gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 }
 
 SkRect GetCircleRect(const gfx::Point& center, int radius) {

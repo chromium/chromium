@@ -140,8 +140,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
       shared_image_ =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-              shared_image_format, size, color_space, kTopLeft_GrSurfaceOrigin,
-              kPremul_SkAlphaType, usage, "FuchsiaVideoDecoder",
+              {shared_image_format, size, color_space, usage,
+               "FuchsiaVideoDecoder"},
               std::move(gmb_handle));
     } else {
       // Note that we are keeping |gmb| creation intact here for the sake of not
@@ -154,9 +154,9 @@ class FuchsiaVideoDecoder::OutputMailbox {
 
       shared_image_ =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-              gmb.get(), nullptr, gfx::BufferPlane::DEFAULT, color_space,
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-              "FuchsiaVideoDecoder");
+              gmb.get(), nullptr, gfx::BufferPlane::DEFAULT,
+              {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+               usage, "FuchsiaVideoDecoder"});
     }
 
     create_sync_token_ = raster_context_provider_->SharedImageInterface()

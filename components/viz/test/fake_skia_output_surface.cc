@@ -292,12 +292,13 @@ void FakeSkiaOutputSurface::CopyOutput(
     // usage flags passed in are currently arbitrary, since callers don't
     // actually do anything meaningful with the SharedImage.
     auto* sii = GetSharedImageInterface();
-    auto client_shared_image = sii->CreateSharedImage(
-        SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
-        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-            gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
-        "CopyOutput", gpu::kNullSurfaceHandle);
+    auto client_shared_image =
+        sii->CreateSharedImage({SinglePlaneFormat::kRGBA_8888,
+                                geometry.result_selection.size(), color_space,
+                                gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                    gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
+                                "CopyOutput"},
+                               gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
     gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 

@@ -399,9 +399,9 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 #endif
       CHECK_EQ(buffer_planes_.size(), 1u);
       shared_images_[0] = shared_image_interface->CreateSharedImage(
-          format, gmb->GetSize(), frame_info->color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-          "CameraVideoFrame", gmb->CloneHandle());
+          {format, gmb->GetSize(), frame_info->color_space, kSharedImageUsage,
+           "CameraVideoFrame"},
+          gmb->CloneHandle());
       CHECK(shared_images_[0]);
     } else {
       gpu::GpuMemoryBufferManager* gmb_manager =
@@ -409,8 +409,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
         shared_images_[plane] = shared_image_interface->CreateSharedImage(
             gmb.get(), gmb_manager, buffer_planes_[plane],
-            frame_info->color_space, kTopLeft_GrSurfaceOrigin,
-            kPremul_SkAlphaType, kSharedImageUsage, "CameraVideoFrame");
+            {frame_info->color_space, kTopLeft_GrSurfaceOrigin,
+             kPremul_SkAlphaType, kSharedImageUsage, "CameraVideoFrame"});
         CHECK(shared_images_[plane]);
       }
     }

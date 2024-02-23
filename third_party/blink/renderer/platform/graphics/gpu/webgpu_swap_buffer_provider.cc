@@ -178,8 +178,9 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
       usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
     }
     auto client_shared_image = sii->CreateSharedImage(
-        Format(), size, PredefinedColorSpaceToGfxColorSpace(color_space_),
-        kTopLeft_GrSurfaceOrigin, alpha_mode, usage, "WebGPUSwapBufferProvider",
+        {Format(), size, PredefinedColorSpaceToGfxColorSpace(color_space_),
+         kTopLeft_GrSurfaceOrigin, alpha_mode, usage,
+         "WebGPUSwapBufferProvider"},
         gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();

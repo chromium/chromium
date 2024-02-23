@@ -611,9 +611,8 @@ class VideoResourceUpdater::SoftwarePlaneResource
                               : viz::SharedBitmap::GenerateId()) {
     if (shared_image_interface_) {
       auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
-          viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater");
+          {viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "VideoResourceUpdater"});
       shared_image_ = std::move(shared_image_mapping.shared_image);
       shared_mapping_ = std::move(shared_image_mapping.mapping);
       CHECK(shared_image_);
@@ -740,8 +739,7 @@ class VideoResourceUpdater::HardwarePlaneResource
           SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
     shared_image_ = sii->CreateSharedImage(
-        format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage, "VideoResourceUpdater",
+        {format, size, color_space, shared_image_usage, "VideoResourceUpdater"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
     InterfaceBase()->WaitSyncTokenCHROMIUM(

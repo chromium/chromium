@@ -194,9 +194,9 @@ class OopPixelTest : public testing::Test,
                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     auto client_shared_image = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
-        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, "TestLabel", gpu::kNullSurfaceHandle);
+        {viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
+         options.target_color_params.color_space, flags, "TestLabel"},
+        gpu::kNullSurfaceHandle);
     EXPECT_TRUE(client_shared_image->mailbox().Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -278,9 +278,9 @@ class OopPixelTest : public testing::Test,
                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     auto client_shared_image = sii->CreateSharedImage(
-        image_format, options.resource_size,
-        color_space.value_or(options.target_color_params.color_space),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "TestLabel",
+        {image_format, options.resource_size,
+         color_space.value_or(options.target_color_params.color_space), flags,
+         "TestLabel"},
         gpu::kNullSurfaceHandle);
     EXPECT_TRUE(client_shared_image->mailbox().Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());

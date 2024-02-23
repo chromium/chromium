@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 #if !BUILDFLAG(IS_NACL)
@@ -31,7 +32,6 @@
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace gfx {
-class ColorSpace;
 class GpuFence;
 class Size;
 
@@ -46,6 +46,57 @@ struct ExportedSharedImage;
 class GpuMemoryBufferManager;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
+
+struct SharedImageMetadata {
+  viz::SharedImageFormat format;
+  gfx::Size size;
+  gfx::ColorSpace color_space;
+  GrSurfaceOrigin surface_origin;
+  SkAlphaType alpha_type;
+  uint32_t usage;
+};
+
+struct SharedImageInfo {
+  SharedImageInfo(const viz::SharedImageFormat& format,
+                  gfx::Size size,
+                  const gfx::ColorSpace& color_space,
+                  GrSurfaceOrigin surface_origin,
+                  SkAlphaType alpha_type,
+                  uint32_t usage,
+                  std::string_view debug_label)
+      : meta(format, size, color_space, surface_origin, alpha_type, usage),
+        debug_label(debug_label) {}
+  SharedImageInfo(const viz::SharedImageFormat& format,
+                  gfx::Size size,
+                  const gfx::ColorSpace& color_space,
+                  uint32_t usage,
+                  std::string_view debug_label)
+      : meta(format,
+             size,
+             color_space,
+             kTopLeft_GrSurfaceOrigin,
+             kPremul_SkAlphaType,
+             usage),
+        debug_label(debug_label) {}
+  // This constructor exists only to support the DEPRECATED CreareSharedImage
+  // call below that accepts a GpuMemoryBuffer. This should be removed when that
+  // call is removed.
+  SharedImageInfo(const gfx::ColorSpace& color_space,
+                  GrSurfaceOrigin surface_origin,
+                  SkAlphaType alpha_type,
+                  uint32_t usage,
+                  std::string_view debug_label)
+      : SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888,
+                        gfx::Size(),
+                        color_space,
+                        surface_origin,
+                        alpha_type,
+                        usage,
+                        debug_label) {}
+
+  SharedImageMetadata meta;
+  std::string debug_label;
+};
 
 // An interface to create shared images and swap chains that can be imported
 // into other APIs. This interface is thread-safe and (essentially) stateless.
@@ -72,13 +123,7 @@ class GPU_EXPORT SharedImageInterface
   // |debug_label| is retained for heap dumps and passed to graphics APIs for
   // tracing tools. Pick a name that is unique to the allocation site.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle) = 0;
 
   // Same behavior as the above, except that this version takes |pixel_data|
@@ -90,13 +135,7 @@ class GPU_EXPORT SharedImageInterface
   // |pixel_data| explicitly. Some backings have different row alignment
   // requirements which the caller has to match exactly or it won't work.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       base::span<const uint8_t> pixel_data) = 0;
 
   // Same behavior as above methods, except that this version is specifically
@@ -109,13 +148,7 @@ class GPU_EXPORT SharedImageInterface
   // we figure out mapping between BufferUsage and SharedImageUsage and
   // eliminate all usages of BufferUsage.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage);
 
@@ -132,13 +165,7 @@ class GPU_EXPORT SharedImageInterface
   // we figure out mapping between BufferUsage and SharedImageUsage and
   // eliminate all usages of BufferUsage.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
@@ -152,13 +179,7 @@ class GPU_EXPORT SharedImageInterface
   // `DestroySharedImage()` is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
   struct GPU_EXPORT SharedImageMapping {
@@ -180,13 +201,7 @@ class GPU_EXPORT SharedImageInterface
   // created out this buffer. This method is used by the software compositor
   // only.
   virtual SharedImageMapping CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) = 0;
+      const SharedImageInfo& si_info) = 0;
 
   // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
   // single planar eg. RGB BufferFormats. Please use the equivalent method above
@@ -213,11 +228,7 @@ class GPU_EXPORT SharedImageInterface
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) = 0;
+      const SharedImageInfo& si_info) = 0;
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.

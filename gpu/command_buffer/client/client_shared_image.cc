@@ -83,7 +83,7 @@ void ClientSharedImage::ScopedMapping::OnMemoryDump(
 
 ClientSharedImage::ClientSharedImage(
     const Mailbox& mailbox,
-    const Metadata& metadata,
+    const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder)
     : mailbox_(mailbox),
@@ -95,7 +95,7 @@ ClientSharedImage::ClientSharedImage(
 
 ClientSharedImage::ClientSharedImage(
     const Mailbox& mailbox,
-    const Metadata& metadata,
+    const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     GpuMemoryBufferHandleInfo handle_info,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder)
@@ -160,10 +160,9 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
       exported_shared_image.sync_token_, nullptr);
 }
 
-ExportedSharedImage::ExportedSharedImage(
-    const Mailbox& mailbox,
-    const ClientSharedImage::Metadata& metadata,
-    const SyncToken& sync_token)
+ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
+                                         const SharedImageMetadata& metadata,
+                                         const SyncToken& sync_token)
     : mailbox_(mailbox), metadata_(metadata), sync_token_(sync_token) {}
 
 }  // namespace gpu

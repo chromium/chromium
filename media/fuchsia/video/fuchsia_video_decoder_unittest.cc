@@ -105,39 +105,21 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   TestSharedImageInterface() = default;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle) override {
     ADD_FAILURE();
     return nullptr;
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       base::span<const uint8_t> pixel_data) override {
     ADD_FAILURE();
     return nullptr;
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
@@ -146,58 +128,36 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label,
+      const gpu::SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
     mailboxes_.insert(result);
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        result,
-        gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                         surface_origin, alpha_type, usage),
-        gpu::SyncToken(), holder_);
+        result, si_info.meta, gpu::SyncToken(), holder_);
   }
 
   SharedImageInterface::SharedImageMapping CreateSharedImage(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override {
-    return {
-        base::MakeRefCounted<gpu::ClientSharedImage>(
-            gpu::Mailbox(),
-            gpu::ClientSharedImage::Metadata(format, size, color_space,
-                                             surface_origin, alpha_type, usage),
-            gpu::SyncToken(), holder_),
-        base::WritableSharedMemoryMapping()};
+      const gpu::SharedImageInfo& si_info) override {
+    return {base::MakeRefCounted<gpu::ClientSharedImage>(
+                gpu::Mailbox(), si_info.meta, gpu::SyncToken(), holder_),
+            base::WritableSharedMemoryMapping()};
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::StringPiece debug_label) override {
+      const gpu::SharedImageInfo& si_info) override {
     auto result = GenerateMailboxForGMBHandle(gpu_memory_buffer->CloneHandle());
     mailboxes_.insert(result);
     return base::MakeRefCounted<gpu::ClientSharedImage>(
         result,
-        gpu::ClientSharedImage::Metadata(viz::GetSinglePlaneSharedImageFormat(
-                                             gpu_memory_buffer->GetFormat()),
-                                         gpu_memory_buffer->GetSize(),
-                                         color_space, surface_origin,
-                                         alpha_type, usage),
+        gpu::SharedImageMetadata(viz::GetSinglePlaneSharedImageFormat(
+                                     gpu_memory_buffer->GetFormat()),
+                                 gpu_memory_buffer->GetSize(),
+                                 si_info.meta.color_space,
+                                 si_info.meta.surface_origin,
+                                 si_info.meta.alpha_type, si_info.meta.usage),
         gpu::SyncToken(), holder_);
   }
 

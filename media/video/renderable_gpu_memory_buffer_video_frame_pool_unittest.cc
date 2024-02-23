@@ -51,9 +51,9 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                         gpu_memory_buffer->CloneHandle());
     return base::MakeRefCounted<gpu::ClientSharedImage>(
         gpu::Mailbox::GenerateForSharedImage(),
-        gpu::ClientSharedImage::Metadata(
-            si_format, gpu_memory_buffer->GetSize(), color_space,
-            surface_origin, alpha_type, usage),
+        gpu::SharedImageMetadata(si_format, gpu_memory_buffer->GetSize(),
+                                 color_space, surface_origin, alpha_type,
+                                 usage),
         sync_token, nullptr);
   }
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -68,11 +68,10 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                         alpha_type, usage);
     return base::MakeRefCounted<gpu::ClientSharedImage>(
         gpu::Mailbox::GenerateForSharedImage(),
-        gpu::ClientSharedImage::Metadata(viz::GetSinglePlaneSharedImageFormat(
-                                             gpu_memory_buffer->GetFormat()),
-                                         gpu_memory_buffer->GetSize(),
-                                         color_space, surface_origin,
-                                         alpha_type, usage),
+        gpu::SharedImageMetadata(viz::GetSinglePlaneSharedImageFormat(
+                                     gpu_memory_buffer->GetFormat()),
+                                 gpu_memory_buffer->GetSize(), color_space,
+                                 surface_origin, alpha_type, usage),
         sync_token, nullptr);
   }
 

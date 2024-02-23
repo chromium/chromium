@@ -190,11 +190,11 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
                                         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
     swap_chain_info.shared_image = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
-        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                        gfx::ColorSpace::TransferID::LINEAR),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-        "OpenXrSwapChain", std::move(gpu_memory_buffer_handle));
+        {viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
+         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                         gfx::ColorSpace::TransferID::LINEAR),
+         shared_image_usage, "OpenXrSwapChain"},
+        std::move(gpu_memory_buffer_handle));
     CHECK(swap_chain_info.shared_image);
     swap_chain_info.sync_token = sii->GenVerifiedSyncToken();
   }

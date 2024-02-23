@@ -169,9 +169,8 @@ TransferableResource CreateTestTexture(
       child_context_provider->SharedImageInterface();
   DCHECK(sii);
   auto client_shared_image = sii->CreateSharedImage(
-      SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"},
       base::as_byte_span(pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 

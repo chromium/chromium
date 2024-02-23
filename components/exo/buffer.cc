@@ -232,10 +232,10 @@ Buffer::Texture::Texture(
                          gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
-  shared_image_ = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      gpu::kExoTextureLabelPrefix, gpu::kNullSurfaceHandle);
+  shared_image_ =
+      sii->CreateSharedImage({viz::SinglePlaneFormat::kRGBA_8888, size,
+                              color_space, usage, gpu::kExoTextureLabelPrefix},
+                             gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
@@ -281,15 +281,16 @@ Buffer::Texture::Texture(
   if (media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
     auto si_format = GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
     shared_image_ = sii->CreateSharedImage(
-        si_format, gpu_memory_buffer_->GetSize(), color_space,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-        gpu::kExoTextureLabelPrefix, gpu_memory_buffer_->CloneHandle());
+        {si_format, gpu_memory_buffer_->GetSize(), color_space, usage,
+         gpu::kExoTextureLabelPrefix},
+        gpu_memory_buffer_->CloneHandle());
 
   } else {
     shared_image_ = sii->CreateSharedImage(
         gpu_memory_buffer_, gpu_memory_buffer_manager,
-        gfx::BufferPlane::DEFAULT, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, gpu::kExoTextureLabelPrefix);
+        gfx::BufferPlane::DEFAULT,
+        {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+         gpu::kExoTextureLabelPrefix});
   }
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
@@ -304,8 +305,9 @@ Buffer::Texture::Texture(
 
 Buffer::Texture::~Texture() {
   DestroyResources();
-  if (context_provider_)
+  if (context_provider_) {
     context_provider_->RemoveObserver(this);
+  }
 }
 
 void Buffer::Texture::OnContextLost() {
@@ -364,8 +366,9 @@ void Buffer::Texture::ReleaseSharedImage(
   // fence.
   if (context_provider_ && resource.release_fence.is_null()) {
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    if (resource.sync_token.HasData())
+    if (resource.sync_token.HasData()) {
       ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
+    }
     ri->BeginQueryEXT(query_type_, query_id_);
     ri->EndQueryEXT(query_type_);
     // Run callback when query result is available (i.e., when all operations on
@@ -440,13 +443,15 @@ void Buffer::Texture::ReleaseWhenQueryResultIsAvailable(
 }
 
 void Buffer::Texture::Released() {
-  if (!release_callback_.is_null())
+  if (!release_callback_.is_null()) {
     std::move(release_callback_).Run();
+  }
 }
 
 void Buffer::Texture::ScheduleWaitForRelease(base::TimeDelta delay) {
-  if (wait_for_release_pending_)
+  if (wait_for_release_pending_) {
     return;
+  }
 
   wait_for_release_pending_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -460,8 +465,9 @@ void Buffer::Texture::WaitForRelease() {
   DCHECK(wait_for_release_pending_);
   wait_for_release_pending_ = false;
 
-  if (release_callback_.is_null())
+  if (release_callback_.is_null()) {
     return;
+  }
 
   base::TimeTicks current_time = base::TimeTicks::Now();
   if (current_time < wait_for_release_time_) {
@@ -574,10 +580,12 @@ bool Buffer::ProduceTransferableResource(
   next_commit_id_++;
 
   // If textures are lost, destroy them to ensure that we create new ones below.
-  if (contents_texture_ && contents_texture_->IsLost())
+  if (contents_texture_ && contents_texture_->IsLost()) {
     contents_texture_.reset();
-  if (texture_ && texture_->IsLost())
+  }
+  if (texture_ && texture_->IsLost()) {
     texture_.reset();
+  }
 
   ui::ContextFactory* context_factory =
       aura::Env::GetInstance()->context_factory();
@@ -588,9 +596,10 @@ bool Buffer::ProduceTransferableResource(
     DLOG(WARNING) << "Failed to acquire a context provider";
     resource->id = viz::kInvalidResourceId;
     resource->size = gfx::Size();
-    if (per_commit_explicit_release_callback)
+    if (per_commit_explicit_release_callback) {
       std::move(per_commit_explicit_release_callback)
           .Run(/*release_fence=*/gfx::GpuFenceHandle());
+    }
     return false;
   }
 
@@ -619,10 +628,11 @@ bool Buffer::ProduceTransferableResource(
   }
   Texture* contents_texture = contents_texture_.get();
 
-  if (release_contents_callback_.IsCancelled())
+  if (release_contents_callback_.IsCancelled()) {
     TRACE_EVENT_ASYNC_BEGIN1("exo", kBufferInUse, gpu_memory_buffer_.get(),
                              "buffer_id",
                              static_cast<const void*>(gfx_buffer()));
+  }
 
   // Cancel pending contents release callback.
   release_contents_callback_.Reset(
@@ -738,8 +748,9 @@ void Buffer::OnDetach() {
 
   // Release buffer if no longer attached to a surface and content has been
   // released.
-  if (!attach_count_ && release_contents_callback_.IsCancelled())
+  if (!attach_count_ && release_contents_callback_.IsCancelled()) {
     Release();
+  }
 }
 
 gfx::Size Buffer::GetSize() const {

@@ -357,9 +357,9 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
 
   CHECK_EQ(buffer_format, gfx::BufferFormat::RGBA_8888);
   auto client_shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "WebXrMailboxToSurfaceBridge", std::move(buffer_handle));
+      {viz::SinglePlaneFormat::kRGBA_8888, size, color_space, usage,
+       "WebXrMailboxToSurfaceBridge"},
+      std::move(buffer_handle));
   CHECK(client_shared_image);
   sync_token = sii->GenVerifiedSyncToken();
   DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format));

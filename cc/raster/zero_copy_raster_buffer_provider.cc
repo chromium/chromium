@@ -119,9 +119,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
       backing_->shared_image = sii->CreateSharedImage(
-          format_, resource_size_, resource_color_space_,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-          "ZeroCopyRasterTile", gpu::kNullSurfaceHandle, kBufferUsage);
+          {format_, resource_size_, resource_color_space_, usage,
+           "ZeroCopyRasterTile"},
+          gpu::kNullSurfaceHandle, kBufferUsage);
       if (!backing_->shared_image) {
         LOG(ERROR) << "Creation of MappableSharedImage failed.";
         return;

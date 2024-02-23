@@ -544,12 +544,12 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
   // to match a use case that would actually be put into a TransferableResource
   // in production.
   gpu::Mailbox mailbox =
-      sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1),
-                             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                             kPremul_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-                             "TestLabel", gpu::kNullSurfaceHandle)
+      sii->CreateSharedImage(
+             {SinglePlaneFormat::kRGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
+              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                  gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+              "TestLabel"},
+             gpu::kNullSurfaceHandle)
           ->mailbox();
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 

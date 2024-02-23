@@ -344,10 +344,9 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   if (!staging_buffer->client_shared_image) {
     auto* sii = worker_context_provider_->SharedImageInterface();
     staging_buffer->client_shared_image = sii->CreateSharedImage(
-        format, staging_buffer->size, dst_color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE,
-        "OneCopyRasterStaging", gpu::kNullSurfaceHandle,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+        {format, staging_buffer->size, dst_color_space,
+         gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "OneCopyRasterStaging"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
     if (!staging_buffer->client_shared_image) {
       LOG(ERROR) << "Creation of StagingBuffer's SharedImage failed.";
       return false;
@@ -400,8 +399,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     if (mailbox_texture_is_overlay_candidate)
       usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     shared_image = sii->CreateSharedImage(
-        format, resource_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "OneCopyRasterTile",
+        {format, resource_size, color_space, usage, "OneCopyRasterTile"},
         gpu::kNullSurfaceHandle);
     CHECK(shared_image);
     // Clear the resource if we're not going to initialize it fully from the

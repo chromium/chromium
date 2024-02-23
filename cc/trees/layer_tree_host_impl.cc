@@ -4665,9 +4665,9 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 
-    auto shared_image_mapping = sii->CreateSharedImage(
-        format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource");
+    auto shared_image_mapping =
+        sii->CreateSharedImage({format, upload_size, color_space,
+                                shared_image_usage, "LayerTreeHostUIResource"});
     client_shared_image = std::move(shared_image_mapping.shared_image);
     shared_mapping = std::move(shared_image_mapping.mapping);
     CHECK(client_shared_image);
@@ -4685,8 +4685,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       client_shared_image = sii->CreateSharedImage(
-          format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
+          {format, upload_size, color_space, shared_image_usage,
+           "LayerTreeHostUIResource"},
           base::span<const uint8_t>(bitmap.GetPixels(), bitmap.SizeInBytes()));
       CHECK(client_shared_image);
     } else {
@@ -4752,8 +4752,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       client_shared_image = sii->CreateSharedImage(
-          format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
+          {format, upload_size, color_space, shared_image_usage,
+           "LayerTreeHostUIResource"},
           base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(pixmap.addr()),
               pixmap.computeByteSize()));

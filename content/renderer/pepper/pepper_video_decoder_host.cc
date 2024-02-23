@@ -427,11 +427,13 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
   // These shared images have the contents of VideoFrames copied into them via
   // the raster interface and then are read and/or written by the plugin via GL.
   auto client_shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
-      "PepperVideoDecoder", gpu::SurfaceHandle());
+      {viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+           gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+       "PepperVideoDecoder"},
+      gpu::SurfaceHandle());
   CHECK(client_shared_image);
   auto mailbox = client_shared_image->mailbox();
 

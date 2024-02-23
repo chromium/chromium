@@ -1854,10 +1854,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     }
 
     yuv_cache_.shared_image = sii->CreateSharedImage(
-        SHARED_IMAGE_FORMAT, video_frame->coded_size(),
-        GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-        "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
+        {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
+         GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()), usage,
+         "PaintCanvasVideoRenderer"},
+        gpu::kNullSurfaceHandle);
     CHECK(yuv_cache_.shared_image);
     token = sii->GenUnverifiedSyncToken();
   }
@@ -2087,10 +2087,10 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           flags |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
         }
         client_shared_image = sii->CreateSharedImage(
-            SHARED_IMAGE_FORMAT, video_frame->coded_size(),
-            GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
-            "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
+            {SHARED_IMAGE_FORMAT, video_frame->coded_size(),
+             GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()), flags,
+             "PaintCanvasVideoRenderer"},
+            gpu::kNullSurfaceHandle);
         CHECK(client_shared_image);
         mailbox = client_shared_image->mailbox();
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
