@@ -277,7 +277,10 @@ bool CanEagerlySimplify(const CSSMathExpressionNode* operand) {
     case CalculationResultCategory::kCalcResolution:
       return true;
     case CalculationResultCategory::kCalcLength:
-      return !CSSPrimitiveValue::IsRelativeUnit(operand->ResolvedUnitType());
+      return !CSSPrimitiveValue::IsRelativeUnit(operand->ResolvedUnitType()) &&
+             (!RuntimeEnabledFeatures::
+                  CSSAnchorPositioningComputeAnchorEnabled() ||
+              !operand->IsAnchorQuery());
     default:
       return false;
   }
@@ -2325,15 +2328,38 @@ bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
 
 // ------ Start of CSSMathExpressionAnchorQuery member functions ------
 
+namespace {
+
+CalculationResultCategory AnchorQueryCategory(
+    const CSSPrimitiveValue* fallback) {
+  if (!RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled()) {
+    // Anchor queries are resolved used-value time.
+    return kCalcPercentLength;
+  }
+  // Note that the main (non-fallback) result of an anchor query is always
+  // a kCalcLength, so the only thing that can make our overall result anything
+  // else is the fallback.
+  if (!fallback || fallback->IsLength()) {
+    return kCalcLength;
+  }
+  // This can happen for e.g. anchor(--a top, 10%). In this case, we can't
+  // tell if we're going to return a <length> or a <percentage> without actually
+  // evaluating the query.
+  //
+  // TODO(crbug.com/326088870): Evaluate anchor queries when understanding
+  // the CalculationResultCategory for an expression.
+  return kCalcPercentLength;
+}
+
+}  // namespace
+
 CSSMathExpressionAnchorQuery::CSSMathExpressionAnchorQuery(
     CSSAnchorQueryType type,
     const CSSValue* anchor_specifier,
     const CSSValue& value,
     const CSSPrimitiveValue* fallback)
     : CSSMathExpressionNode(
-          RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled()
-              ? kCalcLength
-              : kCalcPercentLength,
+          AnchorQueryCategory(fallback),
           false /* has_comparisons */,
           (anchor_specifier && !anchor_specifier->IsScopedValue()) ||
               (fallback && !fallback->IsScopedValue())),
@@ -2354,20 +2380,18 @@ double CSSMathExpressionAnchorQuery::ComputeLengthPx(
 
 double CSSMathExpressionAnchorQuery::ComputeDouble(
     const CSSLengthResolver& length_resolver) const {
+  CHECK_EQ(kCalcLength, Category());
+  // Note: The category may also be kCalcPercentLength (see
+  // AnchorQueryCategory), in which case we'll reach ToCalculationExpression
+  // instead.
+
   CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled());
 
   // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
-  scoped_refptr<const CalculationExpressionNode> node =
-      ToCalculationExpression(length_resolver);
+  scoped_refptr<const CalculationExpressionNode> query =
+      ToCalculationExpressionQuery(length_resolver);
 
-  std::optional<LayoutUnit> px;
-
-  if (Length::AnchorEvaluator* anchor_evaluator =
-          length_resolver.AnchorEvaluator()) {
-    px = anchor_evaluator->Evaluate(*node);
-  }
-
-  if (px.has_value()) {
+  if (std::optional<LayoutUnit> px = EvaluateQuery(*query, length_resolver)) {
     return px.value();
   }
 
@@ -2455,6 +2479,40 @@ CSSAnchorSizeValue CSSValueIDToAnchorSizeValueEnum(CSSValueID value) {
 
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
+    const CSSLengthResolver& length_resolver) const {
+  scoped_refptr<const CalculationExpressionNode> query =
+      ToCalculationExpressionQuery(length_resolver);
+
+  // TODO(crbug.com/41483417): Remove CalculationExpressionAnchorQueryNode.
+  if (!RuntimeEnabledFeatures::CSSAnchorPositioningComputeAnchorEnabled()) {
+    return query;
+  }
+
+  Length result;
+
+  if (std::optional<LayoutUnit> px = EvaluateQuery(*query, length_resolver)) {
+    result = Length::Fixed(px.value());
+  } else if (fallback_) {
+    result = fallback_->ConvertToLength(length_resolver);
+  } else {
+    result = Length::Fixed(0);
+  }
+
+  return result.AsCalculationValue()->GetOrCreateExpression();
+}
+
+std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
+    const CalculationExpressionNode& query,
+    const CSSLengthResolver& length_resolver) const {
+  if (Length::AnchorEvaluator* anchor_evaluator =
+          length_resolver.AnchorEvaluator()) {
+    return anchor_evaluator->Evaluate(query);
+  }
+  return std::nullopt;
+}
+
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionAnchorQuery::ToCalculationExpressionQuery(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(IsScopedValue());
   AnchorSpecifierValue* anchor_specifier = AnchorSpecifierValue::Default();
