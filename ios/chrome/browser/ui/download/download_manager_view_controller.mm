@@ -26,10 +26,8 @@ namespace {
 
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 // Names of icons used in Download buttons or as leading icon.
-NSString* const kFilesAppImage = @"apple_files_app";
 NSString* const kFilesAppWithBackgroundImage =
     @"apple_files_app_with_background";
-NSString* const kDriveAppImage = @"google_drive_app";
 NSString* const kDriveAppWithBackgroundImage =
     @"google_drive_app_with_background";
 #endif
@@ -42,12 +40,10 @@ constexpr CGFloat kWidthConstraintCompactMultiplier = 1.0;
 constexpr CGFloat kRowHeight = 32;
 constexpr CGFloat kRowHorizontalMargins = 16;
 constexpr CGFloat kRowVerticalMargins = 8;
-constexpr CGFloat kRowSpacing = 8;
+constexpr CGFloat kRowSpacing = 12;
 
 // Other UI elements constants.
 constexpr CGFloat kLeadingIconSize = 24;
-constexpr CGFloat kLeadingIconBorderWidth = 1;
-constexpr CGFloat kLeadingIconCornerRadius = 3.5;
 constexpr CGFloat kTextStackSpacing = 2;
 constexpr CGFloat kProgressViewLineWidth = 2.5;
 constexpr CGFloat kCloseButtonIconSize = 30;
@@ -64,20 +60,16 @@ NSString* GetSizeString(int64_t size_in_bytes) {
   return result;
 }
 
-// Returns the appropriate image for a destination icon, with or without
-// background.
-UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination,
-                                         bool with_background) {
+// Returns the appropriate image for a destination icon.
+UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination) {
   NSString* image_name = nil;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   switch (destination) {
     case DownloadFileDestination::kFiles:
-      image_name =
-          with_background ? kFilesAppWithBackgroundImage : kFilesAppImage;
+      image_name = kFilesAppWithBackgroundImage;
       break;
     case DownloadFileDestination::kDrive:
-      image_name =
-          with_background ? kDriveAppWithBackgroundImage : kDriveAppImage;
+      image_name = kDriveAppWithBackgroundImage;
       break;
   }
 
@@ -393,14 +385,6 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
     _leadingIcon = [[UIImageView alloc] init];
     _leadingIcon.translatesAutoresizingMaskIntoConstraints = NO;
     _leadingIcon.contentMode = UIViewContentModeCenter;
-    _leadingIcon.layer.borderColor =
-        [[UIColor colorNamed:kGrey200Color]
-            resolvedColorWithTraitCollection:
-                [UITraitCollection traitCollectionWithUserInterfaceStyle:
-                                       UIUserInterfaceStyleLight]]
-            .CGColor;
-    _leadingIcon.layer.borderWidth = kLeadingIconBorderWidth;
-    _leadingIcon.layer.cornerRadius = kLeadingIconCornerRadius;
     [_leadingIcon setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:UILayoutConstraintAxisHorizontal];
   }
@@ -738,7 +722,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 // Sets up views for the state `kDownloadManagerStateInProgress`.
 - (void)updateViewsForStateInProgress {
   self.leadingIcon.image =
-      GetDownloadFileDestinationImage(_downloadFileDestination, true);
+      GetDownloadFileDestinationImage(_downloadFileDestination);
 
   switch (_downloadFileDestination) {
       // File is being downloaded to local Downloads folder.
@@ -769,7 +753,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 // Sets up views for the state `kDownloadManagerStateSucceeded`.
 - (void)updateViewsForStateSucceeded {
   self.leadingIcon.image =
-      GetDownloadFileDestinationImage(_downloadFileDestination, true);
+      GetDownloadFileDestinationImage(_downloadFileDestination);
   switch (_downloadFileDestination) {
     // File was downloaded to local Downloads folder.
     case DownloadFileDestination::kFiles:
@@ -792,7 +776,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 // Sets up views for the state `kDownloadManagerStateFailed`.
 - (void)updateViewsForStateFailed {
   self.leadingIcon.image =
-      GetDownloadFileDestinationImage(_downloadFileDestination, true);
+      GetDownloadFileDestinationImage(_downloadFileDestination);
   self.statusLabel.text =
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD);
   self.detailLabel.text = _fileName;
@@ -802,7 +786,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 // Sets up views for the state `kDownloadManagerStateFailedNotResumable`.
 - (void)updateViewsForStateFailedNotResumable {
   self.leadingIcon.image =
-      GetDownloadFileDestinationImage(_downloadFileDestination, true);
+      GetDownloadFileDestinationImage(_downloadFileDestination);
   self.statusLabel.text =
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
   self.detailLabel.text = _fileName;
