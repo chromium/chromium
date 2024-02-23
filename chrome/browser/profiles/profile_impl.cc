@@ -794,8 +794,11 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // Not necessary for profiles that don't have a BookmarkModel.
   // On CrOS sync service will be initialized after sign in.
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(this);
-  if (model)
-    model->AddObserver(new BookmarkModelLoadedObserver(this));
+  if (model) {
+    // `BookmarkModelLoadedObserver` destroys itself eventually, when loading
+    // completes.
+    new BookmarkModelLoadedObserver(this, model);
+  }
 #endif
 
   // The ad service might not be available for some irregular profiles, like the
