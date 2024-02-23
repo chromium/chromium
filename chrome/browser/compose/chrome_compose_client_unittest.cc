@@ -444,6 +444,9 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   histograms().ExpectUniqueSample(compose::kComposeRequestReason,
                                   compose::ComposeRequestReason::kFirstRequest,
                                   1);
+  histograms().ExpectUniqueSample("Compose.Server.Request.Reason",
+                                  compose::ComposeRequestReason::kFirstRequest,
+                                  1);
   // Check that a request result OK metric was emitted.
   histograms().ExpectUniqueSample(compose::kComposeRequestStatus,
                                   compose::mojom::ComposeStatus::kOk, 1);
@@ -583,6 +586,19 @@ TEST_F(ChromeComposeClientTest, TestComposeServerAndOnDeviceResponses) {
 
   histograms().ExpectBucketCount("Compose.Session.EvalLocation",
                                  compose::SessionEvalLocation::kMixed, 1);
+
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kFirstRequest,
+                                 1);
+  histograms().ExpectUniqueSample("Compose.Server.Request.Reason",
+                                  compose::ComposeRequestReason::kFirstRequest,
+                                  1);
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kRetryRequest,
+                                 1);
+  histograms().ExpectUniqueSample("Compose.OnDevice.Request.Reason",
+                                  compose::ComposeRequestReason::kRetryRequest,
+                                  1);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
@@ -737,9 +753,15 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponsesAnimated) {
   // Check that a single request result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(compose::kComposeRequestStatus,
                                       compose::mojom::ComposeStatus::kOk, 1);
+  histogram_tester.ExpectUniqueSample("Compose.OnDevice.Request.Status",
+                                      compose::mojom::ComposeStatus::kOk, 1);
   // Check that a single request duration OK metric was emitted.
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationOkSuffix}), 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"Compose.OnDevice", compose::kComposeRequestDurationOkSuffix}),
+      1);
   // Check that no request duration Error metric was emitted.
   histogram_tester.ExpectTotalCount(
       base::StrCat({"Compose", compose::kComposeRequestDurationErrorSuffix}),
@@ -862,8 +884,6 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeRequestTimeout) {
-  base::HistogramTester histogram_tester;
-
   // Set config such that requests time out immediately.
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.request_latency_timeout_seconds = 0;
@@ -2535,6 +2555,15 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
                    ->was_generated_via_edit());
 
   histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kFirstRequest,
+                                 1);
+  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
+                                 compose::ComposeRequestReason::kFirstRequest,
+                                 1);
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kUpdateRequest,
+                                 1);
+  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
                                  compose::ComposeRequestReason::kUpdateRequest,
                                  1);
 
@@ -2588,6 +2617,9 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   EXPECT_EQ("Tomatoes", result->result);
 
   histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kRetryRequest,
+                                 1);
+  histograms().ExpectBucketCount("Compose.Server.Request.Reason",
                                  compose::ComposeRequestReason::kRetryRequest,
                                  1);
 
@@ -2683,12 +2715,18 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
       compose::ComposeRequestReason::kToneFormalRequest, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Request.Reason",
+      compose::ComposeRequestReason::kToneFormalRequest, 1);
 
   page_handler()->Rewrite(
       compose::mojom::StyleModifiers::NewTone(compose::mojom::Tone::kCasual));
   result = test_future.Take();
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kToneCasualRequest, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Request.Reason",
       compose::ComposeRequestReason::kToneCasualRequest, 1);
 
   // Make sure the async call to CloseUI completes before navigating away.
@@ -2793,12 +2831,18 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
       compose::ComposeRequestReason::kLengthElaborateRequest, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Request.Reason",
+      compose::ComposeRequestReason::kLengthElaborateRequest, 1);
 
   page_handler()->Rewrite(compose::mojom::StyleModifiers::NewLength(
       compose::mojom::Length::kShorter));
   result = test_future.Take();
   histograms().ExpectBucketCount(
       compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kLengthShortenRequest, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Request.Reason",
       compose::ComposeRequestReason::kLengthShortenRequest, 1);
 
   // Make sure the async call to CloseUI completes before navigating away.

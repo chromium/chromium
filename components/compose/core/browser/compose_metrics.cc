@@ -213,19 +213,27 @@ void PageUkmTracker::MaybeLogUkm() {
 ComposeSessionEvents::ComposeSessionEvents() {}
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
-  UMA_HISTOGRAM_ENUMERATION(kComposeContextMenuCtr, event);
+  base::UmaHistogramEnumeration(kComposeContextMenuCtr, event);
 }
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
-  UMA_HISTOGRAM_ENUMERATION(kComposeShowStatus, status);
+  base::UmaHistogramEnumeration(kComposeShowStatus, status);
 }
 
 void LogOpenComposeDialogResult(OpenComposeDialogResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kOpenComposeDialogResult, result);
+  base::UmaHistogramEnumeration(kOpenComposeDialogResult, result);
 }
 
 void LogComposeRequestReason(ComposeRequestReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(kComposeRequestReason, reason);
+  base::UmaHistogramEnumeration(kComposeRequestReason, reason);
+}
+
+void LogComposeRequestReason(EvalLocation eval_location,
+                             ComposeRequestReason reason) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Compose.", EvalLocationString(eval_location), ".Request.Reason"}),
+      reason);
 }
 
 void LogComposeRequestStatus(EvalLocation eval_location,

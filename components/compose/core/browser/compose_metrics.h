@@ -309,6 +309,8 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 void LogOpenComposeDialogResult(OpenComposeDialogResult result);
 
 void LogComposeRequestReason(ComposeRequestReason reason);
+void LogComposeRequestReason(EvalLocation eval_location,
+                             ComposeRequestReason reason);
 
 void LogComposeRequestStatus(EvalLocation eval_location,
                              compose::mojom::ComposeStatus status);

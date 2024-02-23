@@ -120,18 +120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Request.Reason" enum="ComposeRequestReason"
-    expires_after="2024-07-02">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Records the reason a Compose request is started. This includes the first
-    request from the input state, retries, updates and modifications made by the
-    user for a reuqest. Logged each time a Compose request is sent by the user
-    to the Compose service.
-  </summary>
-</histogram>
-
 <histogram name="Compose.Session.DialogShownCount.{FinalStatus}" units="count"
     expires_after="2024-08-11">
   <owner>perrier@chromium.org</owner>
@@ -265,6 +253,28 @@ chromium-metrics-reviews@google.com.
     feedback can no longer be modified for a request. {ComposeEvalLocation}
   </summary>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Request.Reason"
+    enum="ComposeRequestReason" expires_after="2024-07-02">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records the reason a Compose request is started. This includes the first
+    request from the input state, retries, updates and modifications made by the
+    user for a reuqest. {ComposeEvalLocation}
+  </summary>
+  <token key="ComposeEvalLocation">
+    <variant name=""
+        summary="Logged each time a Compose request is sent. Recorded for all
+                 evaluation locations."/>
+    <variant name="OnDevice."
+        summary="Logged each time a Compose response that was evalued on
+                 device is received."/>
+    <variant name="Server."
+        summary="Logged each time a Compose response that was evalued on the
+                 server is received."/>
+  </token>
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Status"

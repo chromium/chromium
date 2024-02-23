@@ -198,12 +198,14 @@ class ComposeSession
   void ModelExecutionCallback(
       const base::ElapsedTimer& request_start,
       int request_id,
+      compose::ComposeRequestReason request_reason,
       bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
   void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
+      compose::ComposeRequestReason request_reason,
       bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
@@ -214,12 +216,14 @@ class ComposeSession
 
   // Makes compose or rewrite request.
   void MakeRequest(optimization_guide::proto::ComposeRequest request,
+                   compose::ComposeRequestReason request_reason,
                    bool is_input_edited);
 
   // RequestWithSession can either be called synchronously or on a later event
   // loop.
   void RequestWithSession(
       const optimization_guide::proto::ComposeRequest& request,
+      compose::ComposeRequestReason request_reason,
       bool is_input_edited);
 
   // Callback for processing a timeout error for Compose request with `id`.
