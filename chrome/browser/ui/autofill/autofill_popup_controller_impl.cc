@@ -163,23 +163,20 @@ void AutofillPopupControllerImpl::Show(
       .hide_on_text_field_change =
           IsRootPopup() && suggestions.size() == 1 &&
           suggestions[0].popup_item_id == PopupItemId::kCompose};
-
   AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(
       &AutofillPopupControllerImpl::Hide, base::Unretained(this));
-
   AutofillPopupHideHelper::PictureInPictureDetectionCallback
       pip_detection_callback = base::BindRepeating(
-          [](base::WeakPtr<AutofillPopupView> view) {
-            return view && view->OverlapsWithPictureInPictureWindow();
+          [](base::WeakPtr<AutofillPopupControllerImpl> controller) {
+            return controller && controller->view_ &&
+                   controller->view_->OverlapsWithPictureInPictureWindow();
           },
-          view_);
-
+          GetWeakPtr());
   // The hide helper is destroyed on hide, so it cannot outlive the popup
   // controller.
   popup_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
       web_contents_.get(), std::move(hiding_params), std::move(hiding_callback),
       std::move(pip_detection_callback));
-
   // If the hide helper is null, then no frame has focus.
   if (!popup_hide_helper_) {
     Hide(PopupHidingReason::kNoFrameHasFocus);
