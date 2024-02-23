@@ -44,7 +44,7 @@ class AcceleratedVideoDecoder;
 class VaapiVideoDecoderDelegate;
 class DmabufVideoFramePool;
 class VaapiWrapper;
-class VideoFrame;
+class FrameResource;
 class VASurface;
 
 class VaapiVideoDecoder : public VideoDecoderMixin,
@@ -137,9 +137,9 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // decoder, or encountering an error.
   void ClearDecodeTaskQueue(DecoderStatus status);
 
-  // Releases the local reference to the VideoFrame associated with the
+  // Releases the local reference to the FrameResource associated with the
   // specified |surface_id| on the decoder thread. This is called when
-  // |decoder_| has outputted the VideoFrame and stopped using it as a
+  // |decoder_| has outputted the FrameResource and stopped using it as a
   // reference frame. Note that this doesn't mean the frame can be reused
   // immediately, as it might still be used by the client.
   void ReleaseVideoFrame(VASurfaceID surface_id);
@@ -186,7 +186,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
       bool needs_detiling,
       base::TimeDelta timestamp);
 
-  // Allocates a new VideoFrame using a new VASurface directly. Since this is
+  // Allocates a new FrameResource using a new VASurface directly. Since this is
   // only used on linux, it also sets the required YCbCr information for the
   // frame it creates.
   CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrame(
@@ -241,7 +241,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   int32_t next_buffer_id_ = 0;
 
   // The list of frames currently used as output buffers or reference frames.
-  std::map<VASurfaceID, scoped_refptr<VideoFrame>> output_frames_;
+  std::map<VASurfaceID, scoped_refptr<FrameResource>> output_frames_;
 
   // VASurfaces are created via importing resources from a DmabufVideoFramePool
   // into libva in CreateSurface(). The following map keeps those VASurfaces for

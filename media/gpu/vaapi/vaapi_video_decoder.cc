@@ -29,6 +29,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -500,7 +501,8 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
   DCHECK(client_);
   DmabufVideoFramePool* frame_pool = client_->GetVideoFramePool();
   DCHECK(frame_pool);
-  scoped_refptr<VideoFrame> frame = frame_pool->GetFrame();
+  scoped_refptr<FrameResource> frame =
+      VideoFrameResource::Create(frame_pool->GetFrame());
   if (!frame) {
     // Ask the video frame pool to notify us when new frames are available, so
     // we can retry the current decode task.
@@ -509,22 +511,21 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
     return nullptr;
   }
 
-  const gfx::GpuMemoryBufferId frame_id = GetSharedMemoryId(*frame);
+  const gfx::GpuMemoryBufferId frame_id = frame->GetSharedMemoryId();
   DCHECK(frame_id.is_valid());
 
   scoped_refptr<VASurface> va_surface;
   if (!base::Contains(allocated_va_surfaces_, frame_id)) {
-    scoped_refptr<gfx::NativePixmap> pixmap =
-        CreateNativePixmapDmaBuf(frame.get());
+    scoped_refptr<gfx::NativePixmap> pixmap = frame->CreateNativePixmapDmaBuf();
     if (!pixmap) {
-      SetErrorState("failed to create NativePixmap from VideoFrame");
+      SetErrorState("failed to create NativePixmap from FrameResource");
       return nullptr;
     }
 
     va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
         std::move(pixmap), cdm_context_ref_ || transcryption_);
     if (!va_surface || va_surface->id() == VA_INVALID_ID) {
-      SetErrorState("failed to create VASurface from VideoFrame");
+      SetErrorState("failed to create VASurface from FrameResource");
       return nullptr;
     }
 
@@ -576,24 +577,25 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
   // Find the frame associated with the surface. We won't erase it from
   // |output_frames_| yet, as the decoder might still be using it for reference.
   DCHECK_EQ(output_frames_.count(va_surface->id()), 1u);
-  scoped_refptr<VideoFrame> video_frame = output_frames_[va_surface->id()];
+  scoped_refptr<FrameResource> frame = output_frames_[va_surface->id()];
 
   // Set the timestamp at which the decode operation started on the
-  // |video_frame|. If the frame has been outputted before (e.g. because of VP9
+  // |frame|. If the frame has been outputted before (e.g. because of VP9
   // show-existing-frame feature) we can't overwrite the timestamp directly, as
   // the original frame might still be in use. Instead we wrap the frame in
   // another frame with a different timestamp.
-  if (video_frame->timestamp().is_zero())
-    video_frame->set_timestamp(timestamp);
+  if (frame->timestamp().is_zero()) {
+    frame->set_timestamp(timestamp);
+  }
 
-  if (video_frame->visible_rect() != visible_rect ||
-      video_frame->timestamp() != timestamp) {
+  if (frame->visible_rect() != visible_rect ||
+      frame->timestamp() != timestamp) {
     gfx::Size natural_size = aspect_ratio_.GetNaturalSize(visible_rect);
-    scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-        video_frame, video_frame->format(), visible_rect, natural_size);
+    scoped_refptr<FrameResource> wrapped_frame =
+        frame->CreateWrappingFrame(visible_rect, natural_size);
     wrapped_frame->set_timestamp(timestamp);
 
-    video_frame = std::move(wrapped_frame);
+    frame = std::move(wrapped_frame);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -605,21 +607,19 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
 
     static_assert(
         std::is_same<decltype(va_protected_session_id),
-                     decltype(
-                         video_frame->metadata()
-                             .hw_va_protected_session_id)::value_type>::value,
+                     decltype(frame->metadata().hw_va_protected_session_id)::
+                         value_type>::value,
         "The type of VideoFrameMetadata::hw_va_protected_session_id "
         "does not match the type exposed by VaapiWrapper");
-    video_frame->metadata().hw_va_protected_session_id =
-        va_protected_session_id;
+    frame->metadata().hw_va_protected_session_id = va_protected_session_id;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const auto gfx_color_space = color_space.ToGfxColorSpace();
   if (gfx_color_space.IsValid())
-    video_frame->set_color_space(gfx_color_space);
-  video_frame->set_hdr_metadata(hdr_metadata_);
-  output_cb_.Run(VideoFrameResource::Create(std::move(video_frame)));
+    frame->set_color_space(gfx_color_space);
+  frame->set_hdr_metadata(hdr_metadata_);
+  output_cb_.Run(std::move(frame));
 }
 
 void VaapiVideoDecoder::
@@ -811,12 +811,13 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   // buffer returned by the video frame pool. We should create a test to make
   // sure this assumption is never violated.
   // TODO(b/203240043): Create a GMB directly instead of allocating a
-  // VideoFrame.
-  scoped_refptr<VideoFrame> dummy_frame = CreateGpuMemoryBufferVideoFrame(
-      *format, decoder_pic_size, decoder_visible_rect, decoder_natural_size,
-      /*timestamp=*/base::TimeDelta(),
-      cdm_context_ref_ ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
-                       : gfx::BufferUsage::SCANOUT_VDA_WRITE);
+  // FrameResource.
+  scoped_refptr<FrameResource> dummy_frame =
+      VideoFrameResource::Create(CreateGpuMemoryBufferVideoFrame(
+          *format, decoder_pic_size, decoder_visible_rect, decoder_natural_size,
+          /*timestamp=*/base::TimeDelta(),
+          cdm_context_ref_ ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+                           : gfx::BufferUsage::SCANOUT_VDA_WRITE));
   if (!dummy_frame) {
     SetErrorState("failed to allocate a dummy buffer");
     return;
@@ -936,7 +937,7 @@ CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
   if (!gmb)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
   const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
-  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, natural_size, std::move(gmb), mailbox_holders,
       base::NullCallback(), timestamp);
 
