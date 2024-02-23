@@ -8837,28 +8837,6 @@
                     "enable_features": [
                         "IOSDockingPromo"
                     ]
-                },
-                {
-                    "name": "Enabled_Beta_20240222",
-                    "params": {
-                        "IOSDockingPromoExperimentType": "1",
-                        "IOSDockingPromoNewUserInactiveThresholdHours": "12",
-                        "IOSDockingPromoOldUserInactiveThresholdHours": "24"
-                    },
-                    "enable_features": [
-                        "IOSDockingPromo"
-                    ]
-                },
-                {
-                    "name": "Enabled_20240222",
-                    "params": {
-                        "IOSDockingPromoExperimentType": "1",
-                        "IOSDockingPromoNewUserInactiveThresholdHours": "24",
-                        "IOSDockingPromoOldUserInactiveThresholdHours": "72"
-                    },
-                    "enable_features": [
-                        "IOSDockingPromo"
-                    ]
                 }
             ]
         }
