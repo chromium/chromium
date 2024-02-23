@@ -97,7 +97,8 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
            base::ranges::any_of(options.identity()->providers(),
                                 &IdentityProviderConfig::hasHolder);
   }
-  return options.hasDigital() && options.digital()->hasProviders();
+  return options.hasDigital() && options.digital()->hasProviders() &&
+         !options.digital()->providers().empty();
 }
 
 ScriptPromise DiscoverDigitalIdentityCredentialFromExternalSource(
