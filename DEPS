@@ -1123,7 +1123,7 @@ deps = {
   },
 
   'src/third_party/google_benchmark/src':
-    Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + 'b177433f3ee2513b1075140c723d73ab8901790f',
+    Var('chromium_git') + '/external/github.com/google/benchmark.git' + '@' + '344117638c8ff7e239044fd0fa7085839fc03021',
 
   'src/third_party/boringssl/src':
     Var('boringssl_git') + '/boringssl.git' + '@' +  Var('boringssl_revision'),

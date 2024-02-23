@@ -63,9 +63,7 @@ component("google_benchmark") {
   all_dependent_configs = [ ":benchmark_config" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-  ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 
   if (is_win) {
     configs -= [ "//build/config/win:nominmax" ]
@@ -78,7 +76,7 @@ component("google_benchmark") {
     "HAVE_STD_REGEX=1",
 
     # google_benchmark expects a BENCHMARK_VERSION definition
-    "BENCHMARK_VERSION=\"1.7.1\"",
+    "BENCHMARK_VERSION=\"1.8.3\"",
   ]
 }
 
