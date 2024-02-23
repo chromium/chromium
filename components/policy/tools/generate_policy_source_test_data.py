@@ -877,6 +877,8 @@ const std::array<StringListPolicyAccess, 0> kStringListPolicyAccess {{
 POLICY_CONSTANTS_SOURCE_WIN_ONLY_PART = '''
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const wchar_t kRegistryChromePolicyKey[] = L"SOFTWARE\\\\Policies\\\\Google\\\\Chrome";
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+const wchar_t kRegistryChromePolicyKey[] = L"SOFTWARE\\\\Policies\\\\Google\\\\Chrome for Testing";
 #else
 const wchar_t kRegistryChromePolicyKey[] = L"SOFTWARE\\\\Policies\\\\Chromium";
 #endif
