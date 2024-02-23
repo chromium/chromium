@@ -1009,10 +1009,10 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
 
   VLOG(0) << "Selected candidate-pair changed, reason = " << event.reason;
   VLOG(0) << "  Local IP = " << local_candidate.address().ToString()
-          << ", type = " << local_candidate.type()
+          << ", type = " << local_candidate.type_name()
           << ", protocol = " << local_candidate.protocol();
   VLOG(0) << "  Remote IP = " << remote_candidate.address().ToString()
-          << ", type = " << remote_candidate.type()
+          << ", type = " << remote_candidate.type_name()
           << ", protocol = " << remote_candidate.protocol();
 
   // Try to convert local and peer addresses. These may sometimes be invalid,

@@ -160,7 +160,7 @@ void IceTransportChannel::AddRemoteCandidate(
   // candidates. It's also necessary to discard remote relay candidates.
   bool relay_allowed = (transport_context_->network_settings().flags &
                         NetworkSettings::NAT_TRAVERSAL_RELAY) != 0;
-  if (!relay_allowed && candidate.type() == cricket::RELAY_PORT_TYPE) {
+  if (!relay_allowed && candidate.is_relay()) {
     return;
   }
 
