@@ -370,6 +370,20 @@ void ViewAccessibility::FireFocusAfterMenuClose() {
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
+void ViewAccessibility::SetCharacterOffsets(
+    const std::vector<int32_t>& offsets) {
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                            offsets);
+}
+
+void ViewAccessibility::SetWordStarts(const std::vector<int32_t>& offsets) {
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts, offsets);
+}
+
+void ViewAccessibility::SetWordEnds(const std::vector<int32_t>& offsets) {
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, offsets);
+}
+
 void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
   data_.SetHasPopup(has_popup);
 }

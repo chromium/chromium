@@ -105,6 +105,12 @@ class VIEWS_EXPORT ViewAccessibility {
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
 
+  void SetCharacterOffsets(const std::vector<int32_t>& offsets);
+
+  void SetWordStarts(const std::vector<int32_t>& offsets);
+
+  void SetWordEnds(const std::vector<int32_t>& offsets);
+
   void SetHasPopup(const ax::mojom::HasPopup has_popup);
 
   void SetRole(const ax::mojom::Role role);
@@ -272,8 +278,14 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverrideChildTreeID(ui::AXTreeID tree_id);
   ui::AXTreeID GetChildTreeID() const;
 
+  // Deprecated. Use ViewAccessibility::SetCharacterOffsets instead.
+  // See https://crbug.com/324485311.
   void OverrideCharacterOffsets(const std::vector<int32_t>& offsets);
+  // Deprecated. Use ViewAccessibility::SetWordStarts instead.
+  // See https://crbug.com/324485311.
   void OverrideWordStarts(const std::vector<int32_t>& offsets);
+  // Deprecated. Use ViewAccessibility::SetWordEnds instead.
+  // See https://crbug.com/324485311.
   void OverrideWordEnds(const std::vector<int32_t>& offsets);
 
   void ClearTextOffsets();
