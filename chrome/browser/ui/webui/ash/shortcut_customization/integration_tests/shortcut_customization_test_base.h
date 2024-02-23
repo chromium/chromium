@@ -31,19 +31,6 @@ class ShortcutCustomizationInteractiveUiTestBase
       const ShortcutCustomizationInteractiveUiTestBase&) = delete;
   ~ShortcutCustomizationInteractiveUiTestBase() override;
 
-  // Query to pierce through Shadow DOM to find the keyboard.
-  const DeepQuery kEditButtonQuery{
-      "shortcut-customization-app",
-      "navigation-view-panel#navigationPanel",
-      "#category-0",
-      "#container",
-      "accelerator-subsection",
-      "tbody#rowList",
-      // Action 93 corresponds to the "Open/Close Calendar" shortcut.
-      "accelerator-row[action='93']",
-      "cr-icon-button.edit-button",
-  };
-
   const DeepQuery kCalendarAcceleratorRowQuery{
       "shortcut-customization-app",
       "navigation-view-panel#navigationPanel",
@@ -80,14 +67,14 @@ class ShortcutCustomizationInteractiveUiTestBase
       "#restoreDefault",
   };
 
-  auto OpenCalendarShortcutDialog() {
+  auto OpenEditShortcutDialog(const DeepQuery& query) {
     CHECK(webcontents_id_);
-    return Steps(
-        ExecuteJsAt(webcontents_id_, kCalendarAcceleratorRowQuery, kFocusFn),
-        ExecuteJsAt(webcontents_id_, kEditButtonQuery, kClickFn));
+    const auto edit_button_query = query + "cr-icon-button.edit-button";
+    return Steps(ExecuteJsAt(webcontents_id_, query, kFocusFn),
+                 ExecuteJsAt(webcontents_id_, edit_button_query, kClickFn));
   }
 
-  auto AddCustomCalendarShortcut(ui::Accelerator new_accel) {
+  auto AddCustomShortcut(ui::Accelerator new_accel) {
     CHECK(webcontents_id_);
     return Steps(
         ExecuteJsAt(webcontents_id_, kAddShortcutButtonQuery, kClickFn),
@@ -103,11 +90,12 @@ class ShortcutCustomizationInteractiveUiTestBase
         ExecuteJsAt(webcontents_id_, kDoneButtonQuery, kClickFn));
   }
 
-  auto ResetCalendarShortcuts() {
+  auto ResetShortcut(const DeepQuery& query) {
     CHECK(webcontents_id_);
+    const auto edit_button_query = query + "cr-icon-button.edit-button";
     return Steps(
-        ExecuteJsAt(webcontents_id_, kCalendarAcceleratorRowQuery, kFocusFn),
-        ExecuteJsAt(webcontents_id_, kEditButtonQuery, kClickFn),
+        ExecuteJsAt(webcontents_id_, query, kFocusFn),
+        ExecuteJsAt(webcontents_id_, edit_button_query, kClickFn),
         ExecuteJsAt(webcontents_id_, kRestoreDefaultsButtonQuery, kClickFn),
         ExecuteJsAt(webcontents_id_, kDoneButtonQuery, kClickFn));
   }

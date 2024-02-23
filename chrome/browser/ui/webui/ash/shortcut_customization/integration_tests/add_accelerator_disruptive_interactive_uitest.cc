@@ -35,7 +35,8 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
       InAnyContext(Steps(
-          OpenCalendarShortcutDialog(), ClickAddShortcutButton(),
+          OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
+          ClickAddShortcutButton(),
           Log("Attempting to Add Alt + Shift + I as a custom open/close "
               "calendar shortcut"),
           SendAccelerator(webcontents_id_, feedback_accel),

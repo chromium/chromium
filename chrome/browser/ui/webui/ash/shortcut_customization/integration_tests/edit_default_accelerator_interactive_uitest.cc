@@ -23,7 +23,8 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
       InAnyContext(Steps(
-          OpenCalendarShortcutDialog(), EditDefaultShortcut(new_accel),
+          OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
+          EditDefaultShortcut(new_accel),
           Log("Setting Search + Ctrl + n as the default open/close calendar "
               "shortcut"),
           FocusWebContents(webcontents_id_), EnsureAcceleratorsAreProcessed(),

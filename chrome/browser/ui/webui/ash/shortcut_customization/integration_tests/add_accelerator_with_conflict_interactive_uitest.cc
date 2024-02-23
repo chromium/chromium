@@ -28,26 +28,26 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
 
   RunTestSequence(
       LaunchShortcutCustomizationApp(),
-      InAnyContext(
-          Steps(OpenCalendarShortcutDialog(), ClickAddShortcutButton(),
-                SendAccelerator(webcontents_id_, new_accel),
-                Log("Attempting to Add Search + Ctrl + s as a custom "
-                    "open/close calendar "
-                    "shortcut"),
-                EnsurePresent(webcontents_id_, kErrorMessageConflictQuery),
-                Log("Verifying the conflict error message is shown"),
-                SendAccelerator(webcontents_id_, new_accel), ClickDoneButton(),
-                Log("Pressed the shortcut again to bypass the warning message"),
-                EnsureAcceleratorsAreProcessed(),
-                SendAccelerator(webcontents_id_, new_accel),
-                WaitForShow(kCalendarViewElementId),
-                Log("New accelerator opens calendar"),
-                SendShortcutAccelerator(new_accel),
-                WaitForHide(kCalendarViewElementId),
-                Log("New accelerator closes calendar"),
-                SendShortcutAccelerator(default_accel),
-                EnsurePresent(kCalendarViewElementId),
-                Log("Default accelerator also opens the calendar"))));
+      InAnyContext(Steps(
+          OpenEditShortcutDialog(kCalendarAcceleratorRowQuery),
+          ClickAddShortcutButton(), SendAccelerator(webcontents_id_, new_accel),
+          Log("Attempting to Add Search + Ctrl + s as a custom "
+              "open/close calendar "
+              "shortcut"),
+          EnsurePresent(webcontents_id_, kErrorMessageConflictQuery),
+          Log("Verifying the conflict error message is shown"),
+          SendAccelerator(webcontents_id_, new_accel), ClickDoneButton(),
+          Log("Pressed the shortcut again to bypass the warning message"),
+          EnsureAcceleratorsAreProcessed(),
+          SendAccelerator(webcontents_id_, new_accel),
+          WaitForShow(kCalendarViewElementId),
+          Log("New accelerator opens calendar"),
+          SendShortcutAccelerator(new_accel),
+          WaitForHide(kCalendarViewElementId),
+          Log("New accelerator closes calendar"),
+          SendShortcutAccelerator(default_accel),
+          EnsurePresent(kCalendarViewElementId),
+          Log("Default accelerator also opens the calendar"))));
 }
 
 }  // namespace
