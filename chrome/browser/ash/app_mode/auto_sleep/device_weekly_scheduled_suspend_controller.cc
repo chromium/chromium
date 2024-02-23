@@ -6,9 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "chrome/browser/browser_process.h"
@@ -21,6 +24,10 @@ namespace ash {
 using ::policy::WeeklyTimeInterval;
 
 namespace {
+
+// Tag prefix for instances of `RepeatingTimeIntervalTaskExecutor`.
+const char kRepeatingTaskExecutorTagPrefix[] =
+    "DeviceWeeklyScheduledSuspend_%zu";
 
 // Extracts a vector of WeeklyTimeInterval objects from the policy config.
 // Returns a vector containing nullptr for invalid dictionary entries.
@@ -74,14 +81,25 @@ BuildIntervalExecutorsFromConfig(
   std::vector<std::unique_ptr<WeeklyTimeInterval>> intervals =
       GetPolicyConfigAsWeeklyTimeIntervals(policy_config);
 
+  std::vector<std::string> task_executor_tags;
+
+  for (size_t i = 0; i < intervals.size(); ++i) {
+    std::string executor_tag =
+        base::StringPrintf(kRepeatingTaskExecutorTagPrefix, i);
+    task_executor_tags.emplace_back(executor_tag);
+  }
+
   std::vector<std::unique_ptr<RepeatingTimeIntervalTaskExecutor>> executors;
-  std::ranges::transform(
-      intervals, std::back_inserter(executors),
-      [&](const std::unique_ptr<WeeklyTimeInterval>& interval) {
-        CHECK(interval != nullptr);
-        return std::make_unique<RepeatingTimeIntervalTaskExecutor>(
-            std::move(*interval), on_start_callback, on_end_callback);
-      });
+
+  std::transform(intervals.begin(), intervals.end(), task_executor_tags.begin(),
+                 std::back_inserter(executors),
+                 [&](const std::unique_ptr<WeeklyTimeInterval>& interval,
+                     const std::string& executor_name) {
+                   CHECK(interval != nullptr);
+                   return std::make_unique<RepeatingTimeIntervalTaskExecutor>(
+                       std::move(*interval), on_start_callback, on_end_callback,
+                       executor_name);
+                 });
 
   return executors;
 }

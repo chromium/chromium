@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
@@ -30,6 +31,11 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
         device_weekly_scheduled_suspend_controller_(
             testing_local_state_.Get()) {}
 
+  // testing::Test:
+  void SetUp() override { chromeos::PowerManagerClient::InitializeFake(); }
+
+  void TearDown() override { chromeos::PowerManagerClient::Shutdown(); }
+
   void UpdatePolicyPref(base::Value::List schedule_list) {
     testing_local_state_.Get()->SetList(prefs::kDeviceWeeklyScheduledSuspend,
                                         std::move(schedule_list));
@@ -49,9 +55,13 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
     ASSERT_EQ(expected_intervals.size(), interval_executors.size());
     for (size_t i = 0; i < expected_intervals.size(); ++i) {
       ASSERT_TRUE(interval_executors[i]);
-      EXPECT_EQ(*expected_intervals[i],
-                interval_executors[i]->GetTimeInterval());
+      EXPECT_EQ(*expected_intervals[i], interval_executors[i]->time_interval());
     }
+  }
+
+  DeviceWeeklyScheduledSuspendController*
+  device_weekly_scheduled_suspend_controller() {
+    return &device_weekly_scheduled_suspend_controller_;
   }
 
  private:
@@ -142,6 +152,26 @@ TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
           .GetAsPrefValue());
 
   CheckIntervalsInController({});
+}
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
+       GeneratesUniquesExecutorTags) {
+  UpdatePolicyPref(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddWeeklySuspendInterval(DayOfWeek::MONDAY, base::Hours(21),
+                                    DayOfWeek::TUESDAY, base::Hours(7))
+          .AddWeeklySuspendInterval(DayOfWeek::SATURDAY, base::Hours(0),
+                                    DayOfWeek::MONDAY, base::Hours(7))
+          .GetAsPrefValue());
+
+  const RepeatingTimeIntervalTaskExecutors& interval_executors =
+      device_weekly_scheduled_suspend_controller()
+          ->GetIntervalExecutorsForTesting();
+  ASSERT_EQ(interval_executors.size(), 2ul);
+  EXPECT_EQ(interval_executors[0]->timer_tag(),
+            "DeviceWeeklyScheduledSuspend_0");
+  EXPECT_EQ(interval_executors[1]->timer_tag(),
+            "DeviceWeeklyScheduledSuspend_1");
 }
 
 }  // namespace ash
