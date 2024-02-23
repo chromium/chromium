@@ -18,6 +18,7 @@ import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-web
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
@@ -189,21 +190,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   static get template() {
     return getTemplate();
   }
-
-  // Defines the valid font names that can be passed to front-end and maps
-  // them to a corresponding class style in app.html. Must stay in-sync with
-  // the names set in read_anything_font_model.cc.
-  private defaultFontName_: string = 'sans-serif';
-  private validFontNames_: Array<{name: string, css: string}> = [
-    {name: 'Poppins', css: 'Poppins'},
-    {name: 'Sans-serif', css: 'sans-serif'},
-    {name: 'Serif', css: 'serif'},
-    {name: 'Comic Neue', css: '"Comic Neue"'},
-    {name: 'Lexend Deca', css: '"Lexend Deca"'},
-    {name: 'EB Garamond', css: '"EB Garamond"'},
-    {name: 'STIX Two Text', css: '"STIX Two Text"'},
-    {name: 'Andika', css: 'Andika'},
-  ];
 
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
@@ -1079,17 +1065,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
-  // this should be renamed to just validatedFontName_ and the current
-  // validatedFontName_ method can be removed.
-  private validatedFontNameFromName_(fontName: string): string {
-    // Validate that the given font name is a valid choice, or use the default.
-    const validFontName =
-        this.validFontNames_.find((f: {name: string}) => f.name === fontName);
-    return validFontName ? validFontName.css : this.defaultFontName_;
-  }
-
+  // this should be removed
   private validatedFontName_(): string {
-    return this.validatedFontNameFromName_(chrome.readingMode.fontName);
+    return validatedFontName(chrome.readingMode.fontName);
   }
 
   private getLinkColor_(backgroundSkColor: SkColor): LinkColor {
@@ -1221,13 +1199,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateFont(fontName: string) {
-    const validatedFontName = this.validatedFontNameFromName_(fontName);
+    const validFontName = validatedFontName(fontName);
     this.updateStyles({
-      '--font-family': validatedFontName,
+      '--font-family': validFontName,
     });
-
-    // Also update the font on the toolbar itself with the validated font name.
-    this.$.toolbar.style.fontFamily = validatedFontName;
   }
 
   updateFontSize() {

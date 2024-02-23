@@ -163,7 +163,9 @@ export class FakeReadingMode {
   onBlueTheme() {}
 
   // Called when the font is changed via the webui toolbar.
-  onFontChange(_font: string) {}
+  onFontChange(font: string) {
+    this.fontName = font;
+  }
 
   // Called when the speech rate is changed via the webui toolbar.
   onSpeechRateChange(rate: number) {

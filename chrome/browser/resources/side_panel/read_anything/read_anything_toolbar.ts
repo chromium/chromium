@@ -22,6 +22,7 @@ import type {DomRepeat, DomRepeatEvent} from '//resources/polymer/v3_0/polymer/p
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PauseActionSource, ReadAnythingElement} from './app.js';
+import {validatedFontName} from './common.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -375,14 +376,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       // scrollbar because the height is calculated before the font is set.
       // Therefore, only set the custom fonts on the individual items when
       // Read Aloud is enabled.
-      fontOptions.forEach(element => {
-        assert(element instanceof HTMLElement);
-        if (!element.innerText) {
-          return;
-        }
-        // Update the font of each button to be the same as the font text.
-        element.style.fontFamily = element.innerText;
-      });
+      this.setFontForFontOptions_(fontOptions);
     } else {
       const shadowRoot = this.shadowRoot;
       assert(shadowRoot);
@@ -392,6 +386,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       fontOptions = Array.from(select.options);
       select.selectedIndex = currentFontIndex;
     }
+  }
+
+  private setFontForFontOptions_(fontOptions: Element[]) {
+    fontOptions.forEach(element => {
+      assert(element instanceof HTMLElement);
+      if (!element.innerText) {
+        return;
+      }
+      // Update the font of each button to be the same as the font text.
+      element.style.fontFamily = element.innerText;
+    });
   }
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
@@ -437,6 +442,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
 
     this.$.fontTemplate.render();
+    if (this.isReadAloudEnabled_) {
+      this.setFontForFontOptions_(Array.from(this.$.fontMenu.children));
+    }
   }
 
 
@@ -584,10 +592,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
         ReadAnythingSettingsChange.COUNT);
     const fontName = event.model.item;
-    chrome.readingMode.onFontChange(fontName);
-    if (this.contentPage) {
-      this.contentPage.updateFont(fontName);
-    }
+    this.propagateFontChange_(fontName);
     this.setCheckMarkForMenu_(this.$.fontMenu, event.model.index);
 
     this.closeMenus_();
@@ -595,10 +600,15 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private onFontSelectValueChange_(event: Event) {
     const fontName = (event.target as HTMLSelectElement).value;
+    this.propagateFontChange_(fontName);
+  }
+
+  private propagateFontChange_(fontName: string) {
     chrome.readingMode.onFontChange(fontName);
     if (this.contentPage) {
       this.contentPage.updateFont(fontName);
     }
+    this.style.fontFamily = validatedFontName(fontName);
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {

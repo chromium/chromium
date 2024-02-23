@@ -63,6 +63,15 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontSize) {
   RunSidePanelTest("side_panel/read_anything/font_size_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontMenu) {
+  RunSidePanelTest("side_panel/read_anything/font_menu_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppFontChange) {
+  RunSidePanelTest("side_panel/read_anything/app_font_change_test.js",
+                   "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, PlayPause) {
   RunSidePanelTest("side_panel/read_anything/play_pause_test.js",
                    "mocha.run()");

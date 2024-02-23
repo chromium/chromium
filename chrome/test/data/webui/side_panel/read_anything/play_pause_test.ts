@@ -15,6 +15,7 @@ suite('PlayPause', () => {
   let app: ReadAnythingElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let playPauseButton: CrIconButtonElement;
+  let granularityContainer: HTMLElement;
 
   /**
    * Suppresses harmless ResizeObserver errors due to a browser bug.
@@ -51,6 +52,8 @@ suite('PlayPause', () => {
     playPauseButton =
         app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
             '#play-pause')!;
+    granularityContainer = app.$.toolbar.shadowRoot!.querySelector<HTMLElement>(
+        '#granularity-container')!;
   });
 
   suite('by default', () => {
@@ -61,6 +64,10 @@ suite('PlayPause', () => {
 
     test('shows play icon', () => {
       assertEquals(playPauseButton.ironIcon, 'read-anything-20:play');
+    });
+
+    test('granularity menu buttons hidden', () => {
+      assertTrue(granularityContainer.hidden);
     });
   });
 
@@ -79,6 +86,10 @@ suite('PlayPause', () => {
     test('updates icon to pause', () => {
       assertEquals(playPauseButton.ironIcon, 'read-anything-20:pause');
     });
+
+    test('granularity menu buttons show', () => {
+      assertFalse(granularityContainer.hidden);
+    });
   });
 
   suite('on second click', () => {
@@ -93,6 +104,10 @@ suite('PlayPause', () => {
 
     test('updates icon to play', () => {
       assertEquals(playPauseButton.ironIcon, 'read-anything-20:play');
+    });
+
+    test('granularity menu buttons hidden', () => {
+      assertTrue(granularityContainer.hidden);
     });
   });
 
