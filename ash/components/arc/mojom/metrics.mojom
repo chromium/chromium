@@ -243,14 +243,6 @@ enum ArcCorePriAbiMigEvent {
   kWebviewDowngradeFailure = 7,
 };
 
-[Extensible]
-enum ArcImageCopyPasteCompatAction {
-  kPasteFromFiles = 0,
-  kDragFromFiles = 1,
-  kPasteFromBrowser = 2,
-  kDragFromBrowser = 3,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 [Extensible]
@@ -373,7 +365,7 @@ enum ArcKeyMintError {
 
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
-// Deprecated method IDs: 8, 25, 26, 27, 28, 29
+// Deprecated method IDs: 8, 18, 25, 26, 27, 28, 29
 // Next method ID: 37
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
@@ -440,16 +432,6 @@ interface MetricsHost {
   // Reports main account hash migration status.
   [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
       MainAccountHashMigrationStatus status);
-
-  // DEPRECATED: this method will be removed once the other end is cleaned up.
-  // Reports the operation type (copy & paste or drag & drop) and the source of
-  // the image (from browser or Files app) when image copy-paste app compat is
-  // triggered.
-  // Image copy-paste app compat is a feature that allows insertion of images to
-  // Android apps through commitContent IME API or Android intent, when the app
-  // don't support images in the clipboard.
-  [MinVersion=15] ReportImageCopyPasteCompatActionDeprecated@18(
-      ArcImageCopyPasteCompatAction action_type);
 
   // Reports occurrence of one event in the ARC networking stack.
   [MinVersion=16] ReportArcNetworkEvent@19(ArcNetworkEvent event);

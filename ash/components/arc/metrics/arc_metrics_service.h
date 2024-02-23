@@ -149,8 +149,6 @@ class ArcMetricsService : public KeyedService,
                                 uint32_t number_of_directories) override;
   void ReportMainAccountHashMigrationMetrics(
       mojom::MainAccountHashMigrationStatus status) override;
-  void ReportImageCopyPasteCompatActionDeprecated(
-      mojom::ArcImageCopyPasteCompatAction action_type) override;
   void ReportArcNetworkEvent(mojom::ArcNetworkEvent event) override;
   void ReportArcNetworkError(mojom::ArcNetworkError error) override;
   void ReportAppPrimaryAbi(mojom::AppPrimaryAbi abi) override;
