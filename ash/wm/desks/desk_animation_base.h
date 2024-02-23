@@ -130,8 +130,6 @@ class ASH_EXPORT DeskAnimationBase
   // the user starts and ends the swipe gesture within half a second. If this is
   // false, we do not start the animation when `OnEndingDeskScreenshotTaken` is
   // called.
-  // TODO(sammiequon): If the trial feature is removed, this can be combined
-  // with `is_continuous_gesture_animation_` as an optional or enum.
   bool did_continuous_gesture_end_fast_ = false;
 
   // Used for metrics collection to track how many desks changes a user has seen

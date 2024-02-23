@@ -909,7 +909,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
 
   aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
   ASSERT_TRUE(settings_window);
-  const std::u16string settings_title = settings_window->GetTitle();
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
@@ -918,7 +917,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
       views::Widget::GetWidgetForNativeWindow(settings_window);
   settings_widget->CloseNow();
   ASSERT_FALSE(FindBrowserWindow(kSettingsWindowId));
-  settings_window = nullptr;
 
   auto* desks_controller = ash::DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
@@ -929,21 +927,17 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   browsers_added.Wait();
 
   // Verify that the settings window has been launched on the new desk (desk B).
-  // TODO(sammiequon): Right now the app just launches, so verify the title
-  // matches. We should verify the restore id and use
-  // `FindBrowserWindow(kSettingsWindowId)` once things are wired up properly.
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetTitle() == settings_title) {
-      settings_window = window;
-      break;
-    }
-  }
-  ASSERT_TRUE(settings_window);
-  EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
+  auto it =
+      base::ranges::find_if(*BrowserList::GetInstance(), [](Browser* browser) {
+        return ash::IsBrowserForSystemWebApp(browser,
+                                             ash::SystemWebAppType::SETTINGS);
+      });
+  ASSERT_NE(it, BrowserList::GetInstance()->end());
+  aura::Window* new_settings_window = (*it)->window()->GetNativeWindow();
+  EXPECT_EQ(ash::Shell::GetContainer(new_settings_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
-            settings_window->parent());
+            new_settings_window->parent());
 }
 
 // Tests that launching a template that contains a system web app will move the

@@ -66,7 +66,6 @@ namespace ash {
 namespace {
 
 // Values for scrolling the grid by using the keyboard.
-// TODO(sammiequon): See if we can use the same values used for web scrolling.
 constexpr int kKeyboardPressScrollingDp = 75;
 constexpr int kKeyboardHoldScrollingDp = 15;
 
@@ -1610,9 +1609,8 @@ bool OverviewSession::ProcessForScrolling(const ui::KeyEvent& event) {
     return false;
   }
 
-  // TODO(sammiequon): This only works for tablet mode at the moment, so using
-  // the primary display works. If this feature is adapted for multi display
-  // then this needs to be revisited.
+  // The scrollable overview grid only works for tablet mode, so using the
+  // primary display works.
   auto* grid = GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
   const bool press = (event.type() == ui::ET_KEY_PRESSED);
 

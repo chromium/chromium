@@ -2593,8 +2593,7 @@ void OverviewGrid::MaybeInitDesksWidget() {
 
   desks_widget_->Show();
 
-  // TODO(afakhry): Check if we need to keep this as the bottom-most window in
-  // the container.
+  // Stack desks bar at bottom to guarantee the dragged window is above it.
   auto* window = desks_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
 }

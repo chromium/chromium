@@ -32,7 +32,6 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
     bool multi_app);
 
 // We create a class so we can friend and access certain private members.
-// TODO(sammiequon): Friend this function instead.
 class AppLaunchInfoSaveWaiter {
  public:
   // Instantly saves app restore data, bypassing the normal 2.5s timeout. If
