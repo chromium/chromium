@@ -2182,7 +2182,7 @@
   {
     "name": "enable-archive-tab-service",
     "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 132
   },
   {
     "name": "enable-aria-element-reflection",
