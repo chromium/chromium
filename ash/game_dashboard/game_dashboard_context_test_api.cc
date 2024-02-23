@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
+#include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -41,6 +42,11 @@ const base::RepeatingTimer& GameDashboardContextTestApi::GetRecordingTimer()
 const std::u16string& GameDashboardContextTestApi::GetRecordingDuration()
     const {
   return context_->GetRecordingDuration();
+}
+
+const GameDashboardMainMenuCursorHandler*
+GameDashboardContextTestApi::GetMainMenuCursorHandler() const {
+  return context_->main_menu_cursor_handler_.get();
 }
 
 views::Widget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
@@ -143,6 +149,8 @@ views::Widget* GameDashboardContextTestApi::GetWelcomeDialogWidget() {
 void GameDashboardContextTestApi::OpenTheMainMenu() {
   ASSERT_FALSE(GetMainMenuView()) << "The main menu view is already open.";
   ASSERT_FALSE(GetMainMenuWidget()) << "The main menu widget is already open.";
+  ASSERT_FALSE(GetMainMenuCursorHandler())
+      << "The cursor handler is already registered.";
   auto* game_dashboard_button = GetGameDashboardButton();
   ASSERT_TRUE(game_dashboard_button);
   ClickOnView(game_dashboard_button, event_generator_);
@@ -151,11 +159,14 @@ void GameDashboardContextTestApi::OpenTheMainMenu() {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(GetMainMenuView());
   ASSERT_TRUE(GetMainMenuWidget());
+  ASSERT_TRUE(GetMainMenuCursorHandler());
 }
 
 void GameDashboardContextTestApi::CloseTheMainMenu() {
   ASSERT_TRUE(GetMainMenuView()) << "The main menu view is already closed.";
   ASSERT_TRUE(GetMainMenuWidget()) << "The main menu widget is already closed.";
+  ASSERT_TRUE(GetMainMenuCursorHandler())
+      << "The cursor handler is already registered.";
   auto* game_dashboard_button = GetGameDashboardButton();
   ASSERT_TRUE(game_dashboard_button);
   ClickOnView(game_dashboard_button, event_generator_);
@@ -164,6 +175,7 @@ void GameDashboardContextTestApi::CloseTheMainMenu() {
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(GetMainMenuView());
   ASSERT_FALSE(GetMainMenuWidget());
+  ASSERT_FALSE(GetMainMenuCursorHandler());
 }
 
 views::Widget* GameDashboardContextTestApi::GetToolbarWidget() {

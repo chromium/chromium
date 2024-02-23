@@ -31,6 +31,7 @@ namespace ash {
 class AnchoredNudge;
 class FeatureTile;
 class GameDashboardButton;
+class GameDashboardMainMenuCursorHandler;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
 class IconButton;
@@ -50,6 +51,7 @@ class GameDashboardContextTestApi {
   GameDashboardContext* context() { return context_; }
   const base::RepeatingTimer& GetRecordingTimer() const;
   const std::u16string& GetRecordingDuration() const;
+  const GameDashboardMainMenuCursorHandler* GetMainMenuCursorHandler() const;
 
   // Returns the Game Dashboard button widget, button, and title view.
   views::Widget* GetGameDashboardButtonWidget() const;

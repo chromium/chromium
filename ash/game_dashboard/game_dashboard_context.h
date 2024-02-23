@@ -26,6 +26,7 @@ namespace ash {
 
 class GameDashboardButton;
 class GameDashboardMainMenuView;
+class GameDashboardMainMenuCursorHandler;
 class GameDashboardToolbarView;
 
 // This class manages Game Dashboard related UI for a given `aura::Window`, and
@@ -49,6 +50,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   aura::Window* game_window() { return game_window_.get(); }
 
   GameDashboardMainMenuView* main_menu_view() { return main_menu_view_; }
+
+  base::WeakPtr<GameDashboardContext> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   views::Widget* game_dashboard_button_widget() {
     return game_dashboard_button_widget_.get();
@@ -106,10 +111,18 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 
   // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
  private:
   friend class GameDashboardContextTestApi;
+
+  // Registers a pretarget handler to always show the mouse cursor. Called when
+  // the user opens the main menu.
+  void AddCursorHandler();
+
+  // Unregisters the pretarget handler that always shows the mouse cursor.
+  // Called when the user closes the main menu.
+  void RemoveCursorHandler();
 
   // Creates a Game Dashboard button widget and adds it as a sibling of the game
   // window.
@@ -153,6 +166,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // opens.
   bool ShouldShowWelcomeDialog() const;
 
+  // Resets the `main_menu_view_`, removes the cursor handler, and updates the
+  // `game_dashboard_button_` UI.
+  void UpdateOnMainMenuClosed();
+
   const raw_ptr<aura::Window> game_window_;
 
   // Game Dashboard button widget for the Game Dashboard.
@@ -183,6 +200,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // The `GameDashboardToolbarView` when the user makes the toolbar visible.
   // Owned by the views hierarchy.
   raw_ptr<GameDashboardToolbarView> toolbar_view_ = nullptr;
+
+  // Handles cursor management when the main menu is open.
+  std::unique_ptr<GameDashboardMainMenuCursorHandler> main_menu_cursor_handler_;
 
   // A repeating timer to keep track of the recording session duration.
   base::RepeatingTimer recording_timer_;

@@ -34,7 +34,10 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -561,7 +564,25 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
         EndRecordingReason::kGameDashboardStopRecordingButton);
   } else {
     context_->CloseMainMenu();
-    GameDashboardController::Get()->StartCaptureSession(context_);
+    // Post a task to start a capture session, after the main menu widget
+    // closes. When the main menu opens, `GameDashboardContext` registers
+    // `GameDashboardMainMenuCursorHandler` as a pretarget handler to always
+    // show the mouse cursor. `GameDashboardMainMenuCursorHandler` gets the
+    // `wm::CursorManager`, makes the mouse cursor visible, and locks it. This
+    // is to prevent other components from changing it.
+    // `CaptureModeController::StartForGameDashboard()` also locks the mouse
+    // cursor in a similar fashion. The nested locking/unlocking has an
+    // undesirable behavior. Starting the capture session in a different task
+    // makes the lock/unlock behavior in `wm::CursorManager` occur serially.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<GameDashboardContext> context) {
+                         if (context) {
+                           GameDashboardController::Get()->StartCaptureSession(
+                               context.get());
+                         }
+                       },
+                       context_->GetWeakPtr()));
   }
 }
 

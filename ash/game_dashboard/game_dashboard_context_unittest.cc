@@ -51,6 +51,8 @@
 
 namespace ash {
 
+namespace {
+
 using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
 
 // Sub-label strings.
@@ -58,6 +60,28 @@ const std::u16string& hidden_label = u"Hidden";
 const std::u16string& visible_label = u"Visible";
 
 enum class Movement { kTouch, kMouse };
+
+// Records the last mouse event for testing.
+class EventCapturer : public ui::EventHandler {
+ public:
+  EventCapturer() = default;
+  EventCapturer(const EventCapturer&) = delete;
+  EventCapturer& operator=(const EventCapturer&) = delete;
+  ~EventCapturer() override {}
+
+  void Reset() { last_mouse_event_.reset(); }
+
+  ui::MouseEvent* last_mouse_event() { return last_mouse_event_.get(); }
+
+ private:
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    last_mouse_event_ = std::make_unique<ui::MouseEvent>(*event);
+  }
+
+  std::unique_ptr<ui::MouseEvent> last_mouse_event_;
+};
+
+}  // namespace
 
 class GameDashboardContextTest : public GameDashboardTestBase {
  public:
@@ -68,16 +92,18 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   void SetUp() override {
     GameDashboardTestBase::SetUp();
-
     // Disable the welcome dialog by default.
     active_user_prefs_ =
         Shell::Get()->session_controller()->GetActivePrefService();
     ASSERT_TRUE(active_user_prefs_);
     SetShowWelcomeDialog(false);
+    GetContext()->AddPostTargetHandler(&post_target_event_capturer_);
   }
 
   void TearDown() override {
     active_user_prefs_ = nullptr;
+    frame_header_ = nullptr;
+    GetContext()->RemovePostTargetHandler(&post_target_event_capturer_);
     CloseGameWindow();
     GameDashboardTestBase::TearDown();
   }
@@ -343,6 +369,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // Start recording recording_window.
     recording_window_test_api->OpenTheMainMenu();
     LeftClickOn(recording_window_test_api->GetMainMenuRecordGameTile());
+    // Clicking on the record game tile closes the main menu, and asynchronously
+    // starts the capture session. Run until idle to ensure that the posted task
+    // runs synchronously and completes before proceeding.
+    base::RunLoop().RunUntilIdle();
     ClickOnStartRecordingButtonInCaptureModeBarView();
 
     // Reopen the recording window's main menu, because clicking on the button
@@ -443,10 +473,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   }
 
  protected:
-  std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<chromeos::FrameHeader, DanglingUntriaged> frame_header_;
-  std::unique_ptr<GameDashboardContextTestApi> test_api_;
-
   void DragToolbarToPoint(Movement move_type,
                           const gfx::Point& new_location,
                           bool drop = true) {
@@ -481,6 +507,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // completes before proceeding.
     base::RunLoop().RunUntilIdle();
   }
+
+  std::unique_ptr<aura::Window> game_window_;
+  raw_ptr<chromeos::FrameHeader, DanglingUntriaged> frame_header_;
+  std::unique_ptr<GameDashboardContextTestApi> test_api_;
+  // Post-target handler that captures the last mouse event.
+  EventCapturer post_target_event_capturer_;
 
  private:
   gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
@@ -906,6 +938,62 @@ TEST_F(GameDashboardContextTest, WelcomeDialogWithSmallWindow) {
              (game_window_->GetBoundsInScreen().width() -
               game_dashboard::kWelcomeDialogFixedWidth) /
                  2));
+}
+
+TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {
+  // Create an ARC game window.
+  SetAppBounds(gfx::Rect(50, 50, 800, 700));
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true);
+
+  auto* event_generator = GetEventGenerator();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  // Move the mouse to the center of the window and verify the cursor is
+  // visible.
+  event_generator->MoveMouseToCenterOf(game_window_.get());
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  // Hide the cursor and verify it's hidden.
+  cursor_manager->HideCursor();
+  ASSERT_FALSE(cursor_manager->IsCursorVisible());
+
+  // Open the main menu and verify `GameDashboardMainMenuCursorHandler` exists
+  // and the cursor is visible.
+  ASSERT_FALSE(test_api_->GetMainMenuCursorHandler());
+  test_api_->OpenTheMainMenu();
+  ASSERT_TRUE(test_api_->GetMainMenuCursorHandler());
+  ASSERT_TRUE(cursor_manager->IsCursorVisible());
+
+  // Move the cursor inside the window frame header, half way between the left
+  // edge of the window and `GameDashboardMainMenuButton`.
+  const auto window_bounds = game_window_->GetBoundsInScreen();
+  const auto gd_button_bounds_x =
+      test_api_->GetGameDashboardButton()->GetBoundsInScreen().x();
+  gfx::Point new_mouse_location =
+      gfx::Point((window_bounds.x() + gd_button_bounds_x) / 2,
+                 window_bounds.y() + frame_header_->GetHeaderHeight() / 2);
+  event_generator->MoveMouseTo(new_mouse_location);
+
+  // Verify the mouse event was not consumed by
+  // `GameDashboardMainMenuCursorHandler`.
+  auto* last_mouse_event = post_target_event_capturer_.last_mouse_event();
+  ASSERT_TRUE(last_mouse_event);
+  ASSERT_FALSE(last_mouse_event->handled());
+  ASSERT_FALSE(last_mouse_event->stopped_propagation());
+
+  // Move the mouse to the enter of the window, and below the main menu.
+  new_mouse_location.set_x(window_bounds.CenterPoint().x());
+  const auto main_menu_bounds =
+      test_api_->GetMainMenuView()->GetBoundsInScreen();
+  new_mouse_location.set_y(main_menu_bounds.y() + main_menu_bounds.height() +
+                           50);
+
+  // Verify the mouse event was consumed by
+  // `GameDashboardMainMenuCursorHandler`.
+  post_target_event_capturer_.Reset();
+  event_generator->MoveMouseTo(new_mouse_location);
+  ASSERT_FALSE(post_target_event_capturer_.last_mouse_event());
 }
 
 // -----------------------------------------------------------------------------
@@ -1584,6 +1672,10 @@ TEST_P(GameDashboardStartAndStopCaptureSessionTest, RecordGameFromMainMenu) {
 
     // Start the video recording from the main menu.
     LeftClickOn(record_game_tile);
+    // Clicking on the record game tile closes the main menu, and asynchronously
+    // starts the capture session. Run until idle to ensure that the posted task
+    // runs synchronously and completes before proceeding.
+    base::RunLoop().RunUntilIdle();
     ClickOnStartRecordingButtonInCaptureModeBarView();
   } else {
     // Retrieve the record game button from the toolbar.

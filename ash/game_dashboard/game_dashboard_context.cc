@@ -11,6 +11,7 @@
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
@@ -154,6 +155,7 @@ void GameDashboardContext::ToggleMainMenu() {
     main_menu_widget_->AddObserver(this);
     main_menu_widget_->Show();
     game_dashboard_button_->SetToggled(true);
+    AddCursorHandler();
   } else {
     DCHECK(main_menu_view_);
     DCHECK(main_menu_widget_);
@@ -162,11 +164,14 @@ void GameDashboardContext::ToggleMainMenu() {
 }
 
 void GameDashboardContext::CloseMainMenu() {
-  main_menu_view_ = nullptr;
   DCHECK(main_menu_widget_);
   main_menu_widget_->RemoveObserver(this);
+  // Since the `WidgetObserver` has been removed, `OnWidgetDestroyed` will not
+  // be called. Explicitly call `UpdateOnMainMenuClosed()` to update the
+  // `main_menu_view_`, remove the cursor handler, and update the
+  // `game_dashboard_button_` UI.
+  UpdateOnMainMenuClosed();
   main_menu_widget_.reset();
-  game_dashboard_button_->SetToggled(false);
 }
 
 bool GameDashboardContext::ToggleToolbar() {
@@ -260,11 +265,24 @@ void GameDashboardContext::OnViewPreferredSizeChanged(
   MaybeUpdateWelcomeDialogBounds();
 }
 
-void GameDashboardContext::OnWidgetDestroying(views::Widget* widget) {
+void GameDashboardContext::OnWidgetDestroyed(views::Widget* widget) {
   DCHECK(main_menu_view_);
   DCHECK_EQ(widget, main_menu_view_->GetWidget());
-  main_menu_view_ = nullptr;
-  game_dashboard_button_->SetToggled(false);
+  UpdateOnMainMenuClosed();
+}
+
+void GameDashboardContext::AddCursorHandler() {
+  DCHECK(!main_menu_cursor_handler_);
+  main_menu_cursor_handler_ =
+      std::make_unique<GameDashboardMainMenuCursorHandler>(this);
+  game_window_->AddPreTargetHandler(main_menu_cursor_handler_.get());
+}
+
+void GameDashboardContext::RemoveCursorHandler() {
+  if (main_menu_cursor_handler_) {
+    game_window_->RemovePreTargetHandler(main_menu_cursor_handler_.get());
+    main_menu_cursor_handler_.reset();
+  }
 }
 
 void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
@@ -464,6 +482,13 @@ bool GameDashboardContext::ShouldShowWelcomeDialog() const {
   DCHECK(prefs) << "A valid PrefService is needed to determine whether to show "
                    "the welcome dialog.";
   return prefs->GetBoolean(prefs::kGameDashboardShowWelcomeDialog);
+}
+
+void GameDashboardContext::UpdateOnMainMenuClosed() {
+  DCHECK(main_menu_view_);
+  RemoveCursorHandler();
+  main_menu_view_ = nullptr;
+  game_dashboard_button_->SetToggled(false);
 }
 
 }  // namespace ash
