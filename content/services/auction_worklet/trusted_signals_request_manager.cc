@@ -187,7 +187,6 @@ void TrustedSignalsRequestManager::IssueRequests(
 
     for (RequestImpl* request : batched_request->requests) {
       render_urls.insert(request->render_url_->spec());
-      request->render_url_.reset();
       ad_component_render_urls.insert(
           request->ad_component_render_urls_->begin(),
           request->ad_component_render_urls_->end());

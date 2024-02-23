@@ -616,6 +616,7 @@ class BidderWorkletTest : public testing::Test {
         interest_group_enable_bidding_signals_prioritization_,
         interest_group_priority_vector_, execution_mode_, update_url_,
         interest_group_trusted_bidding_signals_keys_,
+        /*max_trusted_bidding_signals_url_length=*/0,
         interest_group_user_bidding_signals_, interest_group_ads_,
         interest_group_ad_components_, std::move(kanon_keys));
   }
