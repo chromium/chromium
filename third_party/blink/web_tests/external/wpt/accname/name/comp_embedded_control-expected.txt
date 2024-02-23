@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+[FAIL] checkbox label with embedded textfield
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded textfield inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded select:not([size])
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded select:not([size]) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded select[size]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded select[size] inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded combobox (input[type=text])
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded combobox (input[type=text]) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded combobox (span)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded combobox (span) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded combobox (div)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded combobox (div) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded listbox>option[aria-selected=true]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded listbox>option[aria-selected=true] inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded input[type=range]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded input[type=range] inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded input[type=number]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded input[type=number] inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded ARIA slider (aria-valuenow)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded ARIA slider (aria-valuenow) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded ARIA slider (aria-valuetext)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded ARIA slider (aria-valuetext) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded ARIA spinbutton (aria-valuenow)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded ARIA spinbutton (aria-valuenow) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] checkbox label with embedded ARIA spinbutton (aria-valuetext)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] label of embedded ARIA spinbutton (aria-valuetext) inside checkbox label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+Harness: the test ran to completion.
+

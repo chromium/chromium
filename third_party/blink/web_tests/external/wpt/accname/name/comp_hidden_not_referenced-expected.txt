@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] button containing a rendered, unreferenced element that is aria-hidden=true, an unreferenced element with the hidden host language attribute, and an unreferenced element that is unconditionally rendered
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] button labelled by element that is aria-hidden=true
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] button labelled by element with the hidden host language attribute
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] link labelled by elements with assorted visibility and a11y tree exposure
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] heading with name from content, containing element that is visibility:hidden with nested content that is visibility:visible
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+Harness: the test ran to completion.
+

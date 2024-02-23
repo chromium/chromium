@@ -1,0 +1,87 @@
+This is a testharness.js-based test.
+[FAIL] html: input[type=button]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: input[type=image]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: input[type=reset]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: input[type=submit]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=checkbox]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=color]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=date]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=datetime-local]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=email]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=month]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=number]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=password]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=radio]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=range]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=search]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=tel]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=text]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=time]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=url]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=week]
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=checkbox] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=color] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=date] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=datetime-local] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=email] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=month] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=number] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=password] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=radio] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=range] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=search] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=tel] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label[for] input[type=text] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=time] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=url] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: label input[type=week] encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: select for/id
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: select encapsulation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: img[alt] (non-empty)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: picture > img[alt] (non-empty)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: fieldset > legend
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] html: table > caption
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+Harness: the test ran to completion.
+
