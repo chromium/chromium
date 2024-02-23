@@ -1128,7 +1128,7 @@ const base::FeatureParam<int>
 const base::FeatureParam<std::string> kGeminiUrlOverride(
     &omnibox::kStarterPackExpansion,
     "StarterPackGeminiUrlOverride",
-    "");
+    "https://gemini.google.com/app");
 
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);
