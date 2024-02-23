@@ -102,8 +102,11 @@ void SessionWindowToMojom(std::vector<history::mojom::TabPtr>& tabs_mojom,
   }
 
   for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
-    tabs_mojom.push_back(
-        SessionTabToMojom(*tab.get(), device_type, session_name));
+    history::mojom::TabPtr tab_mojom =
+        SessionTabToMojom(*tab.get(), device_type, session_name);
+    if (tab_mojom) {
+      tabs_mojom.push_back(std::move(tab_mojom));
+    }
   }
 }
 
@@ -280,7 +283,7 @@ std::vector<history::mojom::TabPtr> TabResumptionPageHandler::GetForeignTabs() {
       const sync_sessions::SyncedSession* session(sessions[i]);
       auto session_tabs_mojom = SessionToMojom(session);
       for (auto& tab_mojom : session_tabs_mojom) {
-        if ((tab_mojom->relative_time).InHours() < time_limit_ &&
+        if (tab_mojom && (tab_mojom->relative_time).InHours() < time_limit_ &&
             !tab_mojom->url.is_empty()) {
           tabs_mojom.push_back(std::move(tab_mojom));
         }
