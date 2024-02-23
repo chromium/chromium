@@ -236,9 +236,12 @@ void LogComposeRequestReason(EvalLocation eval_location,
       reason);
 }
 
+void LogComposeRequestStatus(compose::mojom::ComposeStatus status) {
+  base::UmaHistogramEnumeration(kComposeRequestStatus, status);
+}
+
 void LogComposeRequestStatus(EvalLocation eval_location,
                              compose::mojom::ComposeStatus status) {
-  base::UmaHistogramEnumeration(kComposeRequestStatus, status);
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"Compose.", EvalLocationString(eval_location), ".Request.Status"}),

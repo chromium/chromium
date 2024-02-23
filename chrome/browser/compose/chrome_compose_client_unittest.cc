@@ -891,6 +891,12 @@ TEST_F(ChromeComposeClientTest, TestComposeRequestTimeout) {
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kRequestTimeout, result->status);
+  histograms().ExpectUniqueSample(
+      compose::kComposeRequestStatus,
+      compose::mojom::ComposeStatus::kRequestTimeout, 1);
+  histograms().ExpectUniqueSample(
+      "Compose.Server.Request.Status",
+      compose::mojom::ComposeStatus::kRequestTimeout, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeParams) {

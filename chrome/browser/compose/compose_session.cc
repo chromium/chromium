@@ -438,6 +438,8 @@ void ComposeSession::RequestWithSession(
 
 void ComposeSession::ComposeRequestTimeout(int id) {
   request_timeouts_.erase(id);
+  compose::LogComposeRequestStatus(
+      compose::mojom::ComposeStatus::kRequestTimeout);
 
   current_state_->has_pending_request = false;
   current_state_->response = compose::mojom::ComposeResponse::New();
@@ -475,6 +477,8 @@ void ComposeSession::ModelExecutionCallback(
                                 was_input_edited);
 
     compose::LogComposeRequestReason(eval_location, request_reason);
+    compose::LogComposeRequestStatus(
+        eval_location, compose::mojom::ComposeStatus::kRequestTimeout);
     return;
   }
 
@@ -569,6 +573,7 @@ void ComposeSession::ModelExecutionComplete(
   current_state_->response = ui_response->Clone();
 
   // Log successful response status.
+  compose::LogComposeRequestStatus(compose::mojom::ComposeStatus::kOk);
   compose::LogComposeRequestStatus(eval_location,
                                    compose::mojom::ComposeStatus::kOk);
   compose::LogComposeRequestDuration(request_delta, eval_location,
@@ -609,6 +614,7 @@ void ComposeSession::ModelExecutionComplete(
 
 void ComposeSession::ProcessError(compose::EvalLocation eval_location,
                                   compose::mojom::ComposeStatus error) {
+  compose::LogComposeRequestStatus(error);
   compose::LogComposeRequestStatus(eval_location, error);
 
   // Feedback can not be given for a request with an error so report now.
