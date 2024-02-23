@@ -12,12 +12,9 @@
 
 // Used to observe the system/application idle state. Override virtual methods
 // for testing.
-class PollingIdleObserver :
-    public user_education::FeaturePromoSessionManager::IdleObserver,
-    public ui::IdlePollingService::Observer {
+class PollingIdleObserver : public user_education::FeaturePromoIdleObserver,
+                            public ui::IdlePollingService::Observer {
  public:
-  using IdleState = user_education::FeaturePromoSessionManager::IdleState;
-
   PollingIdleObserver();
   ~PollingIdleObserver() override;
 

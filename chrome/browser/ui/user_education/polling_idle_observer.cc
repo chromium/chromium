@@ -9,15 +9,17 @@
 #include "base/check.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/user_education/common/feature_promo_idle_observer.h"
+#include "components/user_education/common/feature_promo_idle_policy.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "components/user_education/common/user_education_features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_polling_service.h"
 
 // Function called by `UserEducationServiceFactory` to create an idle observer.
-std::unique_ptr<user_education::FeaturePromoSessionManager::IdleObserver>
+std::unique_ptr<user_education::FeaturePromoIdleObserver>
 CreatePollingIdleObserver() {
-  user_education::FeaturePromoSessionManager::IdlePolicy::SetIdleTimeResolution(
+  user_education::FeaturePromoIdlePolicy::SetIdleTimeResolution(
       ui::IdlePollingService::kPollInterval);
   return std::make_unique<PollingIdleObserver>();
 }

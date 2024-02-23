@@ -11,7 +11,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/test/mock_feature_promo_session_manager.h"
+#include "components/user_education/common/feature_promo_idle_observer.h"
+#include "components/user_education/common/feature_promo_idle_policy.h"
+#include "components/user_education/test/feature_promo_session_mocks.h"
 #include "components/user_education/test/test_feature_promo_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,9 +64,8 @@ TEST_F(FeaturePromoSessionManagerTest, CreateVanillaSessionManager) {
   const auto last_active = now - base::Hours(2);
   const auto start_time = now - base::Hours(4);
   InitSession(start_time, last_active, now);
-  auto observer_ptr =
-      std::make_unique<FeaturePromoSessionManager::IdleObserver>();
-  auto policy_ptr = std::make_unique<FeaturePromoSessionManager::IdlePolicy>();
+  auto observer_ptr = std::make_unique<FeaturePromoIdleObserver>();
+  auto policy_ptr = std::make_unique<FeaturePromoIdlePolicy>();
   FeaturePromoSessionManager manager;
   manager.Init(&storage_service(), std::move(observer_ptr),
                std::move(policy_ptr));
@@ -80,7 +81,7 @@ TEST_F(FeaturePromoSessionManagerTest, CheckIdlePolicyDefaults) {
   InitSession(start_time, now, now);
 
   auto observer_ptr = std::make_unique<test::TestIdleObserver>(IdleState{now});
-  auto policy_ptr = std::make_unique<FeaturePromoSessionManager::IdlePolicy>();
+  auto policy_ptr = std::make_unique<FeaturePromoIdlePolicy>();
 
   auto* const observer = observer_ptr.get();
 
@@ -118,9 +119,8 @@ class FeaturePromoSessionManagerWithMockManagerTest
     return session_manager_;
   }
 
-  void InitSessionManager(
-      const IdleState& initial_state,
-      std::unique_ptr<FeaturePromoSessionManager::IdlePolicy> idle_policy) {
+  void InitSessionManager(const IdleState& initial_state,
+                          std::unique_ptr<FeaturePromoIdlePolicy> idle_policy) {
     session_manager_.Init(&storage_service(), CreateIdleObserver(initial_state),
                           std::move(idle_policy));
   }
@@ -315,11 +315,11 @@ TEST_F(FeaturePromoSessionManagerWithMockPolicyTest, IsApplicationActiveFalse) {
 
 // Class that tests the functionality of the IdlePolicy in conjunction with the
 // FeaturePromoSessionManager.
-class FeaturePromoSessionManagerIdlePolicyTest
+class FeaturePromoIdlePolicyTest
     : public FeaturePromoSessionManagerWithMockManagerTest {
  public:
-  FeaturePromoSessionManagerIdlePolicyTest() = default;
-  ~FeaturePromoSessionManagerIdlePolicyTest() override = default;
+  FeaturePromoIdlePolicyTest() = default;
+  ~FeaturePromoIdlePolicyTest() override = default;
 
  protected:
   static constexpr base::TimeDelta kTimeToIdle = base::Seconds(30);
@@ -346,10 +346,9 @@ class FeaturePromoSessionManagerIdlePolicyTest
       EXPECT_CALL(session_manager(), OnNewSession(session_start, last_active,
                                                   new_state.last_active_time));
     }
-    InitSessionManager(
-        new_state,
-        base::WrapUnique(new FeaturePromoSessionManager::IdlePolicy(
-            kTimeToIdle, kIdleTimeBetweenSessions, kMinimumSessionLength)));
+    InitSessionManager(new_state, base::WrapUnique(new FeaturePromoIdlePolicy(
+                                      kTimeToIdle, kIdleTimeBetweenSessions,
+                                      kMinimumSessionLength)));
     CheckSessionData(new_session ? new_state.last_active_time : session_start,
                      is_idle ? last_active : new_state.last_active_time);
     return new_session;
@@ -382,7 +381,7 @@ class FeaturePromoSessionManagerIdlePolicyTest
   }
 };
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest, InitApplicationNotActive) {
+TEST_F(FeaturePromoIdlePolicyTest, InitApplicationNotActive) {
   const auto start_time = base::Time::Now();
   const auto update_time = start_time + base::Hours(2);
   const bool new_session =
@@ -392,8 +391,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest, InitApplicationNotActive) {
   EXPECT_FALSE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
-       InitApplicationActiveNoNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, InitApplicationActiveNoNewSession) {
   const auto start_time = base::Time::Now();
   const auto old_time = start_time + kIdleTimeBetweenSessions / 4;
   const auto update_time = start_time + kIdleTimeBetweenSessions / 2;
@@ -403,8 +401,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
   EXPECT_TRUE(session_manager().IsApplicationActive());
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
-       InitApplicationIdleNoNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, InitApplicationIdleNoNewSession) {
   const auto start_time = base::Time::Now();
   const auto old_time = start_time + kIdleTimeBetweenSessions / 4;
   const auto update_time = start_time + kIdleTimeBetweenSessions / 2;
@@ -414,8 +411,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
   EXPECT_FALSE(session_manager().IsApplicationActive());
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
-       InitApplicationActiveNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, InitApplicationActiveNewSession) {
   const auto start_time = base::Time::Now();
   const auto old_time = start_time + kIdleTimeBetweenSessions / 2;
   const auto update_time =
@@ -428,8 +424,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
 
 // It would be unusual for a profile or browser to load while the machine is
 // idle, but if it does a new session should not be started right away.
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
-       InitApplicationIdleAfterGapNoNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, InitApplicationIdleAfterGapNoNewSession) {
   const auto start_time = base::Time::Now();
   const auto old_time = start_time + kIdleTimeBetweenSessions / 2;
   const auto update_time =
@@ -440,7 +435,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
   EXPECT_FALSE(session_manager().IsApplicationActive());
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
+TEST_F(FeaturePromoIdlePolicyTest,
        StateUpdatedActiveNoNewSessionDueToMinimumSessionLength) {
   const auto state = InitWithStandardParams();
   const auto new_active =
@@ -451,7 +446,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
   EXPECT_FALSE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest, StateUpdatedActiveNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, StateUpdatedActiveNewSession) {
   const auto state = InitWithStandardParams();
   const auto new_active =
       state.most_recent_active_time + kMinimumSessionLength + base::Seconds(1);
@@ -461,8 +456,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest, StateUpdatedActiveNewSession) {
   EXPECT_TRUE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
-       StateUpdatedInactiveNoNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, StateUpdatedInactiveNoNewSession) {
   const auto state = InitWithStandardParams();
   const auto new_active =
       state.most_recent_active_time + kMinimumSessionLength + base::Seconds(1);
@@ -472,7 +466,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
   EXPECT_FALSE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest, StateUpdatedIdleNoNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, StateUpdatedIdleNoNewSession) {
   const auto state = InitWithStandardParams();
   const auto new_active =
       state.most_recent_active_time + kMinimumSessionLength + base::Seconds(1);
@@ -482,7 +476,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest, StateUpdatedIdleNoNewSession) {
   EXPECT_FALSE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
+TEST_F(FeaturePromoIdlePolicyTest,
        StateUpdatedInsideThenOutsideMinimumSession_NewSession) {
   const auto state = InitWithStandardParams();
   const auto checkpoint =
@@ -497,7 +491,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
   EXPECT_TRUE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
+TEST_F(FeaturePromoIdlePolicyTest,
        StateUpdatedInsideThenOutsideMinimumSession_NoNewSession) {
   const auto state = InitWithStandardParams();
   const auto checkpoint =
@@ -517,7 +511,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
 // then leaving the locked state would first update the most recent active time,
 // then fail to register the new session when the program became active, which
 // meant some users would not experience any new sessions.
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest, ReturnFromLockedNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, ReturnFromLockedNewSession) {
   const auto state = InitWithStandardParams();
   const auto locked = state.start_time + kMinimumSessionLength * 1.5;
   const auto subsequent = locked + base::Seconds(15);
@@ -530,7 +524,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest, ReturnFromLockedNewSession) {
   EXPECT_TRUE(new_session);
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest, ReturnFromLockedNoNewSession) {
+TEST_F(FeaturePromoIdlePolicyTest, ReturnFromLockedNoNewSession) {
   const auto state = InitWithStandardParams();
   const auto update = state.most_recent_active_time + kMinimumSessionLength / 2;
   const auto locked = update + kIdleTimeBetweenSessions + base::Minutes(5);
@@ -550,7 +544,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest, ReturnFromLockedNoNewSession) {
 
 // Test that `IsApplicationActive()` returns the correct values as the current
 // time becomes further from the last updated active time.
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest, IsApplicationActive) {
+TEST_F(FeaturePromoIdlePolicyTest, IsApplicationActive) {
   const auto state = InitWithStandardParams();
 
   // Move forward in small increments verifying when the reported activity
@@ -571,8 +565,7 @@ TEST_F(FeaturePromoSessionManagerIdlePolicyTest, IsApplicationActive) {
   EXPECT_FALSE(session_manager().IsApplicationActive());
 }
 
-TEST_F(FeaturePromoSessionManagerIdlePolicyTest,
-       IsApplicationActiveDuringAndAfterLock) {
+TEST_F(FeaturePromoIdlePolicyTest, IsApplicationActiveDuringAndAfterLock) {
   const auto state = InitWithStandardParams();
   const auto update_time = state.most_recent_active_time + base::Seconds(1);
 

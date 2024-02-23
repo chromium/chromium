@@ -11,109 +11,25 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "components/user_education/common/feature_promo_idle_policy.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/user_education_features.h"
 
 namespace user_education {
-
-// Monitors the idle state of the current program/computer using various low-
-// level APIs.
-FeaturePromoSessionManager::IdleObserver::IdleObserver() = default;
-FeaturePromoSessionManager::IdleObserver::~IdleObserver() = default;
-
-void FeaturePromoSessionManager::IdleObserver::StartObserving() {}
-
-FeaturePromoSessionManager::IdleState
-FeaturePromoSessionManager::IdleObserver::GetCurrentState() const {
-  return IdleState();
-}
-
-base::CallbackListSubscription
-FeaturePromoSessionManager::IdleObserver::AddUpdateCallback(
-    UpdateCallback update_callback) {
-  return update_callbacks_.Add(std::move(update_callback));
-}
-
-void FeaturePromoSessionManager::IdleObserver::NotifyIdleStateChanged(
-    const IdleState& state) {
-  update_callbacks_.Notify(state);
-}
-
-base::Time FeaturePromoSessionManager::IdleObserver::GetCurrentTime() const {
-  return session_manager_->storage_service_->GetCurrentTime();
-}
-
-// static
-base::TimeDelta FeaturePromoSessionManager::IdlePolicy::idle_time_resolution_;
-constexpr double
-    FeaturePromoSessionManager::IdlePolicy::kIdleTimeResolutionFactor;
-
-FeaturePromoSessionManager::IdlePolicy::IdlePolicy()
-    : IdlePolicy(features::GetTimeToIdle(),
-                 features::GetIdleTimeBetweenSessions(),
-                 features::GetMinimumValidSessionLength()) {}
-
-FeaturePromoSessionManager::IdlePolicy::IdlePolicy(
-    base::TimeDelta minimum_idle_time,
-    base::TimeDelta new_session_idle_time,
-    base::TimeDelta minimum_valid_session_length)
-    : minimum_idle_time_(minimum_idle_time),
-      new_session_idle_time_(new_session_idle_time),
-      minimum_valid_session_length_(minimum_valid_session_length) {
-  DCHECK(minimum_idle_time.is_positive());
-  DCHECK_GT(new_session_idle_time, minimum_idle_time);
-  DCHECK(!minimum_valid_session_length.is_negative());
-}
-
-FeaturePromoSessionManager::IdlePolicy::~IdlePolicy() = default;
-
-bool FeaturePromoSessionManager::IdlePolicy::IsActive(
-    base::Time most_recent_active_time) const {
-  const auto inactive_time =
-      session_manager_->storage_service_->GetCurrentTime() -
-      most_recent_active_time;
-  return inactive_time < minimum_idle_time();
-}
-
-bool FeaturePromoSessionManager::IdlePolicy::IsNewSession(
-    base::Time previous_session_start_time,
-    base::Time previous_last_active_time,
-    base::Time most_recent_active_time) const {
-  const auto last_session_length =
-      most_recent_active_time - previous_session_start_time;
-  const auto time_between_active =
-      most_recent_active_time - previous_last_active_time;
-  return time_between_active >= new_session_idle_time() &&
-         last_session_length >= minimum_valid_session_length();
-}
-
-// static
-void FeaturePromoSessionManager::IdlePolicy::SetIdleTimeResolution(
-    base::TimeDelta resolution) {
-  if (idle_time_resolution_.is_zero()) {
-    idle_time_resolution_ = resolution;
-    DUMP_WILL_BE_CHECK_GE(features::GetTimeToIdle(),
-                          kIdleTimeResolutionFactor * resolution)
-        << "Time to idle (" << features::GetTimeToIdle()
-        << ") is too short to resolve; resolution is " << resolution;
-  } else {
-    CHECK_EQ(idle_time_resolution_, resolution);
-  }
-}
 
 FeaturePromoSessionManager::FeaturePromoSessionManager() = default;
 FeaturePromoSessionManager::~FeaturePromoSessionManager() = default;
 
 void FeaturePromoSessionManager::Init(
     FeaturePromoStorageService* storage_service,
-    std::unique_ptr<IdleObserver> idle_observer,
-    std::unique_ptr<IdlePolicy> idle_policy) {
+    std::unique_ptr<FeaturePromoIdleObserver> idle_observer,
+    std::unique_ptr<FeaturePromoIdlePolicy> idle_policy) {
   storage_service_ = storage_service;
   idle_observer_ = std::move(idle_observer);
   idle_policy_ = std::move(idle_policy);
 
-  idle_observer_->session_manager_ = this;
-  idle_policy_->session_manager_ = this;
+  idle_observer_->Init(storage_service_.get());
+  idle_policy_->Init(this, storage_service_.get());
 
   // Immediately update the current state, then subscribe to future updates.
   UpdateIdleState(idle_observer_->GetCurrentState());
@@ -212,14 +128,6 @@ void FeaturePromoSessionManager::UpdateIdleState(
     OnNewSession(old_start_time, old_active_time, new_active_time);
   }
   storage_service_->SaveSessionData(session_data);
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const FeaturePromoSessionManager::IdleState& idle_state) {
-  os << "IdleState{ " << idle_state.last_active_time << ", "
-     << idle_state.application_active << " }";
-  return os;
 }
 
 }  // namespace user_education

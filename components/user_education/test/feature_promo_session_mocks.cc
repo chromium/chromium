@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/test/mock_feature_promo_session_manager.h"
+#include "components/user_education/test/feature_promo_session_mocks.h"
 
 namespace user_education::test {
 

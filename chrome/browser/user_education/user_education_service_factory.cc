@@ -10,12 +10,14 @@
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/user_education/common/feature_promo_idle_observer.h"
+#include "components/user_education/common/feature_promo_idle_policy.h"
 #include "components/user_education/common/feature_promo_session_manager.h"
 #include "content/public/browser/browser_context.h"
 
 // This is found in chrome/browser/ui/user_education, so extern the factory
 // method to create the default idle observer type.
-extern std::unique_ptr<user_education::FeaturePromoSessionManager::IdleObserver>
+extern std::unique_ptr<user_education::FeaturePromoIdleObserver>
 CreatePollingIdleObserver();
 
 UserEducationServiceFactory* UserEducationServiceFactory::GetInstance() {
@@ -53,11 +55,9 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
   result->feature_promo_session_manager().Init(
       &result->feature_promo_storage_service(),
       disable_idle_polling
-          ? std::make_unique<
-                user_education::FeaturePromoSessionManager::IdleObserver>()
+          ? std::make_unique<user_education::FeaturePromoIdleObserver>()
           : CreatePollingIdleObserver(),
-      std::make_unique<
-          user_education::FeaturePromoSessionManager::IdlePolicy>());
+      std::make_unique<user_education::FeaturePromoIdlePolicy>());
   return result;
 }
 
