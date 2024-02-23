@@ -8805,7 +8805,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Canary_Dev_20240222",
+                    "params": {
+                        "IOSDockingPromoExperimentType": "1",
+                        "IOSDockingPromoNewUserInactiveThresholdHours": "6",
+                        "IOSDockingPromoOldUserInactiveThresholdHours": "12"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromo"
+                    ]
+                },
+                {
+                    "name": "Enabled_Beta_20240222",
+                    "params": {
+                        "IOSDockingPromoExperimentType": "1",
+                        "IOSDockingPromoNewUserInactiveThresholdHours": "12",
+                        "IOSDockingPromoOldUserInactiveThresholdHours": "24"
+                    },
+                    "enable_features": [
+                        "IOSDockingPromo"
+                    ]
+                },
+                {
+                    "name": "Enabled_20240222",
                     "params": {
                         "IOSDockingPromoExperimentType": "1",
                         "IOSDockingPromoNewUserInactiveThresholdHours": "24",
