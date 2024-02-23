@@ -40,6 +40,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, PrintPreviewCrosAppTest) {
   RunTestAtPath("print_preview_cros_app_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
+                       SummaryPanelControllerTest) {
+  RunTestAtPath("summary_panel_controller_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, SummaryPanelTest) {
   RunTestAtPath("summary_panel_test.js");
 }

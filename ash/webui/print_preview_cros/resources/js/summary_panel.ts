@@ -7,6 +7,7 @@ import 'chrome://resources/cros_components/button/button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './summary_panel.html.js';
+import {SHEETS_USED_CHANGED_EVENT, SummaryPanelController} from './summary_panel_controller.js';
 
 /**
  * @fileoverview
@@ -21,6 +22,32 @@ export class SummaryPanelElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      sheetsUsedText: String,
+    };
+  }
+
+  private controller: SummaryPanelController = new SummaryPanelController();
+  private sheetsUsedText: string;
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.controller.addEventListener(
+        SHEETS_USED_CHANGED_EVENT, (e: Event) => this.onSheetsUsedChanged(e));
+
+    // Initialize properties using controller.
+    this.sheetsUsedText = this.controller.getSheetsUsedText();
+  }
+
+  getControllerForTesting() {
+    return this.controller;
+  }
+
+  private onSheetsUsedChanged(_event: Event) {
+    this.sheetsUsedText = this.controller.getSheetsUsedText();
   }
 }
 
