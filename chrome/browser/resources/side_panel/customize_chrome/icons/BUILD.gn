@@ -23,6 +23,7 @@ generate_grd("build_grdp") {
     "mini_new_tab_page.svg",
     "productivity.svg",
     "reset.svg",
+    "sparkle.svg",
     "upload.svg",
     "uploaded_image.svg",
     "writing.svg",
