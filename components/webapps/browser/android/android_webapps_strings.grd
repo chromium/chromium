@@ -220,6 +220,12 @@
       <message name="IDS_PWA_UNI_INSTALL_OPTION_OPEN_EXPLANATION" desc="The label in the Universal Install sheet that explains that the app can be opened instead of installing.">
          Click to open the app instead
       </message>
+      <message name="IDS_PWA_UNI_INSTALL_CHECKING_INSTALLABILITY" desc="The label in the Universal Install sheet that explains that the app is being checked whether it can be installed.">
+         Checking if app can be installed\u2026
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL_DISABLED" desc="The label in the Universal Install sheet that explains that the app can not be installed.">
+         This app cannot be installed.
+      </message>
       <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT" desc="The label for adding a shortcut in the Universal Install sheet.">
          Create shortcut
       </message>

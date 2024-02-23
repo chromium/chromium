@@ -30,7 +30,11 @@ class PwaUniversalInstallBottomSheetMediator {
         mModel.set(
                 PwaUniversalInstallProperties.TITLE,
                 mActivity.getString(R.string.pwa_uni_install_title));
-        mModel.set(PwaUniversalInstallProperties.SHOW_OPEN_OPTION, webAppAlreadyInstalled);
+        mModel.set(
+                PwaUniversalInstallProperties.VIEW_STATE,
+                webAppAlreadyInstalled
+                        ? PwaUniversalInstallProperties.ViewState.APP_ALREADY_INSTALLED
+                        : PwaUniversalInstallProperties.ViewState.CHECKING_APP);
     }
 
     PropertyModel getModel() {

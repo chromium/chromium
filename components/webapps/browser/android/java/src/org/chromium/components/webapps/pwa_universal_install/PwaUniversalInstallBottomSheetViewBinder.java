@@ -23,7 +23,7 @@ class PwaUniversalInstallBottomSheetViewBinder {
         if (propertyKey.equals(PwaUniversalInstallProperties.TITLE)) {
             ((TextView) view.getContentView().findViewById(R.id.title))
                     .setText(model.get(PwaUniversalInstallProperties.TITLE));
-        } else if (propertyKey.equals(PwaUniversalInstallProperties.SHOW_OPEN_OPTION)) {
+        } else if (propertyKey.equals(PwaUniversalInstallProperties.VIEW_STATE)) {
             setupInstallOrOpenClickListener(model, view);
         } else if (propertyKey.equals(
                 PwaUniversalInstallProperties.INSTALL_BUTTON_ON_CLICK_CALLBACK)) {
@@ -45,22 +45,41 @@ class PwaUniversalInstallBottomSheetViewBinder {
     static void setupInstallOrOpenClickListener(
             PropertyModel model, PwaUniversalInstallBottomSheetView view) {
         OnClickListener listener = null;
-        if (model.get(PwaUniversalInstallProperties.SHOW_OPEN_OPTION)) {
-            ((TextView) view.getContentView().findViewById(R.id.option_text_install))
-                    .setText(R.string.pwa_uni_install_option_already_installed);
-            view.getContentView()
-                    .findViewById(R.id.option_text_open_instead)
-                    .setVisibility(View.VISIBLE);
+        TextView installText = view.getContentView().findViewById(R.id.option_text_install);
+        TextView installExplanation =
+                view.getContentView().findViewById(R.id.option_text_install_explanation);
+        ImageView installArrow = view.getContentView().findViewById(R.id.arrow_install);
 
-            listener = model.get(PwaUniversalInstallProperties.OPEN_APP_BUTTON_ON_CLICK_CALLBACK);
-        } else {
-            ((TextView) view.getContentView().findViewById(R.id.option_text_install))
-                    .setText(R.string.pwa_uni_install_option_install);
-            view.getContentView()
-                    .findViewById(R.id.option_text_open_instead)
-                    .setVisibility(View.GONE);
+        switch (model.get(PwaUniversalInstallProperties.VIEW_STATE)) {
+            case PwaUniversalInstallProperties.ViewState.CHECKING_APP:
+                installText.setText(R.string.pwa_uni_install_option_install);
+                installExplanation.setText(R.string.pwa_uni_install_checking_installability);
+                installExplanation.setVisibility(View.VISIBLE);
+                installArrow.setVisibility(View.VISIBLE);
+                break;
+            case PwaUniversalInstallProperties.ViewState.APP_ALREADY_INSTALLED:
+                installText.setText(R.string.pwa_uni_install_option_already_installed);
+                installExplanation.setText(R.string.pwa_uni_install_option_open_explanation);
+                installExplanation.setVisibility(View.VISIBLE);
+                installArrow.setVisibility(View.VISIBLE);
 
-            listener = model.get(PwaUniversalInstallProperties.INSTALL_BUTTON_ON_CLICK_CALLBACK);
+                listener =
+                        model.get(PwaUniversalInstallProperties.OPEN_APP_BUTTON_ON_CLICK_CALLBACK);
+                break;
+            case PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE:
+                installText.setText(R.string.pwa_uni_install_option_install);
+                installExplanation.setVisibility(View.GONE);
+                installArrow.setVisibility(View.VISIBLE);
+
+                listener =
+                        model.get(PwaUniversalInstallProperties.INSTALL_BUTTON_ON_CLICK_CALLBACK);
+                break;
+            case PwaUniversalInstallProperties.ViewState.APP_IS_NOT_INSTALLABLE:
+                installText.setText(R.string.pwa_uni_install_option_install);
+                installExplanation.setText(R.string.pwa_uni_install_option_install_disabled);
+                installExplanation.setVisibility(View.VISIBLE);
+                installArrow.setVisibility(View.GONE);
+                break;
         }
 
         // Both the arrow and the underlying view should trigger the listener callback.

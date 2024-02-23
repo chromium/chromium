@@ -99,7 +99,10 @@ import java.util.List;
     ChromeFeatureList.WEB_FEED,
     UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
 })
-@DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+@DisableFeatures({
+    ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS,
+    ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI
+})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs
@@ -366,6 +369,18 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         Menu menu2 = createMenuForMultiWindow();
         assertTrue(isMenuVisible(menu2, R.id.manage_all_windows_menu_id));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI})
+    public void testPageMenuItems_universalInstall() {
+        setUpMocksForPageMenu();
+        Menu menu = createMenuForMultiWindow();
+        assertTrue(isMenuVisible(menu, R.id.universal_install));
+
+        assertFalse(isMenuVisible(menu, R.id.add_to_homescreen_id));
+        assertFalse(isMenuVisible(menu, R.id.install_webapp_id));
+        assertFalse(isMenuVisible(menu, R.id.open_webapk_id));
     }
 
     @Test

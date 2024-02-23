@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +17,6 @@ import android.widget.LinearLayout.LayoutParams;
 
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.WebContents;
-
-import java.util.concurrent.Callable;
 
 /** The view portion of the PWA Universal Install bottom sheet. */
 public class PwaUniversalInstallBottomSheetView {
@@ -35,7 +32,6 @@ public class PwaUniversalInstallBottomSheetView {
     public void initialize(
             Context context,
             WebContents webContents,
-            Callable<Pair<Bitmap, Boolean>> iconCall,
             int arrowId) {
         mContentView =
                 LayoutInflater.from(context)
@@ -62,17 +58,6 @@ public class PwaUniversalInstallBottomSheetView {
                                         TypedValue.COMPLEX_UNIT_DIP,
                                         2,
                                         context.getResources().getDisplayMetrics())));
-
-        // Setup the app icon, with a placeholder as fallback in case of an error.
-        Pair<Bitmap, Boolean> iconWithMetadata = null;
-        try {
-            iconWithMetadata = iconCall.call();
-        } catch (Exception exception) {
-        }
-
-        if (iconWithMetadata != null) {
-            setIcon(iconWithMetadata.first, iconWithMetadata.second);
-        }
 
         if (arrowId != 0) {
             ((ImageView) mContentView.findViewById(R.id.arrow_install))

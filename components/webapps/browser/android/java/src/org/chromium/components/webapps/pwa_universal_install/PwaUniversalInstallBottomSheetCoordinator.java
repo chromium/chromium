@@ -6,7 +6,6 @@ package org.chromium.components.webapps.pwa_universal_install;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.MainThread;
@@ -16,26 +15,19 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-
-import java.util.concurrent.Callable;
 
 /** The Coordinator for managing the Pwa Universal Install bottom sheet experience. */
 @JNINamespace("webapps")
 public class PwaUniversalInstallBottomSheetCoordinator {
-    // If set, this swaps out the icon fetching callback for testing.
-    private static Callable<Pair<Bitmap, Boolean>> sIconCall;
-
-    public static void setIconCallForTesting(Callable<Pair<Bitmap, Boolean>> iconCall) {
-        sIconCall = iconCall;
-    }
+    public static boolean sEnableManualIconFetching;
 
     private final BottomSheetController mController;
     private final PwaUniversalInstallBottomSheetView mView;
     private final PwaUniversalInstallBottomSheetContent mContent;
     private final PwaUniversalInstallBottomSheetMediator mMediator;
-    private final WebContents mWebContents;
 
     private final Runnable mInstallCallback;
     private final Runnable mAddShortcutCallback;
@@ -52,15 +44,13 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             boolean webAppAlreadyInstalled,
             BottomSheetController bottomSheetController,
             int arrowId) {
-        mWebContents = webContents;
         mController = bottomSheetController;
         mInstallCallback = installCallback;
         mAddShortcutCallback = addShortcutCallback;
         mOpenAppCallback = openAppCallback;
 
         mView = new PwaUniversalInstallBottomSheetView();
-        mView.initialize(
-                activity, webContents, sIconCall != null ? sIconCall : this::getIcon, arrowId);
+        mView.initialize(activity, webContents, arrowId);
         mContent = new PwaUniversalInstallBottomSheetContent(mView);
         mMediator =
                 new PwaUniversalInstallBottomSheetMediator(
@@ -72,6 +62,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaUniversalInstallBottomSheetViewBinder::bind);
+
+        if (!sEnableManualIconFetching) {
+            fetchAppData(webContents); // We get a reply back through onAppDataFetched below.
+        }
     }
 
     /**
@@ -81,16 +75,6 @@ public class PwaUniversalInstallBottomSheetCoordinator {
      */
     public boolean show() {
         return mController.requestShowContent(mContent, /* animate= */ true);
-    }
-
-    /**
-     * This function starts the icon fetching asynchronously and returns null to signify that the
-     * icons are not yet available. This is overwritten in tests to return actual icon data
-     * synchronously.
-     */
-    private Pair<Bitmap, Boolean> getIcon() {
-        fetchAppIcon(mWebContents); // We get a reply back through onAppIconFetched below.
-        return null;
     }
 
     private void onInstallClicked() {
@@ -112,19 +96,34 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         return mView.getContentView();
     }
 
-    public void fetchAppIcon(WebContents webContents) {
+    public void fetchAppData(WebContents webContents) {
         PwaUniversalInstallBottomSheetCoordinatorJni.get()
-                .fetchAppIcon(PwaUniversalInstallBottomSheetCoordinator.this, webContents);
+                .fetchAppData(PwaUniversalInstallBottomSheetCoordinator.this, webContents);
     }
 
     @CalledByNative
-    public void onAppIconFetched(Bitmap icon, boolean adaptive) {
+    public void onAppDataFetched(@AppType int appType, Bitmap icon, boolean adaptive) {
         mView.setIcon(icon, adaptive);
+
+        boolean alreadyInstalled =
+                mMediator.getModel().get(PwaUniversalInstallProperties.VIEW_STATE)
+                        == PwaUniversalInstallProperties.ViewState.APP_ALREADY_INSTALLED;
+        if (alreadyInstalled) {
+            return;
+        }
+
+        mMediator
+                .getModel()
+                .set(
+                        PwaUniversalInstallProperties.VIEW_STATE,
+                        (appType == AppType.WEBAPK || appType == AppType.WEBAPK_DIY)
+                                ? PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE
+                                : PwaUniversalInstallProperties.ViewState.APP_IS_NOT_INSTALLABLE);
     }
 
     @NativeMethods
     interface Natives {
-        public void fetchAppIcon(
+        public void fetchAppData(
                 PwaUniversalInstallBottomSheetCoordinator caller, WebContents webContents);
     }
 }
