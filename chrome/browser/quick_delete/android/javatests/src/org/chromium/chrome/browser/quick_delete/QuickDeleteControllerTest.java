@@ -45,6 +45,7 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
@@ -159,6 +160,7 @@ public class QuickDeleteControllerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/322945246")
     public void testNavigateToTabSwitcher_WhenClickingDelete() throws TimeoutException {
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.positive_button)).perform(click());
