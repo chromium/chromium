@@ -2014,6 +2014,12 @@ BASE_FEATURE(kOobeDrivePinning,
              "OobeDrivePinning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled , Personalized Onboarding + App Recommendations
+// will be shown if eligible during user onboarding flow.
+BASE_FEATURE(kOobePersonalizedOnboarding,
+             "OobePersonalizedOnboarding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Consumer Software Screen will be shown during OOBE.
 BASE_FEATURE(kOobeSoftwareUpdate,
              "OobeSoftwareUpdate",
@@ -3975,6 +3981,10 @@ bool IsOobeChoobeEnabled() {
 
 bool IsOobeCrosEventsEnabled() {
   return base::FeatureList::IsEnabled(kOobeCrosEvents);
+}
+
+bool IsOobePersonalizedOnboardingEnabled() {
+  return base::FeatureList::IsEnabled(kOobePersonalizedOnboarding);
 }
 
 bool IsOobeSoftwareUpdateEnabled() {
