@@ -40,23 +40,23 @@ enum class FactoryUser {
   kExtensionProcess,
 };
 
-bool DoContentScriptsDependOnRelaxedCorbOrCors(const Extension& extension) {
+bool DoContentScriptsDependOnRelaxedOrbOrCors(const Extension& extension) {
   // Content scripts injected by Chrome Apps (e.g. into <webview> tag) need to
-  // run with relaxed CORB.
+  // run with relaxed ORB.
   //
   // TODO(https://crbug.com/1152550): Remove this exception once Chrome Platform
   // Apps are gone.
   if (extension.is_platform_app())
     return true;
 
-  // Content scripts are not granted an ability to relax CORB and/or CORS.
+  // Content scripts are not granted an ability to relax ORB and/or CORS.
   return false;
 }
 
 bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(
     const PermissionSet& permissions) {
   // Looking at explicit (rather than effective) hosts results in stricter
-  // checks that better match CORB/CORS behavior.
+  // checks that better match ORB/CORS behavior.
   return base::ranges::any_of(
       permissions.explicit_hosts(), [](const URLPattern& permission) {
         return permission.MatchesScheme(url::kHttpScheme) ||
@@ -73,7 +73,7 @@ bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(const Extension& extension) {
 
   // Optional extension permissions to http origins may be granted later.
   //
-  // TODO(lukasza): Consider only handing out CORB/CORS-disabled
+  // TODO(lukasza): Consider only handing out ORB/CORS-disabled
   // URLLoaderFactory after the optional permission is *actually* granted.  Care
   // might need to be take to make sure that updating the URLLoaderFactory is
   // robust in presence of races (the new factory should reach the all [?]
@@ -96,7 +96,7 @@ bool DoExtensionPermissionsCoverHttpOrHttpsOrigins(const Extension& extension) {
   return false;
 }
 
-// Returns whether to allow bypassing CORS (by disabling CORB, and paying
+// Returns whether to allow bypassing CORS (by disabling ORB, and paying
 // attention to the `isolated_world_origin` from content scripts, and using
 // SecFetchSiteValue::kNoOrigin from extensions).
 bool ShouldRelaxCors(const Extension& extension, FactoryUser factory_user) {
@@ -105,7 +105,7 @@ bool ShouldRelaxCors(const Extension& extension, FactoryUser factory_user) {
 
   switch (factory_user) {
     case FactoryUser::kContentScript:
-      return DoContentScriptsDependOnRelaxedCorbOrCors(extension);
+      return DoContentScriptsDependOnRelaxedOrbOrCors(extension);
     case FactoryUser::kExtensionProcess:
       return true;
   }
@@ -211,7 +211,7 @@ void URLLoaderFactoryManager::OverrideURLLoaderFactoryParams(
 
   // Opaque origins normally don't inherit security properties of their
   // precursor origins, but here opaque origins (e.g. think data: URIs) created
-  // by an extension should inherit CORS/CORB treatment of the extension.
+  // by an extension should inherit CORS/ORB treatment of the extension.
   url::SchemeHostPort precursor_origin =
       origin.GetTupleOrPrecursorTupleIfOpaque();
 
