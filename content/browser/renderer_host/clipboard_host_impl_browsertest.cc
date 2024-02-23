@@ -201,7 +201,7 @@ class ClipboardBrowserTest : public ClipboardHostImplBrowserTest {
         blink::PermissionType::CLIPBOARD_READ_WRITE, status);
   }
 
-  void SetPermissionOverrideForSanitizedWriteTests(
+  void SetPermissionOverrideForStrictlyProcessedWriteTests(
       blink::mojom::PermissionStatus status) {
     content::PermissionController* permission_controller =
         GetRenderFrameHost()->GetBrowserContext()->GetPermissionController();
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, NumberOfFormatsOnRead) {
       blink::mojom::PermissionStatus::GRANTED);
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   ASSERT_TRUE(ExecJs(shell(), " navigator.clipboard.read()"));
-  SetPermissionOverrideForSanitizedWriteTests(
+  SetPermissionOverrideForStrictlyProcessedWriteTests(
       blink::mojom::PermissionStatus::GRANTED);
   ASSERT_TRUE(ExecJs(
       shell(),
