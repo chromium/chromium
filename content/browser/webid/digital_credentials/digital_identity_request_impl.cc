@@ -5,9 +5,11 @@
 #include "content/browser/webid/digital_credentials/digital_identity_request_impl.h"
 
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/digital_credentials/digital_identity_provider.h"
+#include "content/browser/webid/digital_credentials/digital_identity_types.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -16,6 +18,7 @@
 
 using base::Value;
 using blink::mojom::RequestDigitalIdentityStatus;
+using content::digital_identity::RequestStatusForMetrics;
 
 namespace content {
 
@@ -36,19 +39,27 @@ DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
 
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
-void DigitalIdentityRequestImpl::CompleteRequest(const std::string& response) {
-  if (!provider_) {
-    std::move(callback_).Run(RequestDigitalIdentityStatus::kError,
-                             std::nullopt);
-    return;
-  }
+void DigitalIdentityRequestImpl::CompleteRequest(
+    const std::string& response,
+    RequestStatusForMetrics status_for_metrics) {
+  CompleteRequestWithStatus(
+      (status_for_metrics == RequestStatusForMetrics::kSuccess)
+          ? RequestDigitalIdentityStatus::kSuccess
+          : RequestDigitalIdentityStatus::kError,
+      response, status_for_metrics);
+}
 
-  if (!response.empty()) {
-    std::move(callback_).Run(RequestDigitalIdentityStatus::kSuccess, response);
-  } else {
-    std::move(callback_).Run(RequestDigitalIdentityStatus::kError,
-                             std::nullopt);
-  }
+void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
+    RequestDigitalIdentityStatus status,
+    const std::string& response,
+    RequestStatusForMetrics status_for_metrics) {
+  // Invalidate pending requests in case that the request gets aborted.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",
+                                status_for_metrics);
+
+  std::move(callback_).Run(status, response);
 }
 
 base::Value::Dict BuildRequest(
@@ -136,8 +147,7 @@ void DigitalIdentityRequestImpl::Request(
     provider_ = CreateProvider();
   }
   if (!provider_) {
-    std::move(callback_).Run(RequestDigitalIdentityStatus::kError,
-                             std::nullopt);
+    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
     return;
   }
 
@@ -150,7 +160,8 @@ void DigitalIdentityRequestImpl::Request(
 }
 
 void DigitalIdentityRequestImpl::Abort() {
-  // TODO(https://crbug.com/1416939): Implement.
+  CompleteRequestWithStatus(RequestDigitalIdentityStatus::kErrorCanceled, "",
+                            RequestStatusForMetrics::kErrorAborted);
 }
 
 std::unique_ptr<DigitalIdentityProvider>

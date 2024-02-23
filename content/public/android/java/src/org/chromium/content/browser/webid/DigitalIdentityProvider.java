@@ -4,6 +4,12 @@
 
 package org.chromium.content.browser.webid;
 
+import android.annotation.SuppressLint;
+import android.credentials.GetCredentialException;
+import android.os.Build;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -26,6 +32,28 @@ public class DigitalIdentityProvider {
         var oldValue = sCredentials;
         sCredentials = mock;
         ResettersForTesting.register(() -> sCredentials = oldValue);
+    }
+
+    @VisibleForTesting
+    @SuppressLint("NewApi") // GetCredentialException requires API level 34.
+    public static @DigitalIdentityRequestStatusForMetrics int computeStatusForMetricsFromException(
+            Exception e) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return DigitalIdentityRequestStatusForMetrics.ERROR_OTHER;
+        }
+
+        // Exception is passed down from Android OS call so cannot assume type of exception.
+        if (!(e instanceof GetCredentialException)) {
+            return DigitalIdentityRequestStatusForMetrics.ERROR_OTHER;
+        }
+        String credentialExceptionType = ((GetCredentialException) e).getType();
+        if (GetCredentialException.TYPE_USER_CANCELED.equals(credentialExceptionType)) {
+            return DigitalIdentityRequestStatusForMetrics.ERROR_USER_DECLINED;
+        }
+        if (GetCredentialException.TYPE_NO_CREDENTIAL.equals(credentialExceptionType)) {
+            return DigitalIdentityRequestStatusForMetrics.ERROR_NO_CREDENTIAL;
+        }
+        return DigitalIdentityRequestStatusForMetrics.ERROR_OTHER;
     }
 
     // Methods that are called by native implementation
@@ -54,21 +82,29 @@ public class DigitalIdentityProvider {
                         data -> {
                             if (mDigitalIdentityProvider != 0) {
                                 DigitalIdentityProviderJni.get()
-                                        .onReceive(mDigitalIdentityProvider, new String(data));
+                                        .onReceive(
+                                                mDigitalIdentityProvider,
+                                                new String(data),
+                                                DigitalIdentityRequestStatusForMetrics.SUCCESS);
                             }
                         },
                         e -> {
                             if (mDigitalIdentityProvider != 0) {
                                 DigitalIdentityProviderJni.get()
-                                        .onError(mDigitalIdentityProvider);
+                                        .onReceive(
+                                                mDigitalIdentityProvider,
+                                                "",
+                                                DigitalIdentityProvider
+                                                        .computeStatusForMetricsFromException(e));
                             }
                         });
     }
 
     @NativeMethods
     interface Natives {
-        void onReceive(long nativeDigitalIdentityProviderAndroid, String digitalIdentity);
-
-        void onError(long nativeDigitalIdentityProviderAndroid);
+        void onReceive(
+                long nativeDigitalIdentityProviderAndroid,
+                String digitalIdentity,
+                @DigitalIdentityRequestStatusForMetrics int statusForMetrics);
     }
 }

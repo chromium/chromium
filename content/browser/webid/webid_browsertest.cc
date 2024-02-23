@@ -14,10 +14,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/webid/digital_credentials/digital_identity_types.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
@@ -898,9 +900,8 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
   }
 };
 
-EvalJsResult RunDigitalIdentityValidRequest(
-    const ToRenderFrameHost& execution_target) {
-  const constexpr char kValidRequest[] = R"({
+std::string BuildDigitalIdentityValidJsRequestDictionary() {
+  return R"({
       identity: {
         providers: [{
           holder: {
@@ -921,15 +922,26 @@ EvalJsResult RunDigitalIdentityValidRequest(
         }],
       },
     })";
+}
 
+EvalJsResult EvalJsAndReturnToken(const ToRenderFrameHost& execution_target,
+                                  std::string_view script_setting_token) {
   std::string script = base::StringPrintf(R"(
       (async () => {
-          const {token} = await navigator.credentials.get(%s);
+          %s
           return token;
       }) ()
       )",
-                                          kValidRequest);
+                                          script_setting_token.data());
   return EvalJs(execution_target, script);
+}
+
+EvalJsResult RunDigitalIdentityValidRequest(
+    const ToRenderFrameHost& execution_target) {
+  std::string script = base::StringPrintf(
+      "const {token} = await navigator.credentials.get(%s);",
+      BuildDigitalIdentityValidJsRequestDictionary().c_str());
+  return EvalJsAndReturnToken(execution_target, script);
 }
 
 // Test that a Verifiable Credential can be requested via the JS API.
@@ -966,7 +978,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run("test-mdoc");
+            std::move(callback).Run(
+                "test-mdoc",
+                digital_identity::RequestStatusForMetrics::kSuccess);
           }));
 
   EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
@@ -1007,7 +1021,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
-            std::move(callback).Run("test-mdoc");
+            std::move(callback).Run(
+                "test-mdoc",
+                digital_identity::RequestStatusForMetrics::kSuccess);
           }));
 
   std::string script = R"(
@@ -1054,10 +1070,79 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                 "AbortError: Only one navigator.credentials.get request may be "
                 "outstanding at one time.",
                 ExtractJsError(RunDigitalIdentityValidRequest(shell())));
-            std::move(callback).Run("test-mdoc");
+            std::move(callback).Run(
+                "test-mdoc",
+                digital_identity::RequestStatusForMetrics::kSuccess);
           }));
 
   EXPECT_EQ("test-mdoc", RunDigitalIdentityValidRequest(shell()));
+}
+
+// Test that when the user declines a digital identity request, the error
+// message returned to JavaScript does not indicate that the user declined the
+// request.
+IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
+                       UserDeclinesRequest) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockDigitalIdentityProvider* digital_identity_provider =
+      static_cast<MockDigitalIdentityProvider*>(
+          test_browser_client_->GetDigitalIdentityProviderForTests());
+
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
+      .WillOnce(WithArg<3>(
+          [&](DigitalIdentityProvider::DigitalIdentityCallback callback) {
+            std::move(callback).Run(
+                "test-mdoc",
+                digital_identity::RequestStatusForMetrics::kErrorUserDeclined);
+          }));
+
+  EXPECT_EQ("NetworkError: Error retrieving a token.",
+            ExtractJsError(RunDigitalIdentityValidRequest(shell())));
+}
+
+// Test that the digital identity promise is rejected when the page aborts the
+// request.
+IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, PageAbortsRequest) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = base::StringPrintf(
+      R"(
+     const abortController = new AbortController();
+     const getDict = %s;
+     getDict.signal = abortController.signal;
+     const getPromise = navigator.credentials.get(getDict);
+     abortController.abort("abort_reason_details");
+     await getPromise;
+     )",
+      BuildDigitalIdentityValidJsRequestDictionary().c_str());
+  EXPECT_EQ("abort_reason_details",
+            ExtractJsError(EvalJsAndReturnToken(shell(), script)));
+}
+
+// Test that Blink.DigitalIdentityRequest.Status UMA metric is recorded when
+// digital identity request completes.
+IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
+                       RecordRequestStatusHistogramAfterRequestCompletes) {
+  base::HistogramTester histogram_tester;
+
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockDigitalIdentityProvider* digital_identity_provider =
+      static_cast<MockDigitalIdentityProvider*>(
+          test_browser_client_->GetDigitalIdentityProviderForTests());
+
+  EXPECT_CALL(*digital_identity_provider, Request(_, _, _, _))
+      .WillOnce(WithArg<3>(
+          [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
+            std::move(callback).Run(
+                "test-mdoc",
+                digital_identity::RequestStatusForMetrics::kSuccess);
+          }));
+
+  RunDigitalIdentityValidRequest(shell());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DigitalIdentityRequest.Status",
+      digital_identity::RequestStatusForMetrics::kSuccess, 1);
 }
 
 // Verify that the Authz parameters are passed to the id assertion endpoint.

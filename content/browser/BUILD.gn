@@ -2244,6 +2244,7 @@ source_set("browser") {
     "webid/digital_credentials/digital_identity_provider.h",
     "webid/digital_credentials/digital_identity_request_impl.cc",
     "webid/digital_credentials/digital_identity_request_impl.h",
+    "webid/digital_credentials/digital_identity_types.h",
     "webid/fake_identity_request_dialog_controller.cc",
     "webid/fake_identity_request_dialog_controller.h",
     "webid/fedcm_metrics.cc",
@@ -3470,6 +3471,9 @@ group("for_content_tests") {
 if (is_android) {
   java_cpp_enum("client_data_json_generated_enum") {
     sources = [ "webauth/client_data_json.h" ]
+  }
+  java_cpp_enum("digital_identity_enum") {
+    sources = [ "webid/digital_credentials/digital_identity_types.h" ]
   }
 }
 

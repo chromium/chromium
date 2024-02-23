@@ -207,6 +207,7 @@ android_library("content_full_java") {
     ":content_jni_headers",
     ":is_ready_to_pay_service_aidl",
     "//content/browser:client_data_json_generated_enum",
+    "//content/browser:digital_identity_enum",
     "//content/browser/accessibility:content_browser_accessibility_java_enums_srcjar",
     "//content/browser/sms:sms_provider_gms_backend_enum",
     "//content/public/browser:bluetooth_chooser_event_javagen",
@@ -708,11 +709,13 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
     "junit/src/org/chromium/content/browser/webcontents/WebContentsImplTest.java",
     "junit/src/org/chromium/content/browser/webcontents/WebContentsObserverProxyTest.java",
+    "junit/src/org/chromium/content/browser/webid/DigitalIdentityProviderTest.java",
     "junit/src/org/chromium/content_public/browser/MessagePayloadTest.java",
   ]
 
   deps = [
     ":content_java",
+    ":identity_credentials_public_impl_java",
     "//base:base_java",
     "//base:base_java_process_launcher_test_support",
     "//base:base_java_test_support",

@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "content/browser/webid/digital_credentials/digital_identity_provider.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "url/origin.h"
 
 #include <jni.h>
@@ -35,8 +35,7 @@ class CONTENT_EXPORT DigitalIdentityProviderAndroid
 
   // Implementation of corresponding JNI methods in
   // DigitalIdentityProviderAndroid.Natives.*
-  void OnReceive(JNIEnv*, jstring vc);
-  void OnError(JNIEnv*);
+  void OnReceive(JNIEnv*, jstring vc, jint status_for_metrics);
 
   // Triggers a request for a digital credential.
   void Request(WebContents* web_contents,

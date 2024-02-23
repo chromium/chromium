@@ -230,6 +230,14 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="(obsolete) kImageJXL"/>
 </enum>
 
+<enum name="DigitalIdentityRequestStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kErrorOther"/>
+  <int value="2" label="kErrorNoCredential"/>
+  <int value="3" label="kErrorUserDeclined"/>
+  <int value="4" label="kErrorAborted"/>
+</enum>
+
 <enum name="FedCmAccountsResponseInvalidReason">
   <int value="0" label="Response is not JSON or dict"/>
   <int value="1" label="No accounts key"/>

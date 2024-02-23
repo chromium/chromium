@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "content/browser/webid/digital_credentials/digital_identity_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
@@ -30,7 +31,9 @@ class CONTENT_EXPORT DigitalIdentityProvider {
 
   static std::unique_ptr<DigitalIdentityProvider> Create();
 
-  using DigitalIdentityCallback = base::OnceCallback<void(const std::string&)>;
+  using DigitalIdentityCallback = base::OnceCallback<void(
+      const std::string&,
+      digital_identity::RequestStatusForMetrics status_for_metrics)>;
   virtual void Request(WebContents* web_contents,
                        const url::Origin& origin,
                        const base::Value::Dict& request,

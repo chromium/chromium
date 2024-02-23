@@ -1073,6 +1073,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.DigitalIdentityRequest.Status"
+    enum="DigitalIdentityRequestStatus" expires_after="2024-12-01">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the result of a request to the digital identity API. Recorded when
+    the request completes.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.DisplayLockIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-08-04">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
