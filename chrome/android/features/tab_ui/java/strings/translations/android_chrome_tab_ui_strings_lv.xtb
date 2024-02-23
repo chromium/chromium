@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Izveidot grupu</translation>
 <translation id="2662028055331606429">Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Apmeklēt vietni</translation>
-<translation id="2759453070259087442">Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Vai skatīt veikala informāciju?</translation>
 <translation id="2928243913527329289">Google | Par šo veikalu</translation>
 <translation id="2977480621796371840">Noņemt no grupas</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5545379293264651575">Aizvērt bez pārskatīšanas</translation>
 <translation id="5556417849629758491">Skatiet veikala informāciju; opcija ir pieejama ekrāna augšdaļā</translation>
-<translation id="5558362125926932819">Aizvērt ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5580090775658607195">Grupētas <ph name="TAB_COUNT" /> cilnes</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> saite no pārlūka Chrome}zero{<ph name="TABS_COUNT_MANY" /> saišu no pārlūka Chrome}one{<ph name="TABS_COUNT_MANY" /> saite no pārlūka Chrome}other{<ph name="TABS_COUNT_MANY" /> saites no pārlūka Chrome}}</translation>
 <translation id="575494663145460764">Vai saņemt brīdinājumus par cenu kritumu?</translation>
 <translation id="58326064309361797">Velciet cilnes, lai tās sagrupētu</translation>
-<translation id="5846292395804797011">Aizvērt ciļņu grupu “<ph name="TITLE_OF_GROUP" />”. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5972844218283131174">Noņemt visu atlasi</translation>
 <translation id="6017514345406065928">Zaļa</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Aizvērt atlasīto cilni (skaits: <ph name="TABS_COUNT_ONE" />)}zero{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}one{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}other{Aizvērt atlasītās cilnes (skaits: <ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Jauna mape — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Izvērst ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8730999928494395583">Jūsu darbības šajās inkognito cilnēs tiks noņemtas no šīs ierīces</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>

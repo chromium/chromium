@@ -50,6 +50,7 @@
 <translation id="1254424942107648268">Find Previous</translation>
 <translation id="1258491128795710625">What’s new</translation>
 <translation id="1264156759663453185">The selected text is too large for partial translation.</translation>
+<translation id="1264974993859112054">Sports</translation>
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} password}other{{count} passwords}}</translation>
@@ -1462,7 +1463,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8402673309244746971">Go to Following</translation>
 <translation id="8407669440184693619">No passwords found for this site</translation>
 <translation id="842017693807136194">Signed in with</translation>
-<translation id="8423121072346537366">Just Now</translation>
+<translation id="8423121072346537366">just now</translation>
 <translation id="8425693829365242963">Your passwords are unique</translation>
 <translation id="8428045167754449968">City / Town</translation>
 <translation id="8428213095426709021">Settings</translation>

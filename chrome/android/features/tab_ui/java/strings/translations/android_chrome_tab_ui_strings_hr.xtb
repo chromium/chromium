@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ukloni karticu iz grupe}one{Ukloni kartice iz grupe}few{Ukloni kartice iz grupe}other{Ukloni kartice iz grupe}}</translation>
 <translation id="2277224997687551299">Uredi naziv grupe</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Označi karticu}one{Označi kartice}few{Označi kartice}other{Označi kartice}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2569352796411618312">Prijedlog: broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
 <translation id="2613747923081026172">Izradi grupu</translation>
 <translation id="2662028055331606429">Ocjena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Otvori web-lokaciju</translation>
-<translation id="2759453070259087442">Proširite grupu kartica <ph name="TITLE_OF_GROUP" /> sljedećim brojem kartica: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Pogledati podatke o trgovini?</translation>
 <translation id="2928243913527329289">Google | O ovoj trgovini</translation>
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5545379293264651575">Zatvori bez pregleda</translation>
 <translation id="5556417849629758491">Pogledajte podatke o trgovini, opciju koja je dostupna pri vrhu zaslona</translation>
-<translation id="5558362125926932819">Zatvori grupu kartica koja sadrži sljedeći broj kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Kartice su grupirane (njih <ph name="TAB_COUNT" />)</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> veza iz Chromea}one{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}few{<ph name="TABS_COUNT_MANY" /> veze iz Chromea}other{<ph name="TABS_COUNT_MANY" /> veza iz Chromea}}</translation>
 <translation id="575494663145460764">Želite li primati obavijesti o padu cijena?</translation>
 <translation id="58326064309361797">Povucite kartice da biste ih grupirali</translation>
-<translation id="5846292395804797011">Zatvori grupu <ph name="TITLE_OF_GROUP" /> koja sadrži sljedeći broj kartica: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5972844218283131174">Poništi odabir za sve</translation>
 <translation id="6017514345406065928">Zelena</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Premjestite karticu gore</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zatvori <ph name="TABS_COUNT_ONE" /> odabranu karticu}one{Zatvori <ph name="TABS_COUNT_MANY" /> odabranu karticu}few{Zatvori <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Zatvori <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Proširite grupu kartica koja sadrži sljedeći broj kartica: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Niža cijena</translation>
 <translation id="8730999928494395583">Vaša aktivnost na tim anonimnim karticama uklonit će se s ovog uređaja</translation>
 <translation id="8820741577754260431">Pogledajte pad cijena na karticama</translation>

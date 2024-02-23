@@ -25,7 +25,6 @@
 <translation id="2613747923081026172">Gumawa ng pangkat</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Bisitahin ang site</translation>
-<translation id="2759453070259087442">I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
 <translation id="2801787514987684416">Tingnan ang impormasyon ng store?</translation>
 <translation id="2928243913527329289">Google | Tungkol sa store na ito</translation>
 <translation id="2977480621796371840">Alisin sa grupo</translation>
@@ -63,12 +62,10 @@
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5545379293264651575">Isara nang hindi sinusuri</translation>
 <translation id="5556417849629758491">Tingnan ang impormasyon ng store, available ang opsyon malapit sa itaas ng screen</translation>
-<translation id="5558362125926932819">Isara ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab</translation>
 <translation id="5580090775658607195">Naigrupo ang <ph name="TAB_COUNT" /> tab</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link mula sa Chrome}one{<ph name="TABS_COUNT_MANY" /> link mula sa Chrome}other{<ph name="TABS_COUNT_MANY" /> na link mula sa Chrome}}</translation>
 <translation id="575494663145460764">Makatanggap ng mga alerto para sa mga pagbaba sa presyo?</translation>
 <translation id="58326064309361797">I-drag ang mga tab para pagpangkatin ang mga ito</translation>
-<translation id="5846292395804797011">Isara ang grupong <ph name="TITLE_OF_GROUP" /> na may <ph name="NUMBER_OF_TABS" /> (na) tab</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5972844218283131174">I-deselect lahat</translation>
 <translation id="6017514345406065928">Berde</translation>
@@ -107,7 +104,6 @@
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">I-expand ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>

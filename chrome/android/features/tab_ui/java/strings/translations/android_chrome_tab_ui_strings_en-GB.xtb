@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ungroup tab}other{Ungroup tabs}}</translation>
 <translation id="2277224997687551299">Edit group name</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tabs}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="2569352796411618312">Suggestion: <ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="2613747923081026172">Create group</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
 <translation id="266935134738038806">Visit site</translation>
-<translation id="2759453070259087442">Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="NUMBER_OF_TABS" /> tabs.</translation>
 <translation id="2801787514987684416">View shop info?</translation>
 <translation id="2928243913527329289">Google | About this store</translation>
 <translation id="2977480621796371840">Remove from group</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5545379293264651575">Close without reviewing</translation>
 <translation id="5556417849629758491">View shop info, option available near top of the screen</translation>
-<translation id="5558362125926932819">Close tab group with <ph name="NUMBER_OF_TABS" /> tabs</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tabs grouped</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link from Chrome}other{<ph name="TABS_COUNT_MANY" /> links from Chrome}}</translation>
 <translation id="575494663145460764">Get alerts for price drops?</translation>
 <translation id="58326064309361797">Drag tabs to group them</translation>
-<translation id="5846292395804797011">Close <ph name="TITLE_OF_GROUP" /> group with <ph name="NUMBER_OF_TABS" /> tabs</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5972844218283131174">Deselect all</translation>
 <translation id="6017514345406065928">Green</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Move tab up</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected tab}other{Close <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="8398929769197326728">New folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Expand tab group with <ph name="NUMBER_OF_TABS" /> tabs.</translation>
 <translation id="8714939927607906138">Lower price</translation>
 <translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>
 <translation id="8820741577754260431">See price drops on your tabs</translation>

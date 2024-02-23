@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ}other{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ}}</translation>
 <translation id="2277224997687551299">ଗ୍ରୁପ ନାମ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}other{ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ଟାବ ଥିବା <ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TITLE_OF_GROUP" />ଟି ଟାବ୍ ଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="2613747923081026172">ଗୋଷ୍ଠୀ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ</translation>
 <translation id="266935134738038806">ସାଇଟକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସହ <ph name="TITLE_OF_GROUP" /> ଟାବ୍ ଗୋଷ୍ଠୀର ବିସ୍ତାର କରନ୍ତୁ।</translation>
 <translation id="2801787514987684416">ଷ୍ଟୋରର ସୂଚନା ଦେଖିବେ କି?</translation>
 <translation id="2928243913527329289">Google | ଏହି ଷ୍ଟୋର୍ ବିଷୟରେ</translation>
 <translation id="2977480621796371840">ଗୋଷ୍ଠୀରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="5545379293264651575">ସମୀକ୍ଷା ନକରି ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ଏକତ୍ର କରାଯାଇଛି</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeରୁ <ph name="TABS_COUNT_ONE" />ଟି ଲିଙ୍କ}other{Chromeରୁ <ph name="TABS_COUNT_MANY" />ଟି ଲିଙ୍କ}}</translation>
 <translation id="575494663145460764">ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ଆଲର୍ଟ ପାଇବେ?</translation>
 <translation id="58326064309361797">ସେଗୁଡ଼ିକର ଗୋଷ୍ଠୀ କରିବାକୁ ଟାବ୍‌ଗୁଡ଼ିକୁ ଟାଣନ୍ତୁ</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା <ph name="TITLE_OF_GROUP" /> ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5972844218283131174">ସମସ୍ତ ଅଚୟନ କରନ୍ତୁ</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="8398929769197326728">ନୂଆ ଫୋଲ୍ଡର - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରନ୍ତୁ।</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
 <translation id="8730999928494395583">ଏହି ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="8820741577754260431">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ସୂଚନା ଦେଖନ୍ତୁ</translation>

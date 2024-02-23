@@ -810,7 +810,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="250346157641628208">Papir (inkjet)</translation>
 <translation id="2505268675989099013">Zaštitite račun</translation>
-<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (primjenjuju se uvjeti)</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (primjenjuju se uslovi)</translation>
 <translation id="2512101340618156538">Nije dozvoljeno (zadano)</translation>
 <translation id="2512413427717747692">Dugme za postavljanje Chromea kao zadanog preglednika, pritisnite Enter da postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="2514548229949738417">Dom i vrt</translation>
@@ -1159,7 +1159,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3229277193950731405">Kopiraj niz verzije</translation>
 <translation id="323107829343500871">Unesite CVC za <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Uvijek detektiraj važan sadržaj s ove web lokacije</translation>
-<translation id="3236212803136366317">Pogodnosti za korisnike kartica</translation>
+<translation id="3236212803136366317">Pogodnosti kartice</translation>
 <translation id="3238395604961564389">Otvori link u anonimnom prozoru</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da prilagodite izgled preglednika</translation>
 <translation id="3240791268468473923">Otvorena je tabela obavještenja da nema akreditiva za sigurno plaćanje koji se podudaraju</translation>
@@ -1196,7 +1196,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="33073482541490531">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Upravitelj lozinki preporučuje da odmah promijenite lozinku.</translation>
 <translation id="3307649904964670439">Dugme Prilagodi Chrome, aktivirajte da prilagodite izgled preglednika</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
-<translation id="3310047144791481950">Pregledajte informacije koje vam pomažu pri odabiru kartice za plaćanje. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više o pogodnostima za kartice<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
+<translation id="3310047144791481950">Pogledajte informacije koje će vam pomoći da odaberete karticu kojom ćete platiti. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Saznajte više o pogodnostima kartice<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV komedije</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Grimizna</translation>

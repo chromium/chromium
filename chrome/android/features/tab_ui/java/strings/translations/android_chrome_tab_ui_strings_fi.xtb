@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Poista välilehden ryhmittely}other{Poista välilehtien ryhmittely}}</translation>
 <translation id="2277224997687551299">Muokkaa ryhmän nimeä</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aseta välilehti kirjanmerkiksi}other{Aseta välilehdet kirjanmerkeiksi}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tiivistä välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2569352796411618312">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="2613747923081026172">Luo ryhmä</translation>
 <translation id="2662028055331606429">Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Siirry sivustolle</translation>
-<translation id="2759453070259087442">Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="2801787514987684416">Näytetäänkö kaupan tiedot?</translation>
 <translation id="2928243913527329289">Google | Tietoja tästä kaupasta</translation>
 <translation id="2977480621796371840">Poista ryhmästä</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5545379293264651575">Sulje tarkistamatta</translation>
 <translation id="5556417849629758491">Näytä kaupan tiedot, vaihtoehto lähellä näytön yläreunaa</translation>
-<translation id="5558362125926932819">Sulje välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> välilehteä ryhmiteltiin</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> linkki Chromesta}other{<ph name="TABS_COUNT_MANY" /> linkkiä Chromesta}}</translation>
 <translation id="575494663145460764">Haluatko ilmoituksia hinnanalennuksista?</translation>
 <translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>
-<translation id="5846292395804797011">Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5972844218283131174">Poista valinta kaikista</translation>
 <translation id="6017514345406065928">Vihreä</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Laajenna välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>
 <translation id="8820741577754260431">Katso hinnanalennukset välilehdiltä</translation>

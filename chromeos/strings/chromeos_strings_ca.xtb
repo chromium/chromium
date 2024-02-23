@@ -65,6 +65,7 @@
 <translation id="1367951781824006909">Trieu un fitxer</translation>
 <translation id="1371650399987522809">Comentaris sobre els fons de pantalla creats amb la tecnologia de la IA de Google</translation>
 <translation id="1387854245479784695">És una agregació de tots els nuclis</translation>
+<translation id="1393206549145430405">castell</translation>
 <translation id="1394661041439318933">La funda del dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
@@ -77,6 +78,7 @@
 <translation id="1432110487435300883">Per obtenir un resultat aproximat, divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Restableix l'ús de dades automàticament cada mes en un dia seleccionat</translation>
 <translation id="1442433966118452622">Font de la imatge</translation>
+<translation id="1446954767133808402">safir</translation>
 <translation id="1449035143498573192">Obre a la Cerca de Google</translation>
 <translation id="1451536289672181509">El dispositiu és un teclat.</translation>
 <translation id="1452939186874918380">paraigües</translation>
@@ -98,6 +100,7 @@
 <translation id="1555130319947370107">Blau</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
 <translation id="1561927818299383735">color de la retroil·luminació</translation>
+<translation id="1564356849266217610">organza</translation>
 <translation id="1565038567006703504">No es pot actualitzar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Àlbums</translation>
 <translation id="1572585716423026576">Defineix com a fons de pantalla</translation>
@@ -119,6 +122,7 @@
 <translation id="1664796644829245314">Previsualitza <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1669047024429367828">Visibilitat</translation>
+<translation id="1670478569471758522">Més informació relacionada amb la teva selecció</translation>
 <translation id="1672499492233627739">Feed de vídeo de la càmera web</translation>
 <translation id="1676557873873341166">S'està gravant un vídeo</translation>
 <translation id="1684279041537802716">Color d'èmfasi</translation>
@@ -143,6 +147,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tipus d'autenticació</translation>
 <translation id="1776228893584526149">To del fons de pantalla</translation>
+<translation id="1777913922912475695">pont</translation>
 <translation id="1782199038061388045">traducció</translation>
 <translation id="1788485524395674731">El teu administrador gestiona aquesta aplicació</translation>
 <translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
@@ -175,6 +180,7 @@
 <translation id="1923388006036088459">Colors d'èmfasi</translation>
 <translation id="1947737735496445907">Imprès</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954818433534793392">edifici</translation>
 <translation id="1962550982027027473">Es necessita un APN predeterminat</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1977994649430373166">Foto de perfil de Google</translation>
@@ -209,6 +215,7 @@
 <translation id="2163937499206714165">Activa el mode fosc</translation>
 <translation id="2180197493692062006">S'ha produït un error. Prova de tornar a obrir l'aplicació.</translation>
 <translation id="2189104374785738357">Edita els detalls de l'APN</translation>
+<translation id="2201758491318984023">bicicleta</translation>
 <translation id="2203222757805818543">La programació actual està establerta en <ph name="SUNRISE" /> - <ph name="SUNSET" />. Per actualitzar automàticament la programació del mode fosc, <ph name="BEGIN_LINK" />activa l'accés a la ubicació<ph name="END_LINK" />.</translation>
 <translation id="2203642483788377106">un penya-segat</translation>
 <translation id="2208388655216963643">impressionista</translation>
@@ -237,6 +244,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2347064478402194325">cadira</translation>
 <translation id="2358070305000735383">El quadre de diàleg d'edició per a <ph name="DESCRIPTION" /> està obert.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
@@ -254,9 +262,11 @@
 <translation id="2465272316171730950">Estem al límit de la nostra capacitat. Torna d'aquí a una estona.</translation>
 <translation id="2480572840229215612">crancs</translation>
 <translation id="248546197012830854">El dispositiu no té connexió. Connecta'l a la xarxa Wi-Fi per veure el contingut d'ajuda.</translation>
+<translation id="2486301288428798846">fusta</translation>
 <translation id="2491955442992294626">Les tecles no es proven quan fas servir una altra finestra</translation>
 <translation id="2493126929778606526">Les teves millors fotos, seleccionades automàticament</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
+<translation id="2501126912075504550">òpal</translation>
 <translation id="2505327257735685095">Actualitza la imatge actual del fons de pantalla</translation>
 <translation id="2512979179176933762">mostra les finestres</translation>
 <translation id="2513396635448525189">Imatge d'inici de sessió</translation>
@@ -270,8 +280,10 @@
 <translation id="2561093647892030937">llimones</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Per configurar-la, ves a Configuració</translation>
+<translation id="2586146417912237930">blau i anyil</translation>
 <translation id="2597774443162333062">Els fitxers s'enviaran a Google per depurar-los</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat una pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines.}}</translation>
+<translation id="2617397783536231890">cotó</translation>
 <translation id="2618015542787108131">una duna de sorra</translation>
 <translation id="2619761439309613843">Actualització diària</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -279,6 +291,7 @@
 <translation id="2640549051766135490">S'ha seleccionat l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">activa o commuta el dictat</translation>
 <translation id="2656001153562991489">Exclusiu per a Chromebook Plus</translation>
+<translation id="2665671725390405060">Escolta la pronunciació</translation>
 <translation id="267442004702508783">actualitza</translation>
 <translation id="268270014981824665">atenuació del teclat</translation>
 <translation id="2712812801627182647">Clau d'autenticació TLS</translation>
@@ -289,10 +302,13 @@
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2744221223678373668">Compartides</translation>
 <translation id="2751739896257479635">Autenticació de fase 2 d'EAP</translation>
+<translation id="2754757901767760034">llum</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
+<translation id="2786429550992142861">lli</translation>
 <translation id="2787435249130282949">teclat més brillant</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
+<translation id="2855718259207180827">llana</translation>
 <translation id="2859243502336719778">Actualització crítica</translation>
 <translation id="2860473693272905224">Col·loca una altra pàgina a l'escàner</translation>
 <translation id="2872961005593481000">Apaga</translation>
@@ -400,6 +416,7 @@
 <translation id="3632579075709132555">Commutador de la pantalla de privadesa</translation>
 <translation id="3651050199673793219">Selecciona una unitat de temperatura</translation>
 <translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> en flor radiant de color <ph name="FLOWER_COLOR" /></translation>
+<translation id="3662461537616691585">bordeus i granat</translation>
 <translation id="3668449597372804501">Fons de pantalla Moviment de núvols</translation>
 <translation id="3675132884790542448">porcs</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
@@ -427,7 +444,9 @@
 <translation id="3865289341173661845">El contingut d'ajuda no està disponible.</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3866249974567520381">Descripció</translation>
+<translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
+<translation id="3877066159641251281">Escolta la traducció</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
 <translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3916998944874125962">fes una captura de pantalla</translation>
@@ -446,6 +465,7 @@
 <translation id="3993704782688964914">El dispositiu <ph name="DEVICE_NAME" /> s'acaba d'actualitzar</translation>
 <translation id="3998976413398910035">Gestiona les impressores</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
+<translation id="401147258241215701">obsidiana</translation>
 <translation id="4021031199988160623">Canvia al mode de portàtil per fer la prova</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4044093238444069296">No es pot contactar amb la passarel·la</translation>
@@ -486,6 +506,7 @@
 <translation id="4244962993387259361">Necessites com a mínim 500 MB lliures per executar una prova de memòria. Per alliberar espai, ves a Configuració &gt; Gestió de l'emmagatzematge.</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4258281355379922695">Latència d'HTTP</translation>
+<translation id="4266143281602681663">fil</translation>
 <translation id="4271957103967917607">Mostra en pantalla completa</translation>
 <translation id="4275663329226226506">Multimèdia</translation>
 <translation id="4278766082079064416">S'està utilitzant la drecera per a "<ph name="CONFLICT_ACCEL_NAME" />". Edita o suprimeix per resoldre el conflicte.</translation>
@@ -494,6 +515,7 @@
 <translation id="4289849978083912975">Presentació de diapositives</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
+<translation id="430786093962686457">xifó</translation>
 <translation id="4310735698903592804">Fons de pantalla recents amb la tecnologia de la IA de Google</translation>
 <translation id="4320904097188876154">rosa neó</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
@@ -549,6 +571,7 @@
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
 <translation id="4650608062294027130">Maj dreta</translation>
 <translation id="4654549501020883054">Canvia cada dia</translation>
+<translation id="4664651912255946953">pell</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="467715984478005772">Possible tallafoc</translation>
@@ -559,6 +582,7 @@
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
 <translation id="4771607256327216405">brillantor del teclat</translation>
 <translation id="4773299976671772492">En pausa</translation>
+<translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4793710386569335688">Per obtenir més ajuda, ves al <ph name="BEGIN_LINK" />Centre d'ajuda<ph name="END_LINK" />.</translation>
@@ -584,6 +608,7 @@
 <translation id="4854586501323951986">Pantalla tàctil integrada</translation>
 <translation id="4855250849489639581">Llisca cap avall per veure més opcions de disseny</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
+<translation id="4868181314237714900">folre polar</translation>
 <translation id="4873827928179867585">Algoritme d'autenticació</translation>
 <translation id="4880328057631981605">Nom del punt d'accés Wi-Fi</translation>
 <translation id="488307179443832524">S'està utilitzant la drecera per a "<ph name="CONFLICT_ACCEL_NAME" />". Prem una drecera nova.</translation>
@@ -627,6 +652,7 @@
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5142961317498132443">Autenticació</translation>
+<translation id="5144887194300568405">Copia la traducció</translation>
 <translation id="5145081769226915336">Vols activar el mode fosc automàticament?</translation>
 <translation id="5154917547274118687">Memòria</translation>
 <translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
@@ -678,6 +704,7 @@
 <translation id="5431318178759467895">Color</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
+<translation id="5470776029649730099">xarpellera</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>
 <translation id="5488280942828718790">magenta</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
@@ -687,6 +714,7 @@
 <translation id="550600468576850160">un prat</translation>
 <translation id="551689408806449779">El dispositiu s'ha desconnectat. Prova de connectar-te de nou per fer la prova.</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="554067135846762198">corall i canyella</translation>
 <translation id="5543701552415191873">bloquejada</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Canvia automàticament al tema fosc al vespre</translation>
@@ -722,6 +750,7 @@
 <translation id="576835345334454681">Augmenta la brillantor de la pantalla</translation>
 <translation id="57838592816432529">Silencia</translation>
 <translation id="5784136236926853061">La latència d'HTTP és alta</translation>
+<translation id="5790391387506209808">lapislàtzuli</translation>
 <translation id="5810296156135698005">barroc</translation>
 <translation id="5816802250591013230">No hi ha cap drecera assignada</translation>
 <translation id="5826644637650799838">Sobre l'art</translation>
@@ -747,6 +776,7 @@
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Botó de supressió per a <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="5930669310554144537">Escena onírica</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="594552776027197022">Genera un parell de claus aleatori</translation>
@@ -755,6 +785,7 @@
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">coral</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
+<translation id="5996832681196460718">seda</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019566113895157499">Tecles de drecera</translation>
 <translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
@@ -826,6 +857,7 @@
 <translation id="6382182670717268353">Previsualització de l'estalvi de pantalla</translation>
 <translation id="6388847657025262518">L'alimentador de documents de l'escàner està encallat. Comprova l'alimentador i torna-ho a provar.</translation>
 <translation id="6394634179843537518">Afegeix un fitxer</translation>
+<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> surrealista de <ph name="DREAMSCAPES_MATERIAL" /> de color <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">cerca del navegador</translation>
 <translation id="6410257289063177456">Fitxers d'imatge </translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
@@ -885,12 +917,15 @@
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6723847290197874913">Retroil·luminació del teclat</translation>
 <translation id="672609503628871915">Novetats</translation>
+<translation id="6740695858234317715">crema i taronja</translation>
+<translation id="6741823073189174383">barca</translation>
 <translation id="6744441848304920043">una jungla</translation>
 <translation id="6747215703636344499">S'ha aturat: safata de sortida plena</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6753452347192452143">El dispositiu és un ordinador.</translation>
 <translation id="6756731097889387912">No s'ha pogut cancel·lar l'escaneig</translation>
 <translation id="6760706756348334449">Abaixa el volum</translation>
+<translation id="6761537227090937007">S'està creant una imatge d'alta resolució…</translation>
 <translation id="6766275201586212568">Algunes resolucions de DNS han fallat</translation>
 <translation id="6768237774506518020">El percentatge d'error de la resolució de DNS és alt</translation>
 <translation id="6791471867139427246">color de la llum del teclat</translation>
@@ -942,6 +977,7 @@
 <translation id="7135814714616751706">Cerca dreceres</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
+<translation id="7144954474087165241">pagoda</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
@@ -961,6 +997,7 @@
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="7233782086689993269">La drecera s'ha restaurat</translation>
 <translation id="725133483556299729">Selecciona una adreça electrònica</translation>
+<translation id="7255187042098209569">rosa i lila</translation>
 <translation id="7271000785316964275">classicista</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7271932918253517778">La drecera amb tecles de la fila superior ha d'incloure la tecla de <ph name="META_KEY" />.</translation>
@@ -976,6 +1013,7 @@
 <translation id="7311368985037279727">color del teclat</translation>
 <translation id="7317831949569936035">Inscripció en un centre educatiu</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7321055305895875150">verd i verd blavós</translation>
 <translation id="7328475450575141167">flor d'ocell</translation>
 <translation id="7331297744262591636">Has de tenir com a mínim 18 anys i has d'acceptar que l'ús que fas dels fons de pantalla IA està subjecte a les <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />condicions del servei de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> i a les <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />condicions del servei addicionals de la IA generativa<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
@@ -987,6 +1025,7 @@
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="73631062356239394">Comparteix les dades de diagnòstic</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7384004438856720753">palau</translation>
 <translation id="7388959671917308825">Ratolí tàctil integrat</translation>
 <translation id="7397270852490618635">Desactiva el tema clar</translation>
 <translation id="7401543881546089382">Suprimeix la drecera</translation>
@@ -1014,6 +1053,7 @@
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla tàctil USB</translation>
+<translation id="757747079855995705">pedra</translation>
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7613724632293948900">Canvia la posició amb el ratolí o les tecles de fletxa.</translation>
 <translation id="7618774594543487847">Neutre</translation>
@@ -1056,6 +1096,7 @@
 <translation id="7841134249932030522">Activa el mode fosc</translation>
 <translation id="7846634333498149051">Teclat</translation>
 <translation id="7849030488395653706">aurora boreal</translation>
+<translation id="7849737607196682401">punta</translation>
 <translation id="7850847810298646851">Fons de pantalla amb la tecnologia de la IA de Google</translation>
 <translation id="785170686607360576">tulipa</translation>
 <translation id="7856267634822906833">Pantalla tàctil Bluetooth</translation>
@@ -1113,6 +1154,7 @@
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8246209727385807362">Operador de telefonia mòbil desconegut</translation>
 <translation id="8250926778281121244">òxid</translation>
+<translation id="8257572018929862473">Obre la configuració de Respostes ràpides</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262870577632766028">1 hora</translation>
 <translation id="827422111966801947">Anyil</translation>
@@ -1156,6 +1198,7 @@
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8491311378305535241">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc des d'aplicacions d'Android</translation>
+<translation id="8495070016475833911">feltre</translation>
 <translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
@@ -1185,6 +1228,7 @@
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8747900814994928677">Confirma el canvi</translation>
+<translation id="8755946156089753497">torre</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Àlbum de Google Fotos</translation>
 <translation id="8775713578693478175">APN del mòdem</translation>
@@ -1198,6 +1242,7 @@
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
+<translation id="8849799913685544685">far</translation>
 <translation id="8851859208664803097">S'ha aturat: no es pot accedir a la impressora</translation>
 <translation id="8855781559874488009">No es pot establir la connexió amb llocs web HTTP a través del tallafoc</translation>
 <translation id="885701979325669005">Emmagatzematge</translation>
@@ -1280,7 +1325,9 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="952992212772159698">No activat</translation>
+<translation id="95718197892796296">argila</translation>
 <translation id="960719561871045870">Codi d'operador</translation>
+<translation id="965918541715156800">groc i verd blavós</translation>
 <translation id="966787709310836684">menú</translation>
 <translation id="979450713603643090">Rosa clar</translation>
 <translation id="982713511914535780">Executa la prova de descàrrega</translation>

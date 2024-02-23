@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Guruh yaratish</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho</translation>
 <translation id="266935134738038806">Saytni ochish</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.</translation>
 <translation id="2801787514987684416">Doʻkon axboroti ochilsinmi?</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
 <translation id="2977480621796371840">Guruhdan chiqarish</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5545379293264651575">Tekshirmasdan yopish</translation>
 <translation id="5556417849629758491">Doʻkon axboroti ekranning yuqori qismida chiqadi</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yopish</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ta varaq guruhlandi</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome brauzeridan <ph name="TABS_COUNT_ONE" /> ta havola}other{Chrome brauzeridan <ph name="TABS_COUNT_MANY" /> ta havola}}</translation>
 <translation id="575494663145460764">Narxlar tushganda xabar qilinsinmi?</translation>
 <translation id="58326064309361797">Varaqlarni guruhlash uchun bir-birining ustiga torting</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yopish</translation>
 <translation id="5901630391730855834">Sariq</translation>
 <translation id="5972844218283131174">Tanlamani bekor qilish</translation>
 <translation id="6017514345406065928">Yashil</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni yopish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni yopish}}</translation>
 <translation id="8398929769197326728">Yangi jild - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yoyish.</translation>
 <translation id="8714939927607906138">Past narxda</translation>
 <translation id="8730999928494395583">Bu inkognito varaqlardagi harakatlar tarixi ushbu qurilmadan olib tashlanadi</translation>
 <translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>

@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Pisahkan tab}other{Pisahkan tab}}</translation>
 <translation id="2277224997687551299">Edit nama grup</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Bookmark tab}other{Bookmark tab}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="2569352796411618312">Saran: <ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
 <translation id="2613747923081026172">Buat grup</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Buka situs</translation>
-<translation id="2759453070259087442">Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="2801787514987684416">Lihat info toko?</translation>
 <translation id="2928243913527329289">Google | Tentang toko ini</translation>
 <translation id="2977480621796371840">Keluarkan dari grup</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5545379293264651575">Tutup tanpa meninjau</translation>
 <translation id="5556417849629758491">Lihat info toko, opsi tersedia di dekat bagian atas layar</translation>
-<translation id="5558362125926932819">Tutup grup tab yang berisi <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab dikelompokkan</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link dari Chrome}other{<ph name="TABS_COUNT_MANY" /> link dari Chrome}}</translation>
 <translation id="575494663145460764">Dapatkan notifikasi untuk diskon?</translation>
 <translation id="58326064309361797">Tarik tab untuk mengelompokkannya</translation>
-<translation id="5846292395804797011">Tutup grup <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5972844218283131174">Batalkan semua pilihan</translation>
 <translation id="6017514345406065928">Hijau</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Pindahkan tab ke atas</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="8398929769197326728">Folder Baru - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Luaskan grup tab yang berisi <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="8714939927607906138">Harga yang lebih rendah</translation>
 <translation id="8730999928494395583">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
 <translation id="8820741577754260431">Lihat diskon di tab</translation>

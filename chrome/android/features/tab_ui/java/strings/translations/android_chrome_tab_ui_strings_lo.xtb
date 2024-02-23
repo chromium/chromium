@@ -25,7 +25,6 @@
 <translation id="2613747923081026172">ສ້າງກຸ່ມ</translation>
 <translation id="2662028055331606429">ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">ເຂົ້າເບິ່ງເວັບໄຊ</translation>
-<translation id="2759453070259087442">ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍແຖບ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າບໍ?</translation>
 <translation id="2928243913527329289">Google | ກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="2977480621796371840">ລຶບອອກຈາກກຸ່ມ</translation>
@@ -63,12 +62,10 @@
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5545379293264651575">ປິດໂດຍບໍ່ກວດສອບ</translation>
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
-<translation id="5558362125926932819">ປິດກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ</translation>
 <translation id="5580090775658607195">ຈັດກຸ່ມ <ph name="TAB_COUNT" /> ແຖບແລ້ວ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ລິ້ງຈາກ Chrome}other{<ph name="TABS_COUNT_MANY" /> ລິ້ງຈາກ Chrome}}</translation>
 <translation id="575494663145460764">ຮັບແຈ້ງເຕືອນການຫຼຸດລາຄາບໍ?</translation>
 <translation id="58326064309361797">ລາກແຖບເພື່ອຈັດກຸ່ມພວກມັນ</translation>
-<translation id="5846292395804797011">ປິດກຸ່ມ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5972844218283131174">ເຊົາເລືອກທັງໝົດ</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
@@ -107,7 +104,6 @@
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ປິດ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກ}other{ປິດ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກ}}</translation>
 <translation id="8398929769197326728">ໂຟນເດີໃໝ່ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">ຂະຫຍາຍກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ.</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8730999928494395583">ການເຄື່ອນໄຫວຂອງທ່ານໃນແຖບບໍ່ເປີດເຜີຍຕົວຕົນເຫຼົ່ານີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="8820741577754260431">ເບິ່ງການຫຼຸດລາຄາສຳລັບແຖບຂອງທ່ານ</translation>

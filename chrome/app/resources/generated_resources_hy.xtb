@@ -804,6 +804,7 @@
 <translation id="1602085790802918092">Վիրտուալ մեքենան գործարկվում է</translation>
 <translation id="1603116295689434284">Chrome-ի համակարգային տեղեկություններ</translation>
 <translation id="1603411913360944381">Հեռացնել <ph name="DEVICE_NAME" /> սարքը</translation>
+<translation id="1603879843804174953">Երկար սեղմում</translation>
 <translation id="1603914832182249871">(Ինկոգնիտո)</translation>
 <translation id="1604432177629086300">Չհաջողվեց տպել: Ստուգեք տպիչը և նորից փորձեք:</translation>
 <translation id="1604567162047669454">Ճանաչեք տեսողական դասավորության իմաստաբանությունը</translation>
@@ -1345,6 +1346,7 @@
 <translation id="1992397118740194946">Տրված չէ</translation>
 <translation id="1994173015038366702">Կայքի URL</translation>
 <translation id="1995916364271252349">Սահմանում է, թե ինչ տեղեկություններ կարող են կայքերն օգտագործել և ցուցադրել (օրինակ՝ արդյոք կայքերը կարող են օգտագործել տեղադրության տվյալներն ու տեսախցիկը, կամ ցուցադրել ելնող պատուհաններ)։</translation>
+<translation id="199610894463449797">{0,plural, =1{Փակել այս պրոֆիլը}one{Փակել այս պրոֆիլը (# պատուհան)}other{Փակել այս պրոֆիլը (# պատուհան)}}</translation>
 <translation id="1997433994358798851">Chrome-ին անհրաժեշտ է թույլտվություն՝ ձեր սարքին միանալու նպատակով Bluetooth-ն օգտագործելու համար</translation>
 <translation id="1997616988432401742">Ձեր վկայագրերը</translation>
 <translation id="1999115740519098545">Մեկնարկի ժամանակ</translation>
@@ -1587,6 +1589,7 @@
 <translation id="2175384018164129879">&amp;Որոնողական համակարգերի և կայքերում որոնման կառավարում</translation>
 <translation id="217576141146192373">Չհաջողվեց ավելացնել տպիչը: Ստուգեք դրա կարգավորումները և նորից փորձեք:</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
+<translation id="217631816678106981">Չտեղադրել</translation>
 <translation id="2177306523871626993">Տեքստի ճանաչման ֆայլերը ներբեռնվում են… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Ինկոգնիտո ներդիր` <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -2004,6 +2007,7 @@
 <translation id="2476901513051581836">Տարածքը կարելի է ազատել, միայն եթե անցանց հիշողության չափը հայտնի է։</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" />-ն ապատեղադրելու համար ավարտեք Windows-ի հետ աշխատանքը։</translation>
 <translation id="2477065602824695373">Քանի որ դուք մի քանի փոխանջատիչ եք նշանակել, ավտոմատ սկանավորումն անջատվել է։</translation>
+<translation id="2478076885740497414">Տեղադրել հավելվածը</translation>
 <translation id="2478176599153288112">Մեդիա ֆայլերի օգտագործման թույլտվություններ «<ph name="EXTENSION" />»-ի համար</translation>
 <translation id="24786041351753425">Տվյալների վերականգնման ծառայության միացում</translation>
 <translation id="2480868415629598489">Փոփոխել տվյալները, որոնք դուք պատճենում և տեղադրում եք</translation>
@@ -2339,6 +2343,7 @@
 <translation id="2732134891301408122">Լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="2733248615007838252">«Լավն է» կոճակի սեղմումը դրական կարծիք է ուղարկում այս արդյունքների մասին։</translation>
 <translation id="2733992589856193783">Դուք անցաբառ եք ստեղծել այս կայքի համար։ Մուտք գործելու համար պահանջվում է ձեր բջջային սարքը։</translation>
+<translation id="2734797989819862638">Չպատճենել</translation>
 <translation id="27349076983469322">Բաց ֆոն</translation>
 <translation id="2735712963799620190">Ժամանակացույց</translation>
 <translation id="2737363922397526254">Կոծկել…</translation>
@@ -3123,6 +3128,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}one{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}other{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}}</translation>
 <translation id="3361954577771524115">Հավելվածից</translation>
 <translation id="3363202073972776113">Այս նոր պրոֆիլը կկառավարվի ձեր կազմակերպության կողմից։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt+նշորդի պահում</translation>
 <translation id="3364986687961713424">Ձեր ադմինիստրատորից. «<ph name="ADMIN_MESSAGE" />»</translation>
 <translation id="3365598184818502391">Օգտագործեք Ctrl կամ Alt</translation>
 <translation id="3368922792935385530">Միացված է</translation>
@@ -4570,6 +4576,7 @@
 <translation id="4473559657152613417">Մկնիկի աջ կոճակով սեղմեք ներդիրի վրա և ընտրեք «Ավելացնել ներդիրը նոր խմբում»</translation>
 <translation id="4473996011558324141">մոտավոր ժամանակը</translation>
 <translation id="4474155171896946103">Էջանշել բոլոր ներդիրները…</translation>
+<translation id="4475299370877036544">Այս գործողությունը կարող է խախտել ձեր կազմակերպության կանոնները</translation>
 <translation id="4475552974751346499">Որոնել ներբեռնումները</translation>
 <translation id="4476590490540813026">Մարզիկ</translation>
 <translation id="4476659815936224889">Դուք կարող եք սկանավորել այս կոդը հեռախոսի QR սկաների կամ տեսախցիկի որոշ հավելվածների միջոցով:</translation>
@@ -5713,6 +5720,7 @@
 <translation id="5395498824851198390">Կանխադրված տառատեսակ</translation>
 <translation id="5397378439569041789">Գրանցել կրպակի կամ ցուցանակի սարք</translation>
 <translation id="5397794290049113714">Դուք</translation>
+<translation id="5398062879200420134">⌥+նշորդի պահում</translation>
 <translation id="5398497406011404839">Թաքցված էջանիշներ</translation>
 <translation id="5398572795982417028">Դուրս է էջի համարակալման սահմաններից, թույլատրելի սահմանաչափն է <ph name="MAXIMUM_PAGE" /></translation>
 <translation id="5400196580536813396">Արգելված է փնտրել կամ օգտագործել ձեր սարքին հասանելի տպիչները</translation>
@@ -6338,6 +6346,7 @@
 <translation id="5882919346125742463">Պահված ցանցեր</translation>
 <translation id="5883356647197510494">Ավտոմատ արգելափակված թույլտվություններ՝ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884447826201752041">Անհատականացնել թույլտվությունները յուրաքանչյուր ընդլայնման համար</translation>
+<translation id="5884730022784413637">Երկար սեղմում</translation>
 <translation id="5885314688092915589">Այս պրոֆիլը կկառավարի ձեր կազմակերպությունը</translation>
 <translation id="5885470467814103868">Սկսել սկանավորումը</translation>
 <translation id="5885631909150054232">Պատճենել թոքենը</translation>
@@ -7864,6 +7873,7 @@
 <translation id="7072010813301522126">Դյուրանցման անվանումը</translation>
 <translation id="7075513071073410194">PKCS #1 MD5` RSA գաղտնագրումով</translation>
 <translation id="7075625805486468288">HTTPS կամ SSL հավաստագրերի և կարգավորումների կառավարում</translation>
+<translation id="7075896597860500885">Խորհուրդ չի տրվում պատճենել այս կայքից</translation>
 <translation id="7076875098323397992">Չհաջողվեց սկսել նորացումը</translation>
 <translation id="7077751457066325012">Դիտել և հարմարեցնել ստեղնային դյուրանցումները</translation>
 <translation id="7077829361966535409">Պրոքսի-սերվերի ընթացիկ կարգավորումների միջոցով մուտքի էջի բեռնումը չհաջողվեց: <ph name="GAIA_RELOAD_LINK_START" />Փորձեք նորից մուտք գործել<ph name="GAIA_RELOAD_LINK_END" /> կամ օգտագործեք <ph name="PROXY_SETTINGS_LINK_START" />պրոքսի-սերվերի այլ կարգավորումներ<ph name="PROXY_SETTINGS_LINK_END" />:</translation>
@@ -8214,6 +8224,7 @@
 <translation id="736877393389250337">Չհաջողվեց բացել <ph name="URL" /> կայքը <ph name="ALTERNATIVE_BROWSER_NAME" /> դիտարկիչով։ Խնդրում ենք կապվել համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="7368927539449986686">Խմբագրել կայքում որոնումը</translation>
 <translation id="7370592524170198497">Ethernet EAP՝</translation>
+<translation id="7370751048350026847">Այս կայքում խորհուրդ չի տրվում տեղադրել այս բովանդակությունը</translation>
 <translation id="7371917887111892735">Ներդիրները փոքրացվում են ամրացված ներդիրի լայնությանը համապատասխան</translation>
 <translation id="7374376573160927383">Կառավարել USB սարքերը</translation>
 <translation id="7376124766545122644">Չհաջողվեց օգտագործել այս հղումը։ Համոզվեք, որ հղումը սկսվում է «http://» կամ «https://» նախածանցով, և նորից փորձեք։</translation>
@@ -9612,6 +9623,7 @@
 <translation id="8403618281196981152">Ձեր տվյալները Chrome-ում</translation>
 <translation id="8403807918453631441">«<ph name="BRAND" />» գործառույթը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
+<translation id="8405118833120731611">{0,plural, =1{Փակել այս պրոֆիլը}one{Փակել այս պրոֆիլը (# պատուհան)}other{Փակել այս պրոֆիլը (# պատուհան)}}</translation>
 <translation id="8407199357649073301">Գրառման մակարդակը՝</translation>
 <translation id="8408270600235826886">Դուք եք որոշում, թե ինչ տեղեկատվություններ ուղարկել Google-ին։ Այս գործառույթը ցանկացած ժամանակ կարող եք փոփոխել կարգավորումներում։ Տվյալները կօգտագործվեն Google-ի <ph name="BEGIN_LINK" />գաղտնիության քաղաքականության<ph name="END_LINK" /> համաձայն։</translation>
 <translation id="84098433273647700">Ընթացիկ թեման, որ տեղադրել եք։</translation>

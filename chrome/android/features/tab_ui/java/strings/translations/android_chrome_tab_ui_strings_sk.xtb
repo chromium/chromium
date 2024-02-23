@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Vytvoriť skupinu</translation>
 <translation id="2662028055331606429">Hodnotenie: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Navštíviť web</translation>
-<translation id="2759453070259087442">Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> pomocou <ph name="NUMBER_OF_TABS" /> kariet.</translation>
 <translation id="2801787514987684416">Chcete zobraziť informácie o obchode?</translation>
 <translation id="2928243913527329289">Google | Tento obchod</translation>
 <translation id="2977480621796371840">Odstrániť zo skupiny</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5545379293264651575">Zavrieť bez pozretia</translation>
 <translation id="5556417849629758491">Zobraziť informácie o obchode, možnosť je k dispozícii v dolnej časti obrazovky</translation>
-<translation id="5558362125926932819">Zavrieť skupinu s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5580090775658607195">Počet zoskupených kariet: <ph name="TAB_COUNT" /></translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> odkaz z Chromu}few{<ph name="TABS_COUNT_MANY" /> odkazy z Chromu}many{<ph name="TABS_COUNT_MANY" /> links from Chrome}other{<ph name="TABS_COUNT_MANY" /> odkazov z Chromu}}</translation>
 <translation id="575494663145460764">Chcete dostávať upozornenia na poklesy cien?</translation>
 <translation id="58326064309361797">Karty zoskupíte presunutím</translation>
-<translation id="5846292395804797011">Zavrieť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5901630391730855834">Žltá</translation>
 <translation id="5972844218283131174">Zrušiť výber všetkého</translation>
 <translation id="6017514345406065928">Zelená</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Presunúť kartu nahor</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavrieť <ph name="TABS_COUNT_ONE" /> vybranú kartu}few{Zavrieť <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Close <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zavrieť <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="8398929769197326728">Nový priečinok – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Rozbaľte skupinu s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
 <translation id="8714939927607906138">Nižšia cena</translation>
 <translation id="8730999928494395583">Vaša aktivita v týchto kartách inkognito bude odstránená z tohto zariadenia</translation>
 <translation id="8820741577754260431">Zobrazte si na kartách poklesy cien</translation>

@@ -50,6 +50,7 @@
 <translation id="1254424942107648268">Buscar anterior</translation>
 <translation id="1258491128795710625">Novedades</translation>
 <translation id="1264156759663453185">El texto seleccionado es demasiado grande para una traducción parcial.</translation>
+<translation id="1264974993859112054">Deportes</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} contraseña}other{{count} contraseñas}}</translation>
@@ -702,6 +703,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4619564267100705184">Verificar mi identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4620246317052452550">Páginas que has leído</translation>
+<translation id="4620845369664293551">Puedes compartir esta página.</translation>
 <translation id="4620888520263267479">Mostrar vistas previas de enlaces</translation>
 <translation id="4630540211544979320">Traducir páginas</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> contraseñas reutilizadas</translation>
@@ -851,6 +853,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido basado en tus intereses.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{¿Hacer seguimiento de este paquete?}other{¿Hacer seguimiento de {COUNT} paquetes?}}</translation>
+<translation id="5348775987281903912">Puedes compartir esta página usando el botón de compartir.</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, consulta <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5379352933722332597">{count,plural, =1{Marcador guardado en {title}. Solo se guarda en este dispositivo.}other{{count} marcadores guardados en {title}. Solo se guardan en este dispositivo.}}</translation>
@@ -1584,6 +1587,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9000089900434778519">Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9012585441087414258">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Si una página hace algo sospechoso, las URLs y los fragmentos de contenido de la página se envían a Navegación segura de Google.</translation>
+<translation id="9025203546212508704">Desliza para saber cómo personalizar tu menú</translation>
 <translation id="9029650858822697271">Se ha cerrado tu sesión</translation>
 <translation id="9034759925968272072">No se cerrará la sesión en tu cuenta de Google. Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>

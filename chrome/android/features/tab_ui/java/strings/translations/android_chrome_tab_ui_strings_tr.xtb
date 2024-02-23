@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Grup oluştur</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> puan</translation>
 <translation id="266935134738038806">Siteye git</translation>
-<translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> adlı <ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişletin.</translation>
 <translation id="2801787514987684416">Mağaza bilgileri görüntülensin mi?</translation>
 <translation id="2928243913527329289">Google | Bu mağaza hakkında</translation>
 <translation id="2977480621796371840">Gruptan kaldır</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Tümünü seç</translation>
 <translation id="5545379293264651575">İncelemeden kapat</translation>
 <translation id="5556417849629758491">Mağaza bilgilerini görüntüleme seçeneği, ekranın üst kısmına yakın bir yerdedir</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu kapat</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> sekme gruplandı</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome'dan <ph name="TABS_COUNT_ONE" /> bağlantı}other{Chrome'dan <ph name="TABS_COUNT_MANY" /> bağlantı}}</translation>
 <translation id="575494663145460764">Fiyat düşüşü uyarıları alınsın mı?</translation>
 <translation id="58326064309361797">Gruplandırmak için sekmeleri sürükleyin</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> sekmeli <ph name="TITLE_OF_GROUP" /> grubunu kapat</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5972844218283131174">Tümünün seçimini kaldır</translation>
 <translation id="6017514345406065928">Yeşil</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Sekmeyi yukarı taşı</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
 <translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> sekmeli sekme grubunu genişlet.</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
 <translation id="8820741577754260431">Sekmelerinizde fiyat düşüşlerini görün</translation>

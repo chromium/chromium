@@ -2007,6 +2007,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2476901513051581836">Priestor sa nedá vymazať, kým nie je známa veľkosť offline úložiska.</translation>
 <translation id="2476974672882258506">Ak chcete odinštalovať aplikáciu <ph name="PARALLELS_DESKTOP" />, vypnite Windows.</translation>
 <translation id="2477065602824695373">Nastavili ste viacero prepínačov, takže automatické prehľadávanie bolo vypnuté.</translation>
+<translation id="2478076885740497414">Inštalovať aplikáciu</translation>
 <translation id="2478176599153288112">Povolenia súborov médií pre rozšírenie <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Povoľte službu obnovenia údajov.</translation>
 <translation id="2480868415629598489">Upravovať dáta, ktoré kopírujete a prilepujete</translation>
@@ -2319,6 +2320,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2721695630904737430">Kontrolovaní používatelia boli zakázaní správcom.</translation>
 <translation id="2722540561488096675">Zariadenie sa o <ph name="TIME_LEFT" /> vypne. Pred jeho opätovným zapnutím odpojte USB. Potom môžete systém <ph name="DEVICE_OS" /> začať používať.</translation>
 <translation id="2722547199758472013">Identifikátor: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Otvoriť profil pre hostí</translation>
 <translation id="2723819893410108315">Citrón</translation>
 <translation id="2724841811573117416">Denníky WebRTC</translation>
 <translation id="272488616838512378">Prevod jednotiek</translation>

@@ -50,6 +50,7 @@
 <translation id="1254424942107648268">查找上一个</translation>
 <translation id="1258491128795710625">新变化</translation>
 <translation id="1264156759663453185">所选文字太多，无法进行局部翻译。</translation>
+<translation id="1264974993859112054">体育</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} 个密码}other{{count} 个密码}}</translation>
@@ -1517,7 +1518,7 @@
 <translation id="868773710103052534">大功告成！</translation>
 <translation id="8692689525339542358">保护您免受危险的网站、下载内容和扩展程序的侵害。</translation>
 <translation id="8693663554456874301">{count,plural, =1{关闭这个标签页}other{关闭这些标签页}}</translation>
-<translation id="8703536910991780768">您的密码看似安全系数较高</translation>
+<translation id="8703536910991780768">您的密码安全系数较高</translation>
 <translation id="8706253136355675497">温度</translation>
 <translation id="8709409604518538305">标签页已关闭</translation>
 <translation id="8709773186849937451">下载内容</translation>

@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Lap kivétele a csoportból}other{Lapok kivétele a csoportból}}</translation>
 <translation id="2277224997687551299">Csoportnév szerkesztése</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Felvétel a könyvjelzők közé}other{Felvétel a könyvjelzők közé}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{A következő, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása: <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap összecsukása.}other{<ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport összecsukása.}}</translation>
 <translation id="2569352796411618312">Javaslat: <ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
 <translation id="2613747923081026172">Csoport létrehozása</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="266935134738038806">Webhely felkeresése</translation>
-<translation id="2759453070259087442">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="2801787514987684416">Megtekinti az üzlet adatait?</translation>
 <translation id="2928243913527329289">Google | Az üzletről</translation>
 <translation id="2977480621796371840">Eltávolítás a csoportból</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5545379293264651575">Bezárás ellenőrzés nélkül</translation>
 <translation id="5556417849629758491">Az üzlet adatainak megtekintése; a lehetőség a képernyő tetején található</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport bezárása</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> lap csoportosítva</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link a Chrome-ból}other{<ph name="TABS_COUNT_MANY" /> link a Chrome-ból}}</translation>
 <translation id="575494663145460764">Szeretne értesítéseket kapni az árcsökkenésekről?</translation>
 <translation id="58326064309361797">A lapokat húzással csoportosíthatja</translation>
-<translation id="5846292395804797011">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó csoport bezárása: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5901630391730855834">Sárga</translation>
 <translation id="5972844218283131174">Összes kijelölésének megszüntetése</translation>
 <translation id="6017514345406065928">Zöld</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Lap mozgatása felfelé</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap bezárása}}</translation>
 <translation id="8398929769197326728">Új mappa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása.</translation>
 <translation id="8714939927607906138">Alacsonyabb ár</translation>
 <translation id="8730999928494395583">Az ezeken az inkognitó lapokon végzett tevékenységei el lesznek távolítva erről az eszközről.</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>

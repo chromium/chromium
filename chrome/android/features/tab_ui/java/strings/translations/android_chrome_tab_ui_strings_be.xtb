@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Дадаць укладку ў закладкі}one{Дадаць укладкі ў закладкі}few{Дадаць укладкі ў закладкі}many{Дадаць укладкі ў закладкі}other{Дадаць укладкі ў закладкі}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкай.}one{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай.}few{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}many{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}other{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
 <translation id="2613747923081026172">Стварыць групу</translation>
 <translation id="2662028055331606429">Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Наведаць сайт</translation>
-<translation id="2759453070259087442">Разгарнуць групу "<ph name="TITLE_OF_GROUP" />" з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Прагледзець звесткі пра краму?</translation>
 <translation id="2928243913527329289">Google | Пра гэту краму</translation>
 <translation id="2977480621796371840">Выдаліць з групы</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5545379293264651575">Закрыць без разгляду</translation>
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
-<translation id="5558362125926932819">Закрыць групу з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Укладак згрупавана: <ph name="TAB_COUNT" /></translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> спасылка з Chrome}one{<ph name="TABS_COUNT_MANY" /> спасылка з Chrome}few{<ph name="TABS_COUNT_MANY" /> спасылкі з Chrome}many{<ph name="TABS_COUNT_MANY" /> спасылак з Chrome}other{<ph name="TABS_COUNT_MANY" /> спасылкі з Chrome}}</translation>
 <translation id="575494663145460764">Атрымліваць абвесткі пра зніжэнні цэн?</translation>
 <translation id="58326064309361797">Каб згрупаваць укладкі, перацягвайце іх</translation>
-<translation id="5846292395804797011">Закрыць групу "<ph name="TITLE_OF_GROUP" />" з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="5901630391730855834">Жоўты</translation>
 <translation id="5972844218283131174">Скасаваць выбар усіх укладак</translation>
 <translation id="6017514345406065928">Зялёны</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Перамясціць укладку ўверх</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="8398929769197326728">Новая папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Разгарнуць групу з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Цана знізілася</translation>
 <translation id="8730999928494395583">Звесткі пра вашы дзеянні на гэтых укладках у рэжыме інкогніта будуць выдалены з прылады</translation>
 <translation id="8820741577754260431">Паказваць інфармацыю пра зніжэнне цэн на ўкладках</translation>

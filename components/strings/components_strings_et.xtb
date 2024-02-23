@@ -810,6 +810,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="250346157641628208">Paber (tindiprinter)</translation>
 <translation id="2505268675989099013">Konto kaitsmine</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (kehtivad tingimused)</translation>
 <translation id="2512101340618156538">Pole lubatud (vaikeseade)</translation>
 <translation id="2512413427717747692">Chrome'i vaikebrauseriks määramise nupp. Vajutage sisestusklahvi, et määrata Chrome iOS-i seadetes süsteemi vaikebrauseriks</translation>
 <translation id="2514548229949738417">Kodu ja aed</translation>
@@ -1158,6 +1159,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3229277193950731405">Kopeeri versioonistring</translation>
 <translation id="323107829343500871">Krediitkaardi <ph name="CREDIT_CARD" /> CVC sisestamine</translation>
 <translation id="3234666976984236645">Sellel saidil olulise sisu alati tuvastamine</translation>
+<translation id="3236212803136366317">Kaardi hüved</translation>
 <translation id="3238395604961564389">Ava link inkognito aknas</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma brauseri ilme kohandamiseks vajutage tabulaatorit ja siis sisestusklahvi</translation>
 <translation id="3240791268468473923">Turvalise maksemandaadi leht selle kohta, et pole ühtegi sobivat mandaati, on avatud</translation>
@@ -1194,6 +1196,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="33073482541490531">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Paroolihaldur soovitab kohe seda parooli muuta.</translation>
 <translation id="3307649904964670439">Nupp Chrome'i kohandamine, aktiveerige nupp, et kohandada oma brauseri välimust</translation>
 <translation id="3308006649705061278">Organisatsiooniüksus (OU)</translation>
+<translation id="3310047144791481950">Vaadake teavet, mis aitab teil valida, millise kaardiga maksta. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Lisateave kaardi hüvede kohta<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Telekomöödiad</translation>
 <translation id="3324687287337751929">4 × 6 tolli</translation>
 <translation id="3324983252691184275">Tulipunane</translation>

@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab uit groep verwijderen}other{Tabs uit groep verwijderen}}</translation>
 <translation id="2277224997687551299">Groepsnaam bewerken</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Tabblad bookmarken}other{Tabbladen bookmarken}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{Tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="2569352796411618312">Suggestie: <ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
 <translation id="2613747923081026172">Groep maken</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> beoordeling</translation>
 <translation id="266935134738038806">Site bezoeken</translation>
-<translation id="2759453070259087442">De tabbladgroep <ph name="TITLE_OF_GROUP" /> uitvouwen met <ph name="NUMBER_OF_TABS" /> tabbladen.</translation>
 <translation id="2801787514987684416">Winkelinformatie bekijken?</translation>
 <translation id="2928243913527329289">Google | Over deze winkel</translation>
 <translation id="2977480621796371840">Uit groep verwijderen</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5545379293264651575">Sluiten zonder te beoordelen</translation>
 <translation id="5556417849629758491">Winkelinformatie bekijken, optie beschikbaar bovenaan het scherm</translation>
-<translation id="5558362125926932819">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen sluiten</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tabbladen gegroepeerd</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link vanuit Chrome}other{<ph name="TABS_COUNT_MANY" /> links vanuit Chrome}}</translation>
 <translation id="575494663145460764">Meldingen krijgen voor prijsdalingen?</translation>
 <translation id="58326064309361797">Sleep de tabbladen om ze te groeperen</translation>
-<translation id="5846292395804797011">De groep <ph name="TITLE_OF_GROUP" /> met <ph name="NUMBER_OF_TABS" /> tabbladen sluiten</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5972844218283131174">Alles deselecteren</translation>
 <translation id="6017514345406065928">Groen</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> geselecteerd tabblad sluiten}other{<ph name="TABS_COUNT_MANY" /> geselecteerde tabbladen sluiten}}</translation>
 <translation id="8398929769197326728">Nieuwe map - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Tabbladgroep met <ph name="NUMBER_OF_TABS" /> tabbladen uitvouwen</translation>
 <translation id="8714939927607906138">Lagere prijs</translation>
 <translation id="8730999928494395583">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
 <translation id="8820741577754260431">Prijsdalingen bekijken op je tabbladen</translation>

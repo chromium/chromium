@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aggiungi scheda a preferiti}other{Aggiungi schede a preferiti}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="2569352796411618312">Suggerimento: <ph name="NUMBER_OF_TABS" /> delle tue schede non sono state usate ultimamente. Vuoi chiuderle?</translation>
 <translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita il sito</translation>
-<translation id="2759453070259087442">Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede.</translation>
 <translation id="2801787514987684416">Vuoi visualizzare le informazioni sul negozio?</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Seleziona tutto</translation>
 <translation id="5545379293264651575">Chiudi senza rivedere</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
-<translation id="5558362125926932819">Chiudi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> schede raggruppate</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link da Chrome}other{<ph name="TABS_COUNT_MANY" /> link da Chrome}}</translation>
 <translation id="575494663145460764">Vuoi ricevere avvisi sui cali di prezzo?</translation>
 <translation id="58326064309361797">Trascina le schede per raggrupparle</translation>
-<translation id="5846292395804797011">Chiudi il gruppo <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5972844218283131174">Deseleziona tutte</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Espandi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8730999928494395583">La tua attività in queste schede di navigazione in incognito verrà rimossa da questo dispositivo</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>

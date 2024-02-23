@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">使用你的麥克風和相機</translation>
 <translation id="1005333234656240382">是否要啟用 ADB 偵錯？</translation>
 <translation id="1005671386794704751">玫瑰粉</translation>
+<translation id="1006033052970139968">允許系統服務和具有麥克風權限的應用程式與網站存取麥克風</translation>
 <translation id="1006557561787696884">在 Apple 裝置上使用密碼金鑰</translation>
 <translation id="1006873397406093306">這項擴充功能可以讀取及變更你造訪的網站所使用的資料。你可以自行設定要給予這項擴充功能哪些網站的存取權限。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
@@ -1279,6 +1280,7 @@
 <translation id="1944535645109964458">沒有密碼金鑰</translation>
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓你透過身分識別服務使用你擁有的帳戶登入網站</translation>
+<translation id="1948528728718281125">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機</translation>
 <translation id="1949332606889020901">當機 ID</translation>
 <translation id="1949584741547056205">快速解答</translation>
 <translation id="1949849604471335579">根據個人喜好設定桌布、螢幕保護程式、強調色等項目</translation>
@@ -2003,6 +2005,7 @@
 <translation id="2476901513051581836">離線儲存空間大小不明，因此無法清理儲存空間。</translation>
 <translation id="2476974672882258506">請關閉 Windows 以解除安裝 <ph name="PARALLELS_DESKTOP" />。</translation>
 <translation id="2477065602824695373">你已設定多個外接切換裝置，因此自動掃描功能已關閉。</translation>
+<translation id="2478076885740497414">安裝應用程式</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
 <translation id="2480868415629598489">修改你複製和貼上的資料</translation>
@@ -2474,6 +2477,7 @@
 <translation id="2822910719211888134">備份 Linux 時發生錯誤</translation>
 <translation id="2823176412251649407">請變更網際網路連線並選擇「再試一次」。你也能選擇「在離線編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用系統管理員的 Proxy 設定</translation>
+<translation id="2825151610926840364">允許擁有攝影機權限的應用程式和網站存取。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="2825758591930162672">主體的公開金鑰</translation>
 <translation id="2828375943530438449">從「登入」頁面返回</translation>
 <translation id="2828650939514476812">連線至 Wi-Fi 網路</translation>
@@ -3991,6 +3995,7 @@
 <translation id="4001540981461989979">移動時醒目顯示滑鼠游標</translation>
 <translation id="4002347779798688515">如果行動網路供應商處於鎖定狀態，你可能無法使用已下載的設定檔。請向供應商尋求支援。</translation>
 <translation id="4002440992267487163">PIN 碼設定</translation>
+<translation id="4003647532210142956">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟位置資訊存取權<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007856537951125667">隱藏捷徑</translation>
 <translation id="4010746393007464819">現在可以升級至 Debian 12 (Bookworm)</translation>
@@ -4029,6 +4034,7 @@
 <translation id="4036778507053569103">從伺服器下載的政策無效。</translation>
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">先試用看看</translation>
+<translation id="4039966970282098406">控管麥克風、攝影機等權限，掌握自己的隱私權</translation>
 <translation id="4040041015953651705">原文語言</translation>
 <translation id="4042660782729322247">你正在分享螢幕畫面</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
@@ -4400,6 +4406,7 @@
 <translation id="434198521554309404">快速、安全又便利。</translation>
 <translation id="4342417854108207000">允許編輯裝置上的檔案或資料夾</translation>
 <translation id="4343250402091037179">如要搜尋特定網站或 Chrome，請在網址列輸入相應的快捷字詞，然後按下你慣用的鍵盤快速鍵。</translation>
+<translation id="4343283008857332996">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="4345457680916430965">在 <ph name="APP" /> 中開啟(&amp;O)</translation>
 <translation id="4345587454538109430">設定...</translation>
 <translation id="4345732373643853732">伺服器無法辨識使用者名稱</translation>
@@ -4707,6 +4714,7 @@
 <translation id="4576541033847873020">配對藍牙裝置</translation>
 <translation id="4576763597586015380">如要繼續將密碼儲存在 Google 帳戶中，請驗證你的身分</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - 閒置分頁</translation>
+<translation id="4577995939477504370">系統服務和具有麥克風權限的應用程式和網站可使用麥克風</translation>
 <translation id="4579453506923101210">清除已連結的手機</translation>
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">如要設定瀏覽器通知，請前往 <ph name="LINK_BEGIN" />Chrome 瀏覽器設定<ph name="LINK_END" /></translation>
@@ -5700,6 +5708,7 @@
 <translation id="5385628342687007304">這個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。</translation>
 <translation id="5387116558048951800">編輯<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">企業政策已變更，已將 [實驗性功能] 按鈕新增至工具列。按一下這個按鈕即可開啟對話方塊並啟用實驗性功能。</translation>
+<translation id="5388436023007579456">系統服務和具有攝影機權限的應用程式與網站可使用攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資訊</translation>
@@ -5801,6 +5810,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">螢幕鎖定時的記事設定</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
+<translation id="5460641065520325899">管理網站可在你瀏覽時用來追蹤的資訊類型。</translation>
 <translation id="5460861858595506978">靈感</translation>
 <translation id="5461050611724244538">手機連線中斷</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
@@ -6882,6 +6892,7 @@
 <translation id="630292539633944562">個人資訊建議</translation>
 <translation id="6305607932814307878">全域政策：</translation>
 <translation id="6305702903308659374">ChromeVox 朗讀時仍維持音訊的標準音量</translation>
+<translation id="6307268917612054609">系統服務和具有攝影機權限的應用程式與網站可使用攝影機</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
 <translation id="6308493641021088955">登入資訊提供者：<ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">另存連結為(&amp;K)...</translation>
@@ -8209,6 +8220,7 @@
 <translation id="7367714965999718019">QR 圖碼產生器</translation>
 <translation id="7368695150573390554">所有離線資料都會刪除</translation>
 <translation id="736877393389250337">無法在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
+<translation id="7368927539449986686">編輯網站搜尋引擎</translation>
 <translation id="7370592524170198497">乙太網路 EAP：</translation>
 <translation id="7370751048350026847">不建議將這項內容貼到這個網站</translation>
 <translation id="7371917887111892735">將分頁縮至固定分頁寬度</translation>
@@ -8475,6 +8487,7 @@
 <translation id="756583107125124860">部分功能可運用已開啟網頁和近期相關網頁的內容，為你提供更實用的資訊或建議</translation>
 <translation id="7566118625369982896">管理 Play 應用程式連結</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">建立按鍵組合</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="756876171895853918">自訂顯示圖片</translation>
 <translation id="7568790562536448087">更新</translation>
@@ -8736,6 +8749,7 @@
 <translation id="7757787379047923882">透過「<ph name="DEVICE_NAME" />」分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">調整顯示畫面邊界</translation>
+<translation id="7758884017823246335">新增網站搜尋引擎</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7762024824096060040">無法使用這個帳戶</translation>
 <translation id="7762243782113123335">抱歉，系統發生錯誤。請提供意見回饋，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
@@ -10603,6 +10617,7 @@
 <translation id="9153274276370926498">Lacros 系統資訊</translation>
 <translation id="9153367754133725216">在啟動器和搜尋結果中顯示新應用程式和網路內容的建議。只有在你選擇將當機報告和診斷與使用資料傳送到 ChromeOS 時，系統才會傳送統計資料以改善建議。</translation>
 <translation id="9154194610265714752">已更新</translation>
+<translation id="915485121129452731">繪圖板</translation>
 <translation id="9155344700756733162">取消選取顏色</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">無法為所有使用者設定自動更新作業 (預先啟動錯誤：<ph name="ERROR_NUMBER" />)</translation>

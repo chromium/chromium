@@ -809,6 +809,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="250346157641628208">Qogʻoz (siyohli)</translation>
 <translation id="2505268675989099013">Hisobni himoyalash</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (shartlar amal qiladi.)</translation>
 <translation id="2512101340618156538">Ruxsat berilmagan (standart)</translation>
 <translation id="2512413427717747692">Chrome brauzerini asosiy brauzer tugmasi sifatida sozlash, iOS sozlamalari orqali Chrome brauzerini tizimning asosiy brauzeri sifatida sozlash uchun Enter tugmasini bosing.</translation>
 <translation id="2514548229949738417">Uy va bogʻ</translation>
@@ -1155,6 +1156,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3229277193950731405">Versiya qatorini nusxalash</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> kartasining CVC kodini kiriting</translation>
 <translation id="3234666976984236645">Bu saytda har doim muhim kontent aniqlansin</translation>
+<translation id="3236212803136366317">Karta imtiyozlari</translation>
 <translation id="3238395604961564389">Havolani inkognito oynasida ochish</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Brauzeringiz koʻrinishini moslash uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="3240791268468473923">Xavfsiz toʻlov maʼlumotlari ochilgan jadvaldagi maʼlumotlarga mos kelmadi</translation>
@@ -1191,6 +1193,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="33073482541490531">Hozirgina siz foydalangan parol oshkor qilingan. Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="3307649904964670439">Chromeni moslash tugmasi, brauzer koʻrinishini moslash uchun faollashtiring</translation>
 <translation id="3308006649705061278">Bo‘lim (OU)</translation>
+<translation id="3310047144791481950">Xaridingiz uchun qaysi kartadan toʻlash foydali ekanligini bilish uchun ushbu funksiyani yoqing. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Karta imtiyozlari haqida batafsil<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">TV komediyalar</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Malina rang</translation>

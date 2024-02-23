@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Loo grupp</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang</translation>
 <translation id="266935134738038806">Külasta saiti</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> vahekaardiga vahekaartide grupi <ph name="TITLE_OF_GROUP" /> laiendamine.</translation>
 <translation id="2801787514987684416">Kas kuvada poe teave?</translation>
 <translation id="2928243913527329289">Google | Teave selle poe kohta</translation>
 <translation id="2977480621796371840">Grupist eemaldamine</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5545379293264651575">Sule ilma üle vaatamata</translation>
 <translation id="5556417849629758491">Poe teabe vaatamine, valik saadaval ekraanikuva ülaosas</translation>
-<translation id="5558362125926932819">Sule <ph name="NUMBER_OF_TABS" /> vahelehega vahelehegrupp</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> vahekaarti grupeeriti</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link Chrome'ist}other{<ph name="TABS_COUNT_MANY" /> linki Chrome'ist}}</translation>
 <translation id="575494663145460764">Kas soovite hinnalanguste puhul märguandeid saada?</translation>
 <translation id="58326064309361797">Lohistage vahelehti, et neid grupeerida</translation>
-<translation id="5846292395804797011">Sule <ph name="NUMBER_OF_TABS" /> vahelehega grupp <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
 <translation id="6017514345406065928">Roheline</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Teisalda vaheleht üles</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Sule <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="8398929769197326728">Uus kaust – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Laienda <ph name="NUMBER_OF_TABS" /> vahelehega vahelehegruppi.</translation>
 <translation id="8714939927607906138">Soodsam hind</translation>
 <translation id="8730999928494395583">Teie tegevused nendel inkognito vahelehtedel eemaldatakse sellest seadmest</translation>
 <translation id="8820741577754260431">Näete oma vahelehtedel hinnalangusi</translation>

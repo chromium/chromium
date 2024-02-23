@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{为标签页取消分组}other{为标签页取消分组}}</translation>
 <translation id="2277224997687551299">修改组名称</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{为所选标签页添加书签}other{为所有所选标签页添加书签}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{收起包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页组。}}</translation>
 <translation id="2569352796411618312">建议：您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
 <translation id="2613747923081026172">创建群组</translation>
 <translation id="2662028055331606429">当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">访问网站</translation>
-<translation id="2759453070259087442">展开包含 <ph name="NUMBER_OF_TABS" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页组。</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
 <translation id="2977480621796371840">从组中移除</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">全选</translation>
 <translation id="5545379293264651575">直接关闭，不查看</translation>
 <translation id="5556417849629758491">查看商店信息，屏幕顶部附近有可用选项</translation>
-<translation id="5558362125926932819">关闭包含 <ph name="NUMBER_OF_TABS" /> 个标签页的标签页组</translation>
 <translation id="5580090775658607195">已将 <ph name="TAB_COUNT" /> 个标签页合为一组</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 中的 <ph name="TABS_COUNT_ONE" /> 个链接}other{Chrome 中的 <ph name="TABS_COUNT_MANY" /> 个链接}}</translation>
 <translation id="575494663145460764">接收降价提醒？</translation>
 <translation id="58326064309361797">拖动标签可进行分组</translation>
-<translation id="5846292395804797011">关闭包含 <ph name="NUMBER_OF_TABS" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”组</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5972844218283131174">取消全选</translation>
 <translation id="6017514345406065928">绿色</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">上移标签页</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{关闭 <ph name="TABS_COUNT_ONE" /> 个所选标签页}other{关闭 <ph name="TABS_COUNT_MANY" /> 个所选标签页}}</translation>
 <translation id="8398929769197326728">新建文件夹 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">展开包含 <ph name="NUMBER_OF_TABS" /> 个标签页的标签页组。</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730999928494395583">您在这些无痕式标签页中的活动记录将从此设备上移除</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>

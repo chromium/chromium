@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ટૅબ અનગ્રૂપ કરો}one{ટૅબ અનગ્રૂપ કરો}other{ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ટૅબને બુકમાર્ક કરો}one{ટૅબને બુકમાર્ક કરો}other{ટૅબને બુકમાર્ક કરો}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="2613747923081026172">ગ્રૂપ બનાવો</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.</translation>
 <translation id="2801787514987684416">સ્ટોરની માહિતી જોઈએ?</translation>
 <translation id="2928243913527329289">Google | આ સ્ટોર વિશે</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">બધા પસંદ કરો</translation>
 <translation id="5545379293264651575">રિવ્યૂ કર્યા વિના બંધ કરો</translation>
 <translation id="5556417849629758491">સ્ટોરની માહિતી જુઓ, વિકલ્પ સ્ક્રીનની ટોચની નજીક ઉપલબ્ધ છે</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને બંધ કરો</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ટૅબનું ગ્રૂપ બનાવ્યું</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chromeમાંથી <ph name="TABS_COUNT_ONE" /> લિંક}one{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}other{Chromeમાંથી <ph name="TABS_COUNT_MANY" /> લિંક}}</translation>
 <translation id="575494663145460764">કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટની સુવિધા જોઈએ છે?</translation>
 <translation id="58326064309361797">ટૅબનું ગ્રૂપ બનાવવા માટે તેને ખેંચો</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ગ્રૂપ બંધ કરો</translation>
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5972844218283131174">તમામને નાપસંદ કરો</translation>
 <translation id="6017514345406065928">લીલો</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
 <translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.</translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8730999928494395583">આ ડિવાઇસમાંથી આ છૂપા ટૅબમાંની તમારી પ્રવૃત્તિ કાઢી નાખવામાં આવશે</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>

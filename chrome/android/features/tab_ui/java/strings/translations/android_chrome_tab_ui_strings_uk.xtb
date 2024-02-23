@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Створити групу</translation>
 <translation id="2662028055331606429">Оцінка – <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Відвідати сайт</translation>
-<translation id="2759453070259087442">Розгорнути групу "<ph name="TITLE_OF_GROUP" />" зі стількома вкладками: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Переглянути інформацію про магазин?</translation>
 <translation id="2928243913527329289">Google | Про цей магазин</translation>
 <translation id="2977480621796371840">Вилучити з групи</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Вибрати все</translation>
 <translation id="5545379293264651575">Закрити без перевірки</translation>
 <translation id="5556417849629758491">Переглянути інформацію про магазин. Опція доступна вгорі екрана.</translation>
-<translation id="5558362125926932819">Закрити групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Згруповано стільки вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> посилання з Chrome}one{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}few{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}many{<ph name="TABS_COUNT_MANY" /> посилань із Chrome}other{<ph name="TABS_COUNT_MANY" /> посилання з Chrome}}</translation>
 <translation id="575494663145460764">Хочете отримувати сповіщення про зниження цін?</translation>
 <translation id="58326064309361797">Перетягуйте вкладки, щоб групувати їх</translation>
-<translation id="5846292395804797011">Закрити групу "<ph name="TITLE_OF_GROUP" />" зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5972844218283131174">Не вибирати нічого</translation>
 <translation id="6017514345406065928">Зелений</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Перемістити вкладку вгору</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибрану вкладку}one{Закрити <ph name="TABS_COUNT_MANY" /> вибрану вкладку}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані вкладки}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Розгорнути групу зі стількома вкладками: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="8714939927607906138">Дешевше</translation>
 <translation id="8730999928494395583">Дані про ваші дії на цих анонімних вкладках буде вилучено з пристрою</translation>
 <translation id="8820741577754260431">Переглядайте зниження цін на вкладках</translation>

@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Ajouter onglet aux favoris}one{Ajouter onglet aux favoris}other{Ajouter onglets aux favoris}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}other{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2662028055331606429">Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accéder au site</translation>
-<translation id="2759453070259087442">Développez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> comportant <ph name="NUMBER_OF_TABS" /> onglets.</translation>
 <translation id="2801787514987684416">Afficher les infos sur le magasin ?</translation>
 <translation id="2928243913527329289">Google | À propos de ce magasin</translation>
 <translation id="2977480621796371840">Retirer du groupe</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5545379293264651575">Fermer sans examiner</translation>
 <translation id="5556417849629758491">Afficher les infos sur le magasin, option disponible en haut de l'écran</translation>
-<translation id="5558362125926932819">Fermez le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets regroupés</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lien de Chrome}one{<ph name="TABS_COUNT_MANY" /> lien de Chrome}other{<ph name="TABS_COUNT_MANY" /> liens de Chrome}}</translation>
 <translation id="575494663145460764">Être averti des baisses de prix ?</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
-<translation id="5846292395804797011">Fermez le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
 <translation id="6017514345406065928">Vert</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_ONE" />)}one{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_MANY" />)}other{Fermer les onglets sélectionnés (<ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8398929769197326728">Nouveau dossier – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Développez le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera supprimée de cet appareil</translation>
 <translation id="8820741577754260431">Consultez les baisses de prix dans les onglets</translation>

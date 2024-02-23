@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{將分頁移出群組}other{將分頁移出群組}}</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{將分頁加入書籤}other{將分頁加入書籤}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{收合含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{收合含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="2613747923081026172">建立群組</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
 <translation id="266935134738038806">造訪網站</translation>
-<translation id="2759453070259087442">使用 <ph name="NUMBER_OF_TABS" /> 個分頁展開「<ph name="TITLE_OF_GROUP" />」分頁群組。</translation>
 <translation id="2801787514987684416">要查看商店資訊嗎？</translation>
 <translation id="2928243913527329289">Google | 關於這間商店</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">全選</translation>
 <translation id="5545379293264651575">不查看直接關閉</translation>
 <translation id="5556417849629758491">商店資訊和可用選項位於靠近畫面頂端的地方</translation>
-<translation id="5558362125926932819">關閉包含 <ph name="NUMBER_OF_TABS" /> 個分頁的分頁群組</translation>
 <translation id="5580090775658607195">已將 <ph name="TAB_COUNT" /> 個分頁加入群組</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個來自 Chrome 的連結}other{<ph name="TABS_COUNT_MANY" /> 個來自 Chrome 的連結}}</translation>
 <translation id="575494663145460764">要接收降價快訊嗎？</translation>
 <translation id="58326064309361797">拖曳分頁即可進行分組</translation>
-<translation id="5846292395804797011">關閉包含 <ph name="NUMBER_OF_TABS" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」群組</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
 <translation id="6017514345406065928">綠色</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選分頁}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選分頁}}</translation>
 <translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">展開包含 <ph name="NUMBER_OF_TABS" /> 個分頁的分頁群組。</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730999928494395583">你在這些無痕分頁中的活動將從這部裝置上移除</translation>
 <translation id="8820741577754260431">在分頁上查看降價資訊</translation>

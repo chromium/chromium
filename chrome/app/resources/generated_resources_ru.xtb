@@ -803,6 +803,7 @@
 <translation id="1602085790802918092">Запуск виртуальной машины</translation>
 <translation id="1603116295689434284">Системная информация Chrome</translation>
 <translation id="1603411913360944381">Удалить <ph name="DEVICE_NAME" /></translation>
+<translation id="1603879843804174953">Долгое нажатие</translation>
 <translation id="1603914832182249871">(инкогнито)</translation>
 <translation id="1604432177629086300">Ошибка печати. Проверьте принтер и повторите попытку.</translation>
 <translation id="1604567162047669454">Распознавать смысл визуального контекста</translation>
@@ -1343,6 +1344,7 @@
 <translation id="1992397118740194946">Не задано</translation>
 <translation id="1994173015038366702">Адрес сайта</translation>
 <translation id="1995916364271252349">Определяет, какую информацию могут использовать и показывать сайты (например, есть ли у них доступ к местоположению и камере, а также разрешение на показ всплывающих окон и т. д.).</translation>
+<translation id="199610894463449797">{0,plural, =1{Закрыть все окна этого профиля (1)}one{Закрыть все окна этого профиля (#)}few{Закрыть все окна этого профиля (#)}many{Закрыть все окна этого профиля (#)}other{Закрыть все окна этого профиля (#)}}</translation>
 <translation id="1997433994358798851">Chrome требуется разрешение, чтобы подключиться к устройству по Bluetooth.</translation>
 <translation id="1997616988432401742">Ваши сертификаты</translation>
 <translation id="1999115740519098545">Запуск Chrome</translation>
@@ -1585,6 +1587,7 @@
 <translation id="2175384018164129879">&amp;Управление поисковыми системами и поиском по сайту</translation>
 <translation id="217576141146192373">Не удалось добавить принтер. Проверьте его настройки и повторите попытку.</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="217631816678106981">Не вставлять</translation>
 <translation id="2177306523871626993">Скачивание файлов для распознавания текста (<ph name="PERCENT" /> %)…</translation>
 <translation id="2177950615300672361">Вкладка в режиме инкогнито: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -2002,6 +2005,7 @@
 <translation id="2476901513051581836">Невозможно очистить хранилище, пока не будет известен его размер</translation>
 <translation id="2476974672882258506">Чтобы удалить <ph name="PARALLELS_DESKTOP" />, завершите работу Windows.</translation>
 <translation id="2477065602824695373">Автосканирование отключено, поскольку настроено несколько переключателей.</translation>
+<translation id="2478076885740497414">Установить приложение</translation>
 <translation id="2478176599153288112"><ph name="EXTENSION" />: доступ к медиафайлам</translation>
 <translation id="24786041351753425">Включение сервиса восстановления данных</translation>
 <translation id="2480868415629598489">Изменение копируемых и вставляемых данных</translation>
@@ -2339,6 +2343,7 @@
 <translation id="2732134891301408122">Дополнительный контент на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="2733248615007838252">Поставить результатам отметку "Нравится".</translation>
 <translation id="2733992589856193783">Вы создали ключ доступа для этого сайта. Чтобы войти, используйте мобильное устройство.</translation>
+<translation id="2734797989819862638">Не копировать</translation>
 <translation id="27349076983469322">Светлый фон</translation>
 <translation id="2735712963799620190">Расписание</translation>
 <translation id="2737363922397526254">Свернуть...</translation>
@@ -3124,6 +3129,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}one{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}few{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}many{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}other{Устройство "<ph name="DEVICE_NAME" />" отправляет вам <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">Из приложения</translation>
 <translation id="3363202073972776113">Новым профилем будет управлять ваша организация. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt + Навести указатель</translation>
 <translation id="3364986687961713424">Сообщение от администратора: "<ph name="ADMIN_MESSAGE" />"</translation>
 <translation id="3365598184818502391">Необходимо использовать Ctrl или Alt</translation>
 <translation id="3368922792935385530">Подключено</translation>
@@ -4568,6 +4574,7 @@
 <translation id="4473559657152613417">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить в новую группу".</translation>
 <translation id="4473996011558324141">Оценка времени…</translation>
 <translation id="4474155171896946103">Добавить все вкладки в закладки…</translation>
+<translation id="4475299370877036544">Возможно, это действие запрещено правилами организации.</translation>
 <translation id="4475552974751346499">Искать в скачанных файлах</translation>
 <translation id="4476590490540813026">Спортсмен</translation>
 <translation id="4476659815936224889">Этот код можно сканировать с помощью специального приложения или камеры на телефоне (если такая возможность поддерживается)</translation>
@@ -5708,6 +5715,7 @@
 <translation id="5395498824851198390">Шрифт по умолчанию</translation>
 <translation id="5397378439569041789">Зарегистрировать киоск или цифровую вывеску</translation>
 <translation id="5397794290049113714">Вы</translation>
+<translation id="5398062879200420134">Option + Навести указатель</translation>
 <translation id="5398497406011404839">Скрытые закладки</translation>
 <translation id="5398572795982417028">Размер страницы больше максимально допустимого (лимит ‒ <ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400196580536813396">Запрещено искать и использовать принтеры, доступные для вашего устройства</translation>
@@ -6334,6 +6342,7 @@
 <translation id="5882919346125742463">Известные сети</translation>
 <translation id="5883356647197510494">Автоматически отключены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
 <translation id="5884447826201752041">Настроить для каждого расширения</translation>
+<translation id="5884730022784413637">Долгое нажатие</translation>
 <translation id="5885314688092915589">Этим профилем будет управлять ваша организация</translation>
 <translation id="5885470467814103868">Начать сканирование</translation>
 <translation id="5885631909150054232">Копировать токен</translation>
@@ -7865,6 +7874,7 @@
 <translation id="7072010813301522126">Название ярлыка</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 с шифрованием RSA</translation>
 <translation id="7075625805486468288">Управление настройками и сертификатами HTTPS/SSL</translation>
+<translation id="7075896597860500885">Копировать материалы этого сайта не рекомендуется</translation>
 <translation id="7076875098323397992">Не удалось начать обновление</translation>
 <translation id="7077751457066325012">Просмотреть и настроить быстрые клавиши</translation>
 <translation id="7077829361966535409">При загрузке текущих настроек прокси-сервера на главной странице произошла ошибка. <ph name="GAIA_RELOAD_LINK_START" />Выполните вход повторно<ph name="GAIA_RELOAD_LINK_END" /> или измените <ph name="PROXY_SETTINGS_LINK_START" />параметры прокси-сервера<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -8214,6 +8224,7 @@
 <translation id="7368695150573390554">Офлайн-данные будут удалены.</translation>
 <translation id="736877393389250337">Не удалось открыть страницу <ph name="URL" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />. Обратитесь к системному администратору.</translation>
 <translation id="7370592524170198497">EAP для сети Ethernet:</translation>
+<translation id="7370751048350026847">Вставлять контент на этот сайт не рекомендуется</translation>
 <translation id="7371917887111892735">вкладки уменьшаются до размера закрепленной</translation>
 <translation id="7374376573160927383">Настроить USB-устройства</translation>
 <translation id="7376124766545122644">Ссылка не работает. Убедитесь, что она начинается с http:// или https://, и попробуйте снова.</translation>
@@ -9611,6 +9622,7 @@
 <translation id="8403618281196981152">Ваши данные в Chrome</translation>
 <translation id="8403807918453631441"><ph name="BRAND" /> сможет проверить ваши пароли, когда вы сохраните их</translation>
 <translation id="8405046151008197676">Изучите основную информацию о последнем обновлении.</translation>
+<translation id="8405118833120731611">{0,plural, =1{Закрыть все окна этого профиля (1)}one{Закрыть все окна этого профиля (#)}few{Закрыть все окна этого профиля (#)}many{Закрыть все окна этого профиля (#)}other{Закрыть все окна этого профиля (#)}}</translation>
 <translation id="8407199357649073301">Уровень:</translation>
 <translation id="8408270600235826886">Вы сами решаете, какие сведения будут доступны Google. Этот параметр можно в любой момент изменить в настройках. Данные будут использоваться в соответствии с <ph name="BEGIN_LINK" />Политикой конфиденциальности Google<ph name="END_LINK" />.</translation>
 <translation id="84098433273647700">Тема, которая у вас установлена</translation>

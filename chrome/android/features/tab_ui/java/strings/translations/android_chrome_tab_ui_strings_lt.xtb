@@ -25,7 +25,6 @@
 <translation id="2613747923081026172">Sukurti grupę</translation>
 <translation id="2662028055331606429">Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Apsilankyti svetainėje</translation>
-<translation id="2759453070259087442">Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Peržiūrėti parduotuvės informaciją?</translation>
 <translation id="2928243913527329289">„Google“ | Apie šią parduotuvę</translation>
 <translation id="2977480621796371840">Pašalinti iš grupės</translation>
@@ -63,12 +62,10 @@
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5545379293264651575">Uždaryti neperžiūrėjus</translation>
 <translation id="5556417849629758491">Peržiūrėkite parduotuvės informaciją; parinktis pasiekiama ekrano viršuje</translation>
-<translation id="5558362125926932819">Uždaryti skirtukų grupę, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Sugrupuota tiek skirtukų: <ph name="TAB_COUNT" /></translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> nuoroda iš „Chrome“}one{<ph name="TABS_COUNT_MANY" /> nuoroda iš „Chrome“}few{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}many{<ph name="TABS_COUNT_MANY" /> nuorodos iš „Chrome“}other{<ph name="TABS_COUNT_MANY" /> nuorodų iš „Chrome“}}</translation>
 <translation id="575494663145460764">Norite gauti įspėjimus apie sumažintas kainas?</translation>
 <translation id="58326064309361797">Vilkite skirtukus, kad juos sugrupuotumėte</translation>
-<translation id="5846292395804797011">Uždaryti grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5901630391730855834">Geltona</translation>
 <translation id="5972844218283131174">Panaikinti visus pasirinkimus</translation>
 <translation id="6017514345406065928">Žalia</translation>
@@ -107,7 +104,6 @@
 <translation id="8205266828577616993">Perkelti skirtuką į viršų</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="8398929769197326728">Naujas aplankas – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Išskleisti skirtukų grupę, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8730999928494395583">Jūsų veikla šiuose inkognito skirtukuose bus pašalinta iš šio įrenginio</translation>
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>

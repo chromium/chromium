@@ -803,6 +803,7 @@
 <translation id="1602085790802918092">वर्चुअल मशीन शुरू हो रही है</translation>
 <translation id="1603116295689434284">Chrome के सिस्टम की जानकारी</translation>
 <translation id="1603411913360944381"><ph name="DEVICE_NAME" /> को भूल जाएं</translation>
+<translation id="1603879843804174953">दबाकर रखें</translation>
 <translation id="1603914832182249871">(गुप्त)</translation>
 <translation id="1604432177629086300">प्रिंट नहीं किया जा सका. प्रिंटर की जांच करें और फिर से कोशिश करें</translation>
 <translation id="1604567162047669454">विज़ुअल लेआउट सिमैंटिक पहचानें</translation>
@@ -1352,6 +1353,7 @@
 <translation id="1992397118740194946">सेट नहीं है</translation>
 <translation id="1994173015038366702">साइट URL</translation>
 <translation id="1995916364271252349">इस सेटिंग की मदद से, यह कंट्रोल किया जा सकता है कि साइटें आपकी किस जानकारी का इस्तेमाल कर सकती हैं और कौनसी जानकारी दिखा सकती हैं. जैसे, जगह की जानकारी, कैमरा, पॉप-अप वगैरह</translation>
+<translation id="199610894463449797">{0,plural, =1{इस प्रोफ़ाइल को बंद करें}one{इस प्रोफ़ाइल को बंद करें (# विंडो)}other{इस प्रोफ़ाइल को बंद करें (# विंडो)}}</translation>
 <translation id="1997433994358798851">आपके डिवाइस से कनेक्ट करने के लिए, Chrome को ब्लूटूथ इस्तेमाल करने की अनुमति चाहिए</translation>
 <translation id="1997616988432401742">आपके प्रमाणपत्र</translation>
 <translation id="1999115740519098545">शुरुआत करने पर</translation>
@@ -1594,6 +1596,7 @@
 <translation id="2175384018164129879">सर्च इंजन और साइट सर्च को मैनेज करें</translation>
 <translation id="217576141146192373">प्रिंटर जोड़ा नहीं जा सका. अपने प्रिंटर के कॉन्फ़िगरेशन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
+<translation id="217631816678106981">इसे न चिपकाएं</translation>
 <translation id="2177306523871626993">टेक्स्ट पहचानने वाली फ़ाइलें डाउनलोड हो रही हैं… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">गुप्त टैब: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -2014,6 +2017,7 @@
 <translation id="2476901513051581836">जब तक ऑफ़लाइन स्टोरेज का साइज़ पता नहीं चल जाता, तब तक आपके स्टोरेज को खाली नहीं किया जा सकता.</translation>
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> को अनइंस्टॉल करने के लिए Windows को पूरी तरह बंद करें.</translation>
 <translation id="2477065602824695373">आपने एक से ज़्यादा स्विच सेट अप किए हैं, इसलिए अपने-आप स्कैन होने की सुविधा बंद हो गई है.</translation>
+<translation id="2478076885740497414">ऐप्स इंस्टॉल करें</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" के लिए मीडिया-फ़ाइल अनुमतियां</translation>
 <translation id="24786041351753425">डेटा रिकवर करने की सेवा चालू करें.</translation>
 <translation id="2480868415629598489">अपने कॉपी किए हुए और चिपकाए हुए डेटा में बदलाव करें</translation>
@@ -2326,6 +2330,7 @@
 <translation id="2721695630904737430">निगरानी में रखे गए उपयोगकर्ताओं को आपके व्यवस्थापक ने अक्षम कर दिया है.</translation>
 <translation id="2722540561488096675"><ph name="TIME_LEFT" /> में आपका डिवाइस शट डाउन हो जाएगा. अपने डिवाइस को फिर से चालू करने से पहले, उससे जुड़ा यूएसबी डिवाइस हटाएं. इसके बाद, <ph name="DEVICE_OS" /> का इस्तेमाल शुरू किया जा सकता है.</translation>
 <translation id="2722547199758472013">आईडी: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">मेहमान प्रोफ़ाइल खोलें</translation>
 <translation id="2723819893410108315">सिट्रन</translation>
 <translation id="2724841811573117416">WebRTC लॉग</translation>
 <translation id="272488616838512378">यूनिट कन्वर्ज़न</translation>
@@ -2350,6 +2355,7 @@
 <translation id="2732134891301408122">ज़्यादा कॉन्टेंट वाले <ph name="TOTAL_ELEMENTS" /> पेजों में से पेज <ph name="CURRENT_ELEMENT" /></translation>
 <translation id="2733248615007838252">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको ये नतीजे पसंद हैं.</translation>
 <translation id="2733992589856193783">आपने इस साइट के लिए पासकी बनाई है. साइन इन करने के लिए, आपको मोबाइल डिवाइस की ज़रूरत होगी.</translation>
+<translation id="2734797989819862638">कॉपी न करें</translation>
 <translation id="27349076983469322">हल्का बैकग्राउंड</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
@@ -3117,6 +3123,7 @@
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" इस एक्सटेंशन को हटाना चाहता है.</translation>
 <translation id="3345634917232014253">सुरक्षा जांच कुछ देर पहले की गई है</translation>
 <translation id="3345886924813989455">कोई समर्थित ब्राउज़र नहीं मिला</translation>
+<translation id="3346306152660142597">एआई की मदद से, इस पेज को पसंद के मुताबिक बनाएं</translation>
 <translation id="3347086966102161372">इमेज के पते को कॉपी करें</translation>
 <translation id="3348038390189153836">निकालने योग्‍य डिवाइस का पता चला</translation>
 <translation id="3348131053948466246">सुझाए गए इमोजी. नेविगेट करने के लिए, ऊपर या नीचे वाला तीर का निशान दबाएं. इमोजी डालने के लिए enter दबाएं.</translation>
@@ -3133,6 +3140,7 @@
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}one{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}other{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}}</translation>
 <translation id="3361954577771524115">ऐप्लिकेशन से</translation>
 <translation id="3363202073972776113">इस नई प्रोफ़ाइल को आपका संगठन मैनेज करेगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="3364159059299045452">Alt+होवर</translation>
 <translation id="3364986687961713424">आपके एडमिन से: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl या फिर Alt का इस्तेमाल करें</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
@@ -4574,6 +4582,7 @@
 <translation id="4473559657152613417">टैब पर राइट क्लिक करें और "टैब को नए ग्रुप में जोड़ें" को चुनें</translation>
 <translation id="4473996011558324141">लगने वाला अनुमानित समय</translation>
 <translation id="4474155171896946103">सभी टैब बुकमार्क करें...</translation>
+<translation id="4475299370877036544">इस कार्रवाई से आपके संगठन की नीतियों का उल्लंघन हो सकता है</translation>
 <translation id="4475552974751346499">डाउनलोड खोजें</translation>
 <translation id="4476590490540813026">एथलीट</translation>
 <translation id="4476659815936224889">इस कोड को स्कैन करने के लिए, आप अपने फ़ोन पर क्यूआर स्कैनर या कुछ कैमरा ऐप्लिकेशन का इस्तेमाल कर सकते हैं.</translation>
@@ -5713,6 +5722,7 @@
 <translation id="5395498824851198390">डिफ़ॉल्ट फ़ॉन्ट</translation>
 <translation id="5397378439569041789">कीऑस्क या साइनेज डिवाइस का नाम दर्ज करें</translation>
 <translation id="5397794290049113714">आप</translation>
+<translation id="5398062879200420134">⌥+होवर</translation>
 <translation id="5398497406011404839">छिपे हुए बुकमार्क</translation>
 <translation id="5398572795982417028">सीमा से बाहर के पेज का संदर्भ, सीमा <ph name="MAXIMUM_PAGE" /> की है</translation>
 <translation id="5400196580536813396">आपके डिवाइस से ऐक्सेस किए जा सकने वाले प्रिंटर खोजने या उनका इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -6339,6 +6349,7 @@
 <translation id="5882919346125742463">ज्ञात नेटवर्क</translation>
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को अपने-आप ब्लॉक किया गया</translation>
 <translation id="5884447826201752041">साइट ऐक्सेस करने की सेटिंग को हर एक्सटेंशन के हिसाब से बनाएं</translation>
+<translation id="5884730022784413637">दबाकर रखें</translation>
 <translation id="5885314688092915589">आपका संगठन इस प्रोफ़ाइल को मैनेज करेगा</translation>
 <translation id="5885470467814103868">स्कैन शुरू करें</translation>
 <translation id="5885631909150054232">टोकन कॉपी करें</translation>
@@ -7866,6 +7877,7 @@
 <translation id="7072010813301522126">शॉर्टकट का नाम</translation>
 <translation id="7075513071073410194">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD5</translation>
 <translation id="7075625805486468288">HTTPS/SSL प्रमाणपत्र और सेटिंग प्रबंधित करें</translation>
+<translation id="7075896597860500885">इस साइट से कॉन्टेंट कॉपी करने का सुझाव नहीं दिया जाता</translation>
 <translation id="7076875098323397992">अपग्रेड करने की प्रोसेस शुरू नहीं की जा सकती</translation>
 <translation id="7077751457066325012">कीबोर्ड शॉर्टकट देखें और पसंद के मुताबिक बनाएं</translation>
 <translation id="7077829361966535409">मौजूदा प्रॉक्सी सेटिंग के इस्तेमाल करने से साइन इन पेज लोड नहीं हो सका. कृपया <ph name="GAIA_RELOAD_LINK_START" />फिर साइन इन करने की कोशिश करें<ph name="GAIA_RELOAD_LINK_END" />, या अलग-अलग <ph name="PROXY_SETTINGS_LINK_START" />प्रॉक्सी सेटिंग<ph name="PROXY_SETTINGS_LINK_END" /> का इस्तेमाल करें.</translation>
@@ -8215,6 +8227,7 @@
 <translation id="7368695150573390554">कोई भी ऑफ़लाइन डेटा मिटा दिया जाएगा</translation>
 <translation id="736877393389250337"><ph name="URL" /> <ph name="ALTERNATIVE_BROWSER_NAME" /> में नहीं खोला जा सकता है. कृपया अपने सिस्टम एडमिन से संपर्क करें.</translation>
 <translation id="7370592524170198497">ईथरनेट EAP:</translation>
+<translation id="7370751048350026847">इस कॉन्टेंट को इस साइट पर चिपकाने का सुझाव नहीं दिया जाता है</translation>
 <translation id="7371917887111892735">टैब की चौड़ाई, पिन करके छोटे किए गए टैब की चौड़ाई जितनी हो जाती है</translation>
 <translation id="7374376573160927383">अपने यूएसबी डिवाइस प्रबंधित करें</translation>
 <translation id="7376124766545122644">इस लिंक का इस्तेमाल नहीं किया जा सकता. दोबारा कोशिश करते समय यह देखें कि आपका लिंक 'http://' या 'https://' से शुरू होता हो.</translation>
@@ -8995,6 +9008,7 @@
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> के हिसाब से क्रम में लगाएं</translation>
 <translation id="7941179291434537290">टेदरिंग की जा सकती या नहीं:</translation>
 <translation id="7942349550061667556">लाल</translation>
+<translation id="7942846369224063421">पहले से लोड किया गया यूज़र इंटरफ़ेस (यूआई) रेंडरर</translation>
 <translation id="7943349879009553083">मेहमान मोड में उपलब्ध नहीं है</translation>
 <translation id="7943368935008348579">पीडीएफ़ डाउनलोड करें</translation>
 <translation id="7943837619101191061">स्थान जोड़ें...</translation>
@@ -9609,6 +9623,7 @@
 <translation id="8403618281196981152">Chrome में आपका डेटा</translation>
 <translation id="8403807918453631441">पासवर्ड सेव होने पर ही, <ph name="BRAND" /> आपके पासवर्ड की जांच कर सकता है</translation>
 <translation id="8405046151008197676">हाल ही के अपडेट की खास बातें जानें</translation>
+<translation id="8405118833120731611">{0,plural, =1{इस प्रोफ़ाइल को बंद करें}one{इस प्रोफ़ाइल को बंद करें (# विंडो)}other{इस प्रोफ़ाइल को बंद करें (# विंडो)}}</translation>
 <translation id="8407199357649073301">लॉग लेवल:</translation>
 <translation id="8408270600235826886">Google के साथ शेयर की जाने वाली जानकारी का कंट्रोल आपके पास है. सेटिंग में जाकर, इस विकल्प को कभी भी बदला जा सकता है. डेटा का इस्तेमाल, Google की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> के मुताबिक किया जाएगा.</translation>
 <translation id="84098433273647700">आपकी इंस्टॉल की गई मौजूदा थीम.</translation>

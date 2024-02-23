@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{탭 그룹 해제}other{탭 그룹 해제}}</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{북마크 탭}other{북마크 탭}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>
 <translation id="2569352796411618312">추천: 최근 사용하지 않은 탭이 <ph name="NUMBER_OF_TABS" />개 있습니다. 탭을 닫으시겠습니까?</translation>
 <translation id="2613747923081026172">그룹 만들기</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
 <translation id="266935134738038806">사이트 방문</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" />개의 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 확장합니다.</translation>
 <translation id="2801787514987684416">스토어 정보를 확인하시겠습니까?</translation>
 <translation id="2928243913527329289">Google | 매장 정보</translation>
 <translation id="2977480621796371840">그룹에서 삭제</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5545379293264651575">검토하지 않고 닫기</translation>
 <translation id="5556417849629758491">스토어 정보 보기, 화면 상단에 옵션 있음</translation>
-<translation id="5558362125926932819">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 탭 그룹 닫기</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />개의 탭 그룹화됨</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 링크 <ph name="TABS_COUNT_ONE" />개}other{Chrome 링크 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="575494663145460764">가격 인하 알림을 받으시겠습니까?</translation>
 <translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
-<translation id="5846292395804797011">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 그룹 닫기</translation>
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5972844218283131174">전체 선택 해제</translation>
 <translation id="6017514345406065928">녹색</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">탭을 위로 이동</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
 <translation id="8398929769197326728">새 폴더: <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">탭 <ph name="NUMBER_OF_TABS" />개가 포함된 탭 그룹을 펼칩니다.</translation>
 <translation id="8714939927607906138">더 낮은 가격</translation>
 <translation id="8730999928494395583">시크릿 탭의 활동 내역이 이 기기에서 삭제됩니다.</translation>
 <translation id="8820741577754260431">탭에서 가격 인하를 확인합니다.</translation>

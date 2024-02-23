@@ -2021,6 +2021,7 @@
 <translation id="2476901513051581836">Не може да се подзачисти просторот сѐ додека не се знае колку простор има офлајн.</translation>
 <translation id="2476974672882258506">Исклучете го Windows за да се деинсталира <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Автоматското скенирање е исклучено бидејќи доделивте повеќе прекинувачи.</translation>
+<translation id="2478076885740497414">Инсталирај апликација</translation>
 <translation id="2478176599153288112">Дозволи на медиумски датотеки за „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Овозможете услуга за враќање податоци.</translation>
 <translation id="2480868415629598489">Измена на податоците што ги копирате</translation>
@@ -2333,6 +2334,7 @@
 <translation id="2721695630904737430">Администраторот ги оневозможил надгледуваните корисници.</translation>
 <translation id="2722540561488096675">Вашиот уред ќе се исклучи по <ph name="TIME_LEFT" />. Отстранете го USB-уредот пред повторно да го вклучите вашиот уред. Потоа може да започнете да користите <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Отворен гостински профил</translation>
 <translation id="2723819893410108315">Citron</translation>
 <translation id="2724841811573117416">WebRTC-дневници</translation>
 <translation id="272488616838512378">Конверзија на валути</translation>
@@ -3127,6 +3129,7 @@
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ сака да ја отстрани екстензијата.</translation>
 <translation id="3345634917232014253">Безбедносната проверка беше извршена предмалку</translation>
 <translation id="3345886924813989455">Не се најде поддржан прелистувач</translation>
+<translation id="3346306152660142597">Приспособување на страницава со AI</translation>
 <translation id="3347086966102161372">К&amp;опирај ја адресата на сликата</translation>
 <translation id="3348038390189153836">Откриен пренослив уред</translation>
 <translation id="3348131053948466246">Предложено е емоџи. Притиснете на стрелката за горе или долу за навигација, а потоа Enter за да вметнете.</translation>
@@ -9027,6 +9030,7 @@
 <translation id="7940265372707990269">Подреди по <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Подготвеност за интернет преку мобилен:</translation>
 <translation id="7942349550061667556">Црвена</translation>
+<translation id="7942846369224063421">Однапред вчитан прикажувач на кориснички интерфејс</translation>
 <translation id="7943349879009553083">Не е достапно во „Режим на гостин“</translation>
 <translation id="7943368935008348579">Преземи во PDF-формат</translation>
 <translation id="7943837619101191061">Додај локација…</translation>

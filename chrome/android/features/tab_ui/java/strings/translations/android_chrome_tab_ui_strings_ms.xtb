@@ -25,7 +25,6 @@
 <translation id="2613747923081026172">Buat kumpulan</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Lawati laman</translation>
-<translation id="2759453070259087442">Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="2801787514987684416">Lihat maklumat kedai?</translation>
 <translation id="2928243913527329289">Google | Perihal kedai ini</translation>
 <translation id="2977480621796371840">Alih keluar daripada kumpulan</translation>
@@ -63,12 +62,10 @@
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5545379293264651575">Tutup tanpa membuat semakan</translation>
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
-<translation id="5558362125926932819">Tutup kumpulan tab dengan <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab dihimpunkan</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pautan daripada Chrome}other{<ph name="TABS_COUNT_MANY" /> pautan daripada Chrome}}</translation>
 <translation id="575494663145460764">Dapatkan makluman untuk penurunan harga?</translation>
 <translation id="58326064309361797">Seret tab untuk dihimpunkan</translation>
-<translation id="5846292395804797011">Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5972844218283131174">Nyahpilih semua</translation>
 <translation id="6017514345406065928">Hijau</translation>
@@ -107,7 +104,6 @@
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="8398929769197326728">Folder Baharu - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Kembangkan kumpulan tab dengan <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="8714939927607906138">Lebih murah</translation>
 <translation id="8730999928494395583">Aktiviti anda dalam tab Inkognito ini akan dialih keluar daripada peranti ini</translation>
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>

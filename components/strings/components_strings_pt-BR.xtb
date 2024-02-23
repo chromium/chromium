@@ -810,6 +810,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="250346157641628208">Papel (jato de tinta)</translation>
 <translation id="2505268675989099013">Proteger conta</translation>
+<translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (oferta sujeita aos termos)</translation>
 <translation id="2512101340618156538">Sem permissão (padrão)</translation>
 <translation id="2512413427717747692">Botão Definir o Chrome como navegador padrão: pressione Enter para definir o Chrome como o navegador padrão do sistema nas configurações do iOS</translation>
 <translation id="2514548229949738417">Casa e jardim</translation>
@@ -1158,6 +1159,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3229277193950731405">Copiar string da versão</translation>
 <translation id="323107829343500871">Digite o CVC do <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sempre detectar conteúdo importante neste site</translation>
+<translation id="3236212803136366317">Benefícios do cartão</translation>
 <translation id="3238395604961564389">Abrir link em uma janela anônima</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar a aparência do navegador</translation>
 <translation id="3240791268468473923">A página de credenciais para pagamento seguro sem correspondência está aberta</translation>
@@ -1194,6 +1196,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3307649904964670439">Botão "Personalizar o Chrome". Ative para personalizar a aparência do navegador</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
+<translation id="3310047144791481950">Confira informações que ajudam você a escolher com qual cartão pagar. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Conheça os benefícios do cartão<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="3318016344440038475">Programas de TV de comédia</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmim</translation>

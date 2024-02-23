@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">יצירת קבוצה</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">כניסה לאתר</translation>
-<translation id="2759453070259087442">הרחבת קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
 <translation id="2801787514987684416">להציג את פרטי החנות?</translation>
 <translation id="2928243913527329289">‏Google | מידע על החנות הזו</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5545379293264651575">סגירה בלי בדיקה</translation>
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
-<translation id="5558362125926932819">סגירת קבוצת הכרטיסיות עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> כרטיסיות מקובצות</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏קישור אחד (<ph name="TABS_COUNT_ONE" />) מ-Chrome}one{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}two{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}other{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}}</translation>
 <translation id="575494663145460764">רוצה לקבל התראות על הנחות?</translation>
 <translation id="58326064309361797">ניתן לגרור כרטיסיות כדי לקבץ אותן</translation>
-<translation id="5846292395804797011">סגירה של הקבוצה <ph name="TITLE_OF_GROUP" /> עם <ph name="NUMBER_OF_TABS" /> כרטיסיות</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5972844218283131174">ביטול הבחירה בכול הכרטיסיות</translation>
 <translation id="6017514345406065928">ירוק</translation>
@@ -105,7 +102,6 @@
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="8398929769197326728">תיקייה חדשה – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">הרחבת קבוצת הכרטיסיות שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
 <translation id="8714939927607906138">מחיר נמוך יותר</translation>
 <translation id="8730999928494395583">הפעילות שלך בכרטיסיות הפרטיות האלה תוסר מהמכשיר הזה</translation>
 <translation id="8820741577754260431">הצגת הנחות בכרטיסיות</translation>

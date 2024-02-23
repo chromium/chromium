@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Разгрупиране на раздела}other{Разгрупиране на разделите}}</translation>
 <translation id="2277224997687551299">Редактиране на името на групата</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Отметка към раздела}other{Отметка към разделите}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
 <translation id="2613747923081026172">Създаване на група</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Към сайта</translation>
-<translation id="2759453070259087442">Разгъване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ със <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="2801787514987684416">Искате ли да прегледате информацията за магазина?</translation>
 <translation id="2928243913527329289">Google | Всичко за този магазин</translation>
 <translation id="2977480621796371840">Премахване от групата</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5545379293264651575">Затваряне без преглед</translation>
 <translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
-<translation id="5558362125926932819">Затваряне на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> раздела са групирани</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> връзка от Chrome}other{<ph name="TABS_COUNT_MANY" /> връзки от Chrome}}</translation>
 <translation id="575494663145460764">Искате ли да получавате сигнали за понижение на цените?</translation>
 <translation id="58326064309361797">Преместете с плъзгане разделите, за да ги групирате</translation>
-<translation id="5846292395804797011">Затваряне на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5901630391730855834">жълто</translation>
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
 <translation id="6017514345406065928">зелено</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Разгъване на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
 <translation id="8730999928494395583">Активността ви в съответните раздели в режим „инкогнито“ ще бъде премахната от това устройство</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>

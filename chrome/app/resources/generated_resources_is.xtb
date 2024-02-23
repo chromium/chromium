@@ -2021,6 +2021,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2476901513051581836">Ekki er hægt að hreinsa upp geymslurými fyrr en stærð geymslurýmis án nettengingar er þekkt.</translation>
 <translation id="2476974672882258506">Lokaðu Windows til að fjarlægja <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Slökkt var á sjálfvirkri skönnun vegna þess að þú hefur sett upp marga rofa.</translation>
+<translation id="2478076885740497414">Setja upp forrit</translation>
 <translation id="2478176599153288112">Heimildir margmiðlunarskráa fyrir „<ph name="EXTENSION" />“</translation>
 <translation id="24786041351753425">Kveikja á þjónustu fyrir endurheimt gagna.</translation>
 <translation id="2480868415629598489">Breyta gögnum sem þú afritar og límir</translation>
@@ -2333,6 +2334,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2721695630904737430">Kerfisstjóri hefur gert stýrða notendur óvirka.</translation>
 <translation id="2722540561488096675">Tækið slekkur á sér eftir <ph name="TIME_LEFT" />. Fjarlægðu USB-tækið áður en þú kveikir aftur á tækinu. Síðan geturðu byrjað að nota <ph name="DEVICE_OS" />.</translation>
 <translation id="2722547199758472013">Auðkenni: <ph name="EXTENSION_ID" /></translation>
+<translation id="2722817840640790566">Opna gestaprófíl</translation>
 <translation id="2723819893410108315">Sítróna</translation>
 <translation id="2724841811573117416">WebRTC-annálar</translation>
 <translation id="272488616838512378">Umreiknuð mæligildi</translation>

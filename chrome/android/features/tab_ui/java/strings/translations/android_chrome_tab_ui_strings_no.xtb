@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Fjern fanen fra gruppen}other{Fjern fanene fra gruppen}}</translation>
 <translation id="2277224997687551299">Endre gruppenavnet</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Sett fanen som bokmerke}other{Sett fanene som bokmerker}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
 <translation id="2613747923081026172">Opprett en gruppe</translation>
 <translation id="2662028055331606429">Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Besøk nettstedet</translation>
-<translation id="2759453070259087442">Utvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> faner.</translation>
 <translation id="2801787514987684416">Vil du se informasjon om butikken?</translation>
 <translation id="2928243913527329289">Google | Om denne butikken</translation>
 <translation id="2977480621796371840">Fjern fra gruppen</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5545379293264651575">Lukk uten å gjennomgå</translation>
 <translation id="5556417849629758491">Vis butikkinformasjon – alternativet er tilgjengelig nær toppen av skjermen</translation>
-<translation id="5558362125926932819">Lukk fanegruppe med <ph name="NUMBER_OF_TABS" /> faner</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> faner er gruppert.</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> linker fra Chrome}}</translation>
 <translation id="575494663145460764">Vil du ha varsler om avslag?</translation>
 <translation id="58326064309361797">Dra faner for å gruppere dem</translation>
-<translation id="5846292395804797011">Lukk <ph name="TITLE_OF_GROUP" />-gruppen med <ph name="NUMBER_OF_TABS" /> faner</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5972844218283131174">Velg bort alle</translation>
 <translation id="6017514345406065928">Grønn</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Flytt fanen oppover</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Lukk <ph name="TABS_COUNT_ONE" /> valgt fane}other{Lukk <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="8398929769197326728">Ny mappe – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Utvid fanegruppen med <ph name="NUMBER_OF_TABS" /> faner.</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8730999928494395583">Aktiviteten din på disse inkognitofanene blir fjernet fra denne enheten</translation>
 <translation id="8820741577754260431">Se avslag på fanene dine</translation>

@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Crear grupo</translation>
 <translation id="2662028055331606429">Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visitar sitio</translation>
-<translation id="2759453070259087442">Expande el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> pestañas.</translation>
 <translation id="2801787514987684416">¿Deseas ver información de la tienda?</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5545379293264651575">Cerrar sin revisar</translation>
 <translation id="5556417849629758491">Ver información de la tienda (la opción está disponible cerca de la parte superior de la pantalla)</translation>
-<translation id="5558362125926932819">Cerrar el grupo de pestañas, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5580090775658607195">Se agruparon <ph name="TAB_COUNT" /> pestañas</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vínculo de Chrome}other{<ph name="TABS_COUNT_MANY" /> vínculos de Chrome}}</translation>
 <translation id="575494663145460764">¿Deseas recibir alertas de descuentos?</translation>
 <translation id="58326064309361797">Arrastra las pestañas para agruparlas</translation>
-<translation id="5846292395804797011">Cerrar el grupo <ph name="TITLE_OF_GROUP" />, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5972844218283131174">Anular la selección</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Mover la pestaña hacia arriba</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Cierra <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Cierra <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Expandir el grupo de pestañas, el cual tiene <ph name="NUMBER_OF_TABS" /> pestañas</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8730999928494395583">Se quitará tu actividad en las pestañas de incógnito del dispositivo</translation>
 <translation id="8820741577754260431">Visualiza los descuentos en las pestañas.</translation>

@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Elimină fila din grup}few{Elimină filele din grup}other{Elimină filele din grup}}</translation>
 <translation id="2277224997687551299">Editează numele grupului</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Fila Marcaj}few{Filele Marcaj}other{Filele Marcaj}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="2569352796411618312">Sugestie: <ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
 <translation id="2613747923081026172">Creează grupul</translation>
 <translation id="2662028055331606429">Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accesează site-ul</translation>
-<translation id="2759453070259087442">Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="NUMBER_OF_TABS" /> file.</translation>
 <translation id="2801787514987684416">Vrei să vezi informații despre magazin?</translation>
 <translation id="2928243913527329289">Google | Despre acest magazin</translation>
 <translation id="2977480621796371840">Elimină din grup</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5545379293264651575">Închide fără să examinezi</translation>
 <translation id="5556417849629758491">Vezi informații despre magazin, opțiune disponibilă în partea de sus a ecranului</translation>
-<translation id="5558362125926932819">Închide grupul de file cu <ph name="NUMBER_OF_TABS" /> file</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> file grupate</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link din Chrome}few{<ph name="TABS_COUNT_MANY" /> linkuri din Chrome}other{<ph name="TABS_COUNT_MANY" /> de linkuri din Chrome}}</translation>
 <translation id="575494663145460764">Vrei să primești alerte privind scăderile de prețuri?</translation>
 <translation id="58326064309361797">Trage filele pentru a le grupa</translation>
-<translation id="5846292395804797011">Închide grupul <ph name="TITLE_OF_GROUP" /> cu <ph name="NUMBER_OF_TABS" /> file</translation>
 <translation id="5901630391730855834">Galben</translation>
 <translation id="5972844218283131174">Deselectează tot</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Mută fila mai sus</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Închide <ph name="TABS_COUNT_ONE" /> filă selectată}few{Închide <ph name="TABS_COUNT_MANY" /> file selectate}other{Închide <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="8398929769197326728">Dosar nou – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Extinde grupul de file cu <ph name="NUMBER_OF_TABS" /> file.</translation>
 <translation id="8714939927607906138">Preț mai mic</translation>
 <translation id="8730999928494395583">Activitatea ta în filele incognito va fi eliminată de pe acest dispozitiv</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>

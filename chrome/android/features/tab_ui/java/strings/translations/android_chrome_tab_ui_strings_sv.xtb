@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dela upp flik}other{Dela upp flikar}}</translation>
 <translation id="2277224997687551299">Redigera gruppnamn</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Infoga bokmärke för flik}other{Infoga bokmärken för flikar}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="2569352796411618312">Förslag: <ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
 <translation id="2613747923081026172">Skapa grupp</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> i betyg</translation>
 <translation id="266935134738038806">Besök webbplatsen</translation>
-<translation id="2759453070259087442">Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
 <translation id="2801787514987684416">Vill du visa butiksinformation?</translation>
 <translation id="2928243913527329289">Google | Om den här butiken</translation>
 <translation id="2977480621796371840">Ta bort från gruppen</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5545379293264651575">Stäng utan att granska</translation>
 <translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
-<translation id="5558362125926932819">Stäng flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> flikar har grupperats</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> länk från Chrome}other{<ph name="TABS_COUNT_MANY" /> länkar från Chrome}}</translation>
 <translation id="575494663145460764">Vill du få aviseringar om sänkt pris?</translation>
 <translation id="58326064309361797">Gruppera flikar genom att dra dem</translation>
-<translation id="5846292395804797011">Stäng gruppen <ph name="TITLE_OF_GROUP" /> med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5972844218283131174">Avmarkera alla</translation>
 <translation id="6017514345406065928">Grön</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">Flytta fliken uppåt</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> vald flik}other{Stäng <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="8398929769197326728">Ny mapp – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Utöka flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
 <translation id="8730999928494395583">Aktivitet på de här inkognitoflikarna tas bort från enheten</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>

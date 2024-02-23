@@ -1867,7 +1867,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2364498172489649528">Passed</translation>
 <translation id="2365507699358342471">This site can see text and images copied to the clipboard.</translation>
 <translation id="2367972762794486313">Show apps</translation>
-<translation id="2369058545741334020">Open in Reading mode</translation>
+<translation id="2369058545741334020">Open in reading mode</translation>
 <translation id="236939127352773362">When devices are sharing nearby</translation>
 <translation id="2371076942591664043">Open when &amp;done</translation>
 <translation id="237336063998926520">Use your IP address to determine location</translation>
@@ -2020,6 +2020,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2476901513051581836">Can’t clean up storage until offline storage size is known.</translation>
 <translation id="2476974672882258506">Shut down Windows to uninstall <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2477065602824695373">Since you set up multiple switches, auto-scan has been turned off.</translation>
+<translation id="2478076885740497414">Install app</translation>
 <translation id="2478176599153288112">Media-File Permissions for "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Enable data recovery service.</translation>
 <translation id="2480868415629598489">Modify data that you copy and paste</translation>
@@ -3155,7 +3156,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3371351218553893534">Line is too long: <ph name="ERROR_LINE" /></translation>
 <translation id="3372602033006349389">On other devices</translation>
 <translation id="337286756654493126">Read folders that you open in the application</translation>
-<translation id="3373059063088819384">Open in Reading mode</translation>
+<translation id="3373059063088819384">Open in reading mode</translation>
 <translation id="3373196968211632036">Steam for Chromebook (Beta) is not available for child Google Accounts</translation>
 <translation id="3373701465337594448">When on, a list of sites that you visit that guess your interests appears here</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' moved into '<ph name="NEW_FOLDER_TITLE" />'.</translation>
@@ -10650,7 +10651,7 @@ Permissions that you've already given to websites and apps may apply to this acc
       <ph name="LIST_ITEM" />Reconnecting to Wi-Fi
       <ph name="LIST_ITEM" />Running Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
-<translation id="916607977885256133">Picture in Picture</translation>
+<translation id="916607977885256133">Picture-in-picture</translation>
 <translation id="9166253503936244008">Scan this QR code with the device that has the passkey that you want to use for <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Show Reading List</translation>
 <translation id="9167450455589251456">The profile is not supported</translation>

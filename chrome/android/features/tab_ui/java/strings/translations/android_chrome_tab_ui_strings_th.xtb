@@ -25,7 +25,6 @@
 <translation id="2613747923081026172">สร้างกลุ่ม</translation>
 <translation id="2662028055331606429">การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">ไปที่เว็บไซต์</translation>
-<translation id="2759453070259087442">ขยายกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> จำนวน <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="2801787514987684416">ดูข้อมูลร้านค้าไหม</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
@@ -63,12 +62,10 @@
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
 <translation id="5545379293264651575">ปิดโดยไม่ตรวจสอบ</translation>
 <translation id="5556417849629758491">ดูข้อมูลร้านค้า ตัวเลือกจะอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
-<translation id="5558362125926932819">ปิดกลุ่มแท็บที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="5580090775658607195">จัดกลุ่มไว้ <ph name="TAB_COUNT" /> แท็บ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ลิงก์จาก Chrome}other{<ph name="TABS_COUNT_MANY" /> ลิงก์จาก Chrome}}</translation>
 <translation id="575494663145460764">รับการแจ้งเตือนการลดราคาไหม</translation>
 <translation id="58326064309361797">ลากแท็บเพื่อจัดกลุ่ม</translation>
-<translation id="5846292395804797011">เลือกกลุ่ม <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5972844218283131174">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
@@ -107,7 +104,6 @@
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ปิดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{ปิดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="8398929769197326728">โฟลเดอร์ใหม่ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">ขยายกลุ่มแท็บที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="8714939927607906138">ราคาต่ำกว่า</translation>
 <translation id="8730999928494395583">ระบบจะนำกิจกรรมในแท็บที่ไม่ระบุตัวตนเหล่านี้ออกจากอุปกรณ์นี้</translation>
 <translation id="8820741577754260431">ดูการลดราคาในแท็บ</translation>

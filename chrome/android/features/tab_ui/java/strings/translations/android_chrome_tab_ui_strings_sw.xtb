@@ -24,7 +24,6 @@
 <translation id="2613747923081026172">Unda kikundi</translation>
 <translation id="2662028055331606429">Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Tembelea tovuti</translation>
-<translation id="2759453070259087442">Panua kikundi cha kichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Ungependa kuangalia maelezo ya duka?</translation>
 <translation id="2928243913527329289">Google | Kuhusu duka hili</translation>
 <translation id="2977480621796371840">Ondoa kwenye kikundi</translation>
@@ -62,12 +61,10 @@
 <translation id="5494920125229734069">Chagua zote</translation>
 <translation id="5545379293264651575">Funga bila kuvikagua</translation>
 <translation id="5556417849629758491">Angalia maelezo ya duka, chaguo hili linapatikana karibu na sehemu ya juu ya skrini</translation>
-<translation id="5558362125926932819">Funga kikundi chenye vichupo <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Umeweka pamoja vichupo <ph name="TAB_COUNT" /></translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Kiungo <ph name="TABS_COUNT_ONE" /> kutoka Chrome}other{Viungo <ph name="TABS_COUNT_MANY" /> kutoka Chrome}}</translation>
 <translation id="575494663145460764">Ungependa kupata arifa kuhusu punguzo la bei?</translation>
 <translation id="58326064309361797">Buruta vichupo ili uviweke katika kikundi</translation>
-<translation id="5846292395804797011">Funga kikundi cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5972844218283131174">Acha kuchagua zote</translation>
 <translation id="6017514345406065928">Kijani</translation>
@@ -106,7 +103,6 @@
 <translation id="8205266828577616993">Sogeza kichupo juu</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Funga kichupo <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vichupo <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="8398929769197326728">Folda Mpya - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250">Panua kikundi chenye vichupo <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Bei nafuu</translation>
 <translation id="8730999928494395583">Shughuli yako katika vichupo fiche hivi itaondolewa kwenye kifaa hiki</translation>
 <translation id="8820741577754260431">Angalia puzungo la bei kwenye vichupo vyako</translation>

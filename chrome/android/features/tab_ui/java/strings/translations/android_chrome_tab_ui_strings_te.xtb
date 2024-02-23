@@ -19,12 +19,12 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ట్యాబ్‌ను అన్‌గ్రూప్ చేయండి}other{ట్యాబ్‌లను అన్‌గ్రూప్ చేయండి}}</translation>
 <translation id="2277224997687551299">గ్రూప్ పేరును ఎడిట్ చేయండి</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ట్యాబ్‌ను బుక్‌మార్క్ చేయండి}other{ట్యాబ్‌లను బుక్‌మార్క్ చేయండి}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="2613747923081026172">గ్రూప్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
-<translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
 <translation id="2801787514987684416">స్టోర్ సమాచారాన్ని చూడాలా?</translation>
 <translation id="2928243913527329289">Google | ఈ స్టోర్ గురించి</translation>
 <translation id="2977480621796371840">గుంపు నుండి తీసివేయండి</translation>
@@ -62,12 +62,10 @@
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
 <translation id="5545379293264651575">రివ్యూ చేయకుండానే మూసివేయండి</translation>
 <translation id="5556417849629758491">స్టోర్ సమాచారాన్ని చూడండి, ఆప్షన్ స్క్రీన్ పైభాగంలో అందుబాటులో ఉంది</translation>
-<translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ట్యాబ్‌లు గ్రూప్ చేయబడ్డాయి</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome నుండి <ph name="TABS_COUNT_ONE" /> లింక్}other{Chrome నుండి <ph name="TABS_COUNT_MANY" /> లింక్‌లు}}</translation>
 <translation id="575494663145460764">ధర తగ్గింపు అలర్ట్‌లను పొందాలనుకుంటున్నారా?</translation>
 <translation id="58326064309361797">గ్రూప్‌గా చేయడానికి ట్యాబ్‌లను లాగండి</translation>
-<translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> గ్రూప్‌ను మూసివేయండి</translation>
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5972844218283131174">అన్నింటి ఎంపికను తొలగించండి</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
@@ -106,7 +104,6 @@
 <translation id="8205266828577616993">ట్యాబ్‌ను పైక్ తరలించండి</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ఎంపిక చేసిన <ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను మూసివేయి}other{ఎంపిక చేసిన <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లను మూసివేయి}}</translation>
 <translation id="8398929769197326728">కొత్త ఫోల్డర్ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
 <translation id="8714939927607906138">తక్కువ ధర</translation>
 <translation id="8730999928494395583">ఈ అజ్ఞాత ట్యాబ్‌లలో మీరు జరిపిన యాక్టివిటీ ఈ పరికరం నుండి తీసివేయబడుతుంది</translation>
 <translation id="8820741577754260431">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి</translation>
