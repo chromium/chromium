@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://bluetooth-pairing/strings.m.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_device_item.js';
 
-import {SettingsBluetoothPairingDeviceItemElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_device_item.js';
+import type {SettingsBluetoothPairingDeviceItemElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_device_item.js';
 import {DeviceItemState} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,18 +16,16 @@ import {eventToPromise} from '../../../chromeos/test_util.js';
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 
 suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
-  /** @type {?SettingsBluetoothPairingDeviceItemElement} */
-  let bluetoothPairingDeviceItem;
+  let bluetoothPairingDeviceItem: SettingsBluetoothPairingDeviceItemElement;
 
-  async function flushAsync() {
+  async function flushAsync(): Promise<void> {
     flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
   setup(function() {
     bluetoothPairingDeviceItem =
-        /** @type {?SettingsBluetoothPairingDeviceItemElement} */ (
-            document.createElement('bluetooth-pairing-device-item'));
+        document.createElement('bluetooth-pairing-device-item');
     document.body.appendChild(bluetoothPairingDeviceItem);
     assertTrue(!!bluetoothPairingDeviceItem);
     flush();
@@ -47,9 +46,11 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     await flushAsync();
 
     const deviceName =
-        bluetoothPairingDeviceItem.shadowRoot.querySelector('#deviceName');
+        bluetoothPairingDeviceItem.shadowRoot!.querySelector('#deviceName');
     assertTrue(!!deviceName);
-    assertEquals('BeatsX', deviceName.textContent.trim());
+    // deviceName uses ! flag because the compilar currently fails when
+    // running test locally.
+    assertEquals('BeatsX', deviceName!.textContent!.trim());
   });
 
   test('pair-device is fired on click or enter', async function() {
@@ -68,16 +69,19 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     await flushAsync();
 
     const container =
-        bluetoothPairingDeviceItem.shadowRoot.querySelector('#container');
+        bluetoothPairingDeviceItem.shadowRoot!
+            .querySelector<HTMLElement>('#container');
 
     assertTrue(!!container);
-    container.click();
+    // container uses ! flag because the compilar currently fails when
+    // running test locally.
+    container!.click();
     await pairToDevicePromise;
 
     // Simulate pressing enter on the item.
     pairToDevicePromise =
         eventToPromise('pair-device', bluetoothPairingDeviceItem);
-    container.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
+    container!.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
     await pairToDevicePromise;
   });
 
@@ -99,17 +103,14 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     bluetoothPairingDeviceItem.itemIndex = itemIndex;
     bluetoothPairingDeviceItem.listSize = listSize;
 
-    const getSecondaryLabel = () =>
-        bluetoothPairingDeviceItem.shadowRoot.querySelector('#secondaryLabel');
+    const getSecondaryLabel = () => bluetoothPairingDeviceItem.$.secondaryLabel;
     const getItemSecondaryA11yLabel = () =>
-        bluetoothPairingDeviceItem.shadowRoot.querySelector('.text-row')
-            .ariaLabel;
+            bluetoothPairingDeviceItem.$.textRow.ariaLabel;
     const getItemA11yLabel = () =>
-        bluetoothPairingDeviceItem.shadowRoot.querySelector('#container')
-            .ariaLabel;
+            bluetoothPairingDeviceItem.$.container.ariaLabel;
 
     assertTrue(!!getSecondaryLabel());
-    assertEquals('', getSecondaryLabel().textContent.trim());
+    assertEquals('', getSecondaryLabel().textContent!.trim());
 
     const expectedA11yLabel =
         bluetoothPairingDeviceItem.i18n(
@@ -123,7 +124,7 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     assertEquals(
         bluetoothPairingDeviceItem.i18n('bluetoothPairing'),
-        getSecondaryLabel().textContent.trim());
+        getSecondaryLabel().textContent!.trim());
     assertEquals(
         getItemSecondaryA11yLabel(),
         bluetoothPairingDeviceItem.i18n(
@@ -134,7 +135,7 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     assertEquals(
         bluetoothPairingDeviceItem.i18n('bluetoothPairingFailed'),
-        getSecondaryLabel().textContent.trim());
+        getSecondaryLabel().textContent!.trim());
     assertEquals(
         getItemSecondaryA11yLabel(),
         bluetoothPairingDeviceItem.i18n(
@@ -142,6 +143,6 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     bluetoothPairingDeviceItem.deviceItemState = DeviceItemState.DEFAULT;
     await flushAsync();
-    assertEquals('', getSecondaryLabel().textContent.trim());
+    assertEquals('', getSecondaryLabel().textContent!.trim());
   });
 });

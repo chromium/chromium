@@ -93,7 +93,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
 
   devices: BluetoothDeviceProperties[];
   failedPairingDeviceId: string;
-  devicePendingPairing: BluetoothDeviceProperties;
+  devicePendingPairing: BluetoothDeviceProperties|null;
   isBluetoothEnabled: boolean;
   shouldOmitLinks: boolean;
   private buttonBarState_: ButtonBarState;

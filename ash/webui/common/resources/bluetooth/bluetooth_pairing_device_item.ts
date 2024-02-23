@@ -26,6 +26,8 @@ const SettingsBluetoothPairingDeviceItemElementBase = FocusRowMixin(I18nMixin(Po
 export interface SettingsBluetoothPairingDeviceItemElement {
   $: {
     container: HTMLDivElement,
+    secondaryLabel: HTMLDivElement,
+    textRow: HTMLDivElement,
   };
 }
 

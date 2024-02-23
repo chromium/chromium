@@ -307,7 +307,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement
    * Returns a promise that will be resolved the next time
    * onBluetoothDiscoveryStarted() is called.
    */
-  private waitForOnBluetoothDiscoveryStartedForTest(): Promise<void> {
+  waitForOnBluetoothDiscoveryStartedForTest(): Promise<void> {
     return new Promise((resolve) => {
       this.onBluetoothDiscoveryStartedCallbackForTest_ = resolve;
     });
@@ -317,7 +317,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement
    * Returns a promise that will be resolved the next time
    * handlePairDeviceResult_() is called.
    */
-  private waitForHandlePairDeviceResultForTest(): Promise<void> {
+  waitForHandlePairDeviceResultForTest(): Promise<void> {
     return new Promise((resolve) => {
       this.handlePairDeviceResultCallbackForTest_ = resolve;
     });

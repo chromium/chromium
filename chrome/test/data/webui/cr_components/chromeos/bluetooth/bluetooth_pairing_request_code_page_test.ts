@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 import 'chrome://bluetooth-pairing/strings.m.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_request_code_page.js';
 
-import {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_request_code_page.js';
+import type {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_request_code_page.js';
 import {ButtonState, PairingAuthType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
 import {eventToPromise} from '../../../chromeos/test_util.js';
@@ -17,18 +19,16 @@ import {eventToPromise} from '../../../chromeos/test_util.js';
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 
 suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
-  /** @type {?SettingsBluetoothRequestCodePageElement} */
-  let bluetoothPairingRequestCodePage;
+  let bluetoothPairingRequestCodePage: SettingsBluetoothRequestCodePageElement;
 
-  async function flushAsync() {
+  async function flushAsync(): Promise<null> {
     flush();
     return new Promise(resolve => setTimeout(resolve));
   }
 
   setup(function() {
     bluetoothPairingRequestCodePage =
-        /** @type {?SettingsBluetoothRequestCodePageElement} */ (
-            document.createElement('bluetooth-pairing-request-code-page'));
+            document.createElement('bluetooth-pairing-request-code-page');
     document.body.appendChild(bluetoothPairingRequestCodePage);
     assertTrue(!!bluetoothPairingRequestCodePage);
     flush();
@@ -38,19 +38,20 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
       'Message, input length, button states and initial focus',
       async function() {
         const getInput = () =>
-            bluetoothPairingRequestCodePage.shadowRoot.querySelector('#pin');
+            bluetoothPairingRequestCodePage.shadowRoot!
+                .querySelector<CrInputElement>('#pin');
         const getPairButtonState = () => {
           const basePage =
-              bluetoothPairingRequestCodePage.shadowRoot.querySelector(
+              bluetoothPairingRequestCodePage.shadowRoot!.querySelector(
                   'bluetooth-base-page');
-          return basePage.buttonBarState.pair;
+          return basePage!.buttonBarState.pair;
         };
 
         // Input should be focused by default.
         await waitAfterNextRender(bluetoothPairingRequestCodePage);
         assertEquals(
             getDeepActiveElement(),
-            getInput().shadowRoot.querySelector('input'));
+            getInput()!.shadowRoot!.querySelector<HTMLInputElement>('input'));
 
         const deviceName = 'BeatsX';
         const device = createDefaultBluetoothDevice(
@@ -68,22 +69,29 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
             PairingAuthType.REQUEST_PIN_CODE;
         await flushAsync();
 
-        assertEquals(getInput().maxlength, 6);
+        const input = getInput();
+        assertTrue(!!input);
+        // input uses ! flag because the compilar currently fails when
+        // running test locally.
+        assertEquals(input!.maxlength, 6);
 
         const message =
-            bluetoothPairingRequestCodePage.shadowRoot.querySelector(
+            bluetoothPairingRequestCodePage.shadowRoot!.querySelector(
                 '#message');
         assertTrue(!!message);
+        // message uses ! flag because the compilar currently fails when
+        // running test locally.
         assertEquals(
             bluetoothPairingRequestCodePage.i18n(
                 'bluetoothEnterPin', deviceName),
-            message.textContent.trim());
+            message!.textContent!.trim());
 
         // Test button states.
         assertEquals(ButtonState.DISABLED, getPairButtonState());
-        assertTrue(!!getInput());
 
-        getInput().value = '12345';
+        // input uses ! flag because the compilar currently fails when
+        // running test locally.
+        input!.value = '12345';
         await flushAsync();
         assertEquals(ButtonState.ENABLED, getPairButtonState());
       });
@@ -107,18 +115,22 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
         await flushAsync();
 
         const basePage =
-            bluetoothPairingRequestCodePage.shadowRoot.querySelector(
+            bluetoothPairingRequestCodePage.shadowRoot!.querySelector(
                 'bluetooth-base-page');
         assertTrue(!!basePage);
         const input =
-            bluetoothPairingRequestCodePage.shadowRoot.querySelector('#pin');
+            bluetoothPairingRequestCodePage.shadowRoot!
+                .querySelector<CrInputElement>('#pin');
         assertTrue(!!input);
 
         const pin = '12345';
-        input.value = pin;
+        input!.value = pin;
         await flushAsync();
 
-        basePage.dispatchEvent(new CustomEvent('pair'));
+        assertTrue(!!basePage);
+        // basePage uses ! flag because the compilar currently fails when
+        // running test locally.
+        basePage!.dispatchEvent(new CustomEvent('pair'));
         const requestCodeEvent = await requestCodePromise;
         assertEquals(requestCodeEvent.detail.code, pin);
       });
