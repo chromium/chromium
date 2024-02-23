@@ -595,6 +595,26 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia3));
 }
 
+TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
+  const std::string gaia1 =
+      identity_test_env_.identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+
+  manager_.Start();
+  manager_.RegisterIfNeeded();
+  RunUntilIdle();
+  ASSERT_TRUE(manager_.is_registered());
+
+  manager_.StoreKeys(gaia1, {{1, 2, 3, 4}}, 100);
+  identity_test_env_.MakePrimaryAccountAvailable("test2@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  // `MakePrimaryAccountAvailable` should have canceled any action.
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_FALSE(manager_.is_registered());
+  ASSERT_FALSE(manager_.is_ready());
+}
+
 TEST_F(EnclaveManagerTest, SetPIN) {
   manager_.Start();
 

@@ -7,51 +7,27 @@
 
 #include <optional>
 #include <string>
-#include <utility>
-#include <variant>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/types/strong_alias.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "device/fido/enclave/types.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-
-namespace cbor {
-class Value;
-}
-
-namespace crypto {
-class UnexportableSigningKey;
-class UserVerifyingKeyProvider;
-class UserVerifyingSigningKey;
-}  // namespace crypto
 
 namespace network {
 class SharedURLLoaderFactory;
-class SimpleURLLoader;
 }  // namespace network
 
 namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
-
-namespace trusted_vault {
-enum class TrustedVaultRegistrationStatus;
-}
-
-namespace trusted_vault_pb {
-class Vault;
-}  // namespace trusted_vault_pb
 
 namespace webauthn_pb {
 class EnclaveLocalState;
@@ -77,6 +53,7 @@ class EnclaveLocalState_User;
 // enclave, which is the ultimate point of this class.
 class EnclaveManager : public KeyedService {
  public:
+  struct StoreKeysArgs;
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnEnclaveManagerIdle() = 0;
@@ -155,106 +132,26 @@ class EnclaveManager : public KeyedService {
   static std::string_view recovery_key_store_sig_url_for_testing();
 
  private:
-  struct StoreKeysArgs;
-  struct TempState;
+  class StateMachine;
   class IdentityObserver;
+  struct PendingActions;
+  friend class StateMachine;
 
-  // The main part of this class is a state machine that uses the following
-  // states. It moves from state to state in response to `Event` values.
-  // Fields such as `want_registration_` and `identity_updated_` are set in
-  // order to record that the state machine needs to process those requests
-  // once the current processing has completed.
-  enum class State {
-    kInit,
-    kIdle,
-    kNextAction,
-    kLoading,
-    kGeneratingKeys,
-    kWaitingForEnclaveTokenForRegistration,
-    kRegisteringWithEnclave,
-    kWaitingForEnclaveTokenForWrapping,
-    kWrappingSecrets,
-    kJoiningDomain,
-    kHashingPIN,
-    kDownloadingRecoveryKeyStoreKeys,
-    kWaitingForEnclaveTokenForPINWrapping,
-    kWrappingPIN,
-    kWaitingForRecoveryKeyStoreTokenForUpload,
-    kWaitingForRecoveryKeyStore,
-  };
-  static std::string ToString(State);
+  // Starts a `StateMachine` to process the current request.
+  void Act();
 
-  enum class FetchedFile {
-    kCertFile,
-    kSigFile,
-  };
-  static std::string ToString(FetchedFile);
+  // Is called when reading the state file from disk has completed.
+  // (Successfully or otherwise.)
+  void LoadComplete(std::optional<std::string> contents);
 
-  struct HashedPIN {
-    ~HashedPIN() { memset(hashed, 0, sizeof(hashed)); }
+  // Called when `identity_observer_` reports a change in the signed-in state of
+  // the Profile. Also called once the local state has finished loading. In
+  // that case `is_post_load` will be false and any "change" in primary
+  // identity doesn't cause a reset.
+  void HandleIdentityChange(bool is_post_load = false);
 
-    int n = 0;  // The scrypt `N` parameter.
-    uint8_t salt[16];
-    uint8_t hashed[32];
-  };
-
-  using None = base::StrongAlias<class None, absl::monostate>;
-  using Failure =
-      base::StrongAlias<class KeyGenerationFailure, absl::monostate>;
-  using FileContents = base::StrongAlias<class FileContents, std::string>;
-  using KeyReady = base::StrongAlias<
-      class KeyGenerated,
-      std::pair<std::unique_ptr<crypto::UserVerifyingSigningKey>,
-                std::unique_ptr<crypto::UnexportableSigningKey>>>;
-  using EnclaveResponse = base::StrongAlias<class EnclaveResponse, cbor::Value>;
-  using JoinStatus =
-      base::StrongAlias<class JoinStatus,
-                        trusted_vault::TrustedVaultRegistrationStatus>;
-  using AccessToken = base::StrongAlias<class AccessToken, std::string>;
-  using FileFetched =
-      base::StrongAlias<class FileFetched,
-                        std::pair<FetchedFile, std::optional<std::string>>>;
-  using PINHashed =
-      base::StrongAlias<class PINHashed, std::unique_ptr<HashedPIN>>;
-  using Response = base::StrongAlias<class Response, std::string>;
-  using Event = absl::variant<None,
-                              Failure,
-                              FileContents,
-                              KeyReady,
-                              EnclaveResponse,
-                              AccessToken,
-                              JoinStatus,
-                              FileFetched,
-                              PINHashed,
-                              Response>;
-  static std::string ToString(const Event&);
-
-  // Moves to `kNextAction` if currently `kIdle`, which will trigger the next
-  // requested action.
-  void ActIfIdle();
-
-  // The main event loop function, and split out functions to handle each state.
-  void Loop(Event);
-  void ResetActionState();
-  void DoNextAction(Event);
-  void FetchComplete(FetchedFile, std::optional<std::string>);
-  void StartLoadingState();
-  void HandleIdentityChange();
-  void StartEnclaveRegistration();
-  void DoLoading(Event event);
-  void DoGeneratingKeys(Event event);
-  void DoWaitingForEnclaveTokenForRegistration(Event event);
-  void DoRegisteringWithEnclave(Event event);
-  void DoWaitingForEnclaveTokenForWrapping(Event event);
-  void DoWrappingSecrets(Event event);
-  void JoinDomain();
-  void DoJoiningDomain(Event event);
-  void DoHashingPIN(Event event);
-  void DoDownloadingRecoveryKeyStoreKeys(Event event);
-  void DoWaitingForEnclaveTokenForPINWrapping(Event event);
-  void DoWrappingPIN(Event event);
-  void DoWaitingForRecoveryKeyStoreTokenForUpload(Event event);
-  void DoWaitingForRecoveryKeyStore(Event event);
+  // Called when a `StateMachine` has stopped (or needs to stop).
+  void Stopped();
 
   // Can be called at any point to serialise the current value of `local_state_`
   // to disk. Only a single write happens at a time. If a write is already
@@ -264,13 +161,7 @@ class EnclaveManager : public KeyedService {
   void DoWriteState(std::string serialized);
   void WriteStateComplete(bool success);
 
-  void GenerateHardwareKey(
-      std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key);
-
-  void GetAccessTokenInternal(const char* scope);
-  static base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
-      const webauthn_pb::EnclaveLocalState_User& user,
-      const StoreKeysArgs& args);
+  webauthn_pb::EnclaveLocalState_User* current_user_state() const;
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -279,8 +170,8 @@ class EnclaveManager : public KeyedService {
   const std::unique_ptr<trusted_vault::TrustedVaultConnection>
       trusted_vault_conn_;
 
-  State state_ = State::kInit;
   std::unique_ptr<webauthn_pb::EnclaveLocalState> local_state_;
+  bool loading_ = false;
   raw_ptr<webauthn_pb::EnclaveLocalState_User> user_ = nullptr;
   std::unique_ptr<CoreAccountInfo> primary_account_info_;
   std::unique_ptr<IdentityObserver> identity_observer_;
@@ -288,16 +179,11 @@ class EnclaveManager : public KeyedService {
   std::optional<std::string> pending_write_;
   bool currently_writing_ = false;
   base::OnceClosure write_finished_callback_;
-  std::unique_ptr<StoreKeysArgs> store_keys_args_;
-  std::string pending_pin_;
 
-  // This state only exists for the duration of a sequence of
-  // non-idle states. Every time the state machine idles, this is reset.
-  std::unique_ptr<TempState> temp_state_;
+  std::unique_ptr<StateMachine> state_machine_;
+  std::unique_ptr<PendingActions> pending_actions_;
 
   unsigned store_keys_count_ = 0;
-  bool want_registration_ = false;
-  bool identity_updated_ = true;
 
   base::ObserverList<Observer> observer_list_;
 
