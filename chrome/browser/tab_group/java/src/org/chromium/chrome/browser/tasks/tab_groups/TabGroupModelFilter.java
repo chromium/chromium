@@ -528,14 +528,6 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
     }
 
-    @Deprecated
-    @Override
-    public boolean hasOtherRelatedTabs(Tab tab) {
-        int rootId = tab.getRootId();
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        return group != null && group.size() > 1;
-    }
-
     private List<Tab> getRelatedTabList(List<Integer> ids) {
         List<Tab> tabs = new ArrayList<>();
         for (Integer id : ids) {

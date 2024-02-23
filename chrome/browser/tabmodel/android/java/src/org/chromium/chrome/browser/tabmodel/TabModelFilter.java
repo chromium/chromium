@@ -138,22 +138,6 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     /**
-     * Any of the concrete class that defined a relationship between tabs should override this
-     * method. By default, the given {@link Tab} has no related tabs, other than itself.
-     *
-     * @deprecated With support being added for tab groups of size one, usage of this method doesn't
-     *     properly include a in its definition a tab that has a valid relationship, but not with
-     *     other tabs (i.e. being in a group by itself). Use {@link #hasRelationship(Tab tab)}
-     *     instead.
-     * @param tab A {@link Tab}.
-     * @return Whether the given {@link Tab} has other related tabs that is not itself.
-     */
-    @Deprecated
-    public boolean hasOtherRelatedTabs(Tab tab) {
-        return false;
-    }
-
-    /**
      * Returns a valid position to add or move a tab to this model in the context of any related
      * tabs.
      * @param tab The tab to be added/moved.

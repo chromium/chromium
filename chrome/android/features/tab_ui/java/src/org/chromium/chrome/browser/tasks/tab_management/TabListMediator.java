@@ -2341,7 +2341,7 @@ class TabListMediator {
         Set<Integer> checkedRootIds = new HashSet<>();
 
         for (Tab tab : unfilteredTabs) {
-            if (!filter.hasOtherRelatedTabs(tab)) {
+            if (!filter.isTabInTabGroup(tab)) {
                 filteredTabs.add(tab);
                 continue;
             }
