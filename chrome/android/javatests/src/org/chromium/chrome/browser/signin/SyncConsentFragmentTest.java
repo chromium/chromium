@@ -898,6 +898,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/326462005")
     public void testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully()
             throws IOException {
         mAutoTestRule.setIsAutomotive(true);
@@ -943,6 +944,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/326462005")
     public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
         mAutoTestRule.setIsAutomotive(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
