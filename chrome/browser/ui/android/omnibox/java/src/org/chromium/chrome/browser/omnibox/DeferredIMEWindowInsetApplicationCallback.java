@@ -113,9 +113,9 @@ class DeferredIMEWindowInsetApplicationCallback
         int newKeyboardHeight = 0;
         Insets imeInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime());
         if (imeInsets.bottom > 0) {
-            Insets navigationBarInsets =
-                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars());
-            newKeyboardHeight = imeInsets.bottom - navigationBarInsets.bottom;
+            Insets systemBarInsets =
+                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars());
+            newKeyboardHeight = imeInsets.bottom - systemBarInsets.bottom;
         }
         // Keyboard going away or the change is not animated; apply immediately.
         if (newKeyboardHeight < mKeyboardHeight || !mAnimationInProgress) {
