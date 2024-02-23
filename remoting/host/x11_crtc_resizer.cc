@@ -61,7 +61,10 @@ bool X11CrtcResizer::CrtcInfo::OffsetsChanged() const {
 X11CrtcResizer::X11CrtcResizer(
     x11::RandR::GetScreenResourcesCurrentReply* resources,
     x11::Connection* connection)
-    : resources_(resources), connection_(connection) {
+    : connection_(connection) {
+  if (resources != nullptr) {
+    resources_ = *resources;
+  }
   // Unittests provide nullptr, and do not exercise code-paths that talk to the
   // X server.
   if (connection_) {
@@ -79,8 +82,8 @@ X11CrtcResizer::~X11CrtcResizer() = default;
 
 void X11CrtcResizer::FetchActiveCrtcs() {
   active_crtcs_.clear();
-  x11::Time config_timestamp = resources_->config_timestamp;
-  for (const auto& crtc : resources_->crtcs) {
+  x11::Time config_timestamp = resources_.config_timestamp;
+  for (const auto& crtc : resources_.crtcs) {
     auto response = randr_->GetCrtcInfo({crtc, config_timestamp}).Sync();
     if (!response) {
       continue;
@@ -109,7 +112,7 @@ x11::RandR::Crtc X11CrtcResizer::GetCrtcForOutput(
 }
 
 void X11CrtcResizer::DisableCrtc(x11::RandR::Crtc crtc) {
-  x11::Time config_timestamp = resources_->config_timestamp;
+  x11::Time config_timestamp = resources_.config_timestamp;
   randr_->SetCrtcConfig({
       .crtc = crtc,
       .timestamp = x11::Time::CurrentTime,
@@ -279,7 +282,7 @@ webrtc::DesktopSize X11CrtcResizer::GetBoundingBox() const {
 void X11CrtcResizer::ApplyActiveCrtcs() {
   for (const auto& crtc_info : active_crtcs_) {
     if (crtc_info.OffsetsChanged() || updated_crtcs_.contains(crtc_info.crtc)) {
-      x11::Time config_timestamp = resources_->config_timestamp;
+      x11::Time config_timestamp = resources_.config_timestamp;
       randr_->SetCrtcConfig({
           .crtc = crtc_info.crtc,
           .timestamp = x11::Time::CurrentTime,
