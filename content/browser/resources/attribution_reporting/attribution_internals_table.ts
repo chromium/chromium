@@ -147,7 +147,10 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
     const rowCount = this.rowCount_();
     td.innerText = `Rows: ${rowCount}`;
 
-    this.dispatchEvent(new CustomEvent('rows-change', {detail: {rowCount}}));
+    this.dispatchEvent(new CustomEvent('rows-change', {
+      bubbles: true,
+      detail: {rowCount},
+    }));
   }
 
   private setCompare_(f: CompareFunc<T>): void {

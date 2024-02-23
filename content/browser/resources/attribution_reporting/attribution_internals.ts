@@ -479,9 +479,11 @@ class AggregatableReport extends Report {
 }
 
 function initReportTable<T extends Report>(
-    t: AttributionInternalsTableElement<T>, container: HTMLElement,
-    handler: HandlerInterface,
+    panel: HTMLElement, handler: HandlerInterface,
     cols: Iterable<DataColumn<T>>): AttributionInternalsTableElement<T> {
+  const t = panel.querySelector<AttributionInternalsTableElement<T>>(
+      'attribution-internals-table')!;
+
   t.init(
       [
         valueColumn('Status', 'status', asStringOrBool),
@@ -501,7 +503,7 @@ function initReportTable<T extends Report>(
       },
   );
 
-  const sendReportsButton = container.querySelector('button')!;
+  const sendReportsButton = panel.querySelector('button')!;
 
   sendReportsButton.addEventListener(
       'click', () => sendReports(t, sendReportsButton, handler));
@@ -800,16 +802,13 @@ class AttributionInternals implements ObserverInterface {
 
   constructor() {
     this.eventLevelReports = initReportTable<EventLevelReport>(
-        document.querySelector('#reportTable')!,
-        document.querySelector('#event-level-report-controls')!, this.handler, [
+        document.querySelector('#event-level-report-panel')!, this.handler, [
           valueColumn('Report Priority', 'reportPriority', asNumber),
           valueColumn('Randomized Report', 'randomizedReport', asStringOrBool),
         ]);
 
     this.aggregatableReports = initReportTable<AggregatableReport>(
-        document.querySelector('#aggregatableReportTable')!,
-        document.querySelector('#aggregatable-report-controls')!, this.handler,
-        [
+        document.querySelector('#aggregatable-report-panel')!, this.handler, [
           valueColumn('Histograms', 'contributions', asCode),
           valueColumn(
               'Verification Token', 'verificationToken', asStringOrBool),
@@ -831,30 +830,17 @@ class AttributionInternals implements ObserverInterface {
     this.osRegistrations = initOsRegistrationTable(
         document.querySelector('#osRegistrationTable')!);
 
-    installUnreadIndicator(
-        this.sources, document.querySelector<HTMLElement>('#sources-tab')!);
+    const tabs = document.querySelectorAll<HTMLElement>('div[slot="tab"]');
+    const panels = document.querySelectorAll<HTMLElement>('div[slot="panel"]');
 
-    installUnreadIndicator(
-        this.sourceRegistrations,
-        document.querySelector<HTMLElement>('#source-registrations-tab')!);
-
-    installUnreadIndicator(
-        this.triggers, document.querySelector<HTMLElement>('#triggers-tab')!);
-
-    installUnreadIndicator(
-        this.eventLevelReports,
-        document.querySelector<HTMLElement>('#event-level-reports-tab')!);
-
-    installUnreadIndicator(
-        this.aggregatableReports,
-        document.querySelector<HTMLElement>('#aggregatable-reports-tab')!);
-
-    installUnreadIndicator(
-        this.debugReports,
-        document.querySelector<HTMLElement>('#debug-reports-tab')!);
-
-    installUnreadIndicator(
-        this.osRegistrations, document.querySelector<HTMLElement>('#os-tab')!);
+    for (let i = 0; i < panels.length && i < tabs.length; ++i) {
+      const tab = tabs[i]!;
+      panels[i]!.addEventListener(
+          'rows-change',
+          e => tab.classList.toggle(
+              'unread',
+              !tab.hasAttribute('selected') && e.detail.rowCount > 0));
+    }
 
     Factory.getRemote().create(
         new ObserverReceiver(this).$.bindNewPipeAndPassRemote(),
@@ -976,14 +962,6 @@ class AttributionInternals implements ObserverInterface {
       }());
     });
   }
-}
-
-function installUnreadIndicator<T>(
-    t: AttributionInternalsTableElement<T>, tab: HTMLElement): void {
-  t.addEventListener(
-      'rows-change',
-      e => tab.classList.toggle(
-          'unread', !tab.hasAttribute('selected') && e.detail.rowCount > 0));
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -139,7 +139,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   // the report table is empty.
   void SetTitleOnReportsTableEmpty(const std::u16string& title) {
     static constexpr char kObserveEmptyReportsTableScript[] = R"(
-      const table = document.querySelector('#reportTable')
+      const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tfoot');
       const setTitleIfDone = (_, obs) => {
         if (table.querySelector('td')?.innerText === 'Rows: 0') {
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   {
     static constexpr char kScript[] = R"(
-      const table = document.querySelector('#reportTable')
+      const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
         if (table.children.length === 5 &&
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   {
     static constexpr char kScript[] = R"(
-      const table = document.querySelector('#reportTable')
+      const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
         if (table.children.length === 5 &&
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
     // Sort by priority ascending.
     ASSERT_TRUE(ExecJsInWebUI(R"(
-      document.querySelector('#reportTable')
+      document.querySelector('#event-level-report-panel attribution-internals-table')
         .shadowRoot.querySelector('th:nth-child(6) button').click();
     )"));
     ASSERT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   {
     static constexpr char kScript[] = R"(
-      const table = document.querySelector('#reportTable')
+      const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const obs = new MutationObserver((_, obs) => {
         if (table.children.length === 5 &&
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
     // Sort by priority descending.
     ASSERT_TRUE(ExecJsInWebUI(R"(
-      document.querySelector('#reportTable')
+      document.querySelector('#event-level-report-panel attribution-internals-table')
         .shadowRoot.querySelector('th:nth-child(6) button').click();
     )"));
     ASSERT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Verify both rows get rendered.
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#reportTable')
+    const table = document.querySelector('#event-level-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
 
     const setTitleIfDone = (_, obs) => {
@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#reportTable')
+    const table = document.querySelector('#event-level-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
@@ -993,9 +993,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   SetTitleOnReportsTableEmpty(kSentTitle);
 
   ASSERT_TRUE(ExecJsInWebUI(R"(
-    document.querySelector('#reportTable')
+    document.querySelector('#event-level-report-panel attribution-internals-table')
      .shadowRoot.querySelector('input[type="checkbox"]').click();
-    document.querySelector('#event-level-report-controls button').click();
+    document.querySelector('#event-level-report-panel button').click();
   )"));
 
   // The real manager would do this itself, but the test manager requires manual
@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_F(
 
   {
     static constexpr char kScript[] = R"(
-      const table = document.querySelector('#aggregatableReportTable')
+      const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
       const setTitleIfDone = (_, obs) => {
         if (table.children.length === 6 &&
@@ -1242,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   static constexpr char kScript[] = R"(
-    const table = document.querySelector('#aggregatableReportTable')
+    const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
       if (table.querySelector('td')?.innerText !== 'Rows: 0') {
@@ -1270,7 +1270,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher sent_title_watcher(shell()->web_contents(), kSentTitle);
 
   static constexpr char kObserveEmptyReportsTableScript[] = R"(
-    const table = document.querySelector('#aggregatableReportTable')
+    const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
         .shadowRoot.querySelector('tfoot');
     const setTitleIfDone = (_, obs) => {
       if (table.querySelector('td')?.innerText === 'Rows: 0') {
@@ -1291,9 +1291,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, kSentTitle)));
 
   ASSERT_TRUE(ExecJsInWebUI(R"(
-    document.querySelector('#aggregatableReportTable')
+    document.querySelector('#aggregatable-report-panel attribution-internals-table')
       .shadowRoot.querySelectorAll('input[type="checkbox"]')[1].click();
-    document.querySelector('#aggregatable-report-controls button').click();
+    document.querySelector('#aggregatable-report-panel button').click();
   )"));
 
   // The real manager would do this itself, but the test manager requires manual

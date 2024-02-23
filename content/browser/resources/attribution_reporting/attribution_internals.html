@@ -25,13 +25,13 @@ In this browser:
 <button id="clear-data">Clear all attribution data</button>
 </header>
 <cr-tab-box hidden>
-  <div id="sources-tab" slot="tab">Active Sources</div>
-  <div id="source-registrations-tab" slot="tab">Source Registrations</div>
-  <div id="triggers-tab" slot="tab">Trigger Registrations</div>
-  <div id="event-level-reports-tab" slot="tab">Event-Level Reports</div>
-  <div id="aggregatable-reports-tab" slot="tab">Aggregatable Reports</div>
-  <div id="debug-reports-tab" slot="tab">Debug Reports</div>
-  <div id="os-tab" slot="tab">OS Registrations</div>
+  <div slot="tab">Active Sources</div>
+  <div slot="tab">Source Registrations</div>
+  <div slot="tab">Trigger Registrations</div>
+  <div slot="tab">Event-Level Reports</div>
+  <div slot="tab">Aggregatable Reports</div>
+  <div slot="tab">Debug Reports</div>
+  <div slot="tab">OS Registrations</div>
   <div slot="panel">
     <attribution-internals-table id="sourceTable">
     </attribution-internals-table>
@@ -44,19 +44,17 @@ In this browser:
     <attribution-internals-table id="triggerTable">
     </attribution-internals-table>
   </div>
-  <div slot="panel">
-    <div id="event-level-report-controls" class="controls">
+  <div slot="panel" id="event-level-report-panel">
+    <div class="controls">
       <button disabled>Send Selected Pending Event-Level Reports</button>
     </div>
-    <attribution-internals-table id="reportTable">
-    </attribution-internals-table>
+    <attribution-internals-table></attribution-internals-table>
   </div>
-  <div slot="panel">
-    <div id="aggregatable-report-controls" class="controls">
+  <div slot="panel" id="aggregatable-report-panel">
+    <div class="controls">
       <button disabled>Send Selected Pending Aggregatable Reports</button>
     </div>
-    <attribution-internals-table id="aggregatableReportTable">
-    </attribution-internals-table>
+    <attribution-internals-table></attribution-internals-table>
   </div>
   <div slot="panel">
     <attribution-internals-table id="debugReportTable">
