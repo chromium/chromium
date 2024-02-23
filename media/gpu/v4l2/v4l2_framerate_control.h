@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/chromeos/frame_resource.h"
 
 namespace media {
 
@@ -28,18 +29,21 @@ class V4L2FrameRateControl {
                        scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~V4L2FrameRateControl();
 
-  // Trampoline method for VideoFrame destructor callbacks to be directed
-  // to this class' task runner.
+  // Trampoline method for frame destructor callbacks to be directed to this
+  // class' task runner.
   static void RecordFrameDurationThunk(
       base::WeakPtr<V4L2FrameRateControl> weak_this,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // Called from the VideoFrame destructor.  Stores the duration between
-  // subsequent video frames into the moving average.
+  // Called from the frame destructor.  Stores the duration between subsequent
+  // video frames into the moving average.
   void RecordFrameDuration();
 
   // Register this class as a VideoFrame destructor observer.
   void AttachToVideoFrame(scoped_refptr<VideoFrame>& video_frame);
+
+  // Register this class as a FrameResource destructor observer.
+  void AttachToFrameResource(scoped_refptr<FrameResource>& frame);
 
  private:
   void UpdateFrameRate();

@@ -172,4 +172,16 @@ void V4L2FrameRateControl::AttachToVideoFrame(
                      weak_this_factory_.GetWeakPtr(), task_runner_));
 }
 
+void V4L2FrameRateControl::AttachToFrameResource(
+    scoped_refptr<FrameResource>& frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!framerate_control_present_) {
+    return;
+  }
+
+  frame->AddDestructionObserver(
+      base::BindOnce(&V4L2FrameRateControl::RecordFrameDurationThunk,
+                     weak_this_factory_.GetWeakPtr(), task_runner_));
+}
+
 }  // namespace media
