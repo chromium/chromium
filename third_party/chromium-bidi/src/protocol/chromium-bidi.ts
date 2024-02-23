@@ -120,10 +120,6 @@ export type ResultData = WebDriverBidi.ResultData | Cdp.ResultData;
 
 export type BidiPlusChannel = string | null;
 
-export type Message = (
-  | WebDriverBidi.Message
-  | Cdp.Message
-  | {launched: true}
-) & {
+export type Message = (WebDriverBidi.Message | Cdp.Message) & {
   channel?: BidiPlusChannel;
 };
