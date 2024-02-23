@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(PrivateAggregationInternalsWebUiBrowserTest,
       const cell = (a, b) => table.children[a]?.children[b]?.textContent;
       const obs = new MutationObserver((_, obs) => {
         const kExpectedBodyStr =
-          '[ {  "bucket": {   "high": "0",   "low": "123"  },  "value": 456 }]';
+          '[ {  "bucket": "123",  "value": 456 }]';
         if (table.children.length === 4 &&
             cell(0, 1) === 'Pending' &&
             cell(0, 2) === 'https://reporting.example/example-path' &&
