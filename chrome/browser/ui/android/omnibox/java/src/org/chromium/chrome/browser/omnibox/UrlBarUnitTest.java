@@ -10,18 +10,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import android.graphics.Paint;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
@@ -43,9 +49,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowPaint;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -61,18 +64,25 @@ import java.util.Collections;
 
 /** Unit tests for the URL bar UI component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        qualifiers = "w100dp-h50dp",
-        shadows = {UrlBarUnitTest.UrlBarShadowLayout.class, UrlBarUnitTest.UrlBarShadowPaint.class})
+@Config(qualifiers = "w100dp-h50dp")
 public class UrlBarUnitTest {
-    private static final int URL_BAR_WIDTH = 100;
+    // UrlBar has 4 px of padding on the left and right. Set this to urlbar width + padding so
+    // getVisibleMeasuredViewportWidth() returns 100. This ensures NUMBER_OF_VISIBLE_CHARACTERS
+    // is accurate.
+    private static final int URL_BAR_WIDTH = 100 + 8;
     private static final int URL_BAR_HEIGHT = 10;
+
+    // Screen width is set to 100px, with a default density of 1px per dp, and we estimate 5dp per
+    // char, so there will be 20 visible characters.
+    private static final int NUMBER_OF_VISIBLE_CHARACTERS = 20;
 
     private UrlBar mUrlBar;
     public @Rule TestRule mFeaturesProcessorRule = new JUnitProcessor();
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock UrlBarDelegate mUrlBarDelegate;
     private @Mock ViewStructure mViewStructure;
+    private @Mock Layout mLayout;
+    private @Mock TextPaint mPaint;
 
     private final String mShortPath = "/aaaa";
     private final String mLongPath =
@@ -84,40 +94,6 @@ public class UrlBarUnitTest {
                             "", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION_V2, "a"))
                     + ".com";
 
-    // Screen width is set to 100px, with a default density of 1px per dp, and we estimate 5dp per
-    // char, so there will be 20 visible characters.
-    private final int mNumberOfVisibleCharacters = 20;
-
-    @Implements(Layout.class)
-    public static class UrlBarShadowLayout {
-        @Implementation
-        public float getPrimaryHorizontal(int offset) {
-            return (float) offset * 5;
-        }
-
-        // TODO(peilinwang) remove once ScrollToTLDOptimization experiment is finished. This is
-        // only needed for bots that run testss with disable_fieldtrial_testing_config=true.
-        @Implementation
-        public int getOffsetForHorizontal(int line, float horiz) {
-            return (int) horiz / 5;
-        }
-    }
-
-    @Implements(Paint.class)
-    public static class UrlBarShadowPaint extends ShadowPaint {
-        @Implementation
-        public int getOffsetForAdvance(
-                CharSequence text,
-                int start,
-                int end,
-                int contextStart,
-                int contextEnd,
-                boolean isRtl,
-                float advance) {
-            return (int) advance / 5;
-        }
-    }
-
     @Before
     public void setUp() {
         var ctx =
@@ -125,6 +101,25 @@ public class UrlBarUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_AppCompat);
         mUrlBar = spy(new UrlBarApi26(ctx, null));
         mUrlBar.setDelegate(mUrlBarDelegate);
+
+        doReturn(1).when(mLayout).getLineCount();
+        when(mLayout.getPrimaryHorizontal(anyInt()))
+                .thenAnswer(
+                        invocation -> {
+                            return (float) ((int) invocation.getArguments()[0]) * 5;
+                        });
+        when(mPaint.getOffsetForAdvance(
+                        any(CharSequence.class),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyBoolean(),
+                        anyFloat()))
+                .thenAnswer(
+                        invocation -> {
+                            return (int) ((float) invocation.getArguments()[6] / 5);
+                        });
     }
 
     /** Force reset text layout. */
@@ -229,11 +224,12 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongUrl() {
+        doReturn(mLayout).when(mUrlBar).getLayout();
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         String text = mUrlBar.getText().toString();
-        assertEquals(url.substring(0, mNumberOfVisibleCharacters), text);
+        assertEquals(url.substring(0, NUMBER_OF_VISIBLE_CHARACTERS), text);
     }
 
     @Test
@@ -248,6 +244,7 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongTld_ScrollToTld() {
+        doReturn(mLayout).when(mUrlBar).getLayout();
         measureAndLayoutUrlBar();
         String url = mLongDomain + mShortPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mLongDomain.length());
@@ -258,11 +255,12 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testTruncation_LongTld_ScrollToBeginning() {
+        doReturn(mLayout).when(mUrlBar).getLayout();
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_BEGINNING, 0);
         String text = mUrlBar.getText().toString();
-        assertEquals(url.substring(0, mNumberOfVisibleCharacters), text);
+        assertEquals(url.substring(0, NUMBER_OF_VISIBLE_CHARACTERS), text);
     }
 
     @Test
@@ -331,12 +329,14 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION_V2)
     public void testSetLengtHistogram_withTruncation() {
+        doReturn(mLayout).when(mUrlBar).getLayout();
+
         measureAndLayoutUrlBar();
         String url = mShortDomain + mLongPath;
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.SetText.TextLength", mNumberOfVisibleCharacters);
+                        "Omnibox.SetText.TextLength", NUMBER_OF_VISIBLE_CHARACTERS);
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         histogramWatcher.assertExpected();
     }
@@ -509,5 +509,62 @@ public class UrlBarUnitTest {
         // We change the width, which may impact scroll position.
         measureAndLayoutUrlBarForSize(URL_BAR_WIDTH + 1, URL_BAR_HEIGHT);
         verify(mUrlBar).scrollDisplayText(anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD)
+    public void scrollToTLD_sameTLD_calculateVisibleHint() {
+        doReturn(mLayout).when(mUrlBar).getLayout();
+        doReturn(mPaint).when(mLayout).getPaint();
+
+        measureAndLayoutUrlBar();
+        // Url needs to be long enough to fill the entire url bar.
+        String url =
+                mShortDomain
+                        + "/"
+                        + TextUtils.join(
+                                "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "a"));
+        mUrlBar.setText(url);
+        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        verify(mUrlBar, times(0)).calculateVisibleHint();
+
+        // Keep domain the same, but change the path.
+        String url2 =
+                mShortDomain
+                        + "/"
+                        + TextUtils.join(
+                                "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "b"));
+        mUrlBar.setText(url2);
+        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        verify(mUrlBar, times(1)).calculateVisibleHint();
+        String visibleHint = mUrlBar.getVisibleTextPrefixHint().toString();
+        assertEquals(url2.substring(0, NUMBER_OF_VISIBLE_CHARACTERS + 1), visibleHint);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD)
+    public void scrollToTLD_differentTLD_noVisibleHintCalculation() {
+        doReturn(mLayout).when(mUrlBar).getLayout();
+        doReturn(mPaint).when(mLayout).getPaint();
+
+        measureAndLayoutUrlBar();
+        // Url needs to be long enough to fill the entire url bar.
+        String url =
+                "www.a.com/"
+                        + TextUtils.join(
+                                "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "a"));
+        mUrlBar.setText(url);
+        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        verify(mUrlBar, times(0)).calculateVisibleHint();
+
+        // Change the domain, but keep the path the same.
+        String url2 =
+                "www.b.com/"
+                        + TextUtils.join(
+                                "", Collections.nCopies(NUMBER_OF_VISIBLE_CHARACTERS, "a"));
+        mUrlBar.setText(url2);
+        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        verify(mUrlBar, times(0)).calculateVisibleHint();
+        assertNull(mUrlBar.getVisibleTextPrefixHint());
     }
 }

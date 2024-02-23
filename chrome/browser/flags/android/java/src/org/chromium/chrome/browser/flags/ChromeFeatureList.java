@@ -157,6 +157,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_HUB = "AndroidHub";
     public static final String ANDROID_IMPROVED_BOOKMARKS = "AndroidImprovedBookmarks";
     public static final String ANDROID_VISIBLE_URL_TRUNCATION = "AndroidVisibleUrlTruncation";
+    public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
+            "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_VISIBLE_URL_TRUNCATION_V2 = "AndroidVisibleUrlTruncationV2";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_TABLETS =
             "AndroidNoVisibleHintForTablets";
@@ -757,6 +759,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForTablets =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_TABLETS, false);
+    public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
+            newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, false);
     public static final MutableFlagWithSafeDefault sOmniboxHistoryClusterProvider =
             newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
     public static final MutableFlagWithSafeDefault sOmniboxNoopEditUrlSuggestionClicks =

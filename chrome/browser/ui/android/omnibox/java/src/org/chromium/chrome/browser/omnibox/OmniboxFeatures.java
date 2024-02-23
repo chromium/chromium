@@ -171,6 +171,14 @@ public class OmniboxFeatures {
         return !(isTablet(context) && ChromeFeatureList.sNoVisibleHintForTablets.isEnabled());
     }
 
+    /**
+     * Returns if we should omit calculating the visible hint if the TLD is different than the
+     * previous call to setText().
+     */
+    public static boolean shouldOmitVisibleHintCalculationForDifferentTLD() {
+        return ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled();
+    }
+
     /** Returns whether to show the incognito status for tablet. */
     public static boolean showIncognitoStatusForTablet() {
         return ChromeFeatureList.sTabletToolbarIncognitoStatus.isEnabled()
