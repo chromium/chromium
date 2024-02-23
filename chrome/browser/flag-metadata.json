@@ -4393,8 +4393,8 @@
   },
   {
     "name": "files-conflict-dialog",
-    "owners": [ "noel@chromium.org", "//ui/file_manager/OWNERS" ],
-    "expiry_milestone": 117
+    "owners": [ "simmonsjosh@google.com", "//ui/file_manager/OWNERS" ],
+    "expiry_milestone": 135
   },
   {
     "name": "files-local-image-search",
