@@ -52,6 +52,9 @@
 namespace reporting {
 namespace {
 
+constexpr char kUmaRecordProcessedByServer[] =
+    "Browser.ERP.RecordProcessedByServer";
+
 // Priority could come back as an int or as a std::string, this function handles
 // both situations.
 std::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
@@ -715,10 +718,12 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
                  << *failed_uploaded_record;
       records_.push_back(std::move(gap_record_result.value()));
     }
+    base::UmaHistogramBoolean(kUmaRecordProcessedByServer, false);
   }
 
   if (!records_.empty()) {
     // Upload the next record but do not request encryption key again.
+    base::UmaHistogramBoolean(kUmaRecordProcessedByServer, true);
     StartUpload();
     return;
   }
@@ -726,6 +731,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   // No more records to process. Return the highest_sequence_information_
   // if available.
   if (highest_sequence_information_.has_value()) {
+    base::UmaHistogramBoolean(kUmaRecordProcessedByServer, true);
     Complete(SuccessfulUploadResponse{
         .sequence_information =
             std::move(highest_sequence_information_.value()),

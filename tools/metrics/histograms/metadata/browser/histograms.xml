@@ -224,6 +224,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.RecordProcessedByServer" enum="Boolean"
+    expires_after="2024-08-21">
+  <owner>jrhilke@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Recorded when we send an encrypted record and receive a valid response from
+    the server (i.e. no network errors). True if the server processed the
+    record. False if the server found some error with the record. Note that this
+    may return False even if Browser.ERP.(Un)ManagedUploadEncryptedReport
+    doesn't report a server error, because the server errors it refers to are
+    for DM server requests which are not reporting specific.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.RecordsPerUploadFromNonChromeosDevice"
     units="records" expires_after="2024-11-09">
   <owner>jrhilke@chromium.org</owner>
@@ -308,9 +322,9 @@ chromium-metrics-reviews@google.com.
   <owner>jrhilke@google.com</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
-    Status of a completed ERP upload request from a {ManagementStatus}. Either
-    successful, with a failure or with a server error. Recorded when a response
-    from the server is received.
+    Status of a completed ERP upload request from a {ManagementStatus} device.
+    Either successful, with a failure or with a server error. Recorded when a
+    response from the server is received.
   </summary>
   <token key="ManagementStatus">
     <variant name="Managed" summary="managed"/>
