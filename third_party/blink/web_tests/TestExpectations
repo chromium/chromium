@@ -6855,6 +6855,8 @@ crbug.com/40275364 [ Win ] virtual/media-foundation-for-clear-dcomp/media/contro
 # Temporarily disable until the test is made faster to fit in 30 sec timeout
 crbug.com/325960326 external/wpt/webrtc-extensions/RTCRtpReceiver-jitterBufferTarget-stats.html [ Failure Pass Timeout ] # Flaky
 
+crbug.com/1467464 http/tests/devtools/a11y-axe-core/performance/performance-pane-a11y-test.js [ Failure Pass ]
+
 # Flaky tests on Win11-arm64
 crbug.com/325634737 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-fetch.https.html [ Failure Pass Timeout ]
 crbug.com/40263840 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Failure Pass Timeout ] # Flaky
