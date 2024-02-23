@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -35,9 +35,12 @@ bool PickerCategoryView::OnEnterKeyPressed() {
   return search_results_view_->OnEnterKeyPressed();
 }
 
-void PickerCategoryView::SetResults(const PickerSearchResults& results) {
+void PickerCategoryView::SetResults(
+    std::vector<PickerSearchResultsSection> sections) {
   search_results_view_->ClearSearchResults();
-  search_results_view_->AppendSearchResults(results);
+  for (PickerSearchResultsSection& section : sections) {
+    search_results_view_->AppendSearchResults(std::move(section));
+  }
 }
 
 BEGIN_METADATA(PickerCategoryView)

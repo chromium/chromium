@@ -13,7 +13,7 @@
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerSearchResults;
+class PickerSearchResultsSection;
 
 // View to show Picker results for a specific category.
 class ASH_EXPORT PickerCategoryView : public PickerPageView {
@@ -32,8 +32,8 @@ class ASH_EXPORT PickerCategoryView : public PickerPageView {
   // PickerPageView:
   bool OnEnterKeyPressed() override;
 
-  // Replaces the current results with `results`.
-  void SetResults(const PickerSearchResults& results);
+  // Replaces the current results with `sections`.
+  void SetResults(std::vector<PickerSearchResultsSection> sections);
 
  private:
   // Default view for displaying category results.

@@ -32,7 +32,7 @@ class PickerContentsView;
 class PickerSearchFieldView;
 class PickerPageView;
 class PickerSearchResult;
-class PickerSearchResults;
+class PickerSearchResultsSection;
 class PickerSearchResultsView;
 class PickerViewDelegate;
 class PickerZeroStateView;
@@ -101,7 +101,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void StartSearch(const std::u16string& query);
 
   // Displays `results` in the search view.
-  void PublishSearchResults(const PickerSearchResults& results);
+  void PublishSearchResults(std::vector<PickerSearchResultsSection> results);
 
   // Selects a search result.
   void SelectSearchResult(const PickerSearchResult& result);
@@ -111,7 +111,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void SelectCategory(PickerCategory category);
 
   // Displays `results` in the category view.
-  void PublishCategoryResults(const PickerSearchResults& results);
+  void PublishCategoryResults(std::vector<PickerSearchResultsSection> results);
 
   void OnClickOutsideWidget(const ui::LocatedEvent& event);
 

@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_category_search.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_search_debouncer.h"
@@ -158,43 +158,43 @@ void PickerSearchController::PublishBurnInResults() {
     return;
   }
 
-  std::vector<PickerSearchResults::Section> sections;
+  std::vector<PickerSearchResultsSection> sections;
   if (!suggested_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(
+    sections.push_back(PickerSearchResultsSection(
         PickerSectionType::kSuggestions, suggested_results_));
   }
   if (!category_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(
+    sections.push_back(PickerSearchResultsSection(
         PickerSectionType::kCategories, std::move(category_results_)));
   }
   if (!emoji_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(
+    sections.push_back(PickerSearchResultsSection(
         PickerSectionType::kExpressions, std::move(emoji_results_)));
   }
   if (!omnibox_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(
-        PickerSectionType::kLinks, std::move(omnibox_results_)));
+    sections.push_back(PickerSearchResultsSection(PickerSectionType::kLinks,
+                                                  std::move(omnibox_results_)));
   }
   if (!local_file_results_.empty()) {
     sections.emplace_back(PickerSectionType::kFiles,
                           std::move(local_file_results_));
   }
   if (!gif_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(PickerSectionType::kGifs,
-                                                    std::move(gif_results_)));
+    sections.push_back(PickerSearchResultsSection(PickerSectionType::kGifs,
+                                                  std::move(gif_results_)));
   }
-  current_callback_.Run(PickerSearchResults(std::move(sections)));
+  current_callback_.Run(std::move(sections));
 }
 
 void PickerSearchController::AppendPostBurnInResults(
-    PickerSearchResults::Section section) {
+    PickerSearchResultsSection section) {
   if (IsSearchStopped()) {
     return;
   }
 
   CHECK(IsPostBurnIn());
   if (!section.results().empty()) {
-    current_callback_.Run(PickerSearchResults({{std::move(section)}}));
+    current_callback_.Run({{std::move(section)}});
   }
 }
 
@@ -226,7 +226,7 @@ void PickerSearchController::HandleCrosSearchResults(
       omnibox_results_ = std::move(results);
 
       if (IsPostBurnIn()) {
-        AppendPostBurnInResults(PickerSearchResults::Section(
+        AppendPostBurnInResults(PickerSearchResultsSection(
             PickerSectionType::kLinks, std::move(omnibox_results_)));
       }
       break;
@@ -243,7 +243,7 @@ void PickerSearchController::HandleCrosSearchResults(
                                 local_file_results_.end());
 
       if (IsPostBurnIn()) {
-        AppendPostBurnInResults(PickerSearchResults::Section(
+        AppendPostBurnInResults(PickerSearchResultsSection(
             PickerSectionType::kFiles, std::move(local_file_results_)));
       }
       break;
@@ -272,7 +272,7 @@ void PickerSearchController::HandleGifSearchResults(
   gif_results_ = std::move(results);
 
   if (IsPostBurnIn()) {
-    AppendPostBurnInResults(PickerSearchResults::Section(
+    AppendPostBurnInResults(PickerSearchResultsSection(
         PickerSectionType::kGifs, std::move(gif_results_)));
   }
 }

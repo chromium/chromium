@@ -10,7 +10,7 @@
 #include <variant>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
@@ -66,17 +66,15 @@ void PickerSearchResultsView::ClearSearchResults() {
 }
 
 void PickerSearchResultsView::AppendSearchResults(
-    const PickerSearchResults& search_results) {
-  for (const auto& section : search_results.sections()) {
-    auto* section_view =
-        AddChildView(std::make_unique<PickerSectionView>(picker_view_width_));
-    section_view->AddTitleLabel(
-        GetSectionTitleForPickerSectionType(section.type()));
-    for (const auto& result : section.results()) {
-      AddResultToSection(result, section_view);
-    }
-    section_views_.push_back(section_view);
+    PickerSearchResultsSection section) {
+  auto* section_view =
+      AddChildView(std::make_unique<PickerSectionView>(picker_view_width_));
+  section_view->AddTitleLabel(
+      GetSectionTitleForPickerSectionType(section.type()));
+  for (const auto& result : section.results()) {
+    AddResultToSection(result, section_view);
   }
+  section_views_.push_back(section_view);
 }
 
 void PickerSearchResultsView::SelectSearchResult(

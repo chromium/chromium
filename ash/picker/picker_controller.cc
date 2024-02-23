@@ -13,7 +13,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_model.h"
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_copy_media.h"
@@ -240,10 +240,10 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           GetIconForPickerCategory(category)));
       break;
   }
-  callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(PickerSectionType::kRecentlyUsed,
-                                   recent_results),
-  }}));
+  callback.Run({
+      PickerSearchResultsSection(PickerSectionType::kRecentlyUsed,
+                                 recent_results),
+  });
 }
 
 void PickerController::StartSearch(const std::u16string& query,

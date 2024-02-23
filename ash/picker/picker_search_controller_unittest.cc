@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -204,21 +204,17 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(AllOf(
-              Property("type", &PickerSearchResults::Section::type,
-                       PickerSectionType::kLinks),
-              Property(
-                  "results", &PickerSearchResults::Section::results,
-                  ElementsAre(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<
-                          PickerSearchResult::BrowsingHistoryData>(Field(
-                          "url", &PickerSearchResult::BrowsingHistoryData::url,
-                          Property(
-                              "spec", &GURL::spec,
-                              "https://www.google.com/search?q=cat")))))))))))
+      Call(Contains(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kLinks),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
+                      "url", &PickerSearchResult::BrowsingHistoryData::url,
+                      Property("spec", &GURL::spec,
+                               "https://www.google.com/search?q=cat"))))))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -267,27 +263,21 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
   testing::Expectation after_start_search_call =
       EXPECT_CALL(after_start_search, Call).Times(1);
   EXPECT_CALL(first_search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      first_search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(
-              AllOf(Property("type", &PickerSearchResults::Section::type,
-                             PickerSectionType::kLinks),
-                    Property("results", &PickerSearchResults::Section::results,
-                             IsEmpty()))))))
+  EXPECT_CALL(first_search_results_callback,
+              Call(Contains(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kLinks),
+                  Property("results", &PickerSearchResultsSection::results,
+                           IsEmpty())))))
       .Times(0)
       .After(after_start_search_call);
   EXPECT_CALL(second_search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      second_search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(
-              AllOf(Property("type", &PickerSearchResults::Section::type,
-                             PickerSectionType::kLinks),
-                    Property("results", &PickerSearchResults::Section::results,
-                             IsEmpty()))))))
+  EXPECT_CALL(second_search_results_callback,
+              Call(Contains(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kLinks),
+                  Property("results", &PickerSearchResultsSection::results,
+                           IsEmpty())))))
       // This may be changed to 1 if the initial state has an empty links
       // section.
       .Times(0);
@@ -435,19 +425,16 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
   PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
-  EXPECT_CALL(
-      search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(AllOf(
-              Property("type", &PickerSearchResults::Section::type,
-                       PickerSectionType::kFiles),
-              Property("results", &PickerSearchResults::Section::results,
-                       ElementsAre(Property(
-                           "data", &PickerSearchResult::data,
-                           VariantWith<PickerSearchResult::TextData>(Field(
-                               "text", &PickerSearchResult::TextData::text,
-                               u"monorail_cat.jpg"))))))))))
+  EXPECT_CALL(search_results_callback,
+              Call(Contains(AllOf(
+                  Property("type", &PickerSearchResultsSection::type,
+                           PickerSectionType::kFiles),
+                  Property("results", &PickerSearchResultsSection::results,
+                           ElementsAre(Property(
+                               "data", &PickerSearchResult::data,
+                               VariantWith<PickerSearchResult::TextData>(Field(
+                                   "text", &PickerSearchResult::TextData::text,
+                                   u"monorail_cat.jpg")))))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -611,25 +598,21 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(AllOf(
-              Property("type", &PickerSearchResults::Section::type,
-                       PickerSectionType::kGifs),
-              Property(
-                  "results", &PickerSearchResults::Section::results,
-                  Contains(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("url", &PickerSearchResult::GifData::url,
-                                Property(
-                                    "spec", &GURL::spec,
-                                    "https://media.tenor.com/GOabrbLMl4AAAAAd/"
-                                    "plink-cat-plink.gif")),
-                          Field(
-                              "content_description",
-                              &PickerSearchResult::GifData::content_description,
-                              u"cat blink")))))))))))
+      Call(Contains(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kGifs),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              Contains(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::GifData>(AllOf(
+                      Field("url", &PickerSearchResult::GifData::url,
+                            Property("spec", &GURL::spec,
+                                     "https://media.tenor.com/GOabrbLMl4AAAAAd/"
+                                     "plink-cat-plink.gif")),
+                      Field("content_description",
+                            &PickerSearchResult::GifData::content_description,
+                            u"cat blink"))))))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -655,25 +638,21 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(AllOf(
-              Property("type", &PickerSearchResults::Section::type,
-                       PickerSectionType::kGifs),
-              Property(
-                  "results", &PickerSearchResults::Section::results,
-                  Contains(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("url", &PickerSearchResult::GifData::url,
-                                Property(
-                                    "spec", &GURL::spec,
-                                    "https://media.tenor.com/GOabrbLMl4AAAAAd/"
-                                    "plink-cat-plink.gif")),
-                          Field(
-                              "content_description",
-                              &PickerSearchResult::GifData::content_description,
-                              u"cat blink")))))))))))
+      Call(Contains(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kGifs),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              Contains(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::GifData>(AllOf(
+                      Field("url", &PickerSearchResult::GifData::url,
+                            Property("spec", &GURL::spec,
+                                     "https://media.tenor.com/GOabrbLMl4AAAAAd/"
+                                     "plink-cat-plink.gif")),
+                      Field("content_description",
+                            &PickerSearchResult::GifData::content_description,
+                            u"cat blink"))))))))))
       .Times(0);
   ON_CALL(client, StopGifSearch)
       .WillByDefault(
@@ -700,25 +679,22 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          LastElement(AllOf(
-              Property("type", &PickerSearchResults::Section::type,
-                       PickerSectionType::kGifs),
-              Property(
-                  "results", &PickerSearchResults::Section::results,
-                  Contains(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("url", &PickerSearchResult::GifData::url,
-                                Property("spec", &GURL::spec,
-                                         "https://media.tenor.com/"
-                                         "GOabrbLMl4AAAAAd/"
-                                         "plink-cat-plink.gif")),
-                          Field(
-                              "content_description",
-                              &PickerSearchResult::GifData::content_description,
-                              u"cat blink")))))))))))
+      Call(LastElement(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kGifs),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              Contains(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::GifData>(AllOf(
+                      Field("url", &PickerSearchResult::GifData::url,
+                            Property("spec", &GURL::spec,
+                                     "https://media.tenor.com/"
+                                     "GOabrbLMl4AAAAAd/"
+                                     "plink-cat-plink.gif")),
+                      Field("content_description",
+                            &PickerSearchResult::GifData::content_description,
+                            u"cat blink"))))))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -811,41 +787,40 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          IsSupersetOf({
-              AllOf(Property("type", &PickerSearchResults::Section::type,
-                             PickerSectionType::kGifs),
-                    Property(
-                        "results", &PickerSearchResults::Section::results,
-                        Contains(Property(
-                            "data", &PickerSearchResult::data,
-                            VariantWith<PickerSearchResult::GifData>(AllOf(
-                                Field("url", &PickerSearchResult::GifData::url,
-                                      Property("spec", &GURL::spec,
-                                               "https://media.tenor.com/"
-                                               "GOabrbLMl4AAAAAd/"
-                                               "plink-cat-plink.gif")),
-                                Field("content_description",
-                                      &PickerSearchResult::GifData::
-                                          content_description,
-                                      u"cat blink"))))))),
-              AllOf(
-                  Property("type", &PickerSearchResults::Section::type,
-                           PickerSectionType::kLinks),
-                  Property(
-                      "results", &PickerSearchResults::Section::results,
-                      ElementsAre(Property(
-                          "data", &PickerSearchResult::data,
-                          VariantWith<
-                              PickerSearchResult::BrowsingHistoryData>(Field(
+      Call(IsSupersetOf({
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kGifs),
+              Property(
+                  "results", &PickerSearchResultsSection::results,
+                  Contains(Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::GifData>(AllOf(
+                          Field("url", &PickerSearchResult::GifData::url,
+                                Property("spec", &GURL::spec,
+                                         "https://media.tenor.com/"
+                                         "GOabrbLMl4AAAAAd/"
+                                         "plink-cat-plink.gif")),
+                          Field(
+                              "content_description",
+                              &PickerSearchResult::GifData::content_description,
+                              u"cat blink"))))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kLinks),
+              Property(
+                  "results", &PickerSearchResultsSection::results,
+                  ElementsAre(Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field(
                               "url",
                               &PickerSearchResult::BrowsingHistoryData::url,
                               Property(
                                   "spec", &GURL::spec,
                                   "https://www.google.com/search?q=cat"))))))),
 
-          }))))
+      })))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -875,10 +850,8 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Not(Contains(Property("type", &PickerSearchResults::Section::type,
-                                PickerSectionType::kLinks))))))
+      Call(Not(Contains(Property("type", &PickerSearchResultsSection::type,
+                                 PickerSectionType::kLinks)))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -904,10 +877,8 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Not(Contains(Property("type", &PickerSearchResults::Section::type,
-                                PickerSectionType::kLinks))))))
+      Call(Not(Contains(Property("type", &PickerSearchResultsSection::type,
+                                 PickerSectionType::kLinks)))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -932,25 +903,22 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property(
-          "sections", &PickerSearchResults::sections,
-          Contains(AllOf(
-              Property("type", &PickerSearchResults::Section::type,
-                       PickerSectionType::kGifs),
-              Property(
-                  "results", &PickerSearchResults::Section::results,
-                  Contains(Property(
-                      "data", &PickerSearchResult::data,
-                      VariantWith<PickerSearchResult::GifData>(AllOf(
-                          Field("url", &PickerSearchResult::GifData::url,
-                                Property("spec", &GURL::spec,
-                                         "https://media.tenor.com/"
-                                         "GOabrbLMl4AAAAAd/"
-                                         "plink-cat-plink.gif")),
-                          Field(
-                              "content_description",
-                              &PickerSearchResult::GifData::content_description,
-                              u"cat blink")))))))))))
+      Call(Contains(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kGifs),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              Contains(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::GifData>(AllOf(
+                      Field("url", &PickerSearchResult::GifData::url,
+                            Property("spec", &GURL::spec,
+                                     "https://media.tenor.com/"
+                                     "GOabrbLMl4AAAAAd/"
+                                     "plink-cat-plink.gif")),
+                      Field("content_description",
+                            &PickerSearchResult::GifData::content_description,
+                            u"cat blink"))))))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(

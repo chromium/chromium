@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_search_debouncer.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -61,7 +61,7 @@ class ASH_EXPORT PickerSearchController {
 
   void ResetResults();
   void PublishBurnInResults();
-  void AppendPostBurnInResults(PickerSearchResults::Section section);
+  void AppendPostBurnInResults(PickerSearchResultsSection section);
 
   void HandleCategorySearchResults(std::vector<PickerSearchResult> results);
   void HandleCrosSearchResults(ash::AppListSearchResultType type,

@@ -8,7 +8,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_event_filter.h"
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
@@ -281,12 +281,15 @@ void PickerView::StartSearch(const std::u16string& query) {
   }
 }
 
-void PickerView::PublishSearchResults(const PickerSearchResults& results) {
+void PickerView::PublishSearchResults(
+    std::vector<PickerSearchResultsSection> results) {
   if (!published_first_results_) {
     search_results_view_->ClearSearchResults();
     published_first_results_ = true;
   }
-  search_results_view_->AppendSearchResults(results);
+  for (PickerSearchResultsSection& result : results) {
+    search_results_view_->AppendSearchResults(std::move(result));
+  }
   session_metrics_.MarkSearchResultsUpdated();
 }
 
@@ -338,7 +341,8 @@ void PickerView::SelectCategory(PickerCategory category) {
                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PickerView::PublishCategoryResults(const PickerSearchResults& results) {
+void PickerView::PublishCategoryResults(
+    std::vector<PickerSearchResultsSection> results) {
   category_view_->SetResults(results);
 }
 

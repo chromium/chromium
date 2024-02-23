@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -16,13 +17,13 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerSearchResult;
-class PickerSearchResults;
+class PickerSearchResultsSection;
 
 // Delegate for `PickerView`.
 class ASH_EXPORT PickerViewDelegate {
  public:
-  using SearchResultsCallback =
-      base::RepeatingCallback<void(const PickerSearchResults& results)>;
+  using SearchResultsCallback = base::RepeatingCallback<void(
+      std::vector<PickerSearchResultsSection> results)>;
 
   virtual ~PickerViewDelegate() {}
 

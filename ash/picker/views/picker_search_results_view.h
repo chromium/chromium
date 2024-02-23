@@ -6,7 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_SEARCH_RESULTS_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_page_view.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -42,9 +42,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // Clears the search results.
   void ClearSearchResults();
 
-  // Append `results` to the current set of search results.
+  // Append `section` to the current set of search results.
   // TODO: b/325840864 - Merge with existing sections if needed.
-  void AppendSearchResults(const PickerSearchResults& results);
+  void AppendSearchResults(PickerSearchResultsSection section);
 
   base::span<const raw_ptr<PickerSectionView>> section_views_for_testing()
       const {

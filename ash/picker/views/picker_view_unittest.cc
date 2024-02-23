@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
@@ -70,10 +70,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
       base::RepeatingCallback<void(SearchResultsCallback callback)>;
 
   FakePickerViewDelegate()
-      : search_function_(
-            base::BindRepeating([](SearchResultsCallback callback) {
-              callback.Run(PickerSearchResults());
-            })) {}
+      : search_function_(base::BindRepeating(
+            [](SearchResultsCallback callback) { callback.Run({}); })) {}
   explicit FakePickerViewDelegate(FakeSearchFunction search_function)
       : search_function_(search_function) {}
 
@@ -84,7 +82,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
-    callback.Run(PickerSearchResults());
+    callback.Run({});
   }
 
   void StartSearch(const std::u16string& query,
@@ -233,11 +231,10 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         future.SetValue();
-        callback.Run(PickerSearchResults({{
-            PickerSearchResults::Section(
-                PickerSectionType::kExpressions,
-                {{PickerSearchResult::Text(u"result")}}),
-        }}));
+        callback.Run({
+            PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                       {{PickerSearchResult::Text(u"result")}}),
+        });
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -288,12 +285,11 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         search_called.SetValue();
-        callback.Run(PickerSearchResults({{
-            PickerSearchResults::Section(
-                PickerSectionType::kExpressions,
-                {{PickerSearchResult::Category(
-                    PickerCategory::kBrowsingHistory)}}),
-        }}));
+        callback.Run({
+            PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                       {{PickerSearchResult::Category(
+                                           PickerCategory::kBrowsingHistory)}}),
+        });
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -420,9 +416,9 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search_called.Wait());
 
-  search_callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
-  }}));
+  search_callback.Run({
+      PickerSearchResultsSection(PickerSectionType::kExpressions, {}),
+  });
 
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
   EXPECT_THAT(
@@ -439,9 +435,9 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         if (!search1_called.IsReady()) {
-          callback.Run(PickerSearchResults({{
-              PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
-          }}));
+          callback.Run({
+              PickerSearchResultsSection(PickerSectionType::kExpressions, {}),
+          });
           search1_called.SetValue();
         } else {
           search2_called.SetValue();
@@ -477,9 +473,9 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         if (!search1_called.IsReady()) {
-          callback.Run(PickerSearchResults({{
-              PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
-          }}));
+          callback.Run({
+              PickerSearchResultsSection(PickerSectionType::kExpressions, {}),
+          });
           search1_called.SetValue();
         } else {
           search2_callback = std::move(callback);
@@ -498,9 +494,9 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
   // Start another search.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search2_called.Wait());
-  search2_callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(PickerSectionType::kLinks, {}),
-  }}));
+  search2_callback.Run({
+      PickerSearchResultsSection(PickerSectionType::kLinks, {}),
+  });
 
   // Results page should show the new results.
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
@@ -517,11 +513,10 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         search_called.SetValue();
-        callback.Run(PickerSearchResults({{
-            PickerSearchResults::Section(
-                PickerSectionType::kExpressions,
-                {{PickerSearchResult::Text(u"result")}}),
-        }}));
+        callback.Run({
+            PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                       {{PickerSearchResult::Text(u"result")}}),
+        });
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -572,7 +567,7 @@ TEST_F(PickerViewTest, RecordsSearchLatencyAfterSearchFinished) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&, this](FakePickerViewDelegate::SearchResultsCallback callback) {
         task_environment()->FastForwardBy(base::Seconds(1));
-        callback.Run(PickerSearchResults());
+        callback.Run({});
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -802,9 +797,9 @@ TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         future.SetValue();
-        callback.Run(PickerSearchResults({{
-            PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
-        }}));
+        callback.Run({
+            PickerSearchResultsSection(PickerSectionType::kExpressions, {}),
+        });
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,
@@ -824,11 +819,10 @@ TEST_F(PickerViewTest, PressingEnterSelectsSearchResult) {
   FakePickerViewDelegate delegate(base::BindLambdaForTesting(
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         future.SetValue();
-        callback.Run(PickerSearchResults({{
-            PickerSearchResults::Section(
-                PickerSectionType::kExpressions,
-                {{PickerSearchResult::Text(u"result")}}),
-        }}));
+        callback.Run({
+            PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                       {{PickerSearchResult::Text(u"result")}}),
+        });
       }));
   auto widget =
       PickerView::CreateWidget(kDefaultCaretBounds, kDefaultCursorPoint,

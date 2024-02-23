@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/model/picker_search_results_section.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
