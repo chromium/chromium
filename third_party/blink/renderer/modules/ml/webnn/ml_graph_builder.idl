@@ -185,7 +185,7 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
 
-  [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+  [RaisesException] MLOperand constant(MLOperandDescriptor desc, ArrayBufferView bufferView);
 
   [RaisesException] MLOperand argMin(MLOperand input, optional MLArgMinMaxOptions options = {});
   [RaisesException] MLOperand argMax(MLOperand input, optional MLArgMinMaxOptions options = {});
