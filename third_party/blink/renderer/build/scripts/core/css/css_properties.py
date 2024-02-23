@@ -310,12 +310,11 @@ class CSSProperties(object):
         # the resulting order is deterministic.
         # Sort properties by priority, then alphabetically.
         for property_ in self._longhands + self._shorthands:
-            priority_numbers = {'High': 0, 'Low': 1}
-            priority = priority_numbers[property_.priority]
             name_without_leading_dash = property_.name.original
             if name_without_leading_dash.startswith('-'):
                 name_without_leading_dash = name_without_leading_dash[1:]
-            property_.sorting_key = (priority, name_without_leading_dash)
+            property_.sorting_key = (-property_.priority,
+                                     name_without_leading_dash)
 
         sorting_keys = {}
         for property_ in self._longhands + self._shorthands:
@@ -338,7 +337,7 @@ class CSSProperties(object):
                 ('property with ID {} appears more than once in the '
                  'properties list'.format(property_.property_id))
             self._properties_by_id[property_.property_id] = property_
-            if property_.priority == 'High':
+            if property_.priority > 0:
                 self._last_high_priority_property = property_
 
         self._alias_offset = self._last_used_enum_value
