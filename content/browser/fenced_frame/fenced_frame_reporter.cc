@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -29,6 +30,7 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/protocol/network_handler.h"
@@ -43,6 +45,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
@@ -404,16 +407,25 @@ bool FencedFrameReporter::SendReport(
 
   const std::string devtools_request_id =
       base::UnguessableToken::Create().ToString();
+
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(request_initiator_frame);
-  auto* attribution_host = AttributionHost::FromWebContents(web_contents);
-  if (attribution_host &&
+  if (base::FeatureList::IsEnabled(
+          features::kAttributionFencedFrameReportingBeacon) &&
+      web_contents &&
       network::HasAttributionSupport(
           AttributionManager::GetAttributionSupport(web_contents))) {
-    BeaconId beacon_id(unique_id_counter.GetNext());
-    if (attribution_host->NotifyFencedFrameReportingBeaconStarted(
-            beacon_id, navigation_id, request_initiator_frame,
-            devtools_request_id)) {
+    if (auto suitable_context =
+            AttributionSuitableContext::Create(request_initiator_frame);
+        suitable_context.has_value()) {
+      BeaconId beacon_id(unique_id_counter.GetNext());
+
+      AttributionDataHostManager* manager =
+          suitable_context->data_host_manager();
+      manager->NotifyFencedFrameReportingBeaconStarted(
+          beacon_id, std::move(*suitable_context), navigation_id,
+          devtools_request_id);
+
       attribution_reporting_data.emplace(AttributionReportingData{
           .beacon_id = beacon_id,
           .is_automatic_beacon = navigation_id.has_value(),

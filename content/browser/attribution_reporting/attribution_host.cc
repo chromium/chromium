@@ -22,7 +22,6 @@
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -340,32 +339,6 @@ void AttributionHost::BindReceiver(
     return;
   }
   attribution_host->receivers_.Bind(rfh, std::move(receiver));
-}
-
-// TODO(anthonygarant): this method not longer has to be in the
-// attribution_host. We can have the reporter call the manager directly like it
-// does when reporting data.
-bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
-    BeaconId beacon_id,
-    std::optional<int64_t> navigation_id,
-    RenderFrameHostImpl* initiator_frame_host,
-    std::string devtools_request_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAttributionFencedFrameReportingBeacon)) {
-    return false;
-  }
-
-  auto suitable_context =
-      AttributionSuitableContext::Create(initiator_frame_host);
-  if (!suitable_context.has_value()) {
-    return false;
-  }
-
-  AttributionDataHostManager* manager = suitable_context->data_host_manager();
-  manager->NotifyFencedFrameReportingBeaconStarted(
-      beacon_id, std::move(*suitable_context), navigation_id,
-      std::move(devtools_request_id));
-  return true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);

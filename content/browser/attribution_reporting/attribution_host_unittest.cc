@@ -4,8 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_host.h"
 
-#include <stdint.h>
-
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -17,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -81,9 +78,6 @@ const char kRedirectHeaderData[] =
     "HTTP/1.1 301 Moved\0"
     "Location: http://foopy/\0"
     "\0";
-
-constexpr BeaconId kBeaconId(123);
-constexpr int64_t kNavigationId(456);
 
 class AttributionHostTest : public RenderViewHostTestHarness {
  public:
@@ -715,125 +709,6 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-}
-
-TEST_F(AttributionHostTest, FeatureDisabled_FencedFrameReportingBeaconDropped) {
-  contents()->NavigateAndCommit(GURL("https:/secure.com"));
-
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyFencedFrameReportingBeaconStarted)
-      .Times(0);
-
-  RenderFrameHost* fenced_frame =
-      RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-  static_cast<RenderFrameHostImpl*>(fenced_frame)
-      ->frame_tree_node()
-      ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
-  fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
-      GURL("https://fencedframe.example"), fenced_frame);
-
-  EXPECT_FALSE(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-      kBeaconId, kNavigationId, static_cast<RenderFrameHostImpl*>(fenced_frame),
-      "devtools-request-id"));
-}
-
-TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionFencedFrameReportingBeacon);
-
-  const struct {
-    const char* source_origin;
-    bool expected_valid;
-  } kTestCases[] = {
-      {kLocalHost, true},
-      {"http://127.0.0.1", true},
-      {"http://insecure.com", false},
-      {"https:/secure.com", true},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    contents()->NavigateAndCommit(GURL(test_case.source_origin));
-    if (test_case.expected_valid) {
-      EXPECT_CALL(
-          *mock_data_host_manager(),
-          NotifyFencedFrameReportingBeaconStarted(
-              kBeaconId,
-              AllOf(Property(
-                        &AttributionSuitableContext::context_origin,
-                        *SuitableOrigin::Deserialize(test_case.source_origin)),
-                    Property(&AttributionSuitableContext::root_render_frame_id,
-                             main_rfh()->GetGlobalId()),
-                    Property(&AttributionSuitableContext::
-                                 is_nested_within_fenced_frame,
-                             true)),
-              Optional(kNavigationId),
-              /*devtools_request_id=*/_));
-    } else {
-      EXPECT_CALL(*mock_data_host_manager(),
-                  NotifyFencedFrameReportingBeaconStarted)
-          .Times(0);
-    }
-
-    RenderFrameHost* fenced_frame =
-        RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-    static_cast<RenderFrameHostImpl*>(fenced_frame)
-        ->frame_tree_node()
-        ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
-    SetFencedFrameConfigPermissions(fenced_frame);
-    fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
-        GURL("https://fencedframe.example"), fenced_frame);
-
-    EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-                  kBeaconId, kNavigationId,
-                  static_cast<RenderFrameHostImpl*>(fenced_frame),
-                  "devtools-request-id"),
-              test_case.expected_valid);
-  }
-}
-
-TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionFencedFrameReportingBeacon);
-
-  contents()->NavigateAndCommit(GURL("https://secure.com"));
-
-  RenderFrameHost* fenced_frame =
-      RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-  static_cast<RenderFrameHostImpl*>(fenced_frame)
-      ->frame_tree_node()
-      ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
-  SetFencedFrameConfigPermissions(fenced_frame);
-
-  static constexpr char kAllowedOriginUrl[] = "https://a.test";
-
-  const struct {
-    const char* fenced_frame_url;
-    bool expected;
-  } kTestCases[] = {
-      {kAllowedOriginUrl, true},
-      {"https://b.test", false},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_CALL(*mock_data_host_manager(),
-                NotifyFencedFrameReportingBeaconStarted)
-        .Times(test_case.expected);
-
-    auto simulator = NavigationSimulatorImpl::CreateRendererInitiated(
-        GURL(test_case.fenced_frame_url), fenced_frame);
-    simulator->SetPermissionsPolicyHeader(RestrictivePermissionsPolicy(
-        url::Origin::Create(GURL(kAllowedOriginUrl))));
-    simulator->Commit();
-    fenced_frame = simulator->GetFinalRenderFrameHost();
-
-    EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-                  kBeaconId, /*navigation_id=*/std::nullopt,
-                  static_cast<RenderFrameHostImpl*>(fenced_frame),
-                  "devtools-request-id"),
-              test_case.expected);
-  }
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigation_FeaturePolicyChecked) {

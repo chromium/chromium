@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -28,7 +27,6 @@ namespace content {
 
 struct AttributionInputEvent;
 class RenderFrameHost;
-class RenderFrameHostImpl;
 class WebContents;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -61,25 +59,6 @@ class CONTENT_EXPORT AttributionHost
     return input_event_tracker_android_.get();
   }
 #endif
-
-  // This should be called when the fenced frame reporting beacon was initiated
-  // for reportEvent or for an automatic beacon. It may be cached and sent
-  // later. This should be called before the navigation committed for a
-  // navigation beacon.
-  // This function should only be invoked if Attribution Reporting API is
-  // enabled on the page, and for the instance associated with the navigation
-  // initiator's web contents.
-  // `navigation_id` will be set if this beacon is being sent as the result of a
-  // top navigation initiated by a fenced frame. This is used to track
-  // attributions that occur on a navigated page after the current page has been
-  // unloaded. Otherwise `std::nullopt`.
-  // Returns whether fenced frame reporting beacons can support Attribution
-  // Reporting API.
-  bool NotifyFencedFrameReportingBeaconStarted(
-      BeaconId beacon_id,
-      std::optional<int64_t> navigation_id,
-      RenderFrameHostImpl* initiator_frame_host,
-      std::string devtools_request_id);
 
  private:
   friend class AttributionHostTestPeer;
