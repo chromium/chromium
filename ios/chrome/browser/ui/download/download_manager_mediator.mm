@@ -58,10 +58,13 @@ void DownloadManagerMediator::SetDownloadTask(web::DownloadTask* task) {
   download_task_ = task;
   if (download_task_) {
     download_task_->AddObserver(this);
-    UpdateConsumer();
   }
   // Update upload task associated with `download_task_`.
   UpdateUploadTask();
+  // In case download updates were missed, check for any.
+  if (download_task_) {
+    OnDownloadUpdated(download_task_);
+  }
 }
 
 base::FilePath DownloadManagerMediator::GetDownloadPath() {

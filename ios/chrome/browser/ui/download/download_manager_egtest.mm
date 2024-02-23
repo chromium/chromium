@@ -273,6 +273,50 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that "Open in..." works if the download ended while waiting in a
+// different tab which also contains a download task.
+- (void)testSwitchTabsAndOpenInDownloads {
+  // Apple is hiding UIActivityViewController's contents from the host app on
+  // iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+
+  // Create a download A task in one tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+
+  // Go to a second tab and start a download B.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  // Go back to first tab and wait enough time for download B to complete.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(10));
+
+  // Go back to second tab and tap "Open in..." for download B.
+  [ChromeEarlGrey selectTabAtIndex:1];
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      verifyTextVisibleInActivitySheetWithID:l10n_util::GetNSString(
+                                                 IDS_IOS_OPEN_IN_DOWNLOADS)];
+  // Tests filename label.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(@"download-example"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
 // Tests successful blob download. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSuccessfulBlobDownload {
@@ -394,6 +438,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   [_helper testVisibleFileNameAndOpenInDownloads];
 }
 
+// Tests that "Open in..." works if the download ended while waiting in a
+// different tab which also contains a download task.
+- (void)testSwitchTabsAndOpenInDownloads {
+  [_helper testSwitchTabsAndOpenInDownloads];
+}
+
 // Tests successful blob download. This also checks that a file can be
 // downloaded and saved locally while an anchor tag has the download attribute.
 - (void)testSuccessfulBlobDownload {
@@ -489,6 +539,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // Tests that filename label and "Open in Downloads" button are showing.
 - (void)testVisibleFileNameAndOpenInDownloads {
   [_helper testVisibleFileNameAndOpenInDownloads];
+}
+
+// Tests that "Open in..." works if the download ended while waiting in a
+// different tab which also contains a download task.
+- (void)testSwitchTabsAndOpenInDownloads {
+  [_helper testSwitchTabsAndOpenInDownloads];
 }
 
 // Tests successful blob download. This also checks that a file can be
