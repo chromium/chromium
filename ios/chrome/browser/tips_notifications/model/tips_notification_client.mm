@@ -94,6 +94,7 @@ void TipsNotificationClient::HandleNotificationInteraction(
   if (IsSceneLevelForegroundActive()) {
     HandleNotificationInteraction(interacted_type_.value());
     interacted_type_ = std::nullopt;
+    ClearAndMaybeRequestNotification(base::DoNothing());
   }
 }
 
