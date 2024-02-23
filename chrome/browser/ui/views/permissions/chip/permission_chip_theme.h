@@ -16,6 +16,8 @@ enum class PermissionChipTheme {
   kInUseActivityIndicator,
   // Used for blocked activity indicators.
   kBlockedActivityIndicator,
+  // Used for system-level blocked activity indicators.
+  kOnSystemBlockedActivityIndicator,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_CHIP_THEME_H_

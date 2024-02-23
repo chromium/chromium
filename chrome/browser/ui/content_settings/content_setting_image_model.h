@@ -130,6 +130,10 @@ class ContentSettingImageModel {
 
   const gfx::VectorIcon* icon() const { return icon_; }
 
+  bool should_auto_open_bubble() { return should_auto_open_bubble_; }
+
+  bool blocked_on_system_level() { return blocked_on_system_level_; }
+
  protected:
   // Note: image_type_should_notify_accessibility by itself does not guarantee
   // the item will be read; it also needs a valid explanatory_text_id or
@@ -153,6 +157,9 @@ class ContentSettingImageModel {
   void set_tooltip(const std::u16string& tooltip) { tooltip_ = tooltip; }
   void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
     should_auto_open_bubble_ = should_auto_open_bubble;
+  }
+  void set_blocked_on_system_level(const bool blocked_on_system_level) {
+    blocked_on_system_level_ = blocked_on_system_level;
   }
   void set_should_show_promo(const bool should_show_promo) {
     should_show_promo_ = should_show_promo;
@@ -180,6 +187,7 @@ class ContentSettingImageModel {
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_show_promo_ = false;
+  bool blocked_on_system_level_ = false;
   std::optional<int> icon_size_;
 };
 

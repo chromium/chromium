@@ -262,6 +262,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground] = {
+      ui::kColorSysError};
 
   // Tabstrip tab alert colors.
   mixer[kColorTabAlertAudioPlayingActiveFrameActive] = {

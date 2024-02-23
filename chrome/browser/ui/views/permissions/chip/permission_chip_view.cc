@@ -209,6 +209,12 @@ SkColor PermissionChipView::GetForegroundColor() const {
         kColorOmniboxChipBlockedActivityIndicatorForeground);
   }
 
+  if (GetPermissionChipTheme() ==
+      PermissionChipTheme::kOnSystemBlockedActivityIndicator) {
+    return GetColorProvider()->GetColor(
+        kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground);
+  }
+
   if (features::IsChromeRefresh2023()) {
     // 1. Default to the system primary color.
     SkColor text_and_icon_color = GetColorProvider()->GetColor(
@@ -267,6 +273,12 @@ SkColor PermissionChipView::GetBackgroundColor() const {
       PermissionChipTheme::kBlockedActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipBlockedActivityIndicatorBackground);
+  }
+
+  if (GetPermissionChipTheme() ==
+      PermissionChipTheme::kOnSystemBlockedActivityIndicator) {
+    return GetColorProvider()->GetColor(
+        kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground);
   }
 
   return GetColorProvider()->GetColor(kColorOmniboxChipBackground);

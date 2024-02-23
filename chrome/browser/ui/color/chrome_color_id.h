@@ -283,6 +283,8 @@
   E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
   E_CPONLY(kColorOmniboxChipInkDropHover) \
   E_CPONLY(kColorOmniboxChipInkDropRipple) \
+  E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground) \
+  E_CPONLY(kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground) \
   E_CPONLY(kColorOmniboxIntentChipBackground) \
   E_CPONLY(kColorOmniboxIntentChipIcon) \
   E_CPONLY(kColorOmniboxKeywordSelected) \

@@ -949,7 +949,11 @@ ContentSettingMediaImageModel::ContentSettingMediaImageModel()
 
 bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
+  // The system-level permission's state can be changed. Reset it before
+  // calculating the site-level permission's state.
+  set_blocked_on_system_level(false);
   set_should_auto_open_bubble(false);
+
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
@@ -980,6 +984,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       set_accessibility_string_id(IDS_MICROPHONE_CAMERA_BLOCKED);
     } else if (DidCameraAccessFailBecauseOfSystemLevelBlock() ||
                DidMicAccessFailBecauseOfSystemLevelBlock()) {
+      set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED));
       set_accessibility_string_id(IDS_MICROPHONE_CAMERA_BLOCKED);
@@ -1005,6 +1010,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
       set_accessibility_string_id(IDS_CAMERA_BLOCKED);
     } else if (DidCameraAccessFailBecauseOfSystemLevelBlock()) {
+      set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
       set_tooltip(l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED));
       set_accessibility_string_id(IDS_CAMERA_BLOCKED);
@@ -1027,6 +1033,7 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
       set_accessibility_string_id(IDS_MICROPHONE_BLOCKED);
     } else if (DidMicAccessFailBecauseOfSystemLevelBlock()) {
+      set_blocked_on_system_level(true);
       SetIcon(ContentSettingsType::MEDIASTREAM_MIC, /*blocked=*/true);
       set_tooltip(l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED));
       set_accessibility_string_id(IDS_MICROPHONE_BLOCKED);
