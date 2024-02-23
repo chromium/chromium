@@ -391,6 +391,15 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 #define MAYBE_CtrlClickLink CtrlClickLink
 #endif
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b/326134178): Disable the flaky test variant on branded Lacros builder
+  // (ci/linux-lacros-chrome) until the root cause of b/325634285 is fixed.
+  if (GetParam() == AppType::HOSTED_APP) {
+    GTEST_SKIP()
+        << "Disable the flaky test for hosted app on Lacros branded build.";
+  }
+#endif
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Set up an app which covers app.com URLs.
