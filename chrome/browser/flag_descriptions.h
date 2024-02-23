@@ -3340,17 +3340,11 @@ extern const char kAutocorrectToggleDescription[];
 extern const char kAutocorrectUseReplaceSurroundingTextName[];
 extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 
-extern const char kBluetoothFixA2dpPacketSizeName[];
-extern const char kBluetoothFixA2dpPacketSizeDescription[];
-
 extern const char kBluetoothFlossTelephonyName[];
 extern const char kBluetoothFlossTelephonyDescription[];
 
 extern const char kBluetoothDisconnectWarningName[];
 extern const char kBluetoothDisconnectWarningDescription[];
-
-extern const char kBluetoothQualityReportName[];
-extern const char kBluetoothQualityReportDescription[];
 
 extern const char kBluetoothCoredumpName[];
 extern const char kBluetoothCoredumpDescription[];
@@ -4111,9 +4105,6 @@ extern const char kMissiveStorageDescription[];
 
 extern const char kShowBluetoothDebugLogToggleName[];
 extern const char kShowBluetoothDebugLogToggleDescription[];
-
-extern const char kBluetoothSessionizedMetricsName[];
-extern const char kBluetoothSessionizedMetricsDescription[];
 
 extern const char kShowTapsName[];
 extern const char kShowTapsDescription[];

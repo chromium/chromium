@@ -4008,13 +4008,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chromeos::features::kRoundedWindows,
                                     kRoundedWindowsRadiusVariation,
                                     "RoundedWindows")},
-    {"bluetooth-fix-a2dp-packet-size",
-     flag_descriptions::kBluetoothFixA2dpPacketSizeName,
-     flag_descriptions::kBluetoothFixA2dpPacketSizeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBluetoothFixA2dpPacketSize)},
-    {"bluetooth-quality-report", flag_descriptions::kBluetoothQualityReportName,
-     flag_descriptions::kBluetoothQualityReportDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBluetoothQualityReport)},
     {"bluetooth-coredump", flag_descriptions::kBluetoothCoredumpName,
      flag_descriptions::kBluetoothCoredumpDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::bluetooth::features::kBluetoothCoredump)},
@@ -8800,14 +8793,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebIdentityDigitalCredentialsName,
      flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kWebIdentityDigitalCredentials)},
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"bluetooth-sessionized-metrics",
-     flag_descriptions::kBluetoothSessionizedMetricsName,
-     flag_descriptions::kBluetoothSessionizedMetricsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(metrics::structured::kBluetoothSessionizedMetrics)},
-#endif
-
     {"autofill-highlight-only-changed-value-in-preview-mode",
      flag_descriptions::kAutofillHighlightOnlyChangedValuesInPreviewModeName,
      flag_descriptions::

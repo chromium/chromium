@@ -5767,11 +5767,6 @@ const char kAutocorrectUseReplaceSurroundingTextDescription[] =
     "When autocorrect is enabled, use the ReplaceSurroundingText API "
     "for better app compatibility.";
 
-const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
-const char kBluetoothFixA2dpPacketSizeDescription[] =
-    "Fixes Bluetooth A2DP packet size to a smaller default value to improve "
-    "audio quality and may fix audio stutter.";
-
 const char kBluetoothFlossTelephonyName[] = "Bluetooth Floss Telephony";
 const char kBluetoothFlossTelephonyDescription[] =
     "Enable Floss to create a Bluetooth HID device that allows applications to "
@@ -5782,12 +5777,6 @@ const char kBluetoothDisconnectWarningDescription[] =
     "Enables Bluetooth Disconnect Warning feature. When enabled, a "
     "warning dialog will be shown when a user tries to disable Bluetooth "
     "while only Bluetooth input devices are connected to the host.";
-
-const char kBluetoothQualityReportName[] = "Bluetooth Quality Report";
-const char kBluetoothQualityReportDescription[] =
-    "Enables the Bluetooth Quality Report feature on Bluetooth controllers "
-    "which will send the Bluetooth link quality statistics such as the "
-    "signal strength, the lost packet count, etc. to the host.";
 
 const char kBluetoothCoredumpName[] = "Enable Bluetooth Device Coredump";
 const char kBluetoothCoredumpDescription[] =
@@ -7129,11 +7118,6 @@ const char kShowBluetoothDebugLogToggleName[] =
 const char kShowBluetoothDebugLogToggleDescription[] =
     "Enables a toggle which can enable debug (i.e., verbose) logs for "
     "Bluetooth";
-
-const char kBluetoothSessionizedMetricsName[] =
-    "Enable Bluetooth sessionized metrics";
-const char kBluetoothSessionizedMetricsDescription[] =
-    "Enables collecting and processing Bluetooth sessionized metrics.";
 
 const char kShowTapsName[] = "Show taps";
 const char kShowTapsDescription[] =

@@ -873,14 +873,9 @@
     "expiry_milestone": 132
   },
   {
-    "name": "bluetooth-fix-a2dp-packet-size",
-    "owners": [ "michaelfsun@chromium.org", "chromeos-bt-champs@google.com" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "bluetooth-floss-availability-check",
     "owners": [ "howardchung@google.com", "chromeos-bt-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "bluetooth-floss-coredump",
@@ -893,24 +888,14 @@
     "expiry_milestone": 130
   },
   {
-    "name": "bluetooth-quality-report",
-    "owners": [ "josephsih@chromium.org", "chromeos-bt-champs@google.com" ],
-    "expiry_milestone": 111
-  },
-  {
-    "name": "bluetooth-sessionized-metrics",
-    "owners": [ "yudiliu@chromium.org", "chromeos-bt-champs@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "bluetooth-use-floss",
-    "owners": ["sonnysasaka@chromium.org", "abhishekpandit@chromium.org", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 124
+    "owners": ["abhishekpandit@chromium.org", "chromeos-bt-champs@google.com"],
+    "expiry_milestone": 130
   },
   {
     "name": "bluetooth-use-llprivacy",
     "owners": ["jiangzp@chromium.org", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "boarding-pass-detector",
