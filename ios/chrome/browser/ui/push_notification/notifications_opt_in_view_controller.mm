@@ -128,7 +128,7 @@ CGFloat const kSpaceAboveTitle = 20.0;
   [snapshot appendSectionsWithIdentifiers:@[
     @(SectionIdentifier::kNotificationOptions)
   ]];
-  if (IsContentPushNotificationsSetUpListEnabled()) {
+  if (IsContentPushNotificationsEnabled()) {
     [snapshot appendItemsWithIdentifiers:@[
       @(NotificationsOptInItemIdentifier::kContent)
     ]];
