@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <tuple>
 
 #include "base/debug/alias.h"
@@ -14,7 +15,12 @@
 #include "third_party/skia/include/private/base/SkMalloc.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <malloc.h>
 #include <windows.h>
+#elif BUILDFLAG(IS_APPLE)
+#include <malloc/malloc.h>
+#else
+#include <malloc.h>
 #endif
 
 // This implementation of sk_malloc_flags() and friends is similar to
@@ -132,4 +138,23 @@ void* sk_malloc_flags(size_t size, unsigned flags) {
       return malloc_nothrow(size);
     }
   }
+}
+
+size_t sk_malloc_size(void* addr, size_t size) {
+  if (!addr) {
+    return 0;
+  }
+
+  size_t completeSize = 0;
+
+#if BUILDFLAG(IS_WIN)
+  completeSize = _msize(addr);
+#elif BUILDFLAG(IS_APPLE)
+  completeSize = malloc_size(addr);
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  completeSize = malloc_usable_size(addr);
+#endif
+
+  // Guarantee that we return at least `size`
+  return std::max(completeSize, size);
 }
