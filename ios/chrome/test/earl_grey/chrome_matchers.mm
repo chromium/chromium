@@ -417,10 +417,6 @@ id<GREYMatcher> SettingsTrackingPriceTableView() {
   return [ChromeMatchersAppInterface settingsTrackingPriceTableView];
 }
 
-id<GREYMatcher> SettingsContentNotificationsTableView() {
-  return [ChromeMatchersAppInterface settingsContentNotificationsTableView];
-}
-
 id<GREYMatcher> ContentSettingsButton() {
   return [ChromeMatchersAppInterface contentSettingsButton];
 }

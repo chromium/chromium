@@ -324,9 +324,6 @@
 // Returns matcher for the tracking price table view.
 + (id<GREYMatcher>)settingsTrackingPriceTableView;
 
-// Returns matcher for the Content Notifications table view.
-+ (id<GREYMatcher>)settingsContentNotificationsTableView;
-
 // Returns matcher for the Content Settings button on the main Settings screen.
 + (id<GREYMatcher>)contentSettingsButton;
 

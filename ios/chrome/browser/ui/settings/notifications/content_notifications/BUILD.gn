@@ -71,6 +71,7 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:feature_list",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
