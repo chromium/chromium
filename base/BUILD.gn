@@ -215,8 +215,6 @@ component("base") {
   sources = [
     "allocator/allocator_check.cc",
     "allocator/allocator_check.h",
-    "allocator/allocator_extension.cc",
-    "allocator/allocator_extension.h",
     "allocator/dispatcher/configuration.h",
     "allocator/dispatcher/dispatcher.cc",
     "allocator/dispatcher/dispatcher.h",

@@ -8,7 +8,6 @@
 
 #include <unordered_map>
 
-#include "base/allocator/allocator_extension.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"

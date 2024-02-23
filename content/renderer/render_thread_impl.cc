@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/allocator_extension.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -1685,7 +1684,6 @@ void RenderThreadImpl::OnRendererForegrounded() {
 
 void RenderThreadImpl::ReleaseFreeMemory() {
   TRACE_EVENT0("blink", "RenderThreadImpl::ReleaseFreeMemory()");
-  base::allocator::ReleaseFreeMemory();
   discardable_memory_allocator_->ReleaseFreeMemory();
 
   // Do not call into blink if it is not initialized.
