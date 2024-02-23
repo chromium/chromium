@@ -25,8 +25,9 @@ bool HasDevicePermission(HidDelegate* delegate,
                          BrowserContext* browser_context,
                          const blink::StorageKey& key,
                          const device::mojom::HidDeviceInfo& device_info) {
-  return delegate && delegate->HasDevicePermission(browser_context,
-                                                   key.origin(), device_info);
+  return delegate && delegate->HasDevicePermission(
+                         browser_context, /*render_frame_host=*/nullptr,
+                         key.origin(), device_info);
 }
 
 }  // namespace

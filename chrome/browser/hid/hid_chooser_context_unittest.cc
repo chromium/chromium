@@ -30,11 +30,13 @@
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/extension_features.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -60,6 +62,8 @@ constexpr char kTestUserEmail[] = "user@example.com";
 // The HID usages assigned to the top-level collection of the simulated device.
 constexpr uint16_t kTestUsagePage = device::mojom::kPageGenericDesktop;
 constexpr uint16_t kTestUsage = device::mojom::kGenericDesktopGamePad;
+
+constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
 // Main text fixture.
 class HidChooserContextTestBase {
@@ -213,16 +217,24 @@ class HidChooserContextTestBase {
     hid_manager_.SimulateConnectionError();
   }
 
+  void ExpectObjectPermissionChanged() {
+    EXPECT_CALL(permission_observer_,
+                OnObjectPermissionChanged(
+                    std::make_optional(ContentSettingsType::HID_GUARD),
+                    ContentSettingsType::HID_CHOOSER_DATA));
+  }
+
   void GrantDevicePermissionBlocking(
       const url::Origin& origin,
-      const device::mojom::HidDeviceInfo& device) {
+      const device::mojom::HidDeviceInfo& device,
+      const std::optional<url::Origin>& embedding_origin = std::nullopt) {
     base::RunLoop loop;
     EXPECT_CALL(permission_observer_,
                 OnObjectPermissionChanged(
                     std::make_optional(ContentSettingsType::HID_GUARD),
                     ContentSettingsType::HID_CHOOSER_DATA))
         .WillOnce(RunClosure(loop.QuitClosure()));
-    context()->GrantDevicePermission(origin, device);
+    context()->GrantDevicePermission(origin, device, embedding_origin);
     loop.Run();
   }
 
@@ -233,6 +245,7 @@ class HidChooserContextTestBase {
                 OnObjectPermissionChanged(
                     std::make_optional(ContentSettingsType::HID_GUARD),
                     ContentSettingsType::HID_CHOOSER_DATA))
+        .Times(testing::AtLeast(1))
         .WillOnce(RunClosure(loop.QuitClosure()));
     context()->RevokeObjectPermission(origin, object);
     loop.Run();
@@ -1307,4 +1320,112 @@ TEST_F(HidChooserContextLoginScreenTest, ApplyPolicyOnLoginScreen) {
   EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
   EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 #endif
+}
+
+class HidChooserContextWebViewTest : public HidChooserContextTest {
+ public:
+  HidChooserContextWebViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kEnableWebHidInWebView);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that a permission for WebView can be granted successfully.
+// Checks that this permission is *not* accessible outside the embedding app.
+TEST_F(HidChooserContextWebViewTest, GrantDevicePermissionToWebView) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect an ephemeral device and grant permission to the extension.
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kEmbeddingOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kEmbeddingOrigin).size());
+
+  // Grant permission to the embedded WebView.
+  GrantDevicePermissionBlocking(kWebViewOrigin, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                             kEmbeddingOrigin));
+  // WebView permission should not leak outside the embedding app context.
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device));
+  const auto kAnotherAppOrigin = url::Origin::Create(
+      GURL("chrome-extension://abababababababababababababababababababab"));
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                              kAnotherAppOrigin));
+}
+
+// Tests that revoking HID device permission from an embedding application
+// simultaneously revokes permissions for any associated WebViews that were
+// granted access through the embedder.
+TEST_F(HidChooserContextWebViewTest, RevokeDevicePermissionFromEmbedder) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect an ephemeral device and grant permission to the embedder and
+  // WebView.
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kEmbeddingOrigin, *device);
+  GrantDevicePermissionBlocking(kWebViewOrigin, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                             kEmbeddingOrigin));
+
+  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
+      context()->GetGrantedObjects(kEmbeddingOrigin);
+  ASSERT_EQ(1u, origin_objects.size());
+
+  // Revoke permission from the embedder. WebView's permission should also be
+  // revoked.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kEmbeddingOrigin));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kWebViewOrigin));
+  RevokeObjectPermissionBlocking(kEmbeddingOrigin, origin_objects[0]->value);
+  EXPECT_FALSE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                              kEmbeddingOrigin));
+}
+
+// Ensures that the revocation of HID device permission from a WebView does not
+// interfere with the permissions held by the embedding application.
+TEST_F(HidChooserContextWebViewTest, RevokeDevicePermissionFromWebView) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect an ephemeral device and grant permission to the embedder and
+  // WebView.
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kEmbeddingOrigin, *device);
+  GrantDevicePermissionBlocking(kWebViewOrigin, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                             kEmbeddingOrigin));
+
+  // Revoke permission from the WebView. Embedder's permission should not be
+  // affected.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kWebViewOrigin));
+  ExpectObjectPermissionChanged();
+  context()->RevokeDevicePermission(kWebViewOrigin, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                              kEmbeddingOrigin));
+}
+
+// Confirms the strict isolation of HID device permissions granted directly to a
+// website's origin. Verifies that these permissions are not accessible within
+// an embedded WebView, even if belonging to the same website.
+TEST_F(HidChooserContextWebViewTest, WebsitePermissionDoesNotLeakToWebView) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect an ephemeral device and grant permission to the WebView's origin.
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kWebViewOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                              kEmbeddingOrigin));
 }

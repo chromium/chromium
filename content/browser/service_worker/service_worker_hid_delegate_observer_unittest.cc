@@ -601,7 +601,8 @@ TEST_F(ServiceWorkerHidDelegateObserverTest, OnPermissionRevoked) {
     base::RunLoop run_loop;
     auto origin = url::Origin::Create(origins[idx]);
     EXPECT_CALL(hid_delegate(), GetDeviceInfo).WillOnce(Return(device.get()));
-    EXPECT_CALL(hid_delegate(), HasDevicePermission(_, origin, Ref(*device)))
+    EXPECT_CALL(hid_delegate(),
+                HasDevicePermission(_, nullptr, origin, Ref(*device)))
         .WillOnce(Return(false));
     EXPECT_CALL(hid_delegate(), DecrementConnectionCount(_, origin))
         .WillOnce(RunClosure(run_loop.QuitClosure()));

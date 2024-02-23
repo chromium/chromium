@@ -3917,6 +3917,8 @@ static_library("browser") {
       "hid/hid_system_tray_icon.h",
       "hid/web_hid_histograms.cc",
       "hid/web_hid_histograms.h",
+      "hid/web_view_chooser_context.cc",
+      "hid/web_view_chooser_context.h",
       "icon_transcoder/svg_icon_transcoder.cc",
       "icon_transcoder/svg_icon_transcoder.h",
       "importer/external_process_importer_client.cc",

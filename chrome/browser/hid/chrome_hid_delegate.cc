@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -22,9 +23,14 @@
 #include "chrome/common/chrome_features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/device/public/mojom/hid.mojom-forward.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
@@ -45,6 +51,50 @@ HidConnectionTracker* GetConnectionTracker(
   return profile ? HidConnectionTrackerFactory::GetForProfile(profile, create)
                  : nullptr;
 }
+
+std::optional<url::Origin> GetWebViewEmbedderOrigin(
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host) {
+    return std::nullopt;
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (auto* web_view =
+          extensions::WebViewGuest::FromRenderFrameHost(render_frame_host)) {
+    auto* embedder_rfh = web_view->embedder_rfh();
+    if (!embedder_rfh) {
+      return std::nullopt;
+    }
+    return embedder_rfh->GetMainFrame()->GetLastCommittedOrigin();
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return std::nullopt;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void GrantDevicePermission(
+    content::GlobalRenderFrameHostId requesting_rfh_id,
+    content::HidChooser::Callback callback,
+    std::vector<device::mojom::HidDeviceInfoPtr> devices) {
+  auto* render_frame_host = content::RenderFrameHost::FromID(requesting_rfh_id);
+  if (!render_frame_host) {
+    std::move(callback).Run(/*devices=*/{});
+    return;
+  }
+
+  auto* browser_context = render_frame_host->GetBrowserContext();
+  auto* chooser_context = GetChooserContext(browser_context);
+
+  auto origin = render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
+
+  for (auto& device : devices) {
+    chooser_context->GrantDevicePermission(
+        origin, *device, GetWebViewEmbedderOrigin(render_frame_host));
+  }
+  std::move(callback).Run(std::move(devices));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -139,6 +189,37 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
   GetContextObserver(browser_context);
   DCHECK(base::Contains(observations_, browser_context));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // If it's a webview, request permission to show chooser from the embedder.
+  if (auto* web_view =
+          extensions::WebViewGuest::FromRenderFrameHost(render_frame_host);
+      web_view && base::FeatureList::IsEnabled(
+                      extensions_features::kEnableWebHidInWebView)) {
+    auto guest_origin =
+        render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
+    auto device_requested_callback =
+        base::BindOnce(GrantDevicePermission, render_frame_host->GetGlobalId(),
+                       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                           std::move(callback),
+                           std::vector<device::mojom::HidDeviceInfoPtr>()));
+    // Create a chooser with default close closure for now, so that we can
+    // replace a closure later if embedder allows to show chooser.
+    auto chooser = std::make_unique<HidChooser>(base::NullCallback());
+    // base::Unretained is safe here since ChromeHidDelegate is owned by
+    // ChromeContentBrowserClient and will exist for the lifetime of the
+    // browser.
+    web_view->web_view_permission_helper()->RequestHidPermission(
+        guest_origin.GetURL(),
+        base::BindOnce(
+            &ChromeHidDelegate::OnWebViewHidPermissionRequestCompleted,
+            base::Unretained(this), chooser->GetWeakPtr(),
+            web_view->embedder_rfh()->GetGlobalId(), std::move(filters),
+            std::move(exclusion_filters),
+            std::move(device_requested_callback)));
+    return chooser;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   return std::make_unique<HidChooser>(chrome::ShowDeviceChooserDialog(
       render_frame_host,
       std::make_unique<HidChooserController>(
@@ -155,18 +236,24 @@ bool ChromeHidDelegate::CanRequestDevicePermission(
 
 bool ChromeHidDelegate::HasDevicePermission(
     content::BrowserContext* browser_context,
+    content::RenderFrameHost* render_frame_host,
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  return browser_context && GetChooserContext(browser_context)
-                                ->HasDevicePermission(origin, device);
+  return browser_context &&
+         GetChooserContext(browser_context)
+             ->HasDevicePermission(origin, device,
+                                   GetWebViewEmbedderOrigin(render_frame_host));
 }
 
 void ChromeHidDelegate::RevokeDevicePermission(
     content::BrowserContext* browser_context,
+    content::RenderFrameHost* render_frame_host,
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
   if (browser_context) {
-    GetChooserContext(browser_context)->RevokeDevicePermission(origin, device);
+    GetChooserContext(browser_context)
+        ->RevokeDevicePermission(origin, device,
+                                 GetWebViewEmbedderOrigin(render_frame_host));
   }
 }
 
@@ -239,6 +326,7 @@ ChromeHidDelegate::ContextObservation* ChromeHidDelegate::GetContextObserver(
 void ChromeHidDelegate::IncrementConnectionCount(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Don't track connection when the feature isn't enabled or the connection
   // isn't made by an extension origin.
   if (!base::FeatureList::IsEnabled(
@@ -246,6 +334,7 @@ void ChromeHidDelegate::IncrementConnectionCount(
       origin.scheme() != extensions::kExtensionScheme) {
     return;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   auto* hid_connection_tracker =
       GetConnectionTracker(browser_context, /*create=*/true);
@@ -257,6 +346,7 @@ void ChromeHidDelegate::IncrementConnectionCount(
 void ChromeHidDelegate::DecrementConnectionCount(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Don't track connection when the feature isn't enabled or the connection
   // isn't made by an extension origin.
   if (!base::FeatureList::IsEnabled(
@@ -264,9 +354,50 @@ void ChromeHidDelegate::DecrementConnectionCount(
       origin.scheme() != extensions::kExtensionScheme) {
     return;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   auto* hid_connection_tracker =
       GetConnectionTracker(browser_context, /*create=*/false);
   if (hid_connection_tracker) {
     hid_connection_tracker->DecrementConnectionCount(origin);
   }
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void ChromeHidDelegate::OnWebViewHidPermissionRequestCompleted(
+    base::WeakPtr<HidChooser> chooser,
+    content::GlobalRenderFrameHostId embedder_rfh_id,
+    std::vector<blink::mojom::HidDeviceFilterPtr> filters,
+    std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
+    content::HidChooser::Callback callback,
+    bool allow) {
+  if (!allow) {
+    std::move(callback).Run(/*devices=*/{});
+    return;
+  }
+
+  auto* render_frame_host = content::RenderFrameHost::FromID(embedder_rfh_id);
+  if (!render_frame_host) {
+    std::move(callback).Run(/*devices=*/{});
+    return;
+  }
+
+  auto* browser_context = render_frame_host->GetBrowserContext();
+  auto origin = render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
+  if (!CanRequestDevicePermission(browser_context, origin)) {
+    std::move(callback).Run(/*devices=*/{});
+    return;
+  }
+
+  if (!chooser) {
+    std::move(callback).Run(/*devices=*/{});
+    return;
+  }
+
+  chooser->SetCloseClosure(chrome::ShowDeviceChooserDialog(
+      render_frame_host,
+      std::make_unique<HidChooserController>(
+          render_frame_host, std::move(filters), std::move(exclusion_filters),
+          std::move(callback))));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

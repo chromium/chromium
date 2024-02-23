@@ -21,12 +21,14 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
+#include "chrome/browser/hid/web_view_chooser_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -124,6 +126,7 @@ HidChooserContext::~HidChooserContext() {
     observer.OnHidChooserContextShutdown();
     DCHECK(!device_observer_list_.HasObserver(&observer));
   }
+  web_view_chooser_context_.OnHidChooserContextShutdown();
   DCHECK(permission_observer_list_.empty());
 }
 
@@ -393,7 +396,13 @@ void HidChooserContext::RevokeObjectPermission(
 
 void HidChooserContext::GrantDevicePermission(
     const url::Origin& origin,
-    const device::mojom::HidDeviceInfo& device) {
+    const device::mojom::HidDeviceInfo& device,
+    const std::optional<url::Origin>& embedding_origin_of_web_view) {
+  if (embedding_origin_of_web_view) {
+    web_view_chooser_context_.GrantDevicePermission(
+        origin, *embedding_origin_of_web_view, device);
+    return;
+  }
   if (CanStorePersistentEntry(device)) {
     GrantObjectPermission(origin, DeviceInfoToValue(device));
   } else {
@@ -404,7 +413,13 @@ void HidChooserContext::GrantDevicePermission(
 
 void HidChooserContext::RevokeDevicePermission(
     const url::Origin& origin,
-    const device::mojom::HidDeviceInfo& device) {
+    const device::mojom::HidDeviceInfo& device,
+    const std::optional<url::Origin>& embedding_origin_of_web_view) {
+  if (embedding_origin_of_web_view) {
+    web_view_chooser_context_.RevokeDevicePermission(
+        origin, *embedding_origin_of_web_view, device);
+    return;
+  }
   if (CanStorePersistentEntry(device)) {
     RevokePersistentDevicePermission(origin, device);
   } else {
@@ -456,7 +471,8 @@ void HidChooserContext::RevokeEphemeralDevicePermission(
 
 bool HidChooserContext::HasDevicePermission(
     const url::Origin& origin,
-    const device::mojom::HidDeviceInfo& device) {
+    const device::mojom::HidDeviceInfo& device,
+    const std::optional<url::Origin>& embedding_origin_of_web_view) {
   if (device.is_excluded_by_blocklist) {
     const bool has_fido_collection =
         base::Contains(device.collections, device::mojom::kPageFido,
@@ -473,6 +489,11 @@ bool HidChooserContext::HasDevicePermission(
 
   if (!CanRequestObjectPermission(origin))
     return false;
+
+  if (embedding_origin_of_web_view) {
+    return web_view_chooser_context_.HasDevicePermission(
+        origin, *embedding_origin_of_web_view, device);
+  }
 
   auto it = ephemeral_devices_.find(origin);
   if (it != ephemeral_devices_.end() &&
@@ -573,6 +594,15 @@ void HidChooserContext::OnHidManagerInitializedForTesting(
   DCHECK(pending_get_devices_requests_.empty());
   is_initialized_ = true;
   std::move(callback).Run({});
+}
+
+void HidChooserContext::PermissionForWebViewChanged() {
+  NotifyPermissionChanged();
+}
+
+void HidChooserContext::PermissionForWebViewRevoked(
+    const url::Origin& web_view_origin) {
+  NotifyPermissionRevoked(web_view_origin);
 }
 
 base::WeakPtr<HidChooserContext> HidChooserContext::AsWeakPtr() {

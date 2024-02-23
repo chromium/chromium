@@ -1243,7 +1243,8 @@ TEST(ChromeHidDelegateBrowserContextTest, BrowserContextIsNull) {
   EXPECT_FALSE(chrome_hid_delegate.CanRequestDevicePermission(
       /*browser_context=*/nullptr, origin));
   EXPECT_FALSE(chrome_hid_delegate.HasDevicePermission(
-      /*browser_context=*/nullptr, origin, device::mojom::HidDeviceInfo()));
+      /*browser_context=*/nullptr, /*render_frame_host=*/nullptr, origin,
+      device::mojom::HidDeviceInfo()));
   EXPECT_EQ(nullptr,
             chrome_hid_delegate.GetHidManager(/*browser_context=*/nullptr));
   EXPECT_EQ(nullptr, chrome_hid_delegate.GetDeviceInfo(
