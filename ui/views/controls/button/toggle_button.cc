@@ -359,6 +359,18 @@ std::optional<SkColor> ToggleButton::GetTrackOffColor() const {
   return GetSkColorFromVariant(track_off_color_);
 }
 
+void ToggleButton::SetInnerBorderEnabled(bool enabled) {
+  if (inner_border_enabled_ == enabled) {
+    return;
+  }
+  inner_border_enabled_ = enabled;
+  OnPropertyChanged(&inner_border_enabled_, kPropertyEffectsPaint);
+}
+
+bool ToggleButton::GetInnerBorderEnabled() const {
+  return inner_border_enabled_;
+}
+
 void ToggleButton::SetAcceptsEvents(bool accepts_events) {
   if (GetAcceptsEvents() == accepts_events) {
     return;
@@ -574,7 +586,7 @@ void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {
   track_flags.setColor(color_utils::AlphaBlend(
       GetTrackColor(true), GetTrackColor(false), color_ratio));
   canvas->DrawRoundRect(track_rect, radius, track_flags);
-  if (!GetIsOn() && features::IsChromeRefresh2023()) {
+  if (!GetIsOn() && inner_border_enabled_ && features::IsChromeRefresh2023()) {
     track_rect.Inset(kBorderStrokeWidth * dsf / 2.0f);
     track_flags.setColor(
         GetColorProvider()->GetColor(ui::kColorToggleButtonShadow));
@@ -608,6 +620,7 @@ END_METADATA
 
 BEGIN_METADATA(ToggleButton)
 ADD_PROPERTY_METADATA(bool, IsOn)
+ADD_PROPERTY_METADATA(bool, InnerBorderEnabled)
 ADD_PROPERTY_METADATA(bool, AcceptsEvents)
 END_METADATA
 

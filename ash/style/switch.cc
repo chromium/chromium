@@ -33,6 +33,8 @@ constexpr int kFocusPadding = 2;
 Switch::Switch(PressedCallback callback)
     : views::ToggleButton(std::move(callback), /*has_thumb_shadow=*/false) {
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kSwitchInnerPadding)));
+  // Disable the inset outline.
+  SetInnerBorderEnabled(false);
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
