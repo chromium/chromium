@@ -6,10 +6,11 @@
 
 #include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
-#include "ash/test/ash_test_base.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
@@ -17,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -34,7 +36,7 @@ using ::testing::SizeIs;
 
 constexpr int kPickerWidth = 320;
 
-using PickerSearchResultsViewTest = AshTestBase;
+using PickerSearchResultsViewTest = views::ViewsTestBase;
 
 auto MatchesResultSection(PickerSectionType section_type, int num_items) {
   return AllOf(
@@ -147,17 +149,21 @@ struct PickerSearchResultTestCase {
 
 class PickerSearchResultsViewResultSelectionTest
     : public PickerSearchResultsViewTest,
-      public testing::WithParamInterface<PickerSearchResultTestCase> {};
+      public testing::WithParamInterface<PickerSearchResultTestCase> {
+ private:
+  AshColorProvider ash_color_provider_;
+};
 
 TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   const PickerSearchResultTestCase& test_case = GetParam();
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
           kPickerWidth, future.GetCallback(), &asset_fetcher));
+  widget->Show();
   view->AppendSearchResults(PickerSearchResults({{
       PickerSearchResults::Section(PickerSectionType::kExpressions,
                                    {{test_case.result}}),
@@ -169,14 +175,14 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   PickerItemView* result_view =
       view->section_views_for_testing()[0]->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(result_view);
-  LeftClickOn(result_view);
+  LeftClickOn(*result_view);
 
   EXPECT_EQ(future.Get(), test_case.result);
 }
 
 TEST_P(PickerSearchResultsViewResultSelectionTest, PressingEnterSelectsResult) {
   const PickerSearchResultTestCase& test_case = GetParam();
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
   MockPickerAssetFetcher asset_fetcher;

@@ -4,11 +4,12 @@
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 
-#include "ash/test/ash_test_base.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/compositor.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -25,10 +26,11 @@ void WaitUntilNextFramePresented(ui::Compositor* compositor) {
   run_loop.Run();
 }
 
-class PickerSessionMetricsTest : public AshTestBase {
+class PickerSessionMetricsTest : public views::ViewsTestBase {
  public:
   PickerSessionMetricsTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 TEST_F(PickerSessionMetricsTest,
@@ -46,7 +48,7 @@ TEST_F(PickerSessionMetricsTest,
 
 TEST_F(PickerSessionMetricsTest, RecordsFirstFocusLatency) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   const auto trigger_event_timestamp = base::TimeTicks::Now();
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -61,7 +63,7 @@ TEST_F(PickerSessionMetricsTest, RecordsFirstFocusLatency) {
 
 TEST_F(PickerSessionMetricsTest, RecordsOnlyFirstFocusLatency) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   const auto trigger_event_timestamp = base::TimeTicks::Now();
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -79,7 +81,7 @@ TEST_F(PickerSessionMetricsTest, RecordsOnlyFirstFocusLatency) {
 
 TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForSearchField) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   PickerSessionMetrics metrics(base::TimeTicks::Now());
   metrics.StartRecording(*widget);
@@ -92,7 +94,7 @@ TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForSearchField) {
 
 TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForResults) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   PickerSessionMetrics metrics(base::TimeTicks::Now());
   metrics.StartRecording(*widget);
@@ -105,7 +107,7 @@ TEST_F(PickerSessionMetricsTest, RecordsPresentationLatencyForResults) {
 
 TEST_F(PickerSessionMetricsTest, RecordsSearchLatencyOnSearchFinished) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   PickerSessionMetrics metrics;
   metrics.StartRecording(*widget);
@@ -119,7 +121,7 @@ TEST_F(PickerSessionMetricsTest, RecordsSearchLatencyOnSearchFinished) {
 
 TEST_F(PickerSessionMetricsTest, DoesNotRecordSearchLatencyOnCanceledSearch) {
   base::HistogramTester histogram;
-  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   PickerSessionMetrics metrics;
   metrics.StartRecording(*widget);

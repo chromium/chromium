@@ -11,11 +11,11 @@
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
-#include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -36,7 +36,7 @@ std::unique_ptr<PickerEmoticonItemView> CreateSizedEmoticonItem(
   return emoticon_item;
 }
 
-using PickerSmallItemGridViewTest = AshTestBase;
+using PickerSmallItemGridViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSmallItemGridViewTest, AddsEmojiItem) {
   PickerSmallItemGridView small_item_grid(kDefaultGridWidth);

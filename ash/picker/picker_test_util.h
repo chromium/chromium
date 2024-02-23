@@ -8,15 +8,30 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
 class Clipboard;
 }
 
+namespace views {
+class View;
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 // Returns the HTML contents of `clipboard`.
 ASH_EXPORT std::u16string ReadHtmlFromClipboard(ui::Clipboard* clipboard);
+
+// Clicks on `view` with the left mouse button.
+void ASH_EXPORT LeftClickOn(views::View& view);
+
+// Presses and releases `key_code` on `widget`.
+void ASH_EXPORT PressAndReleaseKey(views::Widget& widget,
+                                   ui::KeyboardCode key_code,
+                                   int flags = ui::EF_NONE);
 
 }  // namespace ash
 

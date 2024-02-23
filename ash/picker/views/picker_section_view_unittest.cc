@@ -15,13 +15,13 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
-#include "ash/test/ash_test_base.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -44,7 +44,7 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
           /*accessible_name=*/u""));
 }
 
-using PickerSectionViewTest = AshTestBase;
+using PickerSectionViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
   PickerSectionView section_view(kDefaultSectionWidth);
