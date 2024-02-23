@@ -4,7 +4,9 @@
 
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/trusted_signals.h"
@@ -23,6 +26,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
@@ -63,6 +67,16 @@ const char kBaseScoringJson[] = R"(
     }
   }
 )";
+
+// Expected result when fetch trusted scoring signals with `renderUrl` of
+// `"https://foo.test/"` and `adComponentRenderURLs` in `kBaseScoringJson[]`.
+const char kBaseScoringExpectedResult[] =
+    R"({"renderURL":{"https://foo.test/":1},)"
+    R"("renderUrl":{"https://foo.test/":1},)"
+    R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+    R"("https://barsub.test/":[3],"https://bazsub.test/":"4"},)"
+    R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+    R"("https://barsub.test/":[3],"https://bazsub.test/":"4"}})";
 
 const char kTopLevelOrigin[] = "https://publisher";
 
@@ -126,10 +140,12 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
       const std::string& response,
       const std::string& interest_group_name,
       const std::optional<std::vector<std::string>>&
-          trusted_bidding_signals_keys) {
+          trusted_bidding_signals_keys,
+      int32_t max_trusted_bidding_signals_url_length = 0) {
     AddBidderJsonResponse(&url_loader_factory_, url, response);
     return FetchBiddingSignals(interest_group_name,
-                               trusted_bidding_signals_keys);
+                               trusted_bidding_signals_keys,
+                               max_trusted_bidding_signals_url_length);
   }
 
   // Fetches bidding signals and waits for completion. Returns nullptr on
@@ -137,11 +153,13 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
   scoped_refptr<TrustedSignals::Result> FetchBiddingSignals(
       const std::string& interest_group_name,
       const std::optional<std::vector<std::string>>&
-          trusted_bidding_signals_keys) {
+          trusted_bidding_signals_keys,
+      int32_t max_trusted_bidding_signals_url_length = 0) {
     scoped_refptr<TrustedSignals::Result> signals;
     base::RunLoop run_loop;
     auto request = bidding_request_manager_.RequestBiddingSignals(
         interest_group_name, trusted_bidding_signals_keys,
+        max_trusted_bidding_signals_url_length,
         base::BindOnce(&LoadSignalsCallback, &signals, &error_msg_,
                        run_loop.QuitClosure()));
     bidding_request_manager_.StartBatchedTrustedSignalsRequest();
@@ -155,20 +173,24 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
       const GURL& url,
       const std::string& response,
       const GURL& render_url,
-      const std::vector<std::string>& ad_component_render_urls) {
+      const std::vector<std::string>& ad_component_render_urls,
+      int32_t max_trusted_scoring_signals_url_length = 0) {
     AddJsonResponse(&url_loader_factory_, url, response);
-    return FetchScoringSignals(render_url, ad_component_render_urls);
+    return FetchScoringSignals(render_url, ad_component_render_urls,
+                               max_trusted_scoring_signals_url_length);
   }
 
   // Fetches scoring signals and waits for completion. Returns nullptr on
   // failure.
   scoped_refptr<TrustedSignals::Result> FetchScoringSignals(
       const GURL& render_url,
-      const std::vector<std::string>& ad_component_render_urls) {
+      const std::vector<std::string>& ad_component_render_urls,
+      int32_t max_trusted_scoring_signals_url_length = 0) {
     scoped_refptr<TrustedSignals::Result> signals;
     base::RunLoop run_loop;
     auto request = scoring_request_manager_.RequestScoringSignals(
         render_url, ad_component_render_urls,
+        max_trusted_scoring_signals_url_length,
         base::BindOnce(&LoadSignalsCallback, &signals, &error_msg_,
                        run_loop.QuitClosure()));
     scoring_request_manager_.StartBatchedTrustedSignalsRequest();
@@ -255,6 +277,18 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
   TrustedSignalsRequestManager scoring_request_manager_;
 };
 
+class TrustedSignalsRequestManagerSplitURLTest
+    : public TrustedSignalsRequestManagerTest {
+ public:
+  TrustedSignalsRequestManagerSplitURLTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeSplitTrustedSignalsFetchingURL);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsError) {
   url_loader_factory_.AddResponse(
       "https://url.test/?hostname=publisher&keys=key1&interestGroupNames=name1"
@@ -320,7 +354,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, {{"key1"}},
+      {"name1"}, {{"key1"}}, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -328,7 +362,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name2"}, {{"key2"}},
+      {"name2"}, {{"key2"}}, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -376,6 +410,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
   auto request1 = scoring_request_manager_.RequestScoringSignals(
       GURL("https://foo.test/"),
       /*ad_component_render_urls=*/{},
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -385,6 +420,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
   auto request2 = scoring_request_manager_.RequestScoringSignals(
       GURL("https://bar.test/"),
       /*ad_component_render_urls=*/{},
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -610,7 +646,6 @@ TEST_F(TrustedSignalsRequestManagerTest,
        BiddingSignalsSimultaneousNetworkRequests) {
   // Use partially overlapping keys, to cover both the shared and distinct key
   // cases.
-
   const std::vector<std::string> kKeys1{"key1", "key3"};
   const GURL kUrl1 = GURL(
       "https://url.test/?hostname=publisher"
@@ -627,7 +662,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys1,
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -637,7 +672,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name2"}, kKeys2,
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -709,6 +744,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   std::optional<std::string> error_msg1;
   auto request1 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -719,6 +755,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   std::optional<std::string> error_msg2;
   auto request2 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl2, kAdComponentRenderUrls2,
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -797,7 +834,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys1,
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -805,7 +842,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name2"}, kKeys2,
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -859,6 +896,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
   std::optional<std::string> error_msg1;
   auto request1 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -867,6 +905,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
   std::optional<std::string> error_msg2;
   auto request2 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl2, kAdComponentRenderUrls2,
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -875,6 +914,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
   std::optional<std::string> error_msg3;
   auto request3 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl3, kAdComponentRenderUrls3,
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
                      run_loop3.QuitClosure()));
 
@@ -921,9 +961,11 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelAllQueuedRequests) {
   const std::vector<std::string> kKeys2{"key2"};
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys2, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   request1.reset();
   request2.reset();
@@ -950,13 +992,14 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneRequest) {
                         kBaseBiddingJson);
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name2"}, kKeys2,
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -987,9 +1030,11 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelAllLiveRequests) {
       "&trusted_bidding_signals_slot_size_param=foo");
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys2, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   // Wait for network request to be made, which should include both keys in the
   // URLs.
@@ -1001,8 +1046,7 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelAllLiveRequests) {
   request1.reset();
   request2.reset();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      (*url_loader_factory_.pending_requests())[0].client.is_connected());
+  EXPECT_FALSE(url_loader_factory_.GetPendingRequest(0)->client.is_connected());
 }
 
 // Make two requests, try to start a network request, then cancel the first one.
@@ -1017,13 +1061,14 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
       "&trusted_bidding_signals_slot_size_param=foo");
 
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
-      {"name2"}, kKeys2,
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -1057,7 +1102,8 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsDisabled) {
   const std::vector<std::string> kKeys{"key1"};
 
   auto request = bidding_request_manager_.RequestBiddingSignals(
-      {"name1"}, kKeys, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
   task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_EQ(0, url_loader_factory_.NumPending());
 }
@@ -1083,7 +1129,7 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   scoped_refptr<TrustedSignals::Result> signals1;
   std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys1,
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
                      run_loop1.QuitClosure()));
 
@@ -1098,7 +1144,7 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys2,
+      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -1128,7 +1174,7 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   scoped_refptr<TrustedSignals::Result> signals3;
   std::optional<std::string> error_msg3;
   auto request3 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys3,
+      {"name1"}, kKeys3, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
                      run_loop3.QuitClosure()));
   task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay);
@@ -1163,7 +1209,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   // Wait until just before the timer triggers. No network requests should be
   // made.
@@ -1179,7 +1226,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys2,
+      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -1223,7 +1270,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys1, base::BindOnce(&NeverInvokedLoadSignalsCallback));
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&NeverInvokedLoadSignalsCallback));
 
   // Wait until just before the timer triggers. No network requests should be
   // made.
@@ -1236,7 +1284,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   scoped_refptr<TrustedSignals::Result> signals2;
   std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys2,
+      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
                      run_loop2.QuitClosure()));
 
@@ -1284,7 +1332,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
   scoped_refptr<TrustedSignals::Result> signals;
   std::optional<std::string> error_msg;
   auto request = bidding_request_manager.RequestBiddingSignals(
-      {"name1"}, kKeys,
+      {"name1"}, kKeys, /*max_trusted_bidding_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,
                      run_loop.QuitClosure()));
   bidding_request_manager.StartBatchedTrustedSignalsRequest();
@@ -1327,6 +1375,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
   std::optional<std::string> error_msg;
   auto request1 = scoring_request_manager.RequestScoringSignals(
       kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/0,
       base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,
                      run_loop.QuitClosure()));
 
@@ -1343,6 +1392,1036 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
             R"("https://bazsub.test/":"4"}})",
             ExtractScoringSignals(signals.get(), kRenderUrl1,
                                   kAdComponentRenderUrls1));
+}
+
+// Test a single bidding request with 0 (unlimited) length limit.
+// TODO(crbug.com/326082728): Remove this test because it will be duplicated
+// with `BiddingSignalsOneRequest` after the split feature is enabled by
+// default.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsOneRequestWithZeroLimit) {
+  const std::vector<std::string> kKeys{"key2", "key1"};
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo";
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL(kUrl), kBaseBiddingJson, {"name1"}, kKeys,
+          /*max_trusted_bidding_signals_url_length=*/0);
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(R"({"key2":[2],"key1":1})",
+            ExtractBiddingSignals(signals.get(), kKeys));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test a single scoring request with 0 (unlimited) length limit.
+// TODO(xtlsheep): Remove this test because it will be duplicated with
+// `ScoringSignalsOneRequest` after the split feature is enabled by default.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsOneRequestWithZeroLimit) {
+  const GURL kRenderUrl = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls{
+      "https://foosub.test/", "https://barsub.test/", "https://bazsub.test/"};
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&renderUrls=https%3A%2F%2Ffoo.test%2F"
+      "&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,"
+      "https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+  // URLs are currently added in lexical order.
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchScoringSignalsWithResponse(
+          GURL(kUrl), kBaseScoringJson, kRenderUrl, kAdComponentRenderUrls,
+          /*max_trusted_scoring_signals_url_length=*/0);
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(
+      kBaseScoringExpectedResult,
+      ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test a single bidding request with a tiny length limit that is smaller than
+// the URL generated by itself.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsOneRequestWithTinyLimit) {
+  const std::vector<std::string> kKeys{"key2", "key1"};
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo";
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL(kUrl), kBaseBiddingJson, {"name1"}, kKeys,
+          /*max_trusted_bidding_signals_url_length=*/1);
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(R"({"key2":[2],"key1":1})",
+            ExtractBiddingSignals(signals.get(), kKeys));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test a single scoring request with a tiny length limit that is smaller than
+// the URL generated by itself.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsOneRequestWithTinyLimit) {
+  const GURL kRenderUrl = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls{
+      "https://foosub.test/", "https://barsub.test/", "https://bazsub.test/"};
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&renderUrls=https%3A%2F%2Ffoo.test%2F"
+      "&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,"
+      "https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+  // URLs are currently added in lexical order.
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchScoringSignalsWithResponse(
+          GURL(kUrl), kBaseScoringJson, kRenderUrl, kAdComponentRenderUrls,
+          /*max_trusted_scoring_signals_url_length=*/1);
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(
+      kBaseScoringExpectedResult,
+      ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test a single bidding request with normal length limit that is larger than
+// the URL generated by itself.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsOneRequestWithNormalLimit) {
+  const std::vector<std::string> kKeys{"key2", "key1"};
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignalsWithResponse(
+          GURL(kUrl), kBaseBiddingJson, {"name1"}, kKeys,
+          /*max_trusted_bidding_signals_url_length=*/1000);
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(R"({"key2":[2],"key1":1})",
+            ExtractBiddingSignals(signals.get(), kKeys));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test a single scoring request with normal length limit that is larger than
+// the URL generated by itself.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsOneRequestWithNormalLimit) {
+  const GURL kRenderUrl = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls{
+      "https://foosub.test/", "https://barsub.test/", "https://bazsub.test/"};
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&renderUrls=https%3A%2F%2Ffoo.test%2F"
+      "&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,"
+      "https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+  // URLs are currently added in lexical order.
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchScoringSignalsWithResponse(
+          GURL(kUrl), kBaseScoringJson, kRenderUrl, kAdComponentRenderUrls,
+          /*max_trusted_scoring_signals_url_length=*/1000);
+  ASSERT_TRUE(signals);
+  EXPECT_FALSE(error_msg_.has_value());
+  EXPECT_EQ(
+      kBaseScoringExpectedResult,
+      ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
+
+  // Wait until idle to ensure all requests have been observed within the
+  // `auction_network_events_handler_`.
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test two requests are issued in one request when their joint URL length is
+// smaller than either of their limits:
+// Request A has a limit of 0.
+// Request B has a limit of 1000.
+// The combined URL length of requests A and B is 131.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsJointBatchedRequests) {
+  // Use partially overlapping keys, to cover both the shared and distinct key
+  // cases.
+  const std::vector<std::string> kKeys1{"key1", "key3"};
+  const std::vector<std::string> kKeys2{"key2", "key3"};
+
+  const std::string kSignalsUrl =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2,key3"
+      "&interestGroupNames=name1,name2"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = bidding_request_manager_.RequestBiddingSignals(
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager_.RequestBiddingSignals(
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/1000,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kSignalsUrl),
+                        kBaseBiddingJson);
+  bidding_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"key1":1,"key3":"3"})",
+            ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
+            ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
+
+  ASSERT_EQ(signals1, signals2);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kSignalsUrl,
+                                            "Received URL: " + kSignalsUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test two requests are issued in one request when their joint URL length is
+// smaller than either of their limits:
+// Request A has a limit of 0.
+// Request B has a limit of 1000.
+// The combined URL length of requests A and B is 208.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsJointBatchedRequests) {
+  // Use partially overlapping keys, to cover both the shared and distinct
+  // cases.
+  const GURL kRenderUrl1 = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://foosub.test/", "https://bazsub.test/"};
+
+  const GURL kRenderUrl2 = GURL("https://bar.test/");
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://barsub.test/", "https://bazsub.test/"};
+
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&renderUrls=https%3A%2F%2Fbar.test%2F,https%3A%2F%2Ffoo.test%2F"
+      "&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,"
+      "https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl2, kAdComponentRenderUrls2,
+      /*max_trusted_scoring_signals_url_length=*/1000,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddJsonResponse(&url_loader_factory_, GURL(kUrl), kBaseScoringJson);
+  scoring_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":[2]},)"
+            R"("renderUrl":{"https://bar.test/":[2]},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
+
+  ASSERT_EQ(signals1, signals2);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre("Sent URL: " + kUrl,
+                                            "Received URL: " + kUrl,
+                                            "Completion Status: net::OK"));
+}
+
+// Test two requests are issued separately in two requests when their joint URL
+// length is bigger than either of their limits:
+// Request A has a limit of 130.
+// Request B has a limit of 130.
+// The combined URL length of requests A and B is 131.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsSplitBatchedRequests) {
+  const std::vector<std::string> kKeys1{"key1", "key3"};
+  const std::string kUrl1 =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key3&interestGroupNames=name1"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  const std::vector<std::string> kKeys2{"key2", "key3"};
+  const std::string kUrl2 =
+      "https://url.test/?hostname=publisher"
+      "&keys=key2,key3&interestGroupNames=name2"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = bidding_request_manager_.RequestBiddingSignals(
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/130,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager_.RequestBiddingSignals(
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/130,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl1),
+                        R"({"keys":{"key1":1,"key3":3},
+                            "perInterestGroupData":
+                                {"name1": {"priorityVector": {"foo": 1}}}
+                            })");
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl2),
+                        R"({"keys":{"key2":[2],"key3":[3]},
+                            "perInterestGroupData":
+                                {"name2": {"priorityVector": {"foo": 2}}}
+                            })");
+  bidding_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"key1":1,"key3":3})",
+            ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2],"key3":[3]})",
+            ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
+
+  ASSERT_NE(signals1, signals2);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl1, "Received URL: " + kUrl1,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl2,
+                  "Received URL: " + kUrl2, "Completion Status: net::OK"));
+}
+
+// Test two requests are issued in one request when their joint URL length is
+// smaller than either of their limits:
+// Request A has a limit of 200.
+// Request B has a limit of 200.
+// The combined URL length of requests A and B is 208.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsSplitBatchedRequests) {
+  // Use partially overlapping keys, to cover both the shared and distinct
+  // cases.
+  const GURL kRenderUrl1 = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://foosub.test/", "https://bazsub.test/"};
+
+  const GURL kRenderUrl2 = GURL("https://bar.test/");
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://barsub.test/", "https://bazsub.test/"};
+
+  const std::string kUrl1 =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fbar.test%2F&"
+      "adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,https%3A%2F%2Fbazsub."
+      "test%2F";
+
+  const std::string kUrl2 =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F&"
+      "adComponentRenderUrls=https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub."
+      "test%2F";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/200,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl2, kAdComponentRenderUrls2,
+      /*max_trusted_scoring_signals_url_length=*/200,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddJsonResponse(&url_loader_factory_, GURL(kUrl1), kBaseScoringJson);
+  AddJsonResponse(&url_loader_factory_, GURL(kUrl2), kBaseScoringJson);
+  scoring_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":[2]},)"
+            R"("renderUrl":{"https://bar.test/":[2]},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
+
+  ASSERT_NE(signals1, signals2);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl1, "Received URL: " + kUrl1,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl2,
+                  "Received URL: " + kUrl2, "Completion Status: net::OK"));
+}
+
+// Test whether three requests are issued in two requests: request A and B can
+// be issued together because adding request C will result in an oversized URL.
+// Request A has a limit of 0.
+// Request B has a limit of 1000.
+// Request C has a limit of 130.
+// The combined URL length of requests A and B is 131.
+// The combined URL length of requests A, B and C is 137.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsPartlyJointBatchedRequests1) {
+  const std::vector<std::string> kKeys1{"key1", "key3"};
+  const std::vector<std::string> kKeys2{"key2", "key3"};
+  const std::vector<std::string> kKeys3{"key1", "key2"};
+
+  const std::string kUrl1 =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2,key3&interestGroupNames=name1,name2"
+      "&trusted_bidding_signals_slot_size_param=foo";
+  const std::string kUrl2 =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2&interestGroupNames=name3"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = bidding_request_manager_.RequestBiddingSignals(
+      {"name1"}, kKeys1, /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager_.RequestBiddingSignals(
+      {"name2"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/1000,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  base::RunLoop run_loop3;
+  scoped_refptr<TrustedSignals::Result> signals3;
+  std::optional<std::string> error_msg3;
+  auto request3 = bidding_request_manager_.RequestBiddingSignals(
+      {"name3"}, kKeys3, /*max_trusted_bidding_signals_url_length=*/130,
+      base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
+                     run_loop3.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl1), kBaseBiddingJson);
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl2),
+                        R"({"keys":{"key1":[2],"key2":[3]},
+                            "perInterestGroupData":
+                                {"name3": {"priorityVector": {"foo": 3}}}
+                            })");
+  bidding_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"key1":1,"key3":"3"})",
+            ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector = signals1->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
+            ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
+
+  run_loop3.Run();
+  EXPECT_FALSE(error_msg3);
+  ASSERT_TRUE(signals3);
+  EXPECT_EQ(R"({"key1":[2],"key2":[3]})",
+            ExtractBiddingSignals(signals3.get(), kKeys3));
+  priority_vector = signals3->GetPriorityVector("name3");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 3}}),
+            *priority_vector);
+
+  ASSERT_EQ(signals1, signals2);
+  ASSERT_NE(signals2, signals3);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl1, "Received URL: " + kUrl1,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl2,
+                  "Received URL: " + kUrl2, "Completion Status: net::OK"));
+}
+
+// Test whether three requests are issued in two requests: request A and B can
+// be issued together because adding request C will result in an oversized URL.
+// Request A has a limit of 0.
+// Request B has a limit of 1000.
+// Request C has a limit of 200.
+// The combined URL length of requests A and B is 208.
+// The combined URL length of requests A, B and C is 234.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsPartlyJointBatchedRequests1) {
+  const GURL kRenderUrl1 = GURL("https://bar.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://foosub.test/", "https://bazsub.test/"};
+
+  const GURL kRenderUrl2 = GURL("https://baz.test/");
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://barsub.test/", "https://bazsub.test/"};
+
+  const GURL kRenderUrl3 = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls3{
+      "https://foosub.test/", "https://barsub.test/"};
+
+  const std::string kUrl1 =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fbar.test%2F,https%3A%2F%"
+      "2Fbaz.test%2F&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,https%"
+      "3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+  const std::string kUrl2 =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F&"
+      "adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,https%3A%2F%2Ffoosub."
+      "test%2F";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl2, kAdComponentRenderUrls2,
+      /*max_trusted_scoring_signals_url_length=*/1000,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  base::RunLoop run_loop3;
+  scoped_refptr<TrustedSignals::Result> signals3;
+  std::optional<std::string> error_msg3;
+  auto request3 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl3, kAdComponentRenderUrls3,
+      /*max_trusted_scoring_signals_url_length=*/200,
+      base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
+                     run_loop3.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl1), kBaseScoringJson);
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl2), kBaseScoringJson);
+  scoring_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":[2]},)"
+            R"("renderUrl":{"https://bar.test/":[2]},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://baz.test/":null},)"
+            R"("renderUrl":{"https://baz.test/":null},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
+
+  run_loop3.Run();
+  EXPECT_FALSE(error_msg3);
+  ASSERT_TRUE(signals3);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://barsub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://barsub.test/":[3]}})",
+            ExtractScoringSignals(signals3.get(), kRenderUrl3,
+                                  kAdComponentRenderUrls3));
+
+  ASSERT_EQ(signals1, signals2);
+  ASSERT_NE(signals2, signals3);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl1, "Received URL: " + kUrl1,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl2,
+                  "Received URL: " + kUrl2, "Completion Status: net::OK"));
+}
+
+// Test whether three signal requests are issued in two fetch requests: request
+// A is issued individually, because requests A and B will result an oversized
+// URL for B's limit.
+// Request A has a limit of 0. Request B has a limit of 131.
+// Request C has a limit of 131.
+// The combined URL length of requests A and B is 143.
+// The combined URL length of requests B and C is 131.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsPartlyJointBatchedRequests2) {
+  const std::vector<std::string> kKeys1{"key1", "key3"};
+  const std::vector<std::string> kKeys2{"key2", "key3"};
+  const std::vector<std::string> kKeys3{"key1", "key2"};
+
+  const std::string kUrl1 =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key3&interestGroupNames=extremelyLongName"
+      "&trusted_bidding_signals_slot_size_param=foo";
+  const std::string kUrl2 =
+      "https://url.test/?hostname=publisher"
+      "&keys=key1,key2,key3&interestGroupNames=name1,name2"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  base::RunLoop run_loop3;
+  scoped_refptr<TrustedSignals::Result> signals3;
+  std::optional<std::string> error_msg3;
+  auto request3 = bidding_request_manager_.RequestBiddingSignals(
+      {"name2"}, kKeys3, /*max_trusted_bidding_signals_url_length=*/131,
+      base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
+                     run_loop3.QuitClosure()));
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = bidding_request_manager_.RequestBiddingSignals(
+      {"extremelyLongName"}, kKeys1,
+      /*max_trusted_bidding_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager_.RequestBiddingSignals(
+      {"name1"}, kKeys2, /*max_trusted_bidding_signals_url_length=*/131,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl1),
+                        R"({"keys":{"key1":[2],"key3":[3]},
+                            "perInterestGroupData":
+                                {"extremelyLongName":
+                                    {"priorityVector": {"foo": 3}}}
+                            })");
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl2), kBaseBiddingJson);
+  bidding_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"key1":[2],"key3":[3]})",
+            ExtractBiddingSignals(signals1.get(), kKeys1));
+  const auto* priority_vector =
+      signals1->GetPriorityVector("extremelyLongName");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 3}}),
+            *priority_vector);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"key2":[2],"key3":"3"})",
+            ExtractBiddingSignals(signals2.get(), kKeys2));
+  priority_vector = signals2->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  run_loop3.Run();
+  EXPECT_FALSE(error_msg3);
+  ASSERT_TRUE(signals3);
+  EXPECT_EQ(R"({"key1":1,"key2":[2]})",
+            ExtractBiddingSignals(signals3.get(), kKeys3));
+  priority_vector = signals3->GetPriorityVector("name2");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 2}}),
+            *priority_vector);
+
+  ASSERT_NE(signals1, signals2);
+  ASSERT_EQ(signals2, signals3);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl1, "Received URL: " + kUrl1,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl2,
+                  "Received URL: " + kUrl2, "Completion Status: net::OK"));
+}
+
+// Test whether three signal requests are issued in two fetch requests: request
+// A is issued individually, because requests A and B will result an oversized
+// URL for B's limit.
+// Request A has a limit of 0. Request B has a limit of 208.
+// Request C has a limit of 208.
+// The combined URL length of requests A and B is 221.
+// The combined URL length of requests B and C is 208.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsPartlyJointBatchedRequests2) {
+  const GURL kRenderUrl1 = GURL("https://barExtremelyLong.test/");
+  const std::vector<std::string> kAdComponentRenderUrls1{
+      "https://foosub.test/", "https://bazsub.test/"};
+
+  const GURL kRenderUrl2 = GURL("https://baz.test/");
+  const std::vector<std::string> kAdComponentRenderUrls2{
+      "https://barsub.test/", "https://bazsub.test/"};
+
+  const GURL kRenderUrl3 = GURL("https://foo.test/");
+  const std::vector<std::string> kAdComponentRenderUrls3{
+      "https://foosub.test/", "https://barsub.test/"};
+
+  const std::string kUrl1 =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fbarextremelylong.test%2F&"
+      "adComponentRenderUrls=https%3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub."
+      "test%2F";
+  const std::string kUrl2 =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Fbaz.test%2F,https%3A%2F%"
+      "2Ffoo.test%2F&adComponentRenderUrls=https%3A%2F%2Fbarsub.test%2F,https%"
+      "3A%2F%2Fbazsub.test%2F,https%3A%2F%2Ffoosub.test%2F";
+
+  base::RunLoop run_loop3;
+  scoped_refptr<TrustedSignals::Result> signals3;
+  std::optional<std::string> error_msg3;
+  auto request3 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl3, kAdComponentRenderUrls3,
+      /*max_trusted_scoring_signals_url_length=*/208,
+      base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
+                     run_loop3.QuitClosure()));
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl1, kAdComponentRenderUrls1,
+      /*max_trusted_scoring_signals_url_length=*/0,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl2, kAdComponentRenderUrls2,
+      /*max_trusted_scoring_signals_url_length=*/208,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl1), kBaseScoringJson);
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl2), kBaseScoringJson);
+  scoring_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://barextremelylong.test/":null},)"
+            R"("renderUrl":{"https://barextremelylong.test/":null},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl1,
+                                  kAdComponentRenderUrls1));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://baz.test/":null},)"
+            R"("renderUrl":{"https://baz.test/":null},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl2,
+                                  kAdComponentRenderUrls2));
+
+  run_loop3.Run();
+  EXPECT_FALSE(error_msg3);
+  ASSERT_TRUE(signals3);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://barsub.test/":[3]},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
+            R"("https://barsub.test/":[3]}})",
+            ExtractScoringSignals(signals3.get(), kRenderUrl3,
+                                  kAdComponentRenderUrls3));
+
+  ASSERT_NE(signals1, signals2);
+  ASSERT_EQ(signals2, signals3);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl1, "Received URL: " + kUrl1,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl2,
+                  "Received URL: " + kUrl2, "Completion Status: net::OK"));
+}
+
+// Test two identical signal requests with same interest group name and no
+// bidder keys will result two separate fetch request.
+// Request A has a limit of 104.
+// Request B has a limit of 104.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       BiddingSignalsIdenticalRequests) {
+  const std::string kUrl =
+      "https://url.test/?hostname=publisher"
+      "&interestGroupNames=name"
+      "&trusted_bidding_signals_slot_size_param=foo";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = bidding_request_manager_.RequestBiddingSignals(
+      {"name"}, std::nullopt, /*max_trusted_bidding_signals_url_length=*/100,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = bidding_request_manager_.RequestBiddingSignals(
+      {"name"}, std::nullopt, /*max_trusted_bidding_signals_url_length=*/100,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddBidderJsonResponse(&url_loader_factory_, GURL(kUrl),
+                        R"({"perInterestGroupData":
+                                {"name": {"priorityVector": {"foo": 1}}}
+                            })");
+  bidding_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  const auto* priority_vector = signals1->GetPriorityVector("name");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  priority_vector = signals2->GetPriorityVector("name");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+
+  ASSERT_NE(signals1, signals2);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl, "Received URL: " + kUrl,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl,
+                  "Received URL: " + kUrl, "Completion Status: net::OK"));
+}
+
+// Test two identical signal requests with same render url and no
+// ad component urls will result two separate fetch request.
+// Request A has a limit of 73.
+// Request B has a limit of 73.
+TEST_F(TrustedSignalsRequestManagerSplitURLTest,
+       ScoringSignalsIdenticalRequests) {
+  // Use partially overlapping keys, to cover both the shared and distinct
+  // cases.
+  const GURL kRenderUrl = GURL("https://foo.test/");
+
+  const std::string kUrl =
+      "https://url.test/"
+      "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F";
+
+  base::RunLoop run_loop1;
+  scoped_refptr<TrustedSignals::Result> signals1;
+  std::optional<std::string> error_msg1;
+
+  auto request1 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl, {},
+      /*max_trusted_scoring_signals_url_length=*/50,
+      base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
+                     run_loop1.QuitClosure()));
+
+  base::RunLoop run_loop2;
+  scoped_refptr<TrustedSignals::Result> signals2;
+  std::optional<std::string> error_msg2;
+  auto request2 = scoring_request_manager_.RequestScoringSignals(
+      kRenderUrl, {},
+      /*max_trusted_scoring_signals_url_length=*/50,
+      base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
+                     run_loop2.QuitClosure()));
+
+  AddJsonResponse(&url_loader_factory_, GURL(kUrl), kBaseScoringJson);
+  scoring_request_manager_.StartBatchedTrustedSignalsRequest();
+
+  run_loop1.Run();
+  EXPECT_FALSE(error_msg1);
+  ASSERT_TRUE(signals1);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1}})",
+            ExtractScoringSignals(signals1.get(), kRenderUrl, {}));
+
+  run_loop2.Run();
+  EXPECT_FALSE(error_msg2);
+  ASSERT_TRUE(signals2);
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1}})",
+            ExtractScoringSignals(signals2.get(), kRenderUrl, {}));
+
+  ASSERT_NE(signals1, signals2);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(auction_network_events_handler_.GetObservedRequests(),
+              testing::UnorderedElementsAre(
+                  "Sent URL: " + kUrl, "Received URL: " + kUrl,
+                  "Completion Status: net::OK", "Sent URL: " + kUrl,
+                  "Received URL: " + kUrl, "Completion Status: net::OK"));
 }
 
 }  // namespace

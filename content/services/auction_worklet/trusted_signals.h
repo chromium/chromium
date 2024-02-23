@@ -129,17 +129,32 @@ class CONTENT_EXPORT TrustedSignals {
   TrustedSignals& operator=(const TrustedSignals&) = delete;
   ~TrustedSignals();
 
-  // Constructs a TrustedSignals for fetching bidding signals, and starts the
-  // fetch. `trusted_bidding_signals_url` must be the base URL (no query params
-  // added).  Callback will be invoked asynchronously once the data has been
-  // fetched or an error has occurred. De-duplicates keys when assembling the
-  // full URL for the fetch. Fails if the URL already has a query param (or has
-  // a location or embedded credentials) or if the response is not JSON. If some
-  // or all of the render URLs are missing, still succeeds, and GetSignals()
-  // will populate them with nulls.
+  static GURL BuildTrustedBiddingSignalsURL(
+      const std::string& hostname,
+      const GURL& trusted_bidding_signals_url,
+      const std::set<std::string>& interest_group_names,
+      const std::set<std::string>& bidding_signals_keys,
+      std::optional<uint16_t> experiment_group_id,
+      const std::string& trusted_bidding_signals_slot_size_param);
+
+  static GURL BuildTrustedScoringSignalsURL(
+      const std::string& hostname,
+      const GURL& trusted_scoring_signals_url,
+      const std::set<std::string>& render_urls,
+      const std::set<std::string>& ad_component_render_urls,
+      std::optional<uint16_t> experiment_group_id);
+
+  // Constructs a TrustedSignals for fetching bidding signals, and starts
+  // the fetch. `trusted_bidding_signals_url` must be the base URL (no query
+  // params added).  Callback will be invoked asynchronously once the data
+  // has been fetched or an error has occurred. De-duplicates keys when
+  // assembling the full URL for the fetch. Fails if the URL already has a
+  // query param (or has a location or embedded credentials) or if the
+  // response is not JSON. If some or all of the render URLs are missing,
+  // still succeeds, and GetSignals() will populate them with nulls.
   //
-  // If non-empty, "&`trusted_bidding_signals_slot_size_param`" is appended to
-  // the end of the query string. It's expected to already be escaped if
+  // If non-empty, "&`trusted_bidding_signals_slot_size_param`" is appended
+  // to the end of the query string. It's expected to already be escaped if
   // necessary.
   //
   // There are no lifetime constraints of `url_loader_factory`.

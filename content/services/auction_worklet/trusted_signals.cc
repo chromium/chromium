@@ -347,6 +347,55 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
 
 TrustedSignals::Result::~Result() = default;
 
+GURL TrustedSignals::BuildTrustedBiddingSignalsURL(
+    const std::string& hostname,
+    const GURL& trusted_bidding_signals_url,
+    const std::set<std::string>& interest_group_names,
+    const std::set<std::string>& bidding_signals_keys,
+    std::optional<uint16_t> experiment_group_id,
+    const std::string& trusted_bidding_signals_slot_size_param) {
+  std::string query_params = base::StrCat(
+      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+       CreateQueryParam("keys", bidding_signals_keys),
+       CreateQueryParam("interestGroupNames", interest_group_names)});
+
+  if (experiment_group_id.has_value()) {
+    base::StrAppend(&query_params,
+                    {"&experimentGroupId=",
+                     base::NumberToString(experiment_group_id.value())});
+  }
+  if (!trusted_bidding_signals_slot_size_param.empty()) {
+    base::StrAppend(&query_params,
+                    {"&", trusted_bidding_signals_slot_size_param});
+  }
+  GURL full_signals_url =
+      SetQueryParam(trusted_bidding_signals_url, query_params);
+
+  return full_signals_url;
+}
+
+GURL TrustedSignals::BuildTrustedScoringSignalsURL(
+    const std::string& hostname,
+    const GURL& trusted_scoring_signals_url,
+    const std::set<std::string>& render_urls,
+    const std::set<std::string>& ad_component_render_urls,
+    std::optional<uint16_t> experiment_group_id) {
+  // TODO(crbug.com/1432707): Find a way to rename renderUrls to renderURLs.
+  std::string query_params = base::StrCat(
+      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
+       CreateQueryParam("renderUrls", render_urls),
+       CreateQueryParam("adComponentRenderUrls", ad_component_render_urls)});
+  if (experiment_group_id.has_value()) {
+    base::StrAppend(&query_params,
+                    {"&experimentGroupId=",
+                     base::NumberToString(experiment_group_id.value())});
+  }
+  GURL full_signals_url =
+      SetQueryParam(trusted_scoring_signals_url, query_params);
+
+  return full_signals_url;
+}
+
 std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
@@ -361,6 +410,11 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!interest_group_names.empty());
 
+  GURL full_signals_url = TrustedSignals::BuildTrustedBiddingSignalsURL(
+      hostname, trusted_bidding_signals_url, interest_group_names,
+      bidding_signals_keys, experiment_group_id,
+      trusted_bidding_signals_slot_size_param);
+
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(
           std::move(interest_group_names), std::move(bidding_signals_keys),
@@ -369,22 +423,6 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadBiddingSignals(
           trusted_bidding_signals_url, std::move(devtools_pending_remote),
           std::move(v8_helper), std::move(load_signals_callback)));
 
-  std::string query_params = base::StrCat(
-      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("keys", *trusted_signals->bidding_signals_keys_),
-       CreateQueryParam("interestGroupNames",
-                        *trusted_signals->interest_group_names_)});
-  if (experiment_group_id.has_value()) {
-    base::StrAppend(&query_params,
-                    {"&experimentGroupId=",
-                     base::NumberToString(experiment_group_id.value())});
-  }
-  if (!trusted_bidding_signals_slot_size_param.empty()) {
-    base::StrAppend(&query_params,
-                    {"&", trusted_bidding_signals_slot_size_param});
-  }
-  GURL full_signals_url =
-      SetQueryParam(trusted_bidding_signals_url, query_params);
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedBidding",
       full_signals_url.spec().size());
@@ -406,6 +444,10 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
     LoadSignalsCallback load_signals_callback) {
   DCHECK(!render_urls.empty());
 
+  GURL full_signals_url = BuildTrustedScoringSignalsURL(
+      hostname, trusted_scoring_signals_url, render_urls,
+      ad_component_render_urls, experiment_group_id);
+
   std::unique_ptr<TrustedSignals> trusted_signals =
       base::WrapUnique(new TrustedSignals(
           /*interest_group_names=*/std::nullopt,
@@ -414,19 +456,6 @@ std::unique_ptr<TrustedSignals> TrustedSignals::LoadScoringSignals(
           std::move(auction_network_events_handler), std::move(v8_helper),
           std::move(load_signals_callback)));
 
-  // TODO(crbug.com/1432707): Find a way to rename renderUrls to renderURLs.
-  std::string query_params = base::StrCat(
-      {"hostname=", base::EscapeQueryParamValue(hostname, /*use_plus=*/true),
-       CreateQueryParam("renderUrls", *trusted_signals->render_urls_),
-       CreateQueryParam("adComponentRenderUrls",
-                        *trusted_signals->ad_component_render_urls_)});
-  if (experiment_group_id.has_value()) {
-    base::StrAppend(&query_params,
-                    {"&experimentGroupId=",
-                     base::NumberToString(experiment_group_id.value())});
-  }
-  GURL full_signals_url =
-      SetQueryParam(trusted_scoring_signals_url, query_params);
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.TrustedScoring",
       full_signals_url.spec().size());
