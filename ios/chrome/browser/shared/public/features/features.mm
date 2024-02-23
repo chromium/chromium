@@ -40,11 +40,13 @@ BASE_FEATURE(kShareInWebContextMenuIOS,
              "ShareInWebContextMenuIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
-// finished.
 BASE_FEATURE(kModernTabStrip,
              "ModernTabStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kModernTabStripParameterName[] = "modern-tab-strip-new-tab-button";
+const char kModernTabStripNTBDynamicParam[] = "dynamic";
+const char kModernTabStripNTBStaticParam[] = "static";
 
 BASE_FEATURE(kIncognitoNtpRevamp,
              "IncognitoNtpRevamp",

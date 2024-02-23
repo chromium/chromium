@@ -33,9 +33,14 @@ BASE_DECLARE_FEATURE(kSharedHighlightingIOS);
 // Feature flag to enable Share button in web context menu in iOS.
 BASE_DECLARE_FEATURE(kShareInWebContextMenuIOS);
 
-// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
-// finished. Flag to modernize the tabstrip without disturbing the existing one.
+// Feature flag to enable the modern tabstrip.
 BASE_DECLARE_FEATURE(kModernTabStrip);
+
+// Feature parameters for `kModernTabStrip`feature. If no parameter is set,
+// `kModernTabStripNTBDynamicParam` will be used.
+extern const char kModernTabStripParameterName[];
+extern const char kModernTabStripNTBDynamicParam[];
+extern const char kModernTabStripNTBStaticParam[];
 
 // Feature flag to enable revamped Incognito NTP page.
 BASE_DECLARE_FEATURE(kIncognitoNtpRevamp);

@@ -101,6 +101,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     layout.dataSource = diffableDataSource
     layout.leftStaticSeparator = leftStaticSeparator
     layout.rightStaticSeparator = rightStaticSeparator
+    layout.newTabButton = newTabButton
   }
 
   required init?(coder: NSCoder) {
@@ -127,33 +128,50 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     newTabButton.isIncognito = isIncognito
     view.addSubview(newTabButton)
 
-    NSLayoutConstraint.activate([
-      /// `collectionView` constraints.
-      collectionView.leadingAnchor.constraint(
-        equalTo: view.leadingAnchor),
-      collectionView.topAnchor.constraint(
-        equalTo: view.topAnchor),
-      collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+    if TabStripFeaturesUtils.isModernTabStripNewTabButtonDynamic() {
+      NSLayoutConstraint.activate([
+        collectionView.trailingAnchor.constraint(
+          equalTo: view.trailingAnchor, constant: -TabStripConstants.NewTabButton.width),
+        newTabButton.leadingAnchor.constraint(
+          greaterThanOrEqualTo: view.leadingAnchor),
+        newTabButton.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor),
+      ])
+    } else {
+      NSLayoutConstraint.activate([
+        newTabButton.leadingAnchor.constraint(
+          equalTo: collectionView.trailingAnchor),
+        newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      ])
+    }
 
-      /// `newTabButton` constraints.
-      newTabButton.leadingAnchor.constraint(
-        equalTo: collectionView.trailingAnchor),
-      newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-      newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-      newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
-      newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
+    NSLayoutConstraint.activate(
+      [
+        /// `collectionView` constraints.
+        collectionView.leadingAnchor.constraint(
+          equalTo: view.leadingAnchor),
+        collectionView.topAnchor.constraint(
+          equalTo: view.topAnchor),
+        collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
-      /// `leftStaticSeparator` constraints.
-      leftStaticSeparator.leftAnchor.constraint(equalTo: collectionView.leftAnchor),
-      leftStaticSeparator.bottomAnchor.constraint(
-        equalTo: collectionView.bottomAnchor,
-        constant: -TabStripConstants.StaticSeparator.bottomInset),
-      /// `rightStaticSeparator` constraints.
-      rightStaticSeparator.rightAnchor.constraint(equalTo: collectionView.rightAnchor),
-      rightStaticSeparator.bottomAnchor.constraint(
-        equalTo: collectionView.bottomAnchor,
-        constant: -TabStripConstants.StaticSeparator.bottomInset),
-    ])
+        /// `newTabButton` constraints.
+        newTabButton.leadingAnchor.constraint(
+          greaterThanOrEqualTo: view.leadingAnchor),
+        newTabButton.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor),
+        newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+        newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
+        newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
+
+        /// `leftStaticSeparator` constraints.
+        leftStaticSeparator.leftAnchor.constraint(equalTo: collectionView.leftAnchor),
+        leftStaticSeparator.bottomAnchor.constraint(
+          equalTo: collectionView.bottomAnchor,
+          constant: -TabStripConstants.StaticSeparator.bottomInset),
+        /// `rightStaticSeparator` constraints.
+        rightStaticSeparator.rightAnchor.constraint(equalTo: collectionView.rightAnchor),
+        rightStaticSeparator.bottomAnchor.constraint(
+          equalTo: collectionView.bottomAnchor,
+          constant: -TabStripConstants.StaticSeparator.bottomInset),
+      ])
   }
 
   override func viewWillTransition(

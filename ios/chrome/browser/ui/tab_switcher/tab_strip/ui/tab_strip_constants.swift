@@ -38,6 +38,7 @@ struct TabStripConstants {
     static let trailingInset: CGFloat = 10
     static let cornerRadius: CGFloat = 16
     static let symbolPointSize: CGFloat = 16
+    static let constraintUpdateAnimationDuration: CGFloat = 0.3
   }
 
   /// Animated separator constants.

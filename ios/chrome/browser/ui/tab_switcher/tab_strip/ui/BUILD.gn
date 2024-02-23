@@ -18,6 +18,7 @@ swift_source_set("swift") {
   ]
   deps = [
     ":ui",
+    ":utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/metrics:metrics_bridge",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -49,5 +50,17 @@ source_set("ui") {
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/third_party/material_components_ios",
     "//ui/base",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "tab_strip_features_utils.h",
+    "tab_strip_features_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:features_utils",
   ]
 }

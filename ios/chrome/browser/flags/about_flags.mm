@@ -754,6 +754,18 @@ const FeatureEntry::FeatureVariation kIOSDockingPromoVariations[] = {
     {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE,
      std::size(kIOSDockingPromoDisplayedDuringFRE), nullptr}};
 
+const FeatureEntry::FeatureParam kModernTabStripNTBDynamic[] = {
+    {kModernTabStripParameterName, kModernTabStripNTBDynamicParam}};
+const FeatureEntry::FeatureParam kModernTabStripNTBStatic[] = {
+    {kModernTabStripParameterName, kModernTabStripNTBStaticParam}};
+
+const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
+    {"New tab button dynamic", kModernTabStripNTBDynamic,
+     std::size(kModernTabStripNTBDynamic), nullptr},
+    {"New tab button static", kModernTabStripNTBStatic,
+     std::size(kModernTabStripNTBStatic), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -871,7 +883,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
 #endif
     {"modern-tab-strip", flag_descriptions::kModernTabStripName,
      flag_descriptions::kModernTabStripDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kModernTabStrip)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kModernTabStrip,
+                                    kModernTabStripVariations,
+                                    "ModernTabStrip")},
     {"ios-shared-highlighting-color-change",
      flag_descriptions::kIOSSharedHighlightingColorChangeName,
      flag_descriptions::kIOSSharedHighlightingColorChangeDescription,
