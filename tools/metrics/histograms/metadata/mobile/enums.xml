@@ -238,6 +238,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Tab Strip entry"/>
   <int value="19" label="Inactive Tabs entry"/>
   <int value="20" label="Tab Group Grid Entry"/>
+  <int value="21" label="Tab Group View Entry"/>
 </enum>
 
 <enum name="IOSShareAction">

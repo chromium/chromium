@@ -200,6 +200,7 @@ NSString* const kRemoveTabFromGroupActionSymbol = @"minus.square";
 NSString* const kMoveTabToGroupActionSymbol = @"arrow.up.right.square";
 NSString* const kClockSymbol = @"clock";
 NSString* const kUngroupTabGroupSymbol = @"viewfinder";
+NSString* const kPlusInSquareSymbol = @"plus.square";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

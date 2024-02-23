@@ -206,6 +206,7 @@ extern NSString* const kRemoveTabFromGroupActionSymbol;
 extern NSString* const kMoveTabToGroupActionSymbol;
 extern NSString* const kClockSymbol;
 extern NSString* const kUngroupTabGroupSymbol;
+extern NSString* const kPlusInSquareSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_mutator.h"
@@ -329,6 +330,8 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   // TODO(crbug.com/1501837): Add action to the button.
   UIButton* menuButton = [[UIButton alloc] init];
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
+  menuButton.menu = [self configuredTabGroupMenu];
+  menuButton.showsMenuAsPrimaryAction = YES;
   [menuButton
       setImage:DefaultSymbolWithPointSize(kMenuSymbol, kThreeDotButtonSize)
       forState:UIControlStateNormal];
@@ -369,6 +372,32 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   ]];
 
   return subTitleView;
+}
+
+// Returns the tab group menu.
+- (UIMenu*)configuredTabGroupMenu {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:kMenuScenarioHistogramTabGroupViewEntry];
+
+  UIAction* newTabAction = [actionFactory actionToAddNewTabInGroupWithBlock:^{
+      // TODO(crbug.com/1501837): Add new tab in current group and open it.
+  }];
+  newTabAction.image =
+      DefaultSymbolWithPointSize(kPlusInSquareSymbol, kSymbolActionPointSize);
+
+  UIAction* ungroupAction = [actionFactory actionToUngroupTabGroupWithBlock:^{
+      // TODO(crbug.com/1501837): Remove the group but keep tabs and
+      // dismiss the view.
+  }];
+
+  UIAction* closeGroupAction = [actionFactory actionToCloseTabGroupWithBlock:^{
+      // TODO(crbug.com/1501837): Close all the tabs from the
+      // current group, remove the group and dismiss the view.
+  }];
+
+  return
+      [UIMenu menuWithTitle:@""
+                   children:@[ newTabAction, ungroupAction, closeGroupAction ]];
 }
 
 @end
