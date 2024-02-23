@@ -166,6 +166,7 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   dbus::MessageWriter array(nullptr);
 
   writer->OpenArray("{sv}", &array);
+  WriteDictEntry(&array, kUuid, characteristic.uuid);
   WriteDictEntry(&array, kInstanceId, characteristic.instance_id);
   WriteDictEntry(&array, kProperties, characteristic.properties);
   WriteDictEntry(&array, kPermissions, characteristic.permissions);
