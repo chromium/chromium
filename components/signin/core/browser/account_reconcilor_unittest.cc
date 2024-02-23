@@ -627,8 +627,16 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       EXPECT_EQ(CoreAccountId(), primary_account_id);
   }
 
+  virtual bool ShouldSkipTest(const std::vector<Token>& tokens) {
+    return false;
+  }
+
   void SetupTokens(const char* tokens_string) {
     std::vector<Token> tokens = ParseTokenString(tokens_string);
+    if (ShouldSkipTest(tokens)) {
+      GTEST_SKIP();
+    }
+
     Token primary_account;
     for (const Token& token : tokens) {
       CoreAccountId account_id;
@@ -727,7 +735,9 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
     // Setup tokens. This triggers listing cookies so we need to setup cookies
     // before that.
     SetupTokens(param.tokens);
-
+    if (testing::Test::IsSkipped()) {
+      return;
+    }
     CreateReconclior();
 
     // Setup expectations.
@@ -1590,22 +1600,53 @@ const std::vector<AccountReconcilorTestTableParam>
         {  "xA",   "xA",   IsFirstReconcile::kBoth,  "",  "",   "xA"   },
         // clang-format on
 };
-class AccountReconcilorTestDiceWithUnoPreChromeSignIn
+class AccountReconcilorTestDiceExplicitBrowserSignin
     : public AccountReconcilorTestTable {
+ public:
+  AccountReconcilorTestDiceExplicitBrowserSignin() {
+    consent_level_for_reconcile_ = signin::ConsentLevel::kSignin;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
 };
 
+using AccountReconcilorTestDicePreChromeSignIn =
+    AccountReconcilorTestDiceExplicitBrowserSignin;
+
 // Checks one row of the `kDiceParamsUnoPreChromeSignIn` table above.
-TEST_P(AccountReconcilorTestDiceWithUnoPreChromeSignIn, TableRowTest) {
+TEST_P(AccountReconcilorTestDicePreChromeSignIn, TableRowTest) {
   SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
   RunRowTest(GetParam());
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         AccountReconcilorTestDiceWithUnoPreChromeSignIn,
+                         AccountReconcilorTestDicePreChromeSignIn,
                          ::testing::ValuesIn(GenerateTestCasesFromParams(
                              kDiceParamsUnoPreChromeSignIn)));
+
+class AccountReconcilorTestExplicitBrowserSigninDiceMultiLogin
+    : public AccountReconcilorTestDiceExplicitBrowserSignin {
+ public:
+  bool ShouldSkipTest(const std::vector<Token>& tokens) override {
+    // We use the same set of `kDiceParams`.
+    // In this test suite, the consent level is signin, skip the tests where
+    // there is no authenticated primary account.
+    return !base::ranges::any_of(
+        tokens, [](const Token& token) { return token.is_authenticated; });
+  }
+};
+
+TEST_P(AccountReconcilorTestExplicitBrowserSigninDiceMultiLogin, TableRowTest) {
+  SetAccountConsistency(signin::AccountConsistencyMethod::kDice);
+  CheckReconcileIdempotent(kDiceParams, GetParam());
+  RunRowTest(GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AccountReconcilorTestExplicitBrowserSigninDiceMultiLogin,
+    ::testing::ValuesIn(GenerateTestCasesFromParams(kDiceParams)));
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
