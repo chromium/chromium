@@ -2115,12 +2115,6 @@ BASE_FEATURE(kOsFeedbackDialog,
              "OsFeedbackDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables app badging toggle to be displayed in app notification page in
-// ChromeOS Settings.
-BASE_FEATURE(kOsSettingsAppBadgingToggle,
-             "OsSettingsAppBadgingToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether the DNS dialog in should be deprecated in Security and Privacy
 // Settings page when the user toggles off the DNS button.
 BASE_FEATURE(kOsSettingsDeprecateDnsDialog,
@@ -4016,10 +4010,6 @@ bool IsOobeDisplaySizeEnabled() {
 
 bool IsOsFeedbackDialogEnabled() {
   return base::FeatureList::IsEnabled(kOsFeedbackDialog);
-}
-
-bool IsOsSettingsAppBadgingToggleEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsAppBadgingToggle);
 }
 
 bool IsOsSettingsDeprecateDnsDialogEnabled() {

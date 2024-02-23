@@ -2351,8 +2351,6 @@ component("ash") {
     "system/unified/tasks_bubble_view.h",
     "system/unified/tasks_combobox_model.cc",
     "system/unified/tasks_combobox_model.h",
-    "system/unified/unified_notifier_settings_controller.cc",
-    "system/unified/unified_notifier_settings_controller.h",
     "system/unified/unified_slider_bubble_controller.cc",
     "system/unified/unified_slider_bubble_controller.h",
     "system/unified/unified_slider_view.cc",

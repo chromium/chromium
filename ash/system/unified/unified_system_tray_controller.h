@@ -111,8 +111,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowAudioDetailedView();
   // Show the detailed view of display. Called from the view.
   void ShowDisplayDetailedView();
-  // Show the detailed view of notifier settings. Called from the view.
-  void ShowNotifierSettingsView();
   // Show the detailed view of media controls. Called from the view.
   void ShowMediaControlsDetailedView(
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,

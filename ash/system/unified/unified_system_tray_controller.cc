@@ -61,7 +61,6 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
-#include "ash/system/unified/unified_notifier_settings_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
@@ -290,16 +289,6 @@ void UnifiedSystemTrayController::ShowDisplayDetailedView() {
   showing_display_detailed_view_ = true;
 }
 
-void UnifiedSystemTrayController::ShowNotifierSettingsView() {
-  if (features::IsOsSettingsAppBadgingToggleEnabled()) {
-    return;
-  }
-
-  DCHECK(Shell::Get()->session_controller()->ShouldShowNotificationTray());
-  DCHECK(!Shell::Get()->session_controller()->IsScreenLocked());
-  ShowDetailedView(std::make_unique<UnifiedNotifierSettingsController>(this));
-}
-
 void UnifiedSystemTrayController::ShowCalendarView(
     calendar_metrics::CalendarViewShowSource show_source,
     calendar_metrics::CalendarEventSource event_source) {
@@ -396,7 +385,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   create_tile(std::make_unique<CaptureModeFeaturePodController>(this),
               feature_pod_controllers_, tiles,
               capture_and_quiet_tiles_are_compact);
-  create_tile(std::make_unique<QuietModeFeaturePodController>(this),
+  create_tile(std::make_unique<QuietModeFeaturePodController>(),
               feature_pod_controllers_, tiles,
               capture_and_quiet_tiles_are_compact);
   create_tile(std::make_unique<BluetoothFeaturePodController>(this),

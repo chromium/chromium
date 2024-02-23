@@ -8,7 +8,6 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/notifier_metadata.h"
-#include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -25,19 +24,11 @@ using message_center::MessageCenter;
 
 namespace ash {
 
-QuietModeFeaturePodController::QuietModeFeaturePodController(
-    UnifiedSystemTrayController* tray_controller)
-    : tray_controller_(tray_controller) {
+QuietModeFeaturePodController::QuietModeFeaturePodController() {
   MessageCenter::Get()->AddObserver(this);
-  if (!features::IsOsSettingsAppBadgingToggleEnabled()) {
-    NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
-  }
 }
 
 QuietModeFeaturePodController::~QuietModeFeaturePodController() {
-  if (!features::IsOsSettingsAppBadgingToggleEnabled()) {
-    NotifierSettingsController::Get()->RemoveNotifierSettingsObserver(this);
-  }
   MessageCenter::Get()->RemoveObserver(this);
 }
 
@@ -101,14 +92,8 @@ void QuietModeFeaturePodController::OnIconPressed() {
 }
 
 void QuietModeFeaturePodController::OnLabelPressed() {
-  if (features::IsOsSettingsAppBadgingToggleEnabled()) {
-    // Now that app badging has been moved to OS Settings, this detailed view is
-    // not required.
-    FeaturePodControllerBase::OnLabelPressed();
-    return;
-  }
-  TrackDiveInUMA();
-  tray_controller_->ShowNotifierSettingsView();
+  // App badging lives in OS Settings, so this detailed view is not required.
+  FeaturePodControllerBase::OnLabelPressed();
 }
 
 void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {

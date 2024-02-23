@@ -18,8 +18,6 @@
 
 namespace ash {
 
-class UnifiedSystemTrayController;
-
 // Controller of a feature tile that toggles do-not-disturb mode. If the
 // do-not-disturb mode is enabled, this tile indicates it by bright background
 // color and different icon.
@@ -28,8 +26,7 @@ class ASH_EXPORT QuietModeFeaturePodController
       public message_center::MessageCenterObserver,
       public NotifierSettingsObserver {
  public:
-  explicit QuietModeFeaturePodController(
-      UnifiedSystemTrayController* tray_controller);
+  QuietModeFeaturePodController();
 
   QuietModeFeaturePodController(const QuietModeFeaturePodController&) = delete;
   QuietModeFeaturePodController& operator=(
@@ -58,8 +55,6 @@ class ASH_EXPORT QuietModeFeaturePodController
   std::u16string GetQuietModeStateTooltip();
 
   void RecordDisabledNotifierCount(int disabled_count);
-
-  const raw_ptr<UnifiedSystemTrayController> tray_controller_;
 
   // Owned by the views hierarchy.
   raw_ptr<FeatureTile, DanglingUntriaged> tile_ = nullptr;

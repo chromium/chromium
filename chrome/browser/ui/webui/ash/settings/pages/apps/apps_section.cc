@@ -539,9 +539,6 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showOsSettingsAppNotificationsRow",
       base::FeatureList::IsEnabled(features::kOsSettingsAppNotificationsPage));
-  html_source->AddBoolean(
-      "showOsSettingsAppBadgingToggle",
-      base::FeatureList::IsEnabled(features::kOsSettingsAppBadgingToggle));
   html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
   // TODO(crbug.com/1481737): Double check that this is the correct feature
@@ -837,9 +834,7 @@ void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
   if (kIsRevampEnabled) {
     updater.AddSearchTags(GetAppNotificationsManagerSearchConcepts());
   }
-  if (features::IsOsSettingsAppBadgingToggleEnabled()) {
-    updater.AddSearchTags(GetAppBadgingSearchConcepts());
-  }
+  updater.AddSearchTags(GetAppBadgingSearchConcepts());
 
   if (!MessageCenterAsh::Get()->IsQuietMode()) {
     updater.AddSearchTags(GetTurnOnAppNotificationSearchConcepts());

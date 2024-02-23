@@ -6934,12 +6934,6 @@ const char kOsFeedbackDialogName[] =
 const char kOsFeedbackDialogDescription[] =
     "Enable the OS Feedback dialog on OOBE and login screen.";
 
-const char kOsSettingsAppBadgingToggleName[] =
-    "ChromeOS Settings App Badging Toggle";
-const char kOsSettingsAppBadgingToggleDescription[] =
-    "Enables app badging toggle to be displayed in app notification page in"
-    "ChromeOS Settings.";
-
 const char kOsSettingsDeprecateSyncMetricsToggleName[] =
     "ChromeOS Settings Deprecate Sync Metrics Toggle";
 const char kOsSettingsDeprecateSyncMetricsToggleDescription[] =

@@ -368,28 +368,15 @@ suite('<settings-app-notifications-subpage>', () => {
       };
     }
 
-    setup(() => {
-      loadTimeData.overrideValues({showOsSettingsAppBadgingToggle: true});
-    });
-
     teardown(() => {
       page.remove();
     });
 
-    test('App badging toggle is not visible if feature is disabled', () => {
-      loadTimeData.overrideValues({showOsSettingsAppBadgingToggle: false});
-      createPage();
-
-      const appBadgingToggle =
-          page.shadowRoot!.querySelector('#appBadgingToggleButton');
-      assertNull(appBadgingToggle);
-    });
-
-    test('App badging toggle is visible if the feature is enabled', () => {
+    test('App badging toggle is visible', () => {
       createPage();
       const appBadgingToggle =
           page.shadowRoot!.querySelector('#appBadgingToggleButton');
-      assertTrue(!!appBadgingToggle);
+      assertTrue(isVisible(appBadgingToggle));
     });
 
     test('Clicking the app badging button toggles the pref value', () => {

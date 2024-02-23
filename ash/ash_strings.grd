@@ -338,9 +338,6 @@ Style notes:
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_NETWORK_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for network settings accessed through the network feature pod.">
         Network Settings
       </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_NOTIFIER_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for notification settings accessed through the notification feature pod.">
-        Notification Settings
-      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_USER_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for user settings accessed through the user avatar button.">
         User Settings
       </message>
