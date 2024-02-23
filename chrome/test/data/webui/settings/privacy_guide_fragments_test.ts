@@ -6,8 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {PrivacyGuideCompletionFragmentElement, PrivacyGuidePreloadFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
-import {CookiePrimarySetting, SafeBrowsingSetting, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
+import type {PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncPrefs} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -791,44 +791,6 @@ suite('CookiesFragment', function() {
   });
 });
 
-suite('PreloadFragment', function() {
-  let fragment: PrivacyGuidePreloadFragmentElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    fragment = document.createElement('privacy-guide-preload-fragment');
-    fragment.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(fragment);
-
-    return flushTasks();
-  });
-
-  test('fragmentUpdatesFromPreloadChanges', async function() {
-    const radioButtonGroup =
-        fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
-            '#preloadRadioGroup');
-    assertTrue(!!radioButtonGroup);
-
-    fragment.set(
-        'prefs.net.network_prediction_options.value',
-        NetworkPredictionOptions.STANDARD);
-    assertEquals(
-        NetworkPredictionOptions.STANDARD, Number(radioButtonGroup.selected));
-
-    fragment.set(
-        'prefs.net.network_prediction_options.value',
-        NetworkPredictionOptions.DISABLED);
-    assertEquals(
-        NetworkPredictionOptions.DISABLED, Number(radioButtonGroup.selected));
-  });
-});
-
 suite('CompletionFragment', function() {
   let fragment: PrivacyGuideCompletionFragmentElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -962,7 +924,6 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
         subheader.innerText);
   });
 });
-
 
 suite(
     'CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled', function() {

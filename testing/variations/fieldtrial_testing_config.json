@@ -13450,24 +13450,6 @@
             ]
         }
     ],
-    "PrivacyGuide3": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrivacyGuide3"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyGuideAndroid3": [
         {
             "platforms": [
