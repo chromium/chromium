@@ -10,11 +10,13 @@
 #include "ash/shell.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace ash {
 
+inline int kDeviceId1 = 15;
 inline constexpr char kClickFn[] = "e => e.click()";
 inline constexpr char kFocusFn[] = "e => e.focus()";
 
@@ -138,9 +140,17 @@ class ShortcutCustomizationInteractiveUiTestBase
         .accelerator;
   }
 
+  ui::test::InteractiveTestApi::MultiStep AddKeyboard(bool is_external);
+
+  ui::test::InteractiveTestApi::MultiStep
+  WaitForShortcutToContainNumAcceleartors(const DeepQuery& query,
+                                          const int expected);
+
   void SetUpOnMainThread() override;
 
  protected:
+  testing::FakeUdevLoader fake_udev_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
   base::test::ScopedFeatureList feature_list_;
   ui::ElementIdentifier webcontents_id_;
 };

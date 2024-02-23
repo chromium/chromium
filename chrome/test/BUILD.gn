@@ -11216,6 +11216,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/select_category_from_side_nav_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.h",
+          "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_on_keyboard_plugged_in_interactive_uitest.cc",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
 
           # These cannot live in ":test_support" because they use

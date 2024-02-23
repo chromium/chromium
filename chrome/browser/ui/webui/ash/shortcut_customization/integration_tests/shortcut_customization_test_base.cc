@@ -8,8 +8,18 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
 
 namespace ash {
+
+namespace {
+
+constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayout1Tag[] = "1";
+
+}  // namespace
 
 ShortcutCustomizationInteractiveUiTestBase::
     ShortcutCustomizationInteractiveUiTestBase() {
@@ -62,6 +72,66 @@ ShortcutCustomizationInteractiveUiTestBase::SendShortcutAccelerator(
     ui::Accelerator accel) {
   CHECK(webcontents_id_);
   return Steps(SendAccelerator(webcontents_id_, accel), FlushEvents());
+}
+
+ui::test::InteractiveTestApi::MultiStep
+ShortcutCustomizationInteractiveUiTestBase::AddKeyboard(bool is_external) {
+  return Steps(
+      Log(std::format("Adding {0} keyboard",
+                      is_external ? "external" : "internal")),
+      Do([is_external, this]() {
+        int id = kDeviceId1++;
+        const auto id_string = base::NumberToString(id);
+        ui::KeyboardDevice fake_keyboard(
+            /*id=*/id, /*type=*/
+            is_external ? ui::InputDeviceType::INPUT_DEVICE_USB
+                        : ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+            /*name=*/"Keyboard" + id_string);
+        fake_keyboard.sys_path = base::FilePath("path" + id_string);
+
+        fake_keyboard_devices_.push_back(fake_keyboard);
+        ui::KeyboardCapability::KeyboardInfo keyboard_info;
+        keyboard_info.device_type =
+            is_external
+                ? ui::KeyboardCapability::DeviceType::
+                      kDeviceExternalGenericKeyboard
+                : ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+        keyboard_info.top_row_layout = ui::KeyboardCapability::
+            KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+
+        Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+            fake_keyboard, std::move(keyboard_info));
+        // Calling RunUntilIdle() here is necessary before setting the keyboard
+        // devices to prevent the callback from evdev thread to overwrite
+        // whatever we sethere below. See
+        // `InputDeviceFactoryEvdevProxy::OnStartupScanComplete()`.
+        base::RunLoop().RunUntilIdle();
+        ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+            fake_keyboard_devices_);
+        ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+        std::map<std::string, std::string> sysfs_properties;
+        std::map<std::string, std::string> sysfs_attributes;
+        sysfs_properties[kKbdTopRowPropertyName] = kKbdTopRowLayout1Tag;
+        fake_udev_.AddFakeDevice(
+            fake_keyboard.name, fake_keyboard.sys_path.value(),
+            /*subsystem=*/"input", /*devnode=*/std::nullopt,
+            /*devtype=*/std::nullopt, std::move(sysfs_attributes),
+            std::move(sysfs_properties));
+      }),
+      FlushEvents());
+}
+
+ui::test::InteractiveTestApi::MultiStep
+ShortcutCustomizationInteractiveUiTestBase::
+    WaitForShortcutToContainNumAcceleartors(const DeepQuery& query,
+                                            const int expected) {
+  return Steps(
+      Log(std::format("Expecting shortcut to contain {0} accelerators",
+                      expected)),
+      CheckJsResultAt(webcontents_id_, query,
+                      "e => e.querySelectorAll('accelerator-view').length",
+                      expected));
 }
 
 }  // namespace ash
