@@ -76,8 +76,8 @@ export class CrExpandButtonElement extends CrLitElement {
   protected ariaExpanded_: string = 'false';
   expandIcon: string = 'cr:expand-more';
   collapseIcon: string = 'cr:expand-less';
-  expandTitle: string;
-  collapseTitle: string;
+  expandTitle?: string;
+  collapseTitle?: string;
   override tabIndex: number = 0;
   protected icon_: string = '';
 
@@ -97,7 +97,8 @@ export class CrExpandButtonElement extends CrLitElement {
     if (changedProperties.has('expanded') ||
         changedProperties.has('collapseTitle') ||
         changedProperties.has('expandTitle')) {
-      this.title = this.expanded ? this.collapseTitle : this.expandTitle;
+      this.title =
+          (this.expanded ? this.collapseTitle : this.expandTitle) || '';
     }
 
     if (changedProperties.has('expanded')) {
