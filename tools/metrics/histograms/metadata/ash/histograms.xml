@@ -1919,7 +1919,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingFileSize.{TabletOrClamshell}"
-    units="KB" expires_after="2024-03-01">
+    units="KB" expires_after="2025-02-22">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>

@@ -1441,7 +1441,7 @@
   {
     "name": "coral-feature-key",
     "owners": [ "cros-coral@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 134
   },
   {
     "name": "cormorant",
