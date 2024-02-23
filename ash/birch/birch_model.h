@@ -54,7 +54,7 @@ class ASH_EXPORT BirchModel {
     return weather_items_;
   }
 
-  std::vector<std::unique_ptr<BirchItem>> GetAllItems() const;
+  std::vector<std::unique_ptr<BirchItem>> GetAllItems();
 
   // Returns whether all data in the model is currently fresh.
   bool IsDataFresh();

@@ -126,7 +126,13 @@ void PineController::StartPineOverviewSession() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceBirchFetch)) {
     LOG(WARNING) << "Forcing Birch data fetch";
-    Shell::Get()->birch_model()->RequestBirchDataFetch(base::DoNothing());
+    Shell::Get()->birch_model()->RequestBirchDataFetch(base::BindOnce([]() {
+      // Dump the items that were fetched.
+      auto items = Shell::Get()->birch_model()->GetAllItems();
+      for (const auto& item : items) {
+        LOG(WARNING) << item->ToString();
+      }
+    }));
   }
   // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,

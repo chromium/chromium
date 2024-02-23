@@ -4,10 +4,12 @@
 
 #include "ash/birch/birch_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "ash/birch/birch_item.h"
+#include "ash/birch/birch_ranker.h"
 #include "ash/birch/birch_weather_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -108,10 +110,14 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
   }
 }
 
-std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() const {
+std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   std::vector<std::unique_ptr<BirchItem>> all_items;
 
-  // TODO(b/305094126): Sort items by priority.
+  BirchRanker ranker(base::Time::Now());
+  ranker.RankCalendarItems(&calendar_items_);
+  ranker.RankWeatherItems(&weather_items_);
+  // TODO(b/305094126): Rank all data types.
+
   for (auto& event : calendar_items_) {
     all_items.push_back(std::make_unique<BirchCalendarItem>(event));
   }
@@ -124,6 +130,12 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() const {
   for (auto& weather_item : weather_items_) {
     all_items.push_back(std::make_unique<BirchWeatherItem>(weather_item));
   }
+
+  // Sort items by ranking.
+  std::sort(all_items.begin(), all_items.end(),
+            [](const auto& item_a, const auto& item_b) {
+              return item_a->ranking < item_b->ranking;
+            });
 
   return all_items;
 }

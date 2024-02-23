@@ -28,8 +28,12 @@ struct ASH_EXPORT BirchItem {
 
   std::u16string title;
   ui::ImageModel icon;
+  float ranking;  // Lower is better.
 
   virtual const char* GetItemType() const = 0;
+
+  // Print the item to a string for debugging. The format is not stable.
+  virtual std::string ToString() const = 0;
 };
 
 // A birch item which contains calendar event information.
@@ -44,9 +48,7 @@ struct ASH_EXPORT BirchCalendarItem : public BirchItem {
 
   // BirchItem:
   const char* GetItemType() const override;
-
-  // For debugging.
-  std::string ToString() const;
+  std::string ToString() const override;
 
   GURL icon_url;
   base::Time start_time;
@@ -70,6 +72,7 @@ struct ASH_EXPORT BirchAttachmentItem : public BirchItem {
 
   // BirchItem:
   const char* GetItemType() const override;
+  std::string ToString() const override;
 
   GURL file_url;          // Link to the file.
   GURL icon_url;          // Link to the file's icon's art asset.
@@ -92,10 +95,9 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
 
   static constexpr char kItemType[] = "FileItem";
 
+  // BirchItem:
   const char* GetItemType() const override;
-
-  // Intended for debugging.
-  std::string ToString() const;
+  std::string ToString() const override;
 };
 
 // A birch item which contains tab and session information.
@@ -118,10 +120,9 @@ struct ASH_EXPORT BirchTabItem : public BirchItem {
 
   static constexpr char kItemType[] = "TabItem";
 
+  // BirchItem:
   const char* GetItemType() const override;
-
-  // Intended for debugging.
-  std::string ToString() const;
+  std::string ToString() const override;
 };
 
 struct ASH_EXPORT BirchWeatherItem : public BirchItem {
@@ -138,10 +139,9 @@ struct ASH_EXPORT BirchWeatherItem : public BirchItem {
 
   static constexpr char kItemType[] = "WeatherItem";
 
+  // BirchItem:
   const char* GetItemType() const override;
-
-  // Intended for debugging.
-  std::string ToString() const;
+  std::string ToString() const override;
 };
 
 }  // namespace ash

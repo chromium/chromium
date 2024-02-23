@@ -4,6 +4,7 @@
 
 #include "ash/birch/birch_item.h"
 
+#include <limits>
 #include <sstream>
 #include <string>
 
@@ -13,7 +14,9 @@
 namespace ash {
 
 BirchItem::BirchItem(const std::u16string& title, ui::ImageModel icon)
-    : title(title), icon(std::move(icon)) {}
+    : title(title),
+      icon(std::move(icon)),
+      ranking(std::numeric_limits<float>::max()) {}
 
 BirchItem::BirchItem(BirchItem&&) = default;
 
@@ -48,8 +51,8 @@ const char* BirchCalendarItem::GetItemType() const {
 std::string BirchCalendarItem::ToString() const {
   std::stringstream ss;
   using base::UTF16ToUTF8;
-  ss << "Calendar item: {title: " << UTF16ToUTF8(title)
-     << ", icon_url: " << icon_url.spec()
+  ss << "Calendar item: {ranking: " << ranking
+     << ", title: " << UTF16ToUTF8(title) << ", icon_url: " << icon_url.spec()
      << ", start: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time))
      << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time))
      << ", conference_url: " << conference_url.spec() << "}";
@@ -77,6 +80,18 @@ const char* BirchAttachmentItem::GetItemType() const {
   return kItemType;
 }
 
+std::string BirchAttachmentItem::ToString() const {
+  std::stringstream ss;
+  using base::UTF16ToUTF8;
+  ss << "Attachment item: {ranking: " << ranking
+     << ", title: " << UTF16ToUTF8(title) << ", file_url: " << file_url.spec()
+     << ", icon_url: " << icon_url.spec()
+     << ", start: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time))
+     << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time))
+     << "}";
+  return ss.str();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
@@ -102,8 +117,8 @@ const char* BirchFileItem::GetItemType() const {
 
 std::string BirchFileItem::ToString() const {
   std::stringstream ss;
-  ss << "File item : {title: " << base::UTF16ToUTF8(title)
-     << ", file_path:" << file_path;
+  ss << "File item : {ranking: " << ranking
+     << ", title: " << base::UTF16ToUTF8(title) << ", file_path:" << file_path;
   if (timestamp.has_value()) {
     ss << ", timestamp: "
        << base::UTF16ToUTF8(
@@ -138,7 +153,8 @@ const char* BirchWeatherItem::GetItemType() const {
 
 std::string BirchWeatherItem::ToString() const {
   std::stringstream ss;
-  ss << "Weather item: {title: " << base::UTF16ToUTF8(title)
+  ss << "Weather item: {ranking: " << ranking
+     << ", title : " << base::UTF16ToUTF8(title)
      << ", temperature:" << base::UTF16ToUTF8(temperature) << "}";
   return ss.str();
 }
@@ -170,9 +186,10 @@ const char* BirchTabItem::GetItemType() const {
 
 std::string BirchTabItem::ToString() const {
   std::stringstream ss;
-  ss << "title: " << base::UTF16ToUTF8(title) << ", url:" << url
+  ss << "Tab item: {ranking: " << ranking
+     << ", title: " << base::UTF16ToUTF8(title) << ", url:" << url
      << ", timestamp:" << timestamp << ", favicon_url:" << favicon_url
-     << ", session_name:" << session_name;
+     << ", session_name:" << session_name << "}";
   return ss.str();
 }
 
