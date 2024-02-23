@@ -1125,7 +1125,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   }
 }
 
-- (void)insertItem:(TabSwitcherItem*)item
+- (void)insertItem:(GridItemIdentifier*)item
            atIndex:(NSUInteger)index
     selectedItemID:(web::WebStateID)selectedItemID {
   if (_mode == TabGridModeSearch) {
@@ -1359,11 +1359,12 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 // Makes the required changes to the data source when a new item is inserted.
-- (void)applyModelAndViewUpdatesForInsertionOfItem:(TabSwitcherItem*)item
+- (void)applyModelAndViewUpdatesForInsertionOfItem:(GridItemIdentifier*)item
                                            atIndex:(NSUInteger)index
                                     selectedItemID:
                                         (web::WebStateID)selectedItemID
                                           snapshot:(GridSnapshot*)snapshot {
+  CHECK(item.type == GridItemType::Tab);
   // TODO(crbug.com/1473625): There are crash reports that show there could be
   // cases where the open tabs section is not present in the snapshot. If so,
   // don't perform the update.
@@ -1375,10 +1376,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return;
   }
 
-  GridItemIdentifier* itemIdentifier = [GridItemIdentifier tabIdentifier:item];
-
   // Consistency check: `item`'s ID is not in the collection view.
-  CHECK(![self.diffableDataSource indexPathForItemIdentifier:itemIdentifier]);
+  CHECK(![self.diffableDataSource indexPathForItemIdentifier:item]);
 
   // Store the identifier of the current item at the given index, if any, prior
   // to model updates.
@@ -1388,7 +1387,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
 
   self.selectedItemID = selectedItemID;
-  self.lastInsertedItemID = item.identifier;
+  self.lastInsertedItemID = item.tabSwitcherItem.identifier;
 
   // The snapshot API doesn't provide a way to insert at a given index (that's
   // its purpose actually), only before/after an existing item, or by
@@ -1397,10 +1396,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // one before it. Otherwise (if the section is empty, or the new index is
   // the new last position), append at the end of the section.
   if (previousItemIdentifier) {
-    [snapshot insertItemsWithIdentifiers:@[ itemIdentifier ]
+    [snapshot insertItemsWithIdentifiers:@[ item ]
                 beforeItemWithIdentifier:previousItemIdentifier];
   } else {
-    [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]
+    [snapshot appendItemsWithIdentifiers:@[ item ]
                intoSectionWithIdentifier:kGridOpenTabsSectionIdentifier];
   }
 }

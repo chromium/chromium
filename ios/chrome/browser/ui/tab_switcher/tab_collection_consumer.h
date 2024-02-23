@@ -33,7 +33,7 @@ class WebStateID;
 // Tells the consumer to insert `item` at `index` and update the selected item
 // ID to be `selectedItemID`. It's an error if `item`'s ID duplicates an
 // ID already passed to the consumer (and not yet removed).
-- (void)insertItem:(TabSwitcherItem*)item
+- (void)insertItem:(GridItemIdentifier*)item
            atIndex:(NSUInteger)index
     selectedItemID:(web::WebStateID)selectedItemID;
 

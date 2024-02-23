@@ -166,10 +166,11 @@ TEST_P(BaseGridViewControllerTest, InsertItem) {
   // Previously: The grid had 2 items and selectedIndex was 0. The delegate had
   // an itemCount of 2.
   web::WebStateID newItemID = web::WebStateID::NewUnique();
-  [view_controller_
-          insertItem:[[TabSwitcherItem alloc] initWithIdentifier:newItemID]
-             atIndex:2
-      selectedItemID:newItemID];
+  TabSwitcherItem* item =
+      [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
+  [view_controller_ insertItem:[GridItemIdentifier tabIdentifier:item]
+                       atIndex:2
+                selectedItemID:newItemID];
   EXPECT_EQ(3U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(2U, view_controller_.selectedIndex);
   EXPECT_EQ(3U, delegate_.itemCount);
@@ -302,7 +303,9 @@ TEST_P(BaseGridViewControllerTest, ReplaceScrolledOffScreenCell) {
     web::WebStateID uniqueID = web::WebStateID::NewUnique();
     TabSwitcherItem* item =
         [[TabSwitcherItem alloc] initWithIdentifier:uniqueID];
-    [view_controller_ insertItem:item atIndex:0 selectedItemID:identifier_a_];
+    [view_controller_ insertItem:[GridItemIdentifier tabIdentifier:item]
+                         atIndex:0
+                  selectedItemID:identifier_a_];
     // Spin the runloop to make sure that the visible cells are updated.
     base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
     visibleCellsCount = view_controller_.collectionView.visibleCells.count;

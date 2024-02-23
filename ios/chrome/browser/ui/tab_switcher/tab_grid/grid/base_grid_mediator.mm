@@ -373,7 +373,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
       NSUInteger itemIndex =
           [self itemIndexFromWebStateListIndex:insertChange.index()];
-      [self.consumer insertItem:item
+      [self.consumer insertItem:[GridItemIdentifier tabIdentifier:item]
                         atIndex:itemIndex
                  selectedItemID:GetActiveNonPinnedTabID(webStateList)];
 
@@ -1077,7 +1077,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     TabSwitcherItem* item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
     NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-    [self.consumer insertItem:item
+    [self.consumer insertItem:[GridItemIdentifier tabIdentifier:item]
                       atIndex:itemIndex
                selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
 

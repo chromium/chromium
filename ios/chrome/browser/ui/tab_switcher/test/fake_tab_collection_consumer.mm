@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
 #import "base/check.h"
+
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -31,10 +32,10 @@
   }
 }
 
-- (void)insertItem:(TabSwitcherItem*)item
+- (void)insertItem:(GridItemIdentifier*)item
            atIndex:(NSUInteger)index
     selectedItemID:(web::WebStateID)selectedItemID {
-  _items.insert(_items.begin() + index, item.identifier);
+  _items.insert(_items.begin() + index, item.tabSwitcherItem.identifier);
   _selectedItemID = selectedItemID;
 }
 
