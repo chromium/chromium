@@ -11,8 +11,8 @@ desc: |-
   from calling the API without a prior user gesture.
 
   For detailed information on valid url patterns, please see
-  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * is
-  not an accepted value for this policy.
+  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
   Origins matching both blocked and allowed policy patterns will be blocked.
   Origins not specified by policy nor user settings will require a prior user
