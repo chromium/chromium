@@ -448,7 +448,8 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     basic_shape = std::move(inset);
   } else if (const auto* ray_value =
                  DynamicTo<cssvalue::CSSRayValue>(basic_shape_value)) {
-    float angle = ray_value->Angle().ComputeDegrees();
+    float angle =
+        ray_value->Angle().ComputeDegrees(state.CssToLengthConversionData());
     StyleRay::RaySize size = KeywordToRaySize(ray_value->Size().GetValueID());
     bool contain = !!ray_value->Contain();
     basic_shape =
