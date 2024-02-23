@@ -860,7 +860,7 @@
   {
     "name": "block-insecure-private-network-requests",
     "owners": [ "lyf@chromium.org", "phao@chromium.org", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "bluetooth-coredump",
@@ -6752,12 +6752,12 @@
   {
     "name": "private-network-access-preflight-short-timeout",
     "owners": [ "lyf@chromium.org", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "private-network-access-respect-preflight-results",
     "owners": [ "lyf@chromium.org", "phao@chromium.org", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "probabilistic-memory-saver",
