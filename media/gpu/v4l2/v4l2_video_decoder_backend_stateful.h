@@ -105,7 +105,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // When a video frame pool is in use, obtain a frame from the pool or, if
   // none is available, schedule |EnqueueOutputBuffers()| to be called when one
   // becomes available.
-  scoped_refptr<VideoFrame> GetPoolVideoFrame();
+  scoped_refptr<FrameResource> GetPoolVideoFrame();
 
   bool SendStopCommand();
   bool InitiateFlush(VideoDecoder::DecodeCB flush_cb);

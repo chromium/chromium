@@ -21,6 +21,7 @@
 #include "media/base/video_codecs.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
@@ -340,20 +341,21 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
         ret = std::move(*buffer).QueueMMap();
         break;
       case V4L2_MEMORY_DMABUF: {
-        scoped_refptr<VideoFrame> video_frame = GetPoolVideoFrame();
+        scoped_refptr<FrameResource> frame = GetPoolVideoFrame();
         // Running out of frame is not an error, we will be called again
         // once frames are available.
-        if (!video_frame)
+        if (!frame) {
           return;
-        buffer = output_queue_->GetFreeBufferForFrame(
-            GetSharedMemoryId(*video_frame));
+        }
+        buffer =
+            output_queue_->GetFreeBufferForFrame(frame->GetSharedMemoryId());
         if (!buffer) {
           no_buffer = true;
           break;
         }
 
-        framerate_control_->AttachToVideoFrame(video_frame);
-        ret = std::move(*buffer).QueueDMABuf(std::move(video_frame));
+        framerate_control_->AttachToFrameResource(frame);
+        ret = std::move(*buffer).QueueDMABuf(std::move(frame));
         break;
       }
       default:
@@ -376,16 +378,18 @@ void V4L2StatefulVideoDecoderBackend::EnqueueOutputBuffers() {
             << " output buffers queued";
 }
 
-scoped_refptr<VideoFrame> V4L2StatefulVideoDecoderBackend::GetPoolVideoFrame() {
+scoped_refptr<FrameResource>
+V4L2StatefulVideoDecoderBackend::GetPoolVideoFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
   DmabufVideoFramePool* pool = client_->GetVideoFramePool();
   DCHECK_EQ(output_queue_->GetMemoryType(), V4L2_MEMORY_DMABUF);
   DCHECK_NE(pool, nullptr);
 
-  scoped_refptr<VideoFrame> frame = pool->GetFrame();
+  scoped_refptr<FrameResource> frame =
+      VideoFrameResource::Create(pool->GetFrame());
   if (!frame) {
-    DVLOGF(3) << "No available videoframe for now";
+    DVLOGF(3) << "No available VideoFrame for now";
     // We will try again once a frame becomes available.
     pool->NotifyWhenFrameAvailable(base::BindOnce(
         base::IgnoreResult(&base::SequencedTaskRunner::PostTask), task_runner_,
@@ -454,25 +458,23 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
       encoding_timestamps_.erase(flat_timespec);
     }
 
-    scoped_refptr<VideoFrame> frame;
+    scoped_refptr<FrameResource> frame;
 
     switch (output_queue_->GetMemoryType()) {
       case V4L2_MEMORY_MMAP: {
-        // Wrap the videoframe into another one so we can be signaled when the
+        // Wrap the frame into another one so we can be signaled when the
         // consumer is done with it and reuse the V4L2 buffer.
-        scoped_refptr<VideoFrame> origin_frame = buffer->GetVideoFrame();
-        frame = VideoFrame::WrapVideoFrame(origin_frame, origin_frame->format(),
-                                           origin_frame->visible_rect(),
-                                           origin_frame->natural_size());
+        scoped_refptr<FrameResource> origin_frame = buffer->GetFrameResource();
+        frame = origin_frame->CreateWrappingFrame();
         frame->AddDestructionObserver(base::BindOnce(
             &V4L2StatefulVideoDecoderBackend::ReuseOutputBufferThunk,
             task_runner_, weak_this_, buffer));
         break;
       }
       case V4L2_MEMORY_DMABUF:
-        // The pool VideoFrame we passed to QueueDMABuf() has been decoded into,
-        // pass it as-is.
-        frame = buffer->GetVideoFrame();
+        // The frame from the frame pool that we passed to QueueDMABuf() has
+        // been decoded into. It can be output as-is.
+        frame = buffer->GetFrameResource();
         break;
       default:
         NOTREACHED();

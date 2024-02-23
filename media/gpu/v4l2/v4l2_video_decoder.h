@@ -82,7 +82,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                         gfx::Rect visible_rect,
                         size_t num_codec_reference_frames,
                         uint8_t bit_depth) override;
-  void OutputFrame(scoped_refptr<VideoFrame> frame,
+  void OutputFrame(scoped_refptr<FrameResource> frame,
                    const gfx::Rect& visible_rect,
                    const VideoColorSpace& color_space,
                    base::TimeDelta timestamp) override;

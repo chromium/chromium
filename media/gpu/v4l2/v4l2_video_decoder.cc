@@ -27,7 +27,6 @@
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_status.h"
@@ -1200,7 +1199,7 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
   }
 }
 
-void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
+void V4L2VideoDecoder::OutputFrame(scoped_refptr<FrameResource> frame,
                                    const gfx::Rect& visible_rect,
                                    const VideoColorSpace& color_space,
                                    base::TimeDelta timestamp) {
@@ -1218,8 +1217,8 @@ void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
   if (frame->visible_rect() != visible_rect ||
       frame->timestamp() != timestamp) {
     gfx::Size natural_size = aspect_ratio_.GetNaturalSize(visible_rect);
-    scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-        frame, frame->format(), visible_rect, natural_size);
+    scoped_refptr<FrameResource> wrapped_frame =
+        frame->CreateWrappingFrame(visible_rect, natural_size);
     wrapped_frame->set_timestamp(timestamp);
 
     frame = std::move(wrapped_frame);
@@ -1227,7 +1226,7 @@ void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
 
   frame->set_color_space(color_space.ToGfxColorSpace());
 
-  output_cb_.Run(VideoFrameResource::Create(std::move(frame)));
+  output_cb_.Run(std::move(frame));
 }
 
 DmabufVideoFramePool* V4L2VideoDecoder::GetVideoFramePool() const {
