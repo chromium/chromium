@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.11](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.10...chromium-bidi-v0.5.11) (2024-02-23)
+
+
+### Bug Fixes
+
+* add `cdp.resolveRealm` command ([#1882](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1882)) ([08d3e45](https://github.com/GoogleChromeLabs/chromium-bidi/commit/08d3e45dc4ba5317b53b3aae994fc1fc5551e1bd))
+* use better error handling ([#1877](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1877)) ([33536e0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/33536e0be142de0659241c4762b2040c52c3e980))
+
 ## [0.5.10](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.9...chromium-bidi-v0.5.10) (2024-02-22)
 
 
