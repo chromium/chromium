@@ -9320,13 +9320,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kDragDropIntoOmnibox)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-update-virtual-card-enrollment",
-     flag_descriptions::kAutofillEnableUpdateVirtualCardEnrollmentName,
-     flag_descriptions::kAutofillEnableUpdateVirtualCardEnrollmentDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"lacros-shared-components-dir",
      flag_descriptions::kLacrosSharedComponentsDirName,

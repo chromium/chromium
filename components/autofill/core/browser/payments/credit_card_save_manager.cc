@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -463,12 +464,7 @@ void CreditCardSaveManager::OnDidUploadCard(
     // |personal_data_manager_|. PDM uses this information to update the avatar
     // button UI.
     personal_data_manager_->OnCreditCardSaved(/*is_local_card=*/false);
-#if BUILDFLAG(IS_IOS)
-    if (base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
-#else
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-#endif
+    if (VirtualCardFeatureEnabled()) {
       // After a card is successfully saved to the server, offer virtual card
       // enrollment if the card is eligible. |upload_card_response_details| has
       // fields in the response that will be required for server requests in the
@@ -1222,12 +1218,7 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
         user_provided_card_details.expiration_date_year, app_locale_);
   }
 
-#if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
-#else
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-#endif
+  if (VirtualCardFeatureEnabled()) {
     client_->GetVirtualCardEnrollmentManager()
         ->SetSaveCardBubbleAcceptedTimestamp(AutofillClock::Now());
   }

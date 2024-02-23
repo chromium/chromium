@@ -693,11 +693,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "autofill-enable-update-virtual-card-enrollment",
-    "owners": [ "siyua@chromium.org", "jsaul@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-enable-user-avatar-in-save-card-footer",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 130

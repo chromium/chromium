@@ -13,6 +13,9 @@ class CreditCard;
 // product name and whether they both should be shown.
 bool ShouldShowCardMetadata(const CreditCard& card);
 
+// Returns whether the virtual card is supported.
+bool VirtualCardFeatureEnabled();
+
 // TODO(crbug.com/1431355): Move here payments related feature availability
 // checks from autofill_experiments.
 

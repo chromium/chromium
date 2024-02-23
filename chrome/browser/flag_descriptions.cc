@@ -563,14 +563,6 @@ const char kAutofillEnableSyncingOfPixBankAccountsDescription[] =
     "These bank account will show up in Chrome settings.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kAutofillEnableUpdateVirtualCardEnrollmentName[] =
-    "Enable Update Virtual Card Enrollment";
-const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =
-    "When enabled, the user will have the ability to update the virtual card "
-    "enrollment of a credit card through their chrome browser after certain "
-    "autofill flows (for example, downstream and upstream), and from the "
-    "settings page.";
-
 const char kAutofillEnableVcn3dsAuthenticationName[] =
     "Enable 3DS authentication for virtual cards";
 const char kAutofillEnableVcn3dsAuthenticationDescription[] =

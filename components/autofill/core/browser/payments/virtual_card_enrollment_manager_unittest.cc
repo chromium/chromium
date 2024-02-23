@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -51,8 +50,6 @@ const std::string kTestRiskData = "risk_data";
 class VirtualCardEnrollmentManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableUpdateVirtualCardEnrollment);
     autofill_client_ = std::make_unique<TestAutofillClient>();
     autofill_client_->SetPrefs(test::PrefServiceForTesting());
     personal_data_manager().Init(
@@ -129,6 +126,9 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     return response;
   }
 
+  // TODO(b/303715506): This part does not test the desired behavior on iOS as
+  // the virtual card enrollment strikedatabase on iOS is not initialized
+  // (guarded by the feature flag).
   void SetUpStrikeDatabaseTest() {
     VirtualCardEnrollmentProcessState* state =
         virtual_card_enrollment_manager_
@@ -160,7 +160,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   }
   PrefService* user_prefs() { return autofill_client_->GetPrefs(); }
 
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   syncer::TestSyncService sync_service_;

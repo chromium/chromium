@@ -330,9 +330,6 @@ extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
 extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
-extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
-extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
-
 extern const char kAutofillEnableVcn3dsAuthenticationName[];
 extern const char kAutofillEnableVcn3dsAuthenticationDescription[];
 

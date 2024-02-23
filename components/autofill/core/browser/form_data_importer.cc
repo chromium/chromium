@@ -116,11 +116,6 @@ bool ShouldOfferVirtualCardEnrollment(
   if (!base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCards)) {
     return false;
   }
-#else
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableUpdateVirtualCardEnrollment)) {
-    return false;
-  }
 #endif
 
   if (!extracted_credit_card) {
