@@ -43,6 +43,12 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
       continue;
     }
 
+    // Ongoing events have medium priority all day.
+    if (IsOngoingEvent(item)) {
+      item.ranking = 9.f;
+      continue;
+    }
+
     // Events starting in the next 30 minutes has medium priority all day.
     if (now_ <= item.start_time && item.start_time < now_ + base::Minutes(30)) {
       item.ranking = 12.f;

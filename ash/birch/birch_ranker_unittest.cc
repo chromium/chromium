@@ -127,6 +127,27 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
   EXPECT_FLOAT_EQ(items[2].ranking, 25.f);
 }
 
+TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 3 PM.
+  base::Time now = TimeFromString("22 Feb 2024 15:00 UTC");
+  BirchRanker ranker(now);
+
+  // Create an ongoing event (2 PM to 4 PM).
+  BirchCalendarItem item(u"Ongoing");
+  item.start_time = TimeFromString("22 Feb 2024 14:00 UTC");
+  item.end_time = TimeFromString("22 Feb 2024 16:00 UTC");
+  std::vector<BirchCalendarItem> items = {item};
+
+  ranker.RankCalendarItems(&items);
+
+  ASSERT_EQ(1u, items.size());
+
+  // The ongoing event has a ranking.
+  EXPECT_FLOAT_EQ(items[0].ranking, 9.f);
+}
+
 TEST(BirchRankerTest, RankWeatherItems_Morning) {
   base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
 
