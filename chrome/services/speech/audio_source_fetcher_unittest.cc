@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -182,6 +183,7 @@ TEST_P(AudioSourceFetcherImplTest, ResampleForServerBasedRecognizer) {
   audio_bus->Zero();
   audio_source_fetcher()->Capture(audio_bus.get(),
                                   /*audio_capture_time=*/base::TimeTicks::Now(),
+                                  /*glitch_info=*/{},
                                   /*volume=*/1.0,
                                   /*key_pressed=*/true);
   if (is_server_based()) {

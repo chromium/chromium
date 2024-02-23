@@ -198,6 +198,7 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   // Runs on audio service thread.
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
+               const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override {
     DCHECK_EQ(g_current_format.num_channels, audio_source->channels());

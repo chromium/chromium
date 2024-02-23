@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_glitch_info.h"
 
 namespace ash::libassistant {
 
@@ -142,7 +143,8 @@ class FakeInputDevice {
     DVLOG(2) << "Send " << block->frames() << " audio frames";
     const base::TimeTicks time = base::TimeTicks::Now();
     if (callback_)
-      callback_->Capture(block, time, /*volume=*/0.5, /*key_pressed=*/false);
+      callback_->Capture(block, time, {}, /*volume=*/0.5,
+                         /*key_pressed=*/false);
   }
 
   // LibAssistant doesn't expect the microphone to stop sending data.
@@ -156,7 +158,7 @@ class FakeInputDevice {
         audio_parameters_.GetMicrosecondsPerFrame() * audio_packet->frames();
     const base::TimeTicks time = base::TimeTicks::Now();
     if (callback_) {
-      callback_->Capture(audio_packet.get(), time, /*volume=*/0.5,
+      callback_->Capture(audio_packet.get(), time, {}, /*volume=*/0.5,
                          /*key_pressed=*/false);
     }
 

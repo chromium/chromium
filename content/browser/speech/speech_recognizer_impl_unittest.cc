@@ -29,6 +29,7 @@
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/test_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -261,7 +262,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     auto* capture_callback =
         static_cast<media::AudioCapturerSource::CaptureCallback*>(
             recognizer_.get());
-    capture_callback->Capture(data, base::TimeTicks::Now(), 0.0, false);
+    capture_callback->Capture(data, base::TimeTicks::Now(), {}, 0.0, false);
   }
 
   void OnCaptureError() {
