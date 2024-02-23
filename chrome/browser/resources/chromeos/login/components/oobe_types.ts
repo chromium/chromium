@@ -148,7 +148,6 @@ export namespace OobeTypes {
   export enum EnrollmentStep {
     LOADING = 'loading',
     SIGNIN = 'signin',
-    AD_JOIN = 'ad-join',
     WORKING = 'working',
     ATTRIBUTE_PROMPT = 'attribute-prompt',
     ERROR = 'error',
@@ -157,7 +156,6 @@ export namespace OobeTypes {
     TPM_CHECKING = 'tpm-checking',
     KIOSK_ENROLLMENT = 'kiosk-enrollment',
     ATTRIBUTE_PROMPT_ERROR = 'attribute-prompt-error',
-    ACTIVE_DIRECTORY_JOIN_ERROR = 'active-directory-join-error',
   }
 
   /**

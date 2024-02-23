@@ -409,40 +409,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
-      id: 'offline-ad-login',
-      kind: ScreenKind.NORMAL,
-      // Remove this step from preview here, because it can only occur during
-      // enterprise enrollment step and it is already available there in debug
-      // overlay.
-      handledSteps: 'unlock,creds',
-      suffix: 'E',
-      states: [
-        {
-          id: 'unlock',
-          trigger: (screen) => {
-            screen.setUIStep('unlock');
-          },
-          data: {},
-        },
-        {
-          id: 'creds',
-          trigger: (screen) => {
-            screen.setUIStep('creds');
-            screen.isDomainJoin = false;
-          },
-          data: {},
-        },
-        {
-          id: 'creds(isDomainJoin)',
-          trigger: (screen) => {
-            screen.setUIStep('creds');
-            screen.isDomainJoin = true;
-          },
-          data: {},
-        },
-      ],
-    },
-    {
       id: 'enterprise-enrollment',
       kind: ScreenKind.NORMAL,
       handledSteps: 'error',

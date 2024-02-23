@@ -37,10 +37,6 @@ import {globalOobeKeyboard, KEYBOARD_UTILS_FOR_INJECTION} from '../../components
 import {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import * as OobeDebugger from '../../debug/debug.js';
-import {invokePolymerMethod} from '../../display_manager.js';
-import {OfflineAdLogin} from '../common/offline_ad_login.js';
-import type {ActiveDirectoryErrorState, JoinConfigType} from '../common/offline_ad_login.js';
-import {ADLoginStep} from '../common/offline_ad_login.js';
 
 import {getTemplate} from './enterprise_enrollment.html.js';
 
@@ -69,21 +65,6 @@ interface EnterpriseEnrollmentScreenData {
   management_domain: string|undefined;
   email: string|undefined;
   webviewPartitionName: string|undefined;
-}
-
-declare global {
-  interface HTMLElementEventMap {
-    'authCompletedAd': CustomEvent<{
-      'distinguished_name': string,
-      'username': string,
-      'password': string,
-      'machine_name': string,
-      'encryption_types': string,
-    }>;
-    'unlockPasswordEntered': CustomEvent<{
-      'unlock_password': string,
-    }>;
-  }
 }
 
 export class EnterpriseEnrollmentElement extends
@@ -253,8 +234,6 @@ export class EnterpriseEnrollmentElement extends
   override get EXTERNAL_API(): string[] {
     return [
       'doReload',
-      'setAdJoinConfiguration',
-      'setAdJoinParams',
       'setEnterpriseDomainInfo',
       'showAttributePromptStep',
       'showError',
@@ -277,13 +256,6 @@ export class EnterpriseEnrollmentElement extends
         this.shadowRoot?.querySelector<GaiaDialog>('#step-signin');
     assert(gaiaDialog instanceof GaiaDialog);
     return gaiaDialog;
-  }
-
-  private getOfflineAdLogin(): OfflineAdLogin {
-    const offlineAdLogin =
-        this.shadowRoot?.querySelector<OfflineAdLogin>('#step-ad-join');
-    assert(offlineAdLogin instanceof OfflineAdLogin);
-    return offlineAdLogin;
   }
 
   private getSkipConfirmationDialog(): OobeModalDialog {
@@ -317,35 +289,6 @@ export class EnterpriseEnrollmentElement extends
       }
     });
 
-    const offlineAdLogin = this.getOfflineAdLogin();
-    offlineAdLogin.addEventListener(
-        'authCompletedAd', (e: CustomEvent<{
-                             'distinguished_name': string,
-                             'username': string,
-                             'password': string,
-                             'machine_name': string,
-                             'encryption_types': string,
-                           }>) => {
-          offlineAdLogin.disabled = true;
-          offlineAdLogin.loading = true;
-          chrome.send('oauthEnrollAdCompleteLogin', [
-            e.detail.machine_name,
-            e.detail.distinguished_name,
-            e.detail.encryption_types,
-            e.detail.username,
-            e.detail.password,
-          ]);
-        });
-
-    offlineAdLogin.addEventListener(
-        'unlockPasswordEntered', (e: CustomEvent<{
-                                   'unlock_password': string,
-                                 }>) => {
-          offlineAdLogin.disabled = true;
-          chrome.send(
-              'oauthEnrollAdUnlockConfiguration', [e.detail.unlock_password]);
-        });
-
     assert(this.authenticator);
     this.authenticator.insecureContentBlockedCallback = (url: string) => {
       this.showError(
@@ -366,8 +309,7 @@ export class EnterpriseEnrollmentElement extends
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param data Screen init payload,
-   * contains the signin frame URL.
+   * @param data Screen init payload, contains the signin frame URL.
    */
   onBeforeShow(data?: EnterpriseEnrollmentScreenData): void {
     if (data === undefined) {
@@ -435,7 +377,6 @@ export class EnterpriseEnrollmentElement extends
       }
     }
 
-    invokePolymerMethod(this.getOfflineAdLogin(), 'onBeforeShow');
     if (!this.uiStep) {
       this.showStep(
           this.isAutoEnroll ? OobeTypes.EnrollmentStep.WORKING :
@@ -452,8 +393,7 @@ export class EnterpriseEnrollmentElement extends
   }
 
   /**
-   * Shows attribute-prompt step with pre-filled asset ID and
-   * location.
+   * Shows attribute-prompt step with pre-filled asset ID and location.
    */
   showAttributePromptStep(annotatedAssetId: string, annotatedLocation: string):
       void {
@@ -464,7 +404,6 @@ export class EnterpriseEnrollmentElement extends
 
   /**
    * Sets the type of the device and the enterprise domain to be shown.
-   *
    */
   setEnterpriseDomainInfo(manager: string, deviceType: string): void {
     this.domainManager = manager;
@@ -503,15 +442,8 @@ export class EnterpriseEnrollmentElement extends
    */
   showStep(step: OobeTypes.EnrollmentStep): void {
     this.setUIStep(step);
-    if (step === OobeTypes.EnrollmentStep.AD_JOIN) {
-      const offlineAdLogin = this.getOfflineAdLogin();
-      offlineAdLogin.disabled = false;
-      offlineAdLogin.loading = false;
-      offlineAdLogin.focus();
-    }
     this.isCancelDisabled = (step === OobeTypes.EnrollmentStep.SIGNIN &&
                              !this.isManualEnrollment) ||
-        step === OobeTypes.EnrollmentStep.AD_JOIN ||
         step === OobeTypes.EnrollmentStep.WORKING ||
         step === OobeTypes.EnrollmentStep.CHECKING ||
         step === OobeTypes.EnrollmentStep.TPM_CHECKING ||
@@ -535,44 +467,12 @@ export class EnterpriseEnrollmentElement extends
     this.authenticator.reload();
   }
 
-  /**
-   * Sets Active Directory join screen params.
-   * @param showUnlockConfig true if there is an encrypted
-   * configuration (and not unlocked yet).
-   */
-  setAdJoinParams(
-      machineName: string, userName: string,
-      errorState: ActiveDirectoryErrorState, showUnlockConfig: boolean): void {
-    const offlineAdLogin = this.getOfflineAdLogin();
-    offlineAdLogin.disabled = false;
-    offlineAdLogin.machineName = machineName;
-    offlineAdLogin.userName = userName;
-    offlineAdLogin.errorState = errorState;
-    if (showUnlockConfig) {
-      offlineAdLogin.setUIStep(ADLoginStep.UNLOCK);
-    } else {
-      offlineAdLogin.setUIStep(ADLoginStep.CREDS);
-    }
-  }
-
-  /**
-   * Sets Active Directory join screen with the unlocked configuration.
-   */
-  setAdJoinConfiguration(options: JoinConfigType[]): void {
-    const offlineAdLogin = this.getOfflineAdLogin();
-    offlineAdLogin.disabled = false;
-    offlineAdLogin.setJoinConfigurationOptions(options);
-    offlineAdLogin.setUIStep(ADLoginStep.CREDS);
-    offlineAdLogin.focus();
-  }
-
   clickPrimaryButtonForTesting(): void {
     this.getGaiaDialog().clickPrimaryButtonForTesting();
   }
 
   /**
-   * Skips the device attribute update,
-   * shows the successful enrollment step.
+   * Skips the device attribute update, shows the successful enrollment step.
    */
   private skipAttributes(): void {
     this.showStep(OobeTypes.EnrollmentStep.SUCCESS);
@@ -715,8 +615,6 @@ export class EnterpriseEnrollmentElement extends
 
     if (this.uiStep === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
       this.showStep(OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT_ERROR);
-    } else if (this.uiStep === OobeTypes.EnrollmentStep.AD_JOIN) {
-      this.showStep(OobeTypes.EnrollmentStep.ACTIVE_DIRECTORY_JOIN_ERROR);
     } else {
       this.showStep(OobeTypes.EnrollmentStep.ERROR);
     }
@@ -815,14 +713,6 @@ export class EnterpriseEnrollmentElement extends
    */
   private doRetry(): void {
     chrome.send('oauthEnrollRetry');
-  }
-
-  /**
-   *  Event handler for the 'Try again' button that is shown upon an error
-   *  during ActiveDirectory join.
-   */
-  private onAdJoinErrorRetry(): void {
-    this.showStep(OobeTypes.EnrollmentStep.AD_JOIN);
   }
 
   /*

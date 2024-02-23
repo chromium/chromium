@@ -30,7 +30,6 @@ import './screens/common/local_state_error.js';
 import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.js';
 import './screens/common/multidevice_setup.js';
-import './screens/common/offline_ad_login.js';
 import './screens/common/online_authentication_screen.js';
 import './screens/common/oobe_reset.js';
 import './screens/common/os_install.js';
@@ -157,7 +156,6 @@ export const commonScreensList: ScreensList = [
   {tag: 'managed-terms-of-service-element', id: 'terms-of-service'},
   {tag: 'marketing-opt-in-element', id: 'marketing-opt-in'},
   {tag: 'multidevice-setup-element', id: 'multidevice-setup-screen'},
-  {tag: 'offline-ad-login-element', id: 'offline-ad-login'},
   {
     tag: 'online-authentication-screen-element',
     id: 'online-authentication-screen',

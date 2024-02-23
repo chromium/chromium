@@ -80,25 +80,17 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
 </oobe-loading-dialog>
 
-<offline-ad-login-element id="step-ad-join" is-domain-join
-    for-step="ad-join"
-    class="fit"
-    ad-welcome-message-key="oauthEnrollAdDomainJoinWelcomeMessage">
-</offline-ad-login-element>
-
 <!--  ERROR DIALOG -->
-<!-- There are three kinds of errors:
+<!-- There are two kinds of errors:
         - General
         - AttributePrompt
-        - ActiveDirectoryJoin
 
     They share the same structure but have different bottom buttons.
         General: [ Back, Skip/Manual Enrollment, Try Again ]
         AttributePrompt: [ 'Done' ]
-        ActiveDirectoryJoin: [ 'Try Again' ]
 -->
 <oobe-adaptive-dialog id="step-error" role="alert"
-    for-step="error, attribute-prompt-error, active-directory-join-error">
+    for-step="error, attribute-prompt-error">
   <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
   <h1 slot="title">[[getErrorTitle(locale, licenseType)]]</h1>
   <div id="errorMsg" slot="subtitle">[[errorText]]</div>
@@ -129,14 +121,6 @@ found in the LICENSE file.
         hidden$="[[!canRetryAfterError]]"
         on-click="doRetry" class="focus-on-show"
         text-key="oauthEnrollRetry">
-      </oobe-text-button>
-    </div>
-
-    <!-- BOTTOM BUTTONS: ACTIVE DIRECTORY JOIN ERROR-->
-    <div for-step="active-directory-join-error">
-      <oobe-text-button inverse id="adRetryButton"
-          on-click="onAdJoinErrorRetry" class="focus-on-show"
-          text-key="oauthEnrollRetry">
       </oobe-text-button>
     </div>
 
