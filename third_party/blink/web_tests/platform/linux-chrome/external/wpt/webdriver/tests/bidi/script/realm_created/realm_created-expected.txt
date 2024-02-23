@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_shared_worker
+  asyncio.exceptions.TimeoutError
+[FAIL] test_service_worker
+  asyncio.exceptions.TimeoutError
+Harness: the test ran to completion.
