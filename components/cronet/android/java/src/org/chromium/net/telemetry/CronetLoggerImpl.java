@@ -64,6 +64,12 @@ public class CronetLoggerImpl extends CronetLogger {
 
     @Override
     public void logCronetInitializedInfo(CronetInitializedInfo info) {
+        // This atom uses arrays, which are only supported by StatsLog starting from Android T. If
+        // we are running Android <T we simply drop the atom, which is fine-ish because it doesn't
+        // carry critical information, nor does it carry information that other atoms may want to
+        // join against.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
+
         CronetStatsLog.write(
                 CronetStatsLog.CRONET_INITIALIZED,
                 info.cronetInitializationRef,
