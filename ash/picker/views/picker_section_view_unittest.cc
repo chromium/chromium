@@ -28,7 +28,6 @@
 namespace ash {
 namespace {
 
-using ::testing::Eq;
 using ::testing::Property;
 using ::testing::SizeIs;
 
@@ -53,7 +52,7 @@ TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
   section_view.AddTitleLabel(kSectionTitleText);
 
   EXPECT_THAT(section_view.title_label_for_testing(),
-              Property(&views::Label::GetText, Eq(kSectionTitleText)));
+              Property(&views::Label::GetText, kSectionTitleText));
 }
 
 TEST_F(PickerSectionViewTest, AddsListItem) {

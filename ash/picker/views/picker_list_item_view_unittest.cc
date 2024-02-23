@@ -22,7 +22,6 @@
 namespace ash {
 namespace {
 
-using ::testing::Eq;
 using ::testing::Property;
 using ::testing::SizeIs;
 
@@ -39,7 +38,7 @@ TEST_F(PickerListItemViewTest, SetsPrimaryText) {
       item_view.primary_container_for_testing()->children()[0];
   ASSERT_TRUE(views::IsViewClass<views::Label>(primary_label));
   EXPECT_THAT(views::AsViewClass<views::Label>(primary_label),
-              Property(&views::Label::GetText, Eq(kPrimaryText)));
+              Property(&views::Label::GetText, kPrimaryText));
 }
 
 TEST_F(PickerListItemViewTest, SetsPrimaryImage) {

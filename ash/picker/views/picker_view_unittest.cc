@@ -47,7 +47,6 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
@@ -330,12 +329,11 @@ TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
   ViewDrawnWaiter().Wait(category_item_view);
   LeftClickOn(category_item_view);
 
-  EXPECT_THAT(
-      picker_view->search_field_view_for_testing()
-          .textfield_for_testing()
-          .GetPlaceholderText(),
-      Eq(l10n_util::GetStringUTF16(
-          IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT)));
+  EXPECT_EQ(picker_view->search_field_view_for_testing()
+                .textfield_for_testing()
+                .GetPlaceholderText(),
+            l10n_util::GetStringUTF16(
+                IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT));
 }
 
 TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {

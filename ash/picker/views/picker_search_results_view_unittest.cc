@@ -27,7 +27,6 @@ namespace {
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
@@ -42,7 +41,7 @@ auto MatchesResultSection(PickerSectionType section_type, int num_items) {
   return AllOf(
       Property(&PickerSectionView::title_label_for_testing,
                Property(&views::Label::GetText,
-                        Eq(GetSectionTitleForPickerSectionType(section_type)))),
+                        GetSectionTitleForPickerSectionType(section_type))),
       Property(&PickerSectionView::item_views_for_testing, SizeIs(num_items)));
 }
 

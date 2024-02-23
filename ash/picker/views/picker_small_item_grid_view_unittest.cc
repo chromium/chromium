@@ -22,7 +22,6 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::Pointee;
 using ::testing::Property;
 
@@ -47,7 +46,7 @@ TEST_F(PickerSmallItemGridViewTest, AddsEmojiItem) {
   // One row with one item.
   EXPECT_THAT(small_item_grid.children(),
               ElementsAre(Pointee(
-                  Property(&views::View::children, ElementsAre(Eq(item))))));
+                  Property(&views::View::children, ElementsAre(item)))));
 }
 
 TEST_F(PickerSmallItemGridViewTest, AddsSymbolItem) {
@@ -59,7 +58,7 @@ TEST_F(PickerSmallItemGridViewTest, AddsSymbolItem) {
   // One row with one item.
   EXPECT_THAT(small_item_grid.children(),
               ElementsAre(Pointee(
-                  Property(&views::View::children, ElementsAre(Eq(item))))));
+                  Property(&views::View::children, ElementsAre(item)))));
 }
 
 TEST_F(PickerSmallItemGridViewTest, AddsEmoticonItem) {
@@ -72,7 +71,7 @@ TEST_F(PickerSmallItemGridViewTest, AddsEmoticonItem) {
   // One row with one item.
   EXPECT_THAT(small_item_grid.children(),
               ElementsAre(Pointee(
-                  Property(&views::View::children, ElementsAre(Eq(item))))));
+                  Property(&views::View::children, ElementsAre(item)))));
 }
 
 TEST_F(PickerSmallItemGridViewTest, SmallGridItemsStayWithinGridWidth) {
@@ -88,12 +87,11 @@ TEST_F(PickerSmallItemGridViewTest, SmallGridItemsStayWithinGridWidth) {
       CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
   // Three items in first row, one item in second row.
-  EXPECT_THAT(
-      small_item_grid.children(),
-      ElementsAre(
-          Pointee(Property(&views::View::children,
-                           ElementsAre(Eq(item1), Eq(item2), Eq(item3)))),
-          Pointee(Property(&views::View::children, ElementsAre(Eq(item4))))));
+  EXPECT_THAT(small_item_grid.children(),
+              ElementsAre(Pointee(Property(&views::View::children,
+                                           ElementsAre(item1, item2, item3))),
+                          Pointee(Property(&views::View::children,
+                                           ElementsAre(item4)))));
 }
 
 TEST_F(PickerSmallItemGridViewTest, GetsTopItem) {
@@ -106,11 +104,11 @@ TEST_F(PickerSmallItemGridViewTest, GetsTopItem) {
   PickerItemView* item3 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item1), Eq(item2)))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item3))))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item2))),
+          Pointee(Property(&views::View::children, ElementsAre(item3)))));
   EXPECT_EQ(item_grid.GetTopItem(), item1);
 }
 
@@ -130,11 +128,11 @@ TEST_F(PickerSmallItemGridViewTest, GetsBottomItem) {
   PickerItemView* item3 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item1), Eq(item2)))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item3))))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item2))),
+          Pointee(Property(&views::View::children, ElementsAre(item3)))));
   EXPECT_EQ(item_grid.GetBottomItem(), item3);
 }
 
@@ -154,11 +152,11 @@ TEST_F(PickerSmallItemGridViewTest, GetsItemAbove) {
   PickerItemView* item3 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item1), Eq(item2)))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item3))))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item2))),
+          Pointee(Property(&views::View::children, ElementsAre(item3)))));
   EXPECT_EQ(item_grid.GetItemAbove(item1), nullptr);
   EXPECT_EQ(item_grid.GetItemAbove(item3), item1);
 }
@@ -181,11 +179,11 @@ TEST_F(PickerSmallItemGridViewTest, GetsItemBelow) {
   PickerItemView* item3 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item1), Eq(item2)))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item3))))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item2))),
+          Pointee(Property(&views::View::children, ElementsAre(item3)))));
   EXPECT_EQ(item_grid.GetItemBelow(item1), item3);
   EXPECT_EQ(item_grid.GetItemBelow(item2), item3);
   EXPECT_EQ(item_grid.GetItemBelow(item3), nullptr);
@@ -209,11 +207,11 @@ TEST_F(PickerSmallItemGridViewTest, GetsItemLeftOf) {
   PickerItemView* item3 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item1), Eq(item2)))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item3))))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item2))),
+          Pointee(Property(&views::View::children, ElementsAre(item3)))));
   EXPECT_EQ(item_grid.GetItemLeftOf(item1), nullptr);
   EXPECT_EQ(item_grid.GetItemLeftOf(item2), item1);
   EXPECT_EQ(item_grid.GetItemLeftOf(item3), nullptr);
@@ -237,11 +235,11 @@ TEST_F(PickerSmallItemGridViewTest, GetsItemRightOf) {
   PickerItemView* item3 =
       item_grid.AddEmoticonItem(CreateSizedEmoticonItem(gfx::Size(100, 40)));
 
-  EXPECT_THAT(item_grid.children(),
-              ElementsAre(Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item1), Eq(item2)))),
-                          Pointee(Property(&views::View::children,
-                                           ElementsAre(Eq(item3))))));
+  EXPECT_THAT(
+      item_grid.children(),
+      ElementsAre(
+          Pointee(Property(&views::View::children, ElementsAre(item1, item2))),
+          Pointee(Property(&views::View::children, ElementsAre(item3)))));
   EXPECT_EQ(item_grid.GetItemRightOf(item1), item2);
   EXPECT_EQ(item_grid.GetItemRightOf(item2), nullptr);
   EXPECT_EQ(item_grid.GetItemRightOf(item3), nullptr);
