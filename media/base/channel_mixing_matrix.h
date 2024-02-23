@@ -48,6 +48,11 @@ class MEDIA_EXPORT ChannelMixingMatrix {
   void AccountFor(Channels ch);
   bool IsUnaccounted(Channels ch) const;
 
+  // Helper methods for checking if input or output layout is mono or 1.1 (Mono
+  // + LFE).
+  bool IsMonoInputLayout() const;
+  bool IsMonoOutputLayout() const;
+
   // Helper methods for checking if |ch| exists in either |input_layout_| or
   // |output_layout_| respectively.
   bool HasInputChannel(Channels ch) const;

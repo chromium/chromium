@@ -358,7 +358,7 @@ TEST(ChannelLayoutUtilMac,
 }
 
 TEST(ChannelLayoutUtilMac, ChannelLayoutConvertBackToChannelLayout) {
-  for (int i = 0; i < CHANNEL_LAYOUT_MAX; i++) {
+  for (int i = 0; i <= CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout input_layout = static_cast<ChannelLayout>(i);
     // Skip invalid channel layout.
     int input_channels = ChannelLayoutToChannelCount(input_layout);
@@ -366,10 +366,12 @@ TEST(ChannelLayoutUtilMac, ChannelLayoutConvertBackToChannelLayout) {
       continue;
     }
     // CHANNEL_LAYOUT_STEREO_DOWNMIX is the alias of CHANNEL_LAYOUT_STEREO,
-    // and CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is the alias of
-    // CHANNEL_LAYOUT_SURROUND
+    // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC is the alias of
+    // CHANNEL_LAYOUT_SURROUND, and CHANNEL_LAYOUT_5_1_4_DOWNMIX is the alias
+    // of CHANNEL_LAYOUT_5_1.
     if (input_layout == CHANNEL_LAYOUT_STEREO_DOWNMIX ||
-        input_layout == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
+        input_layout == CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC ||
+        input_layout == CHANNEL_LAYOUT_5_1_4_DOWNMIX) {
       continue;
     }
     auto intermediate_layout =

@@ -147,6 +147,8 @@ source_set("formats") {
     sources += [
       "mp4/ac3.cc",
       "mp4/ac3.h",
+      "mp4/ac3_constants.cc",
+      "mp4/ac3_constants.h",
       "mp4/eac3.cc",
       "mp4/eac3.h",
     ]

@@ -5,19 +5,16 @@
 #include "media/formats/mp4/ac3.h"
 
 #include <algorithm>
+
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 #include "media/base/limits.h"
+#include "media/formats/mp4/ac3_constants.h"
 #include "media/formats/mp4/rcheck.h"
 
 namespace media {
 
 namespace mp4 {
-// Please refer to ETSI TS 102 366 V1.4.1
-//     https://www.etsi.org/deliver/etsi_ts/102300_102399/102366/01.03.01_60/ts_102366v010301p.pdf
-//     4.4.2.3 acmod - Audio coding mode - 3 bits
-// for more details.
-constexpr uint8_t kGlobalChannelArray[] = {2, 1, 2, 3, 3, 4, 4, 5};
 
 AC3::AC3() = default;
 
@@ -53,14 +50,16 @@ bool AC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
 
   int acmod;
   RCHECK(reader.ReadBits(3, &acmod));
-  if (acmod >= static_cast<int>(sizeof(kGlobalChannelArray))) {
+  if (acmod >= kAC3AudioCodingModeSize) {
     return false;
   }
 
   int lfeon;
   RCHECK(reader.ReadBits(1, &lfeon));
 
-  channel_count_ = kGlobalChannelArray[acmod] + lfeon;
+  channel_layout_ = kAC3AudioCodingModeTable[lfeon][acmod];
+  RCHECK(channel_layout_ > CHANNEL_LAYOUT_UNSUPPORTED);
+  channel_count_ = ChannelLayoutToChannelCount(channel_layout_);
   RCHECK(channel_count_ >= 1 && channel_count_ <= limits::kMaxChannels);
 
   // skip bit_rate_code, reserved
@@ -70,6 +69,10 @@ bool AC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
 
 uint32_t AC3::GetChannelCount() const {
   return channel_count_;
+}
+
+ChannelLayout AC3::GetChannelLayout() const {
+  return channel_layout_;
 }
 
 }  // namespace mp4

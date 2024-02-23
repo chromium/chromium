@@ -429,7 +429,7 @@ static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
     return true;
   }
 
-  for (int i = 0; i < ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
+  for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout layout = static_cast<ChannelLayout>(i);
     if (ChannelLayoutToChannelCount(layout) != *channels) {
       continue;

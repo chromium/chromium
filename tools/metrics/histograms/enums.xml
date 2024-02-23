@@ -2732,6 +2732,12 @@ media/base/android/media_drm_bridge.h. -->
   <int value="27" label="CHANNEL_LAYOUT_7_1_WIDE_BACK"/>
   <int value="28" label="CHANNEL_LAYOUT_OCTAGONAL"/>
   <int value="29" label="CHANNEL_LAYOUT_DISCRETE"/>
+  <int value="30" label="CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC"/>
+  <int value="31" label="CHANNEL_LAYOUT_4_1_QUAD_SIDE"/>
+  <int value="32" label="CHANNEL_LAYOUT_BITSTREAM"/>
+  <int value="33" label="CHANNEL_LAYOUT_5_1_4_DOWNMIX"/>
+  <int value="34" label="CHANNEL_LAYOUT_1_1"/>
+  <int value="35" label="CHANNEL_LAYOUT_3_1_BACK"/>
 </enum>
 
 <enum name="ChromeLabsSelectedLab">

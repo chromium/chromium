@@ -192,7 +192,7 @@ bool AudioChannelLayoutToChannelLayout(const AudioChannelLayout& input_layout,
     channels_to_match.push_back(channel);
   }
 
-  for (int i = 0; i < ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
+  for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout layout = static_cast<ChannelLayout>(i);
     if (static_cast<UInt32>(ChannelLayoutToChannelCount(layout)) !=
         channel_count) {

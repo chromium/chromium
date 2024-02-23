@@ -47,6 +47,8 @@ static const int kLayoutToChannels[] = {
     5,   // CHANNEL_LAYOUT_4_1_QUAD_SIDE
     0,   // CHANNEL_LAYOUT_BITSTREAM
     6,   // CHANNEL_LAYOUT_5_1_4 (downmixed to 5.1)
+    2,   // CHANNEL_LAYOUT_1_1
+    4,   // CHANNEL_LAYOUT_3_1_BACK
 };
 
 // The channel orderings for each layout as specified by FFmpeg. Each value
@@ -165,6 +167,12 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
 
     // CHANNEL_LAYOUT_5_1_4, downmixed to six channels (5.1)
     {  0  , 1  , 2  , 3   , -1 , -1 , -1    , -1    , -1 , 4  ,  5 },
+
+    // CHANNEL_LAYOUT_1_1
+     { -1 , -1 , 0  ,  1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
+
+    // CHANNEL_LAYOUT_3_1_BACK
+    {  0  , 1  , -1 ,  2  , -1 , -1 , -1    , -1    ,  3 , -1 , -1 },
 };
 
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
@@ -276,6 +284,10 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
       return "BITSTREAM";
     case CHANNEL_LAYOUT_5_1_4_DOWNMIX:
       return "5.1.4 DOWNMIX";
+    case CHANNEL_LAYOUT_1_1:
+      return "1.1";
+    case CHANNEL_LAYOUT_3_1_BACK:
+      return "3.1_BACK";
   }
   NOTREACHED() << "Invalid channel layout provided: " << layout;
   return "";

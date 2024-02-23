@@ -887,14 +887,17 @@ ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
       return CHANNEL_LAYOUT_7_1;
     case AV_CH_LAYOUT_7POINT1_WIDE:
       return CHANNEL_LAYOUT_7_1_WIDE;
-#ifdef AV_CH_LAYOUT_7POINT1_WIDE_BACK
     case AV_CH_LAYOUT_7POINT1_WIDE_BACK:
       return CHANNEL_LAYOUT_7_1_WIDE_BACK;
-#endif
     case AV_CH_LAYOUT_OCTAGONAL:
       return CHANNEL_LAYOUT_OCTAGONAL;
     case AV_CH_LAYOUT_STEREO_DOWNMIX:
       return CHANNEL_LAYOUT_STEREO_DOWNMIX;
+    case AV_CH_FRONT_CENTER | AV_CH_LOW_FREQUENCY:
+      return CHANNEL_LAYOUT_1_1;
+    case AV_CH_FRONT_LEFT | AV_CH_FRONT_RIGHT | AV_CH_LOW_FREQUENCY |
+        AV_CH_BACK_CENTER:
+      return CHANNEL_LAYOUT_3_1_BACK;
     default:
       // FFmpeg channel_layout is 0 for .wav and .mp3.  Attempt to guess layout
       // based on the channel count.
