@@ -27,21 +27,6 @@ void WebTestContentSettingsClient::OnDestruct() {
   delete this;
 }
 
-bool WebTestContentSettingsClient::AllowScriptFromSource(
-    bool enabled_per_settings,
-    const blink::WebURL& script_url) {
-  bool allowed = enabled_per_settings;
-  if (test_runner_->GetFlags().dump_web_content_settings_client_callbacks()) {
-    auto* frame_proxy = static_cast<WebFrameTestProxy*>(render_frame());
-    frame_proxy->GetWebTestControlHostRemote()->PrintMessage(
-        std::string("WebTestContentSettingsClient: allowScriptFromSource(") +
-        web_test_string_util::NormalizeWebTestURLForTextOutput(
-            script_url.GetString().Utf8()) +
-        "): " + (allowed ? "true" : "false") + "\n");
-  }
-  return allowed;
-}
-
 bool WebTestContentSettingsClient::AllowStorageAccessSync(
     StorageType storage_type) {
   return test_runner_->GetFlags().storage_allowed();

@@ -1204,8 +1204,10 @@ class FakeContentSettingsClient : public blink::WebContentSettingsClient {
   FakeContentSettingsClient() = default;
 
   void DidNotAllowImage() override { ++did_not_allow_image_count_; }
+  void DidNotAllowScript() override { ++did_not_allow_script_count_; }
 
   int did_not_allow_image_count_ = 0;
+  int did_not_allow_script_count_ = 0;
 };
 
 }  // namespace
@@ -1238,6 +1240,59 @@ TEST_F(RenderFrameImplTest, ContentSettingsCallbackImageBlocked) {
                   web_view_);
 
   EXPECT_EQ(1, fake_content_settings_client.did_not_allow_image_count_);
+}
+
+// Checks that when script is blocked, the ContentSettingsAgent receives a
+// callback.
+TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptBlocked) {
+  // Create a fake content settings client to track script blocked callbacks.
+  FakeContentSettingsClient fake_content_settings_client;
+  GetMainRenderFrame()->GetWebFrame()->SetContentSettingsClient(
+      &fake_content_settings_client);
+
+  // Navigate to a URL with script disabled.
+  auto common_params = GetCommonParamsForContentSettingsTest();
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  commit_params->content_settings->allow_script = false;
+  content::TestRenderFrame* frame =
+      static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
+                  web_view_);
+  EXPECT_TRUE(HasText(GetMainFrame(), "JS_DISABLED"));
+  EXPECT_FALSE(HasText(GetMainFrame(), "JS_ENABLED"));
+
+  EXPECT_EQ(1, fake_content_settings_client.did_not_allow_script_count_);
+}
+
+// Checks that when script is allowed, the ContentSettingsAgent does not receive
+// a callback.
+TEST_F(RenderFrameImplTest, ContentSettingsCallbackScriptAllowed) {
+  // Create a fake content settings client to track script blocked callbacks.
+  FakeContentSettingsClient fake_content_settings_client;
+  GetMainRenderFrame()->GetWebFrame()->SetContentSettingsClient(
+      &fake_content_settings_client);
+
+  // Navigate to a URL with script enabled.
+  auto common_params = GetCommonParamsForContentSettingsTest();
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  content::TestRenderFrame* frame =
+      static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
+                  web_view_);
+  // Verify that the script was not blocked.
+  EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
+  EXPECT_TRUE(HasText(GetMainFrame(), "JS_ENABLED"));
+
+  // Verify there was no script blocked callback.
+  EXPECT_EQ(0, fake_content_settings_client.did_not_allow_script_count_);
 }
 
 // Regression test for crbug.com/232410: Load a page with JS blocked. Then,

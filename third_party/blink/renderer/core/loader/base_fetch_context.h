@@ -116,7 +116,7 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       : fetcher_properties_(properties), console_logger_(logger) {}
 
   // Used for security checks.
-  virtual bool AllowScriptFromSource(const KURL&) const = 0;
+  virtual bool AllowScript() const = 0;
 
   // Note: subclasses are expected to override following methods.
   // Used in the default implementation for CanRequest, CanFollowRedirect

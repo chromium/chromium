@@ -1423,63 +1423,6 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
 }
 
-IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
-                       WorkerImportModuleBlocked) {
-  // This test uses 2 servers, |https_server_| and |embedded_test_server|.
-  // These 3 files are served from them:
-  //   - "worker_import_module.html" from |embedded_test_server|.
-  //   - "worker_import_module_worker.js" from |embedded_test_server|.
-  //   - "worker_import_module_imported.js" from |https_server_|.
-  // 1. worker_import_module.html starts a dedicated worker which type is
-  //    'module' using worker_import_module_worker.js.
-  //      new Worker('worker_import_module_worker.js', { type: 'module' })
-  // 2. worker_import_module_worker.js imports worker_import_module_imported.js.
-  //    - If succeeded to import, calls postMessage() with the exported |msg|
-  //      constant value which is 'Imported'.
-  //    - If failed, calls postMessage('Failed').
-  // 3. When the page receives the message from the worker, change the title
-  //    to the message string.
-  //      worker.onmessage = (event) => { document.title = event.data; };
-  ASSERT_TRUE(https_server_.Start());
-  GURL module_url = https_server_.GetURL("/worker_import_module_imported.js");
-
-  const std::string script = base::StringPrintf(
-      "import('%s')\n"
-      "  .then(module => postMessage(module.msg), _ => postMessage('Failed'));",
-      module_url.spec().c_str());
-  RegisterStaticFile(embedded_test_server(), "/worker_import_module_worker.js",
-                     script, "text/javascript");
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL http_url = embedded_test_server()->GetURL("/worker_import_module.html");
-
-  // Change the settings to blocks the script loading of
-  // worker_import_module_imported.js from worker_import_module.html.
-  HostContentSettingsMap* content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  content_settings_map->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(http_url),
-      ContentSettingsPattern::FromURLNoWildcard(module_url),
-      ContentSettingsType::JAVASCRIPT, base::Value(CONTENT_SETTING_BLOCK));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  std::u16string expected_title(u"Failed");
-  content::TitleWatcher title_watcher(web_contents, expected_title);
-  title_watcher.AlsoWaitForTitle(u"Imported");
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
-
-  // The import must be blocked.
-  ui_test_utils::WaitForViewVisibility(
-      browser(), VIEW_ID_CONTENT_SETTING_JAVASCRIPT, true);
-  EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
-                  web_contents->GetPrimaryMainFrame())
-                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
-  EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
-}
-
 class ContentSettingsWorkerModulesParameterizedBrowserTest
     : public ContentSettingsWorkerModulesBrowserTest,
       public testing::WithParamInterface<bool> {

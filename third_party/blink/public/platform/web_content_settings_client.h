@@ -46,18 +46,6 @@ class WebContentSettingsClient {
   // Blocks until done.
   virtual bool AllowStorageAccessSync(StorageType storage_type) { return true; }
 
-  // Controls whether scripts are allowed to execute for this frame.
-  virtual bool AllowScript(bool enabled_per_settings) {
-    return enabled_per_settings;
-  }
-
-  // Controls whether scripts loaded from the given URL are allowed to execute
-  // for this frame.
-  virtual bool AllowScriptFromSource(bool enabled_per_settings,
-                                     const WebURL& script_url) {
-    return enabled_per_settings;
-  }
-
   // Controls whether insecure scripts are allowed to execute for this frame.
   virtual bool AllowRunningInsecureContent(bool enabled_per_settings,
                                            const WebURL&) {

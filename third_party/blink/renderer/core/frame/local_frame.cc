@@ -3880,4 +3880,12 @@ bool LocalFrame::ImagesEnabled() {
   return allow_image_renderer && allow_image_content_setting;
 }
 
+bool LocalFrame::ScriptEnabled() {
+  DCHECK(!IsDetached());
+
+  bool allow_script_renderer = GetSettings()->GetScriptEnabled();
+  bool allow_script_content_setting = GetContentSettings()->allow_script;
+  return allow_script_renderer && allow_script_content_setting;
+}
+
 }  // namespace blink

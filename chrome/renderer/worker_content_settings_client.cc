@@ -114,36 +114,6 @@ bool WorkerContentSettingsClient::AllowRunningInsecureContent(
   return true;
 }
 
-bool WorkerContentSettingsClient::AllowScriptFromSource(
-    bool enabled_per_settings,
-    const blink::WebURL& script_url) {
-  bool allow = enabled_per_settings;
-  if (allow && content_setting_rules_) {
-    GURL top_frame_origin_url = top_frame_origin_.GetURL();
-    // Allow DevTools to run worker scripts.
-    if (top_frame_origin_url.SchemeIs(content::kChromeDevToolsScheme))
-      return true;
-    for (const auto& rule : content_setting_rules_->script_rules) {
-      // The primary pattern was already matched in the browser process (see
-      // PageSpecificContentSettings::ReadyToCommitNavigation), so we only need
-      // to match the secondary pattern here.
-      if (rule.secondary_pattern.Matches(script_url)) {
-        allow = rule.GetContentSetting() != CONTENT_SETTING_BLOCK;
-        break;
-      }
-    }
-  }
-
-  if (!allow) {
-    EnsureContentSettingsManager();
-    content_settings_manager_->OnContentBlocked(
-        frame_token_, ContentSettingsType::JAVASCRIPT);
-    return false;
-  }
-
-  return true;
-}
-
 bool WorkerContentSettingsClient::ShouldAutoupgradeMixedContent() {
   if (content_setting_rules_) {
     if (content_setting_rules_->mixed_content_rules.size() > 0)

@@ -157,6 +157,7 @@ void ContentSettingsAgentImpl::BindContentSettingsManager(
 
 void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
+  // This entire method will be removed soon. https://crbug.com/40282541.
   // Clear "block" flags for the new page. This needs to happen before any of
   // `allowScript()`, `allowScriptFromSource()`, or
   // `allowPlugins()` is called for the new page so that these functions can
@@ -281,46 +282,6 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   return result;
 }
 
-bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
-  if (!enabled_per_settings)
-    return false;
-
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  const auto it = cached_script_permissions_.find(frame);
-  if (it != cached_script_permissions_.end())
-    return it->second;
-
-  // Evaluate the content setting rules before
-  // IsAllowlistedForContentSettings(); if there is only the default rule
-  // allowing all scripts, it's quicker this way.
-  bool allow = true;
-  if (content_setting_rules_) {
-    ContentSetting setting = GetContentSettingFromRules(
-        content_setting_rules_->script_rules,
-        url::Origin(frame->GetDocument().GetSecurityOrigin()).GetURL());
-    allow = setting != CONTENT_SETTING_BLOCK;
-  }
-  allow = allow || IsAllowlistedForContentSettings();
-
-  cached_script_permissions_[frame] = allow;
-  return allow;
-}
-
-bool ContentSettingsAgentImpl::AllowScriptFromSource(
-    bool enabled_per_settings,
-    const blink::WebURL& script_url) {
-  if (!enabled_per_settings)
-    return false;
-
-  bool allow = true;
-  if (content_setting_rules_) {
-    ContentSetting setting = GetContentSettingFromRules(
-        content_setting_rules_->script_rules, script_url);
-    allow = setting != CONTENT_SETTING_BLOCK;
-  }
-  return allow || IsAllowlistedForContentSettings();
-}
-
 bool ContentSettingsAgentImpl::AllowReadFromClipboard() {
   return delegate_->AllowReadFromClipboard();
 }
@@ -382,7 +343,6 @@ void ContentSettingsAgentImpl::DidNotAllowImage() {
 void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
   content_blocked_.clear();
   cached_storage_permissions_.clear();
-  cached_script_permissions_.clear();
 }
 
 bool ContentSettingsAgentImpl::IsAllowlistedForContentSettings() const {

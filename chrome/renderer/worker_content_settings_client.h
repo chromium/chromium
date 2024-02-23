@@ -38,8 +38,6 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
   bool AllowStorageAccessSync(StorageType storage_type) override;
   bool AllowRunningInsecureContent(bool allowed_per_settings,
                                    const blink::WebURL& url) override;
-  bool AllowScriptFromSource(bool enabled_per_settings,
-                             const blink::WebURL& script_url) override;
   bool ShouldAutoupgradeMixedContent() override;
 
  private:

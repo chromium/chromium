@@ -78,14 +78,10 @@ SubresourceFilter* WorkerFetchContext::GetSubresourceFilter() const {
   return subresource_filter_.Get();
 }
 
-bool WorkerFetchContext::AllowScriptFromSource(const KURL& url) const {
-  if (!global_scope_->ContentSettingsClient()) {
-    return true;
-  }
-  // If we're on a worker, script should be enabled, so no need to plumb
-  // Settings::GetScriptEnabled() here.
-  return global_scope_->ContentSettingsClient()->AllowScriptFromSource(true,
-                                                                       url);
+bool WorkerFetchContext::AllowScript() const {
+  // Script is always allowed in worker fetch contexts, since the fact that
+  // they're running is already evidence that script is allowed.
+  return true;
 }
 
 bool WorkerFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {

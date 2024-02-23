@@ -68,17 +68,6 @@ class WebContentSettingsClient;
 class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                                             public LoadingBehaviorObserver {
  public:
-  // Returns true if execution of scripts from the url are allowed. Compared to
-  // AllowScriptFromSource(), this method does not generate any
-  // notification to the `WebContentSettingsClient` that the execution of the
-  // script was blocked. This method should be called only when there is a need
-  // to check the settings, and where blocked setting doesn't really imply that
-  // JavaScript was blocked from being executed.
-  static bool AllowScriptFromSourceWithoutNotifying(
-      const KURL& url,
-      WebContentSettingsClient* settings_client,
-      Settings* settings);
-
   static ResourceFetcher* CreateFetcherForCommittedDocument(DocumentLoader&,
                                                             Document&);
   FrameFetchContext(DocumentLoader& document_loader,
@@ -163,7 +152,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   // BaseFetchContext overrides:
   net::SiteForCookies GetSiteForCookies() const override;
   SubresourceFilter* GetSubresourceFilter() const override;
-  bool AllowScriptFromSource(const KURL&) const override;
+  bool AllowScript() const override;
   bool ShouldBlockRequestByInspector(const KURL&) const override;
   void DispatchDidBlockRequest(const ResourceRequest&,
                                const ResourceLoaderOptions&,
