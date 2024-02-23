@@ -1628,7 +1628,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree(),
         TestCase("openFileDialogEscapeDrive").WithBrowser().NewDirectoryTree(),
         // Section end - browser tests for new directory tree
-        TestCase("openFileDialogUnload").WithBrowser(),
+        // TODO(b:326522807): Re-enable flaky test.
+        // TestCase("openFileDialogUnload").WithBrowser(),
         TestCase("openFileDialogDownloads")
             .WithBrowser()
             .FeatureIds({"screenplay-a63f2d5c-2cf8-4b5d-97fa-cd1f34004556"}),
