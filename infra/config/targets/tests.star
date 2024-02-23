@@ -219,16 +219,7 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "blink_unit_tests_v2",
-    binary = "blink_unittests_v2",
-)
-
-targets.tests.gtest_test(
     name = "blink_unittests",
-)
-
-targets.tests.gtest_test(
-    name = "blink_unittests_v2",
 )
 
 targets.tests.isolated_script_test(
@@ -2687,11 +2678,6 @@ targets.tests.script_test(
 targets.tests.gtest_test(
     name = "webkit_unit_tests",
     binary = "blink_unittests",
-)
-
-targets.tests.gtest_test(
-    name = "webkit_unit_tests_v2",
-    binary = "blink_unittests_v2",
 )
 
 targets.tests.gtest_test(

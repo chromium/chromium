@@ -7,6 +7,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
@@ -36,7 +37,9 @@ class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
 
 }  // namespace
 
-class ScrollbarThemeAuraTest : public testing::Test {};
+class ScrollbarThemeAuraTest : public testing::Test {
+  test::TaskEnvironment task_environment_;
+};
 
 // Note that this helper only sends mouse events that are already handled on the
 // compositor thread, to the scrollbar (i.e they will have the event modifier

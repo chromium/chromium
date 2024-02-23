@@ -173,13 +173,9 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
 // blink_unittests_v2 completes.
 class TextFragmentAnchorTest : public TextFragmentAnchorTestController {
  public:
-#if defined(HAS_BLINK_TASK_ENVIRONMENT)
   TextFragmentAnchorTest()
       : TextFragmentAnchorTestController(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-#else
-  TextFragmentAnchorTest() = default;
-#endif
 };
 
 // Basic test case, ensure we scroll the matching text into view.

@@ -271,7 +271,6 @@ targets.legacy_basic_suite(
     name = "blink_unittests",
     tests = {
         "blink_unit_tests": targets.legacy_test_config(),
-        "blink_unit_tests_v2": targets.legacy_test_config(),
     },
 )
 
@@ -767,7 +766,6 @@ targets.legacy_basic_suite(
     tests = {
         "blink_heap_unittests": targets.legacy_test_config(),
         "webkit_unit_tests": targets.legacy_test_config(),
-        "webkit_unit_tests_v2": targets.legacy_test_config(),
     },
 )
 
@@ -948,11 +946,6 @@ targets.legacy_basic_suite(
         "ui_touch_selection_unittests": targets.legacy_test_config(),
         "url_unittests": targets.legacy_test_config(),
         "webkit_unit_tests": targets.legacy_test_config(
-            android_swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-        "webkit_unit_tests_v2": targets.legacy_test_config(
             android_swarming = targets.swarming(
                 shards = 6,
             ),
@@ -1998,7 +1991,6 @@ targets.legacy_basic_suite(
         "blink_heap_unittests": targets.legacy_test_config(),
         "blink_platform_unittests": targets.legacy_test_config(),
         "blink_unittests": targets.legacy_test_config(),
-        "blink_unittests_v2": targets.legacy_test_config(),
         "boringssl_crypto_tests": targets.legacy_test_config(),
         "boringssl_ssl_tests": targets.legacy_test_config(),
         "capture_unittests": targets.legacy_test_config(),
@@ -3723,7 +3715,6 @@ targets.legacy_basic_suite(
             ],
         ),
         "blink_unittests": targets.legacy_test_config(),
-        "blink_unittests_v2": targets.legacy_test_config(),
         "boringssl_crypto_tests": targets.legacy_test_config(),
         "boringssl_ssl_tests": targets.legacy_test_config(),
         "capture_unittests": targets.legacy_test_config(),
@@ -4284,7 +4275,6 @@ targets.legacy_basic_suite(
         "blink_heap_unittests": targets.legacy_test_config(),
         "blink_platform_unittests": targets.legacy_test_config(),
         "blink_unittests": targets.legacy_test_config(),
-        "blink_unittests_v2": targets.legacy_test_config(),
         "cc_unittests": targets.legacy_test_config(),
         "components_unittests": targets.legacy_test_config(),
         "content_unittests": targets.legacy_test_config(),

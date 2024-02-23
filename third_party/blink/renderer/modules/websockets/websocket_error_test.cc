@@ -121,7 +121,6 @@ TEST_F(WebSocketErrorTest, ConstructWithOverlongReason) {
 }
 
 TEST_F(WebSocketErrorTest, InternalCreate) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   auto* isolate = scope.GetIsolate();
   auto context = scope.GetContext();

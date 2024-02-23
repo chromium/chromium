@@ -18,6 +18,9 @@ class DedicatedWorkerMessagingProxyForTest;
 class DedicatedWorkerTest : public PageTestBase {
  public:
   DedicatedWorkerTest() = default;
+  explicit DedicatedWorkerTest(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : PageTestBase(time_source) {}
 
   void SetUp() override;
   void TearDown() override;

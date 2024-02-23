@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -133,6 +134,7 @@ class RendererResourceCoordinatorImplTest : public ::testing::Test {
     RendererResourceCoordinator::Set(resource_coordinator_.get());
   }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MockProcessCoordinationUnit> mock_process_coordination_unit_;
   std::unique_ptr<RendererResourceCoordinatorImpl> resource_coordinator_;
 };

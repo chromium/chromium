@@ -25,7 +25,12 @@ class V8WorkerMemoryReporterTest : public ::testing::Test {
 };
 
 class V8WorkerMemoryReporterTestWithDedicatedWorker
-    : public DedicatedWorkerTest {};
+    : public DedicatedWorkerTest {
+ public:
+  V8WorkerMemoryReporterTestWithDedicatedWorker()
+      : DedicatedWorkerTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 class V8WorkerMemoryReporterTestWithMockPlatform
     : public V8WorkerMemoryReporterTestWithDedicatedWorker {
