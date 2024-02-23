@@ -6,23 +6,21 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_ARIA_NOTIFICATION_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
-#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
 
 namespace blink {
 
-class AriaNotification final : public GarbageCollected<AriaNotification> {
+class AriaNotification {
  public:
-  AriaNotification(Node*,
-                   const String& announcement,
+  AriaNotification(const String& announcement,
                    const AriaNotificationOptions* options);
 
-  void Trace(Visitor* visitor) const { visitor->Trace(node_); }
-
  private:
-  Member<Node> node_;
   String announcement_;
   String notification_id_;
+  ax::mojom::blink::AriaNotificationInterrupt interrupt_;
+  ax::mojom::blink::AriaNotificationPriority priority_;
 };
 
 }  // namespace blink

@@ -1136,7 +1136,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   BlinkAXEventIntentsSet active_event_intents_;
 
   // A set of aria notifications that have yet to be added to ax_tree_data.
-  HeapVector<Member<AriaNotification>> aria_notifications_;
+  Vector<AriaNotification> aria_notifications_;
 
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.

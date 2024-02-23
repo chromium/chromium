@@ -4,12 +4,43 @@
 
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 
+#include "ui/accessibility/ax_enums.mojom-blink.h"
+
 namespace blink {
-AriaNotification::AriaNotification(Node* node,
-                                   const String& announcement,
+
+namespace {
+
+ax::mojom::blink::AriaNotificationInterrupt ToEnum(
+    const V8AriaNotifyInterrupt& interrupt) {
+  switch (interrupt.AsEnum()) {
+    case V8AriaNotifyInterrupt::Enum::kNone:
+      return ax::mojom::blink::AriaNotificationInterrupt::kNone;
+    case V8AriaNotifyInterrupt::Enum::kAll:
+      return ax::mojom::blink::AriaNotificationInterrupt::kAll;
+    case V8AriaNotifyInterrupt::Enum::kPending:
+      return ax::mojom::blink::AriaNotificationInterrupt::kPending;
+  }
+  NOTREACHED_NORETURN();
+}
+
+ax::mojom::blink::AriaNotificationPriority ToEnum(
+    const V8AriaNotifyPriority& priority) {
+  switch (priority.AsEnum()) {
+    case V8AriaNotifyPriority::Enum::kNone:
+      return ax::mojom::blink::AriaNotificationPriority::kNone;
+    case V8AriaNotifyPriority::Enum::kImportant:
+      return ax::mojom::blink::AriaNotificationPriority::kImportant;
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
+
+AriaNotification::AriaNotification(const String& announcement,
                                    const AriaNotificationOptions* options)
-    : node_(node),
-      announcement_(announcement),
-      notification_id_(options->notificationId()) {}
+    : announcement_(announcement),
+      notification_id_(options->notificationId()),
+      interrupt_(ToEnum(options->interrupt())),
+      priority_(ToEnum(options->priority())) {}
 
 }  // namespace blink

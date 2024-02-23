@@ -2543,8 +2543,7 @@ const char* ToString(ax::mojom::AriaNotificationInterrupt interrupt) {
     case ax::mojom::AriaNotificationInterrupt::kPending:
       return "pending";
   }
-
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 const char* ToString(ax::mojom::AriaNotificationPriority priority) {
@@ -2554,8 +2553,7 @@ const char* ToString(ax::mojom::AriaNotificationPriority priority) {
     case ax::mojom::AriaNotificationPriority::kImportant:
       return "important";
   }
-
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace ui

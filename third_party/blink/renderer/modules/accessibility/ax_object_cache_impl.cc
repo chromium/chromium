@@ -2105,8 +2105,7 @@ void AXObjectCacheImpl::AddAriaNotification(
     Node* node,
     const String announcement,
     const AriaNotificationOptions* options) {
-  aria_notifications_.push_back(
-      MakeGarbageCollected<AriaNotification>(node, announcement, options));
+  aria_notifications_.emplace_back(announcement, options);
 }
 
 void AXObjectCacheImpl::AddToFixedOrStickyNodeList(const AXObject* object) {
@@ -5799,7 +5798,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(render_accessibility_host_);
   visitor->Trace(ax_tree_source_);
   visitor->Trace(dirty_objects_);
-  visitor->Trace(aria_notifications_);
   visitor->Trace(node_to_parse_before_more_tree_updates_);
   visitor->Trace(weak_factory_for_serialization_pipeline_);
 
