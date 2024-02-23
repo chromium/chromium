@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
@@ -41,23 +40,19 @@ void PermissionPromptBaseView::AddedToWidget() {
     GetBubbleFrameView()->SetTitleView(
         CreateTitleOriginLabel(GetWindowTitle()));
   }
+  occlusion_observation_.Observe(GetWidget());
 }
 
 bool PermissionPromptBaseView::ShouldIgnoreButtonPressedEventHandling(
     View* button,
     const ui::Event& event) const {
-  // Ignore the key pressed event if the button row bounds intersect with PiP
-  // windows bounds.
-  if (!event.IsKeyEvent()) {
-    return false;
-  }
+  // Ignore button pressed events whenever we're occluded by a
+  // picture-in-picture window.
+  return occluded_by_picture_in_picture_;
+}
 
-  std::optional<gfx::Rect> pip_window_bounds =
-      PictureInPictureWindowManager::GetInstance()
-          ->GetPictureInPictureWindowBounds();
-
-  return pip_window_bounds &&
-         pip_window_bounds->Intersects(button->GetBoundsInScreen());
+void PermissionPromptBaseView::OnOcclusionStateChanged(bool occluded) {
+  occluded_by_picture_in_picture_ = occluded;
 }
 
 void PermissionPromptBaseView::FilterUnintenedEventsAndRunCallbacks(

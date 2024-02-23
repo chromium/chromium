@@ -8572,6 +8572,14 @@ static_library("test_support") {
       "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h",
     ]
   }
+
+  if (toolkit_views) {
+    sources += [
+      "../browser/ui/permission_bubble/permission_bubble_test_util.cc",
+      "../browser/ui/permission_bubble/permission_bubble_test_util.h",
+    ]
+    deps += [ "//components/permissions:permissions" ]
+  }
 }
 
 if (!is_android) {

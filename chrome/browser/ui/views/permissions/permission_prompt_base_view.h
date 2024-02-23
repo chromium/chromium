@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_
 
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -18,7 +20,8 @@ class Browser;
 // * Filter unintended button presses
 // * Ensure no button is selected by default to prevent unintended button
 // presses
-class PermissionPromptBaseView : public views::BubbleDialogDelegateView {
+class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
+                                 public PictureInPictureOcclusionObserver {
   METADATA_HEADER(PermissionPromptBaseView, views::BubbleDialogDelegateView)
 
  public:
@@ -34,6 +37,9 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView {
   bool ShouldIgnoreButtonPressedEventHandling(
       View* button,
       const ui::Event& event) const override;
+
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
 
  protected:
   // Performs clickjacking checks and executes the button callback if the click
@@ -55,6 +61,9 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView {
 
  private:
   const UrlIdentity url_identity_;
+
+  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
+  bool occluded_by_picture_in_picture_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_

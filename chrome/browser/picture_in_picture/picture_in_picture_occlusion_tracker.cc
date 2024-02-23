@@ -174,6 +174,19 @@ PictureInPictureOcclusionTracker::GetPictureInPictureWidgetsForTesting() {
   return pip_widgets;
 }
 
+void PictureInPictureOcclusionTracker::SetWidgetOcclusionStateForTesting(
+    views::Widget* observed_widget,
+    bool occluded) {
+  auto iter = observed_widget_data_.find(observed_widget);
+
+  // Only observed widgets should have a manual occlusion state set for testing.
+  CHECK(iter != observed_widget_data_.end());
+
+  iter->second.forced_occlusion_state = occluded;
+
+  UpdateObserverStateForWidget(observed_widget, /*force_update=*/true);
+}
+
 void PictureInPictureOcclusionTracker::ObserveWidgetAndParents(
     views::Widget* widget,
     bool directly_observe_this_widget) {
@@ -286,6 +299,9 @@ void PictureInPictureOcclusionTracker::UpdateObserverStateForWidget(
 
   // Update the observers if the occlusion state has changed.
   iter->second.occluded = occluded;
+  if (iter->second.forced_occlusion_state.has_value()) {
+    occluded = iter->second.forced_occlusion_state.value();
+  }
   for (auto& observer : observers_) {
     if (observer.occludable_widget() == widget) {
       observer.occlusion_observer()->OnOcclusionStateChanged(occluded);

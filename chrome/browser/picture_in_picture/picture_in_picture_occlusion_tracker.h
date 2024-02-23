@@ -99,6 +99,10 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
   // observed.
   std::vector<views::Widget*> GetPictureInPictureWidgetsForTesting();
 
+  // Allows tests to manually set an occlusion state for an observed widget.
+  void SetWidgetOcclusionStateForTesting(views::Widget* observed_widget,
+                                         bool occluded);
+
  private:
   struct ObservedWidgetData {
     // True if the widget associated with this observation is a
@@ -122,6 +126,10 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
     // 2) The PictureInPictureOcclusionObserver is observing the occlusion state
     // of a child of this widget.
     int number_of_dependent_observers = 0;
+
+    // If set and true, we treat the widget as occluded. If set and false, we
+    // treat the widget as unoccluded. For testing only.
+    std::optional<bool> forced_occlusion_state;
   };
 
   // Start observing this widget, plus any of its parent widgets.
