@@ -264,6 +264,10 @@ class QuickStartController
 std::ostream& operator<<(std::ostream& stream,
                          const QuickStartController::UiState& ui_state);
 
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartController::AbortFlowReason& abort_flow_reason);
+
 }  // namespace ash::quick_start
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICKSTART_CONTROLLER_H_

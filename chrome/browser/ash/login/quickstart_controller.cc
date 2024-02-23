@@ -190,7 +190,7 @@ void QuickStartController::DetermineEntryPointVisibility(
 
 void QuickStartController::AbortFlow(AbortFlowReason reason) {
   CHECK(bootstrap_controller_);
-  QS_LOG(INFO) << "Aborting flow.";
+  QS_LOG(INFO) << "Aborting flow: " << reason;
 
   bootstrap_controller_->CloseOpenConnections(
       ConnectionClosedReasonFromAbortFlowReason(reason));
@@ -636,6 +636,33 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case QuickStartController::UiDelegate::UiState::EXIT_SCREEN:
       stream << "[exit screen]";
+      break;
+  }
+
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const QuickStartController::AbortFlowReason& abort_flow_reason) {
+  switch (abort_flow_reason) {
+    case QuickStartController::AbortFlowReason::USER_CLICKED_BACK:
+      stream << "[user clicked back]";
+      break;
+    case QuickStartController::AbortFlowReason::USER_CLICKED_CANCEL:
+      stream << "[user clicked cancel]";
+      break;
+    case QuickStartController::AbortFlowReason::SIGNIN_SCHOOL:
+      stream << "[signin school]";
+      break;
+    case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
+      stream << "[enterprise enrollment]";
+      break;
+    case QuickStartController::AbortFlowReason::QUICK_START_FLOW_COMPLETE:
+      stream << "[Quick Start flow complete]";
+      break;
+    case QuickStartController::AbortFlowReason::ERROR:
+      stream << "[error]";
       break;
   }
 
