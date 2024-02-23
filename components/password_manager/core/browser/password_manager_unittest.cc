@@ -1282,6 +1282,69 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   store->ShutdownOnUIThread();
 }
 
+// Checks that credentials on the submitted form are not checked for leak when
+// the password store is broken. Broken password store makes it unable to mute
+// the leak notification.
+TEST_P(PasswordManagerTest, BrokenPasswordStorePreventsMutingCredentials) {
+  auto mock_factory =
+      std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
+  MockLeakDetectionCheckFactory* weak_factory = mock_factory.get();
+  manager()->set_leak_factory(std::move(mock_factory));
+  auto store = base::MakeRefCounted<PasswordStore>(
+      std::make_unique<FailingPasswordStoreBackend>());
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  ON_CALL(client_, GetProfilePasswordStore())
+      .WillByDefault(Return(store.get()));
+
+  const FormData form_data = MakeSimpleFormData();
+  std::vector<FormData> observed = {form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  // Expect no automatic save/update prompt and no leak check if password store
+  // is not available.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+  EXPECT_CALL(*weak_factory, TryCreateLeakCheck).Times(0);
+
+  // Now the password manager waits for the navigation to complete.
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+  // Objects owned by the manager may keep references to the store - therefore
+  // destroy the manager prior to store destruction.
+  manager_.reset();
+  store->ShutdownOnUIThread();
+}
+
+// Checks that submitted form manager is cleared when saving was disabled at the
+// time of submission.
+TEST_P(PasswordManagerTest, ClearSubmittedManagerIfSavingIsDisabled) {
+  const FormData form_data = MakeSimpleFormData();
+  std::vector<FormData> observed = {form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(false));
+  OnPasswordFormSubmitted(form_data);
+
+  // Expect no automatic save/update prompt because saving is disabled.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+
+  // Now the password manager waits for the navigation to complete.
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+
+  // Form manager is deleted after successful form submission.
+  EXPECT_TRUE(manager()->form_managers().empty());
+}
+
 // This test verifies a fix for http://crbug.com/236673
 TEST_P(PasswordManagerTest, FormSubmitWithFormOnPreviousPage) {
   PasswordForm first_form(MakeSimpleForm());

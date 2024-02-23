@@ -1131,17 +1131,6 @@ void PasswordManager::OnLoginSuccessful() {
       submitted_manager->GetPendingCredentials().username_value);
   client_->NotifyOnSuccessfulLogin(submitted_form->username_value);
 
-  // Check for leaks only if there are no muted credentials and it is not a
-  // single username submission (a leak warning may offer an automated password
-  // change, which requires a user to be logged in).
-  if (!HasMutedCredentials(
-          submitted_manager->GetInsecureCredentials(),
-          submitted_manager->GetSubmittedForm()->username_value) &&
-      !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
-    leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
-                                  submitted_manager->GetPendingCredentials());
-  }
-
   auto submission_event =
       submitted_manager->GetSubmittedForm()->submission_event;
   metrics_util::LogPasswordSuccessfulSubmissionIndicatorEvent(submission_event);
@@ -1154,6 +1143,17 @@ void PasswordManager::OnLoginSuccessful() {
                         able_to_save_passwords);
   if (!able_to_save_passwords)
     return;
+
+  // Check for leaks only if there are no muted credentials and it is not a
+  // single username submission (a leak warning may offer an automated password
+  // change, which requires a user to be logged in).
+  if (!HasMutedCredentials(
+          submitted_manager->GetInsecureCredentials(),
+          submitted_manager->GetSubmittedForm()->username_value) &&
+      !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
+    leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
+                                  submitted_manager->GetPendingCredentials());
+  }
 
   password_manager::PasswordReuseManager* reuse_manager =
       client_->GetPasswordReuseManager();
@@ -1189,6 +1189,9 @@ void PasswordManager::OnLoginSuccessful() {
   CHECK(!submitted_manager->GetPendingCredentials().only_for_fallback);
 
   if (!submitted_manager->IsSavingAllowed()) {
+    // Stop tracking the form if it was not allowed to save credentials at the
+    // submission time.
+    ResetSubmittedManager();
     return;
   }
 
