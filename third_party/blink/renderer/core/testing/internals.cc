@@ -241,7 +241,7 @@ class UseCounterImplObserverImpl final : public UseCounterImpl::Observer {
   bool OnCountFeature(WebFeature feature) final {
     if (feature_ != feature)
       return false;
-    resolver_->Resolve(static_cast<int>(feature));
+    resolver_->Resolve();
     return true;
   }
 
@@ -918,13 +918,14 @@ bool Internals::isLoadingFromMemoryCache(const String& url) {
   return resource && resource->GetStatus() == ResourceStatus::kCached;
 }
 
-ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
-                                                    const String& url,
-                                                    Document* document,
-                                                    bool new_load_only) {
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLLong> Internals::getInitialResourcePriority(
+    ScriptState* script_state,
+    const String& url,
+    Document* document,
+    bool new_load_only) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLLong>>(script_state);
+  auto promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
 
   auto callback = WTF::BindOnce(&Internals::ResolveResourcePriority,
@@ -935,7 +936,7 @@ ScriptPromise Internals::getInitialResourcePriority(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise Internals::getInitialResourcePriorityOfNewLoad(
+ScriptPromiseTyped<IDLLong> Internals::getInitialResourcePriorityOfNewLoad(
     ScriptState* script_state,
     const String& url,
     Document* document) {
@@ -3862,8 +3863,9 @@ void Internals::setDeviceEmulationScale(float scale,
   page->GetChromeClient().GetWebView()->EnableDeviceEmulation(params);
 }
 
-void Internals::ResolveResourcePriority(ScriptPromiseResolver* resolver,
-                                        int resource_load_priority) {
+void Internals::ResolveResourcePriority(
+    ScriptPromiseResolverTyped<IDLLong>* resolver,
+    int resource_load_priority) {
   resolver->Resolve(resource_load_priority);
 }
 

@@ -142,7 +142,7 @@ ExecutionContext* RemotePlayback::GetExecutionContext() const {
   return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
-ScriptPromise RemotePlayback::watchAvailability(
+ScriptPromiseTyped<IDLLong> RemotePlayback::watchAvailability(
     ScriptState* script_state,
     V8RemotePlaybackAvailabilityCallback* callback,
     ExceptionState& exception_state) {
@@ -151,7 +151,7 @@ ScriptPromise RemotePlayback::watchAvailability(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "disableRemotePlayback attribute is present.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLLong>();
   }
 
   int id = WatchAvailabilityInternal(
@@ -160,7 +160,7 @@ ScriptPromise RemotePlayback::watchAvailability(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Availability monitoring is not supported on this device.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLLong>();
   }
 
   // TODO(avayvod): Currently the availability is tracked for each media element
@@ -169,9 +169,9 @@ ScriptPromise RemotePlayback::watchAvailability(
   // controls. If there are no default controls, we should also start tracking
   // availability on demand meaning the Promise returned by watchAvailability()
   // will be resolved asynchronously.
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLLong>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   resolver->Resolve(id);
   return promise;
 }

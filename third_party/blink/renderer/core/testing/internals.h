@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_INTERNALS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
@@ -78,7 +79,6 @@ class Page;
 class Range;
 class ReadableStream;
 class RecordTest;
-class ScriptPromiseResolver;
 class ScriptState;
 class SequenceTest;
 class ShadowRoot;
@@ -111,13 +111,15 @@ class Internals final : public ScriptWrappable {
   bool isLoading(const String& url);
   bool isLoadingFromMemoryCache(const String& url);
 
-  ScriptPromise getInitialResourcePriority(ScriptState*,
-                                           const String& url,
-                                           Document*,
-                                           bool new_load_only = false);
-  ScriptPromise getInitialResourcePriorityOfNewLoad(ScriptState*,
-                                                    const String& url,
-                                                    Document*);
+  ScriptPromiseTyped<IDLLong> getInitialResourcePriority(
+      ScriptState*,
+      const String& url,
+      Document*,
+      bool new_load_only = false);
+  ScriptPromiseTyped<IDLLong> getInitialResourcePriorityOfNewLoad(
+      ScriptState*,
+      const String& url,
+      Document*);
   String getResourceHeader(const String& url, const String& header, Document*);
 
   bool doesWindowHaveUrlFragment(DOMWindow*);
@@ -648,7 +650,7 @@ class Internals final : public ScriptWrappable {
                            const String& marker_type,
                            unsigned index,
                            ExceptionState&);
-  void ResolveResourcePriority(ScriptPromiseResolver*,
+  void ResolveResourcePriority(ScriptPromiseResolverTyped<IDLLong>*,
                                int resource_load_priority);
   Member<InternalRuntimeFlags> runtime_flags_;
   Member<Document> document_;

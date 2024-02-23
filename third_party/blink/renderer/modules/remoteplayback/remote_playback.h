@@ -78,9 +78,10 @@ class MODULES_EXPORT RemotePlayback final
   // Starts notifying the page about the changes to the remote playback devices
   // availability via the provided callback. May start the monitoring of remote
   // playback devices if it isn't running yet.
-  ScriptPromise watchAvailability(ScriptState*,
-                                  V8RemotePlaybackAvailabilityCallback*,
-                                  ExceptionState&);
+  ScriptPromiseTyped<IDLLong> watchAvailability(
+      ScriptState*,
+      V8RemotePlaybackAvailabilityCallback*,
+      ExceptionState&);
 
   // Cancels updating the page via the callback specified by its id.
   ScriptPromise cancelWatchAvailability(ScriptState*, int id, ExceptionState&);

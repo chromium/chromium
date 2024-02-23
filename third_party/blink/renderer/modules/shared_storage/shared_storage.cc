@@ -606,28 +606,30 @@ ScriptPromise SharedStorage::get(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise SharedStorage::length(ScriptState* script_state,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUnsignedLong> SharedStorage::length(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUnsignedLong>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUnsignedLong>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   CHECK(CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                             *resolver));
 
   GetSharedStorageWorkletServiceClient(execution_context)
       ->SharedStorageLength(WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
-             base::TimeTicks start_time, bool success,
-             const String& error_message, uint32_t length) {
+          [](ScriptPromiseResolverTyped<IDLUnsignedLong>* resolver,
+             SharedStorage* shared_storage, base::TimeTicks start_time,
+             bool success, const String& error_message, uint32_t length) {
             DCHECK(resolver);
             ScriptState* script_state = resolver->GetScriptState();
 
