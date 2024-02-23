@@ -3550,7 +3550,7 @@
   {
     "name": "enable-session-serialization-optimizations",
     "owners": [ "fedegermi@chromium.org", "sdefresne@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "enable-shared-zstd",
