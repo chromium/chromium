@@ -283,6 +283,12 @@ extern const char kAutofillEnableCardArtServerSideStretchingDescription[];
 extern const char kAutofillEnableCardBenefitsName[];
 extern const char kAutofillEnableCardBenefitsDescription[];
 
+extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
+extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
+
+extern const char kAutofillEnableCardBenefitsForCapitalOneName[];
+extern const char kAutofillEnableCardBenefitsForCapitalOneDescription[];
+
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 

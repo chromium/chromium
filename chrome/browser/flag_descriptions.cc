@@ -470,6 +470,18 @@ const char kAutofillEnableCardBenefitsDescription[] =
     "When enabled, card benefits offered by issuers will be shown in "
     "Payments Autofill UI.";
 
+const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
+    "Enable showing card benefits for American Express cards";
+const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =
+    "When enabled, card benefits offered by American Express will be shown in "
+    "Autofill suggestions.";
+
+const char kAutofillEnableCardBenefitsForCapitalOneName[] =
+    "Enable showing card benefits for Capital One cards";
+const char kAutofillEnableCardBenefitsForCapitalOneDescription[] =
+    "When enabled, card benefits offered by Capital One will be shown in "
+    "Autofill suggestions.";
+
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

@@ -37,6 +37,16 @@ extern const char kAutofillEnableCardArtImageDescription[];
 extern const char kAutofillEnableCardBenefitsName[];
 extern const char kAutofillEnableCardBenefitsDescription[];
 
+// Title and description for the flag to enable American Express card benefits
+// for autofill Payments UI.
+extern const char kAutofillEnableCardBenefitsForAmericanExpressName[];
+extern const char kAutofillEnableCardBenefitsForAmericanExpressDescription[];
+
+// Title and description for the flag to enable Capital One card benefits for
+// autofill Payments UI.
+extern const char kAutofillEnableCardBenefitsForCapitalOneName[];
+extern const char kAutofillEnableCardBenefitsForCapitalOneDescription[];
+
 // Title and description for the flag to send merchant_domain as a top-level
 // parameter in card unmask requests.
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];

@@ -39,6 +39,18 @@ const char kAutofillEnableCardBenefitsDescription[] =
     "When enabled, card benefits offered by issuers will be shown in "
     "Payments Autofill UI.";
 
+const char kAutofillEnableCardBenefitsForAmericanExpressName[] =
+    "Enable showing American Express card benefits";
+const char kAutofillEnableCardBenefitsForAmericanExpressDescription[] =
+    "When enabled, card benefits offered by American Express will be shown in "
+    "Autofill suggestions.";
+
+const char kAutofillEnableCardBenefitsForCapitalOneName[] =
+    "Enable showing Capital One card benefits";
+const char kAutofillEnableCardBenefitsForCapitalOneDescription[] =
+    "When enabled, card benefits offered by Capital One will be shown in "
+    "Autofill suggestions.";
+
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
     "Enable sending merchant domain in server card unmask requests";
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =

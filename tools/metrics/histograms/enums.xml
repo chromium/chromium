@@ -17005,6 +17005,8 @@ from previous Chrome versions.
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1710314754"
       label="MessagesForAndroidStackingAnimation:disabled"/>
+  <int value="-1707707919"
+      label="AutofillEnableCardBenefitsForAmericanExpress:enabled"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
   <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
@@ -21127,6 +21129,8 @@ from previous Chrome versions.
   <int value="169986702" label="FirmwareUpdateJelly:enabled"/>
   <int value="170101645" label="PageInfoAboutThisSiteMoreInfo:disabled"/>
   <int value="171273307" label="SystemEmojiPickerClipboard:disabled"/>
+  <int value="171751855"
+      label="AutofillEnableCardBenefitsForCapitalOne:enabled"/>
   <int value="172878751"
       label="OmniboxRemoveSuggestionHeaderCapitalization:enabled"/>
   <int value="173288154" label="PrintPdfAsImage:enabled"/>
@@ -21319,6 +21323,8 @@ from previous Chrome versions.
   <int value="264443322" label="CompressionDictionaryTransportBackend:enabled"/>
   <int value="264534322" label="FilesDriveShortcuts:enabled"/>
   <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
+  <int value="264896911"
+      label="AutofillEnableCardBenefitsForAmericanExpress:disabled"/>
   <int value="265140282" label="Prerender2:disabled"/>
   <int value="265449858" label="WebBluetoothRequestLargerMtu:enabled"/>
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
@@ -25276,6 +25282,8 @@ from previous Chrome versions.
   <int value="2067903732"
       label="OmniboxRemoveSuggestionsFromClipboard:enabled"/>
   <int value="2068193488" label="SharedClipboardUI:disabled"/>
+  <int value="2068334402"
+      label="AutofillEnableCardBenefitsForCapitalOne:disabled"/>
   <int value="2068914329" label="WebViewXRequestedWithHeader:enabled"/>
   <int value="2069999572"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:disabled"/>

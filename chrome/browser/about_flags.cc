@@ -11017,6 +11017,21 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixPayments)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-enable-card-benefits-for-american-express",
+     flag_descriptions::kAutofillEnableCardBenefitsForAmericanExpressName,
+     flag_descriptions::
+         kAutofillEnableCardBenefitsForAmericanExpressDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableCardBenefitsForAmericanExpress)},
+
+    {"autofill-enable-card-benefits-for-capital-one",
+     flag_descriptions::kAutofillEnableCardBenefitsForCapitalOneName,
+     flag_descriptions::kAutofillEnableCardBenefitsForCapitalOneDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableCardBenefitsForCapitalOne)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
