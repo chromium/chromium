@@ -745,7 +745,7 @@ class NoCoiPermissionIsolatedWebAppContentBrowserClient
 
   std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kDirectSockets,

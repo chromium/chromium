@@ -2232,7 +2232,7 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 
 std::optional<blink::ParsedPermissionsPolicy>
 ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
+    content::WebContents* web_contents,
     const url::Origin& app_origin) {
 #if !BUILDFLAG(IS_ANDROID)
   // Extensions are exempt from manifest policy enforcement and retain the
@@ -2241,7 +2241,8 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     return std::nullopt;
   }
 
-  Profile* profile = Profile::FromBrowserContext(browser_context);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto& registrar =
       web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
   std::vector<webapps::AppId> app_ids_for_origin =

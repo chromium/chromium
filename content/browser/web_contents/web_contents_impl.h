@@ -750,6 +750,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnSharedDictionaryAccessed(
       RenderFrameHostImpl*,
       const network::mojom::SharedDictionaryAccessDetails& details) override;
+  std::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source) override;
 
   // Called when WebAudio starts or stops playing audible audio in an
   // AudioContext.

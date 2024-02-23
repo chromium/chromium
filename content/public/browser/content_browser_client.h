@@ -597,9 +597,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // specific cases -- then the default non-isolated permissions policy will be
   // applied.
   virtual std::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin);
+  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
+                                        const url::Origin& app_origin);
 
   // Returns whether a new process should be created or an existing one should
   // be reused based on the URL we want to load. This should return false,

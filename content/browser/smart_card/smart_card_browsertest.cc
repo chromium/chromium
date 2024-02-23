@@ -182,9 +182,8 @@ class SmartCardTestContentBrowserClient
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;
   std::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
+                                        const url::Origin& app_origin) override;
 
  private:
   std::unique_ptr<SmartCardDelegate> delegate_;
@@ -315,7 +314,7 @@ bool SmartCardTestContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 
 std::optional<blink::ParsedPermissionsPolicy>
 SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
+    WebContents* web_contents,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration coi_decl(
       blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
@@ -1614,7 +1613,7 @@ class NoCoiPermissionSmartCardTestContentBrowserClient
  public:
   std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
+      WebContents* web_contents,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kSmartCard,

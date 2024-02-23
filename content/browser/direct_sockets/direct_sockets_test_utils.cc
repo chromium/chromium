@@ -170,7 +170,7 @@ bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 
 std::optional<blink::ParsedPermissionsPolicy>
 IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
+    WebContents* web_contents,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration coi_decl(
       blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,

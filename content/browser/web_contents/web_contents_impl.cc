@@ -3372,6 +3372,16 @@ void WebContentsImpl::OnSharedDictionaryAccessed(
   observers_.NotifyObservers(func, rfh, details);
 }
 
+std::optional<blink::ParsedPermissionsPolicy>
+WebContentsImpl::GetPermissionsPolicyForIsolatedWebApp(
+    RenderFrameHostImpl* source) {
+  WebExposedIsolationInfo weii =
+      source->GetSiteInstance()->GetWebExposedIsolationInfo();
+  CHECK(weii.is_isolated_application());
+  return GetContentClient()->browser()->GetPermissionsPolicyForIsolatedWebApp(
+      this, weii.origin());
+}
+
 void WebContentsImpl::Stop() {
   TRACE_EVENT0("content", "WebContentsImpl::Stop");
   ForEachFrameTree(base::BindRepeating(

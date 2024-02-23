@@ -196,4 +196,10 @@ bool RenderFrameHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
   return false;
 }
 
+std::optional<blink::ParsedPermissionsPolicy>
+RenderFrameHostDelegate::GetPermissionsPolicyForIsolatedWebApp(
+    RenderFrameHostImpl* source) {
+  return blink::ParsedPermissionsPolicy();
+}
+
 }  // namespace content

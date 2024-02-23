@@ -182,9 +182,8 @@ class IsolatedWebAppContentBrowserClient
                                              const GURL& url) override;
 
   std::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
+                                        const url::Origin& app_origin) override;
 
  private:
   url::Origin isolated_app_origin_;

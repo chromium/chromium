@@ -710,6 +710,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // ignored.
   virtual bool ShouldIgnoreUnresponsiveRenderer();
 
+  // Returns the base permissions policy that should be applied to the Isolated
+  // Web App running in the given RenderFrameHostImpl. If std::nullopt is
+  // returned the default non-isolated permissions policy will be applied.
+  virtual std::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source);
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

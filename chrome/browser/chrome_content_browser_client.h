@@ -229,9 +229,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool MayReuseHost(content::RenderProcessHost* process_host) override;
   size_t GetProcessCountToIgnoreForLimit() override;
   std::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(content::WebContents* web_contents,
+                                        const url::Origin& app_origin) override;
   bool ShouldTryToUseExistingProcessHost(
       content::BrowserContext* browser_context,
       const GURL& url) override;

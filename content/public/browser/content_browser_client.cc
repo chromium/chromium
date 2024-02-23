@@ -265,7 +265,7 @@ size_t ContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 
 std::optional<blink::ParsedPermissionsPolicy>
 ContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
+    WebContents* web_contents,
     const url::Origin& app_origin) {
   return blink::ParsedPermissionsPolicy();
 }
