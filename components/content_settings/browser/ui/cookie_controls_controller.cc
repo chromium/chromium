@@ -146,7 +146,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
                              status.blocking_status, status.expiration);
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
-    observer.OnUserBypassIconStatusChanged(
+    observer.OnCookieControlsIconStatusChanged(
         ShouldUserBypassIconBeVisible(
             status.protections_on, status.controls_visible,
             third_party_allowed_sites + third_party_blocked_sites),
@@ -462,7 +462,7 @@ void CookieControlsController::PresentBlockedCookieCounter() {
   for (auto& observer : observers_) {
     observer.OnSitesCountChanged(third_party_allowed_sites,
                                  third_party_blocked_sites);
-    observer.OnUserBypassIconStatusChanged(
+    observer.OnCookieControlsIconStatusChanged(
         ShouldUserBypassIconBeVisible(
             status.protections_on, status.controls_visible,
             third_party_allowed_sites + third_party_blocked_sites),

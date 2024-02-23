@@ -57,7 +57,7 @@ class MockCookieControlsObserver
                base::Time));
   MOCK_METHOD(void, OnSitesCountChanged, (int, int));
   MOCK_METHOD(void,
-              OnUserBypassIconStatusChanged,
+              OnCookieControlsIconStatusChanged,
               (/*icon_visible*/ bool,
                /*protections_on*/ bool,
                CookieBlocking3pcdStatus,
@@ -263,7 +263,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -272,7 +272,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
 
   // Accessing 1p cookies should not increase count.
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -284,7 +284,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
 
   // Accessing cookies should be notified.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -301,7 +301,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -311,7 +311,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
 
   // Blocking cookies should update the blocked sites count.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 1));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -328,7 +328,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -338,7 +338,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
 
   // A site accessing cookies should be counted only once.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 1));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -351,7 +351,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
 
   // Another site accessing cookies should update the sites count.
   EXPECT_CALL(*mock(), OnSitesCountChanged(2, 1));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -367,7 +367,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -388,7 +388,7 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -403,7 +403,7 @@ TEST_P(CookieControlsUserBypassTest, NewTabPage) {
                       /*controls_visible=*/false, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -419,7 +419,7 @@ TEST_P(CookieControlsUserBypassTest, PreferenceDisabled) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -434,7 +434,7 @@ TEST_P(CookieControlsUserBypassTest, PreferenceDisabled) {
                       /*controls_visible=*/false, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -454,7 +454,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -469,7 +469,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -483,7 +483,7 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -506,7 +506,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -520,7 +520,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -536,7 +536,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -551,7 +551,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -566,7 +566,7 @@ TEST_P(CookieControlsUserBypassTest, DisableForSite) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -583,7 +583,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -620,7 +620,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(
       incognito_mock_,
-      OnUserBypassIconStatusChanged(
+      OnCookieControlsIconStatusChanged(
           /*icon_visible=*/false, /*protections_on=*/true,
           CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
   EXPECT_CALL(incognito_mock_, OnSitesCountChanged(0, 0));
@@ -635,7 +635,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -648,7 +648,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
                       CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(
       incognito_mock_,
-      OnUserBypassIconStatusChanged(
+      OnCookieControlsIconStatusChanged(
           /*icon_visible=*/true, /*protections_on=*/false,
           CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
   EXPECT_CALL(incognito_mock_, OnSitesCountChanged(0, 0));
@@ -667,7 +667,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
                            // expiration, because the default allow never
                            // expires, zero_expiration is correct.
                            zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -679,7 +679,7 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
                       CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
   EXPECT_CALL(
       incognito_mock_,
-      OnUserBypassIconStatusChanged(
+      OnCookieControlsIconStatusChanged(
           /*icon_visible=*/true, /*protections_on=*/false,
           CookieBlocking3pcdStatus::kNotIn3pcd, /*should_highlight=*/false));
   profile()->GetPrefs()->SetInteger(
@@ -704,7 +704,7 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
                       /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -719,7 +719,7 @@ TEST_P(CookieControlsUserBypassTest, ThirdPartyCookiesException) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -740,7 +740,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
   EXPECT_CALL(*mock(), OnSitesCountChanged(0, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -750,7 +750,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
 
   // Accessing cookies should be notified.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -763,7 +763,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
 
   // Reload the page and simulate accessing storage on page load.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -776,7 +776,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
 
   // After the second reload and accessing storage, UB should highlight.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
@@ -807,7 +807,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -817,7 +817,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 
   // Accessing cookies should be notified.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -830,7 +830,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 
   // Reload the page and simulate accessing storage on page load.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -843,7 +843,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
 
   // After the second reload and accessing storage, UB should be highlighted.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
@@ -860,7 +860,7 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
@@ -890,7 +890,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -900,7 +900,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
 
   // Accessing cookies should be notified.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -913,7 +913,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
 
   // Reload the page and simulate accessing storage on page load.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -929,7 +929,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
 
   // The second reload happens with a delay and doesn't highlight.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -946,7 +946,7 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -987,7 +987,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
@@ -997,7 +997,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
 
   // Site data access should highlight.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
@@ -1024,7 +1024,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1035,7 +1035,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   // Site with medium or low engagement index that has accessed site does not
   // highlight UB and only shows the icon.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1049,7 +1049,7 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
   // Revisiting high site engagement site doesn't highlight UB
   // because the entry point was already highlighted for that site.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1084,7 +1084,7 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1095,7 +1095,7 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   // Even though the site has high engagement level, UB does not highlight
   // because SAA was requested in the site context.
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1112,7 +1112,7 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1144,7 +1144,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1160,7 +1160,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsNoWildcardMatchingDomain) {
                       /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1182,7 +1182,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1198,7 +1198,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsWildcardMatchingDomain) {
                       /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1221,7 +1221,7 @@ TEST_P(CookieControlsUserBypassTest,
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1238,7 +1238,7 @@ TEST_P(CookieControlsUserBypassTest,
                       /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1260,7 +1260,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1277,7 +1277,7 @@ TEST_P(CookieControlsUserBypassTest, CustomExceptionsDotComWildcard) {
                       /*controls_visible=*/true, /*protections_on=*/false,
                       CookieControlsEnforcement::kEnforcedByCookieSetting,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1388,7 +1388,7 @@ TEST_P(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1402,7 +1402,7 @@ TEST_P(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
                            /*controls_visible=*/true, /*protections_on=*/false,
                            CookieControlsEnforcement::kNoEnforcement,
                            CookieBlocking3pcdStatus::kNotIn3pcd, expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1433,7 +1433,7 @@ TEST_P(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
@@ -1454,7 +1454,7 @@ TEST_P(CookieControlsUserBypassTest, IconHighlightedAfterExceptionExpires) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1477,7 +1477,7 @@ TEST_P(CookieControlsUserBypassTest, StatefulBounce) {
                       /*controls_visible=*/true, /*protections_on=*/true,
                       CookieControlsEnforcement::kNoEnforcement,
                       CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration()));
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
@@ -1569,7 +1569,7 @@ TEST_P(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
   navigation->Start();
   navigation->Commit();
 
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));

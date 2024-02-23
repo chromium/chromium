@@ -168,7 +168,7 @@ int CookieControlsIconView::GetLabelForStatus() const {
   }
 }
 
-void CookieControlsIconView::OnUserBypassIconStatusChanged(
+void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     bool icon_visible,
     bool protections_on,
     CookieBlocking3pcdStatus blocking_status,

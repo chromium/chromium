@@ -142,9 +142,9 @@ TEST_P(CookieControlsIconViewUnitTest, DefaultNotVisible) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconAnimatesWhenShouldHighlightIsTrueAndProtectionsAreOn) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/true);
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(),
@@ -164,9 +164,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconAnimatesOnPageReloadWithChangedSettings) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/false);
   ExecuteIcon();
   // Force the icon to animate and set the label again
   view_->OnFinishedPageReloadWithChangedSettings();
@@ -180,9 +180,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 }
 
 TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/true);
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
   ExecuteIcon();
@@ -192,9 +192,9 @@ TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconOpened), 0);
   // Simulate a change in web content.
   view_->UpdateImpl();
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/false);
   ExecuteIcon();
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
@@ -206,9 +206,9 @@ TEST_P(CookieControlsIconViewUnitTest, IconAnimationIsResetOnWebContentChange) {
 }
 
 TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/true);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/true);
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
   EXPECT_EQ(TooltipText(),
@@ -221,9 +221,9 @@ TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
 
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconAnimated), 1);
   EXPECT_EQ(user_actions_.GetActionCount(kUMAIconShown), 0);
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/false,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/false);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(),
@@ -240,9 +240,9 @@ TEST_P(CookieControlsIconViewUnitTest, HidingIconDoesNotRetriggerA11yReadOut) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        IconDoesNotAnimateWhenShouldHighlightIsFalse) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/false);
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
   ExecuteIcon();
@@ -251,9 +251,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 }
 
 TEST_P(CookieControlsIconViewUnitTest, IconHiddenWhenIconVisibleIsFalse) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/false,
-                                       /*protections_on=*/false, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/false,
+                                           /*protections_on=*/false, GetParam(),
+                                           /*should_highlight=*/false);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   EXPECT_EQ(TooltipText(), u"");
@@ -267,9 +267,9 @@ TEST_P(CookieControlsIconViewUnitTest, IconHiddenWhenIconVisibleIsFalse) {
 
 TEST_P(CookieControlsIconViewUnitTest,
        RecordsIconOpenMetricWhenProtectionsAreOff) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/false, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/false, GetParam(),
+                                           /*should_highlight=*/false);
   EXPECT_TRUE(Visible());
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
@@ -282,9 +282,9 @@ TEST_P(CookieControlsIconViewUnitTest,
 
 TEST_P(CookieControlsIconViewUnitTest,
        RecordsIconOpenMetricWhenProtectionsAreOn) {
-  view_->OnUserBypassIconStatusChanged(/*icon_visible=*/true,
-                                       /*protections_on=*/true, GetParam(),
-                                       /*should_highlight=*/false);
+  view_->OnCookieControlsIconStatusChanged(/*icon_visible=*/true,
+                                           /*protections_on=*/true, GetParam(),
+                                           /*should_highlight=*/false);
   EXPECT_EQ(TooltipText(),
             In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
   EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : BlockedLabel());

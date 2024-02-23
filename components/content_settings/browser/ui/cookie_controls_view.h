@@ -54,7 +54,7 @@ class CookieControlsObserver : public base::CheckedObserver {
 
   // Called to update the user bypass entrypoint in the omnibox. This can impact
   // any property of the entrypoint (i.e. the visibility, label, or icon).
-  virtual void OnUserBypassIconStatusChanged(
+  virtual void OnCookieControlsIconStatusChanged(
       // Whether to show the user bypass icon.
       bool icon_visible,
       // Whether protections (3PC blocking and ACT features) are on for the

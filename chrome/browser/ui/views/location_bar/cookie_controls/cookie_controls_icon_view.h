@@ -33,10 +33,11 @@ class CookieControlsIconView : public PageActionIconView,
   ~CookieControlsIconView() override;
 
   // CookieControlsObserver:
-  void OnUserBypassIconStatusChanged(bool icon_visible,
-                                     bool protections_on,
-                                     CookieBlocking3pcdStatus blocking_status,
-                                     bool should_highlight) override;
+  void OnCookieControlsIconStatusChanged(
+      bool icon_visible,
+      bool protections_on,
+      CookieBlocking3pcdStatus blocking_status,
+      bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void ShowCookieControlsBubble();
