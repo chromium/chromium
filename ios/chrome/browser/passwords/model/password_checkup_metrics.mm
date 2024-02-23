@@ -6,12 +6,13 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/strcat.h"
 
 using password_manager::WarningType;
 
 namespace {
 
-const std::string kUserActionWithContextHistogram =
+const char kUserActionWithContextHistogram[] =
     "PasswordManager.BulkCheck.UserAction.IOS";
 
 const char kGeneralUserActionHistogram[] =
@@ -51,13 +52,14 @@ enum class PasswordCheckInteractionIOSWithoutContext {
 std::string GetHistogramForContext(WarningType context) {
   switch (context) {
     case WarningType::kCompromisedPasswordsWarning:
-      return kUserActionWithContextHistogram + ".Compromised";
+      return base::StrCat({kUserActionWithContextHistogram, ".Compromised"});
     case WarningType::kReusedPasswordsWarning:
-      return kUserActionWithContextHistogram + ".Reused";
+      return base::StrCat({kUserActionWithContextHistogram, ".Reused"});
     case WarningType::kWeakPasswordsWarning:
-      return kUserActionWithContextHistogram + ".Weak";
+      return base::StrCat({kUserActionWithContextHistogram, ".Weak"});
     case WarningType::kDismissedWarningsWarning:
-      return kUserActionWithContextHistogram + ".MutedCompromised";
+      return base::StrCat(
+          {kUserActionWithContextHistogram, ".MutedCompromised"});
     case WarningType::kNoInsecurePasswordsWarning:
       NOTREACHED_NORETURN();
   }

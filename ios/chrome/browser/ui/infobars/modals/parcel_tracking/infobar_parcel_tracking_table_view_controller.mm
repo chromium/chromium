@@ -37,9 +37,8 @@ enum ItemType {
 // Height of the "Report an issue" table footer.
 const CGFloat kFooterFrameHeight = 50;
 
-// Frame of the empty accessory view added after carrier name.
-const CGRect kEmptyAccessoryViewFrame =
-    CGRectMake(0, 0, 0.5, kSymbolAccessoryPointSize);
+// Width of the empty accessory view added after carrier name.
+const CGFloat kEmptyAccessoryViewWidth = 0.5;
 
 // Key used to access carrier info from CustomTextCheckingResult.
 NSString* const kCarrierKey = @"carrier";
@@ -198,8 +197,9 @@ NSString* const kCarrierKey = @"carrier";
       break;
     }
     case ItemType::kCarrier:
-      cell.accessoryView =
-          [[UIImageView alloc] initWithFrame:kEmptyAccessoryViewFrame];
+      CGRect frame =
+          CGRectMake(0, 0, kEmptyAccessoryViewWidth, kSymbolAccessoryPointSize);
+      cell.accessoryView = [[UIImageView alloc] initWithFrame:frame];
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
   }

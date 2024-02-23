@@ -13,6 +13,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -20,8 +21,6 @@ constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kLabelBottomMargin = -40;
 constexpr CGFloat kLabelFontSize = 15;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
-BOOL isIPad =
-    UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
 }  // namespace
 
 @interface WhatsNewScreenshotViewController ()
@@ -80,7 +79,8 @@ BOOL isIPad =
 
   [self configureAnimationView];
   [self configureAlertScreen];
-  if (self.item.isIphoneOnly && isIPad) {
+  if (self.item.isIphoneOnly &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self configureLabelView];
   }
   [self layoutAlertScreen];
@@ -111,7 +111,8 @@ BOOL isIPad =
       [[ConfirmationAlertViewController alloc] init];
   alertScreen.titleString = titleString;
   alertScreen.subtitleString = subtitleString;
-  if (!self.item.isIphoneOnly || !isIPad) {
+  if (!self.item.isIphoneOnly ||
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
     alertScreen.primaryActionString = primaryActionString;
     alertScreen.secondaryActionString = secondaryActionString;
   }
