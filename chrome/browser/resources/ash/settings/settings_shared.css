@@ -81,12 +81,17 @@ a[href]:focus {
   outline-color: var(--cros-sys-focus_ring);
 }
 
-settings-toggle-button.primary-toggle {
+/**
+ * primary-toggle is a row containing a toggle that represents some setting's
+ * on/off state. Examples: bluetooth primary toggle, wifi primary toggle, etc.
+ */
+.primary-toggle {
   color: var(--cros-sys-on_surface_variant);
   font: var(--cros-button-2-font);
 }
 
-settings-toggle-button.primary-toggle[checked] {
+.primary-toggle[on],
+.primary-toggle[checked] {
   color: var(--cros-sys-primary);
 }
 

@@ -173,7 +173,7 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
       assertEquals(enabled, enableBluetoothToggle.checked);
       const element =
           bluetoothDevicesSubpage.shadowRoot!.querySelector<HTMLElement>(
-              '#onOff');
+              '.primary-toggle');
       assertTrue(!!element);
       assertEquals(
           bluetoothDevicesSubpage.i18n(enabled ? 'deviceOn' : 'deviceOff'),
