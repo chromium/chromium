@@ -5,29 +5,16 @@
 
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86) && defined(__ELF__)
 .text
-.globl	ChaCha20_ctr32
-.hidden	ChaCha20_ctr32
-.type	ChaCha20_ctr32,@function
+.globl	ChaCha20_ctr32_nohw
+.hidden	ChaCha20_ctr32_nohw
+.type	ChaCha20_ctr32_nohw,@function
 .align	16
-ChaCha20_ctr32:
-.L_ChaCha20_ctr32_begin:
+ChaCha20_ctr32_nohw:
+.L_ChaCha20_ctr32_nohw_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-	xorl	%eax,%eax
-	cmpl	28(%esp),%eax
-	je	.L000no_data
-	call	.Lpic_point
-.Lpic_point:
-	popl	%eax
-	leal	OPENSSL_ia32cap_P-.Lpic_point(%eax),%ebp
-	testl	$16777216,(%ebp)
-	jz	.L001x86
-	testl	$512,4(%ebp)
-	jz	.L001x86
-	jmp	.Lssse3_shortcut
-.L001x86:
 	movl	32(%esp),%esi
 	movl	36(%esp),%edi
 	subl	$132,%esp
@@ -56,13 +43,13 @@ ChaCha20_ctr32:
 	movl	%ebx,116(%esp)
 	movl	%ecx,120(%esp)
 	movl	%edx,124(%esp)
-	jmp	.L002entry
+	jmp	.L000entry
 .align	16
-.L003outer_loop:
+.L001outer_loop:
 	movl	%ebx,156(%esp)
 	movl	%eax,152(%esp)
 	movl	%ecx,160(%esp)
-.L002entry:
+.L000entry:
 	movl	$1634760805,%eax
 	movl	$857760878,4(%esp)
 	movl	$2036477234,8(%esp)
@@ -90,9 +77,9 @@ ChaCha20_ctr32:
 	movl	%edi,60(%esp)
 	movl	%edx,112(%esp)
 	movl	$10,%ebx
-	jmp	.L004loop
+	jmp	.L002loop
 .align	16
-.L004loop:
+.L002loop:
 	addl	%ebp,%eax
 	movl	%ebx,128(%esp)
 	movl	%ebp,%ebx
@@ -246,14 +233,14 @@ ChaCha20_ctr32:
 	xorl	%esi,%ebp
 	roll	$7,%ebp
 	decl	%ebx
-	jnz	.L004loop
+	jnz	.L002loop
 	movl	160(%esp),%ebx
 	addl	$1634760805,%eax
 	addl	80(%esp),%ebp
 	addl	96(%esp),%ecx
 	addl	100(%esp),%esi
 	cmpl	$64,%ebx
-	jb	.L005tail
+	jb	.L003tail
 	movl	156(%esp),%ebx
 	addl	112(%esp),%edx
 	addl	120(%esp),%edi
@@ -316,9 +303,9 @@ ChaCha20_ctr32:
 	movl	%ebp,(%eax)
 	leal	64(%eax),%eax
 	subl	$64,%ecx
-	jnz	.L003outer_loop
-	jmp	.L006done
-.L005tail:
+	jnz	.L001outer_loop
+	jmp	.L004done
+.L003tail:
 	addl	112(%esp),%edx
 	addl	120(%esp),%edi
 	movl	%eax,(%esp)
@@ -362,34 +349,35 @@ ChaCha20_ctr32:
 	movl	%edi,60(%esp)
 	xorl	%eax,%eax
 	xorl	%edx,%edx
-.L007tail_loop:
+.L005tail_loop:
 	movb	(%esi,%ebp,1),%al
 	movb	(%esp,%esi,1),%dl
 	leal	1(%esi),%esi
 	xorb	%dl,%al
 	movb	%al,-1(%ecx,%esi,1)
 	decl	%ebx
-	jnz	.L007tail_loop
-.L006done:
+	jnz	.L005tail_loop
+.L004done:
 	addl	$132,%esp
-.L000no_data:
 	popl	%edi
 	popl	%esi
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	ChaCha20_ctr32,.-.L_ChaCha20_ctr32_begin
-.globl	ChaCha20_ssse3
-.hidden	ChaCha20_ssse3
-.type	ChaCha20_ssse3,@function
+.size	ChaCha20_ctr32_nohw,.-.L_ChaCha20_ctr32_nohw_begin
+.globl	ChaCha20_ctr32_ssse3
+.hidden	ChaCha20_ctr32_ssse3
+.type	ChaCha20_ctr32_ssse3,@function
 .align	16
-ChaCha20_ssse3:
-.L_ChaCha20_ssse3_begin:
+ChaCha20_ctr32_ssse3:
+.L_ChaCha20_ctr32_ssse3_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
 	pushl	%edi
-.Lssse3_shortcut:
+	call	.Lpic_point
+.Lpic_point:
+	popl	%eax
 	movl	20(%esp),%edi
 	movl	24(%esp),%esi
 	movl	28(%esp),%ecx
@@ -402,7 +390,7 @@ ChaCha20_ssse3:
 	leal	.Lssse3_data-.Lpic_point(%eax),%eax
 	movdqu	(%ebx),%xmm3
 	cmpl	$256,%ecx
-	jb	.L0081x
+	jb	.L0061x
 	movl	%edx,516(%esp)
 	movl	%ebx,520(%esp)
 	subl	$256,%ecx
@@ -447,9 +435,9 @@ ChaCha20_ssse3:
 	movdqa	%xmm7,-80(%ebp)
 	leal	128(%esi),%esi
 	leal	128(%edi),%edi
-	jmp	.L009outer_loop
+	jmp	.L007outer_loop
 .align	16
-.L009outer_loop:
+.L007outer_loop:
 	movdqa	-112(%ebp),%xmm1
 	movdqa	-96(%ebp),%xmm2
 	movdqa	-80(%ebp),%xmm3
@@ -484,7 +472,7 @@ ChaCha20_ssse3:
 	movl	$10,%edx
 	nop
 .align	16
-.L010loop:
+.L008loop:
 	paddd	%xmm3,%xmm0
 	movdqa	%xmm3,%xmm2
 	pxor	%xmm0,%xmm6
@@ -684,7 +672,7 @@ ChaCha20_ssse3:
 	psrld	$25,%xmm1
 	por	%xmm1,%xmm3
 	decl	%edx
-	jnz	.L010loop
+	jnz	.L008loop
 	movdqa	%xmm3,-64(%ebx)
 	movdqa	%xmm4,(%ebx)
 	movdqa	%xmm5,16(%ebx)
@@ -826,9 +814,9 @@ ChaCha20_ssse3:
 	movdqu	%xmm7,64(%edi)
 	leal	208(%edi),%edi
 	subl	$256,%ecx
-	jnc	.L009outer_loop
+	jnc	.L007outer_loop
 	addl	$256,%ecx
-	jz	.L011done
+	jz	.L009done
 	movl	520(%esp),%ebx
 	leal	-128(%esi),%esi
 	movl	516(%esp),%edx
@@ -838,7 +826,7 @@ ChaCha20_ssse3:
 	paddd	96(%eax),%xmm2
 	pand	112(%eax),%xmm3
 	por	%xmm2,%xmm3
-.L0081x:
+.L0061x:
 	movdqa	32(%eax),%xmm0
 	movdqu	(%edx),%xmm1
 	movdqu	16(%edx),%xmm2
@@ -850,9 +838,9 @@ ChaCha20_ssse3:
 	movdqa	%xmm2,32(%esp)
 	movdqa	%xmm3,48(%esp)
 	movl	$10,%edx
-	jmp	.L012loop1x
+	jmp	.L010loop1x
 .align	16
-.L013outer1x:
+.L011outer1x:
 	movdqa	80(%eax),%xmm3
 	movdqa	(%esp),%xmm0
 	movdqa	16(%esp),%xmm1
@@ -860,9 +848,9 @@ ChaCha20_ssse3:
 	paddd	48(%esp),%xmm3
 	movl	$10,%edx
 	movdqa	%xmm3,48(%esp)
-	jmp	.L012loop1x
+	jmp	.L010loop1x
 .align	16
-.L012loop1x:
+.L010loop1x:
 	paddd	%xmm1,%xmm0
 	pxor	%xmm0,%xmm3
 .byte	102,15,56,0,222
@@ -907,13 +895,13 @@ ChaCha20_ssse3:
 	pshufd	$147,%xmm1,%xmm1
 	pshufd	$57,%xmm3,%xmm3
 	decl	%edx
-	jnz	.L012loop1x
+	jnz	.L010loop1x
 	paddd	(%esp),%xmm0
 	paddd	16(%esp),%xmm1
 	paddd	32(%esp),%xmm2
 	paddd	48(%esp),%xmm3
 	cmpl	$64,%ecx
-	jb	.L014tail
+	jb	.L012tail
 	movdqu	(%esi),%xmm4
 	movdqu	16(%esi),%xmm5
 	pxor	%xmm4,%xmm0
@@ -929,9 +917,9 @@ ChaCha20_ssse3:
 	movdqu	%xmm3,48(%edi)
 	leal	64(%edi),%edi
 	subl	$64,%ecx
-	jnz	.L013outer1x
-	jmp	.L011done
-.L014tail:
+	jnz	.L011outer1x
+	jmp	.L009done
+.L012tail:
 	movdqa	%xmm0,(%esp)
 	movdqa	%xmm1,16(%esp)
 	movdqa	%xmm2,32(%esp)
@@ -939,22 +927,22 @@ ChaCha20_ssse3:
 	xorl	%eax,%eax
 	xorl	%edx,%edx
 	xorl	%ebp,%ebp
-.L015tail_loop:
+.L013tail_loop:
 	movb	(%esp,%ebp,1),%al
 	movb	(%esi,%ebp,1),%dl
 	leal	1(%ebp),%ebp
 	xorb	%dl,%al
 	movb	%al,-1(%edi,%ebp,1)
 	decl	%ecx
-	jnz	.L015tail_loop
-.L011done:
+	jnz	.L013tail_loop
+.L009done:
 	movl	512(%esp),%esp
 	popl	%edi
 	popl	%esi
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	ChaCha20_ssse3,.-.L_ChaCha20_ssse3_begin
+.size	ChaCha20_ctr32_ssse3,.-.L_ChaCha20_ctr32_ssse3_begin
 .align	64
 .Lssse3_data:
 .byte	2,3,0,1,6,7,4,5,10,11,8,9,14,15,12,13

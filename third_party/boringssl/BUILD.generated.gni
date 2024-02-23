@@ -543,8 +543,6 @@ crypto_headers = [
   "src/include/openssl/pkcs12.h",
   "src/include/openssl/pkcs7.h",
   "src/include/openssl/pkcs8.h",
-  "src/include/openssl/pki/certificate.h",
-  "src/include/openssl/pki/signature_verify_cache.h",
   "src/include/openssl/poly1305.h",
   "src/include/openssl/pool.h",
   "src/include/openssl/posix_time.h",
@@ -584,6 +582,7 @@ rust_bssl_crypto = [
   "src/rust/bssl-crypto/src/ed25519.rs",
   "src/rust/bssl-crypto/src/hkdf.rs",
   "src/rust/bssl-crypto/src/hmac.rs",
+  "src/rust/bssl-crypto/src/hpke.rs",
   "src/rust/bssl-crypto/src/lib.rs",
   "src/rust/bssl-crypto/src/macros.rs",
   "src/rust/bssl-crypto/src/mem.rs",
@@ -720,6 +719,11 @@ pki_internal_headers = [
   "src/pki/verify_certificate_chain_typed_unittest.h",
   "src/pki/verify_name_match.h",
   "src/pki/verify_signed_data.h",
+]
+
+pki_headers = [
+  "src/include/openssl/pki/certificate.h",
+  "src/include/openssl/pki/signature_verify_cache.h",
 ]
 
 tool_sources = [

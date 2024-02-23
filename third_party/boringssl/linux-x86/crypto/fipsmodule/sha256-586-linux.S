@@ -5,12 +5,12 @@
 
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86) && defined(__ELF__)
 .text
-.globl	sha256_block_data_order
-.hidden	sha256_block_data_order
-.type	sha256_block_data_order,@function
+.globl	sha256_block_data_order_nohw
+.hidden	sha256_block_data_order_nohw
+.type	sha256_block_data_order_nohw,@function
 .align	16
-sha256_block_data_order:
-.L_sha256_block_data_order_begin:
+sha256_block_data_order_nohw:
+.L_sha256_block_data_order_nohw_begin:
 	pushl	%ebp
 	pushl	%ebx
 	pushl	%esi
@@ -22,7 +22,7 @@ sha256_block_data_order:
 	call	.L000pic_point
 .L000pic_point:
 	popl	%ebp
-	leal	.L001K256-.L000pic_point(%ebp),%ebp
+	leal	.LK256-.L000pic_point(%ebp),%ebp
 	subl	$16,%esp
 	andl	$-64,%esp
 	shll	$6,%eax
@@ -31,29 +31,13 @@ sha256_block_data_order:
 	movl	%edi,4(%esp)
 	movl	%eax,8(%esp)
 	movl	%ebx,12(%esp)
-	leal	OPENSSL_ia32cap_P-.L001K256(%ebp),%edx
-	movl	(%edx),%ecx
-	movl	4(%edx),%ebx
-	testl	$1048576,%ecx
-	jnz	.L002loop
-	movl	8(%edx),%edx
-	testl	$16777216,%ecx
-	jz	.L003no_xmm
-	andl	$1073741824,%ecx
-	andl	$268435968,%ebx
-	orl	%ebx,%ecx
-	andl	$1342177280,%ecx
-	cmpl	$1342177280,%ecx
-	je	.L004AVX
-	testl	$512,%ebx
-	jnz	.L005SSSE3
-.L003no_xmm:
+.L001no_xmm:
 	subl	%edi,%eax
 	cmpl	$256,%eax
-	jae	.L006unrolled
-	jmp	.L002loop
+	jae	.L002unrolled
+	jmp	.L003loop
 .align	16
-.L002loop:
+.L003loop:
 	movl	(%edi),%eax
 	movl	4(%edi),%ebx
 	movl	8(%edi),%ecx
@@ -122,7 +106,7 @@ sha256_block_data_order:
 	movl	%ecx,28(%esp)
 	movl	%edi,32(%esp)
 .align	16
-.L00700_15:
+.L00400_15:
 	movl	%edx,%ecx
 	movl	24(%esp),%esi
 	rorl	$14,%ecx
@@ -160,11 +144,11 @@ sha256_block_data_order:
 	addl	$4,%ebp
 	addl	%ebx,%eax
 	cmpl	$3248222580,%esi
-	jne	.L00700_15
+	jne	.L00400_15
 	movl	156(%esp),%ecx
-	jmp	.L00816_63
+	jmp	.L00516_63
 .align	16
-.L00816_63:
+.L00516_63:
 	movl	%ecx,%ebx
 	movl	104(%esp),%esi
 	rorl	$11,%ecx
@@ -219,7 +203,7 @@ sha256_block_data_order:
 	addl	$4,%ebp
 	addl	%ebx,%eax
 	cmpl	$3329325298,%esi
-	jne	.L00816_63
+	jne	.L00516_63
 	movl	356(%esp),%esi
 	movl	8(%esp),%ebx
 	movl	16(%esp),%ecx
@@ -246,7 +230,7 @@ sha256_block_data_order:
 	leal	356(%esp),%esp
 	subl	$256,%ebp
 	cmpl	8(%esp),%edi
-	jb	.L002loop
+	jb	.L003loop
 	movl	12(%esp),%esp
 	popl	%edi
 	popl	%esi
@@ -254,7 +238,7 @@ sha256_block_data_order:
 	popl	%ebp
 	ret
 .align	64
-.L001K256:
+.LK256:
 .long	1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298
 .long	66051,67438087,134810123,202182159
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97
@@ -263,7 +247,7 @@ sha256_block_data_order:
 .byte	112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103
 .byte	62,0
 .align	16
-.L006unrolled:
+.L002unrolled:
 	leal	-96(%esp),%esp
 	movl	(%esi),%eax
 	movl	4(%esi),%ebp
@@ -280,9 +264,9 @@ sha256_block_data_order:
 	movl	%ebx,20(%esp)
 	movl	%ecx,24(%esp)
 	movl	%esi,28(%esp)
-	jmp	.L009grand_loop
+	jmp	.L006grand_loop
 .align	16
-.L009grand_loop:
+.L006grand_loop:
 	movl	(%edi),%ebx
 	movl	4(%edi),%ecx
 	bswap	%ebx
@@ -3162,15 +3146,40 @@ sha256_block_data_order:
 	movl	%ebx,24(%esp)
 	movl	%ecx,28(%esp)
 	cmpl	104(%esp),%edi
-	jb	.L009grand_loop
+	jb	.L006grand_loop
 	movl	108(%esp),%esp
 	popl	%edi
 	popl	%esi
 	popl	%ebx
 	popl	%ebp
 	ret
-.align	32
-.L005SSSE3:
+.size	sha256_block_data_order_nohw,.-.L_sha256_block_data_order_nohw_begin
+.globl	sha256_block_data_order_ssse3
+.hidden	sha256_block_data_order_ssse3
+.type	sha256_block_data_order_ssse3,@function
+.align	16
+sha256_block_data_order_ssse3:
+.L_sha256_block_data_order_ssse3_begin:
+	pushl	%ebp
+	pushl	%ebx
+	pushl	%esi
+	pushl	%edi
+	movl	20(%esp),%esi
+	movl	24(%esp),%edi
+	movl	28(%esp),%eax
+	movl	%esp,%ebx
+	call	.L007pic_point
+.L007pic_point:
+	popl	%ebp
+	leal	.LK256-.L007pic_point(%ebp),%ebp
+	subl	$16,%esp
+	andl	$-64,%esp
+	shll	$6,%eax
+	addl	%edi,%eax
+	movl	%esi,(%esp)
+	movl	%edi,4(%esp)
+	movl	%eax,8(%esp)
+	movl	%ebx,12(%esp)
 	leal	-96(%esp),%esp
 	movl	(%esi),%eax
 	movl	4(%esi),%ebx
@@ -3189,9 +3198,9 @@ sha256_block_data_order:
 	movl	%ecx,24(%esp)
 	movl	%esi,28(%esp)
 	movdqa	256(%ebp),%xmm7
-	jmp	.L010grand_ssse3
+	jmp	.L008grand_ssse3
 .align	16
-.L010grand_ssse3:
+.L008grand_ssse3:
 	movdqu	(%edi),%xmm0
 	movdqu	16(%edi),%xmm1
 	movdqu	32(%edi),%xmm2
@@ -3214,9 +3223,9 @@ sha256_block_data_order:
 	paddd	%xmm3,%xmm7
 	movdqa	%xmm6,64(%esp)
 	movdqa	%xmm7,80(%esp)
-	jmp	.L011ssse3_00_47
+	jmp	.L009ssse3_00_47
 .align	16
-.L011ssse3_00_47:
+.L009ssse3_00_47:
 	addl	$64,%ebp
 	movl	%edx,%ecx
 	movdqa	%xmm1,%xmm4
@@ -3859,7 +3868,7 @@ sha256_block_data_order:
 	addl	%ecx,%eax
 	movdqa	%xmm6,80(%esp)
 	cmpl	$66051,64(%ebp)
-	jne	.L011ssse3_00_47
+	jne	.L009ssse3_00_47
 	movl	%edx,%ecx
 	rorl	$14,%edx
 	movl	20(%esp),%esi
@@ -4373,15 +4382,40 @@ sha256_block_data_order:
 	movdqa	64(%ebp),%xmm7
 	subl	$192,%ebp
 	cmpl	104(%esp),%edi
-	jb	.L010grand_ssse3
+	jb	.L008grand_ssse3
 	movl	108(%esp),%esp
 	popl	%edi
 	popl	%esi
 	popl	%ebx
 	popl	%ebp
 	ret
-.align	32
-.L004AVX:
+.size	sha256_block_data_order_ssse3,.-.L_sha256_block_data_order_ssse3_begin
+.globl	sha256_block_data_order_avx
+.hidden	sha256_block_data_order_avx
+.type	sha256_block_data_order_avx,@function
+.align	16
+sha256_block_data_order_avx:
+.L_sha256_block_data_order_avx_begin:
+	pushl	%ebp
+	pushl	%ebx
+	pushl	%esi
+	pushl	%edi
+	movl	20(%esp),%esi
+	movl	24(%esp),%edi
+	movl	28(%esp),%eax
+	movl	%esp,%ebx
+	call	.L010pic_point
+.L010pic_point:
+	popl	%ebp
+	leal	.LK256-.L010pic_point(%ebp),%ebp
+	subl	$16,%esp
+	andl	$-64,%esp
+	shll	$6,%eax
+	addl	%edi,%eax
+	movl	%esi,(%esp)
+	movl	%edi,4(%esp)
+	movl	%eax,8(%esp)
+	movl	%ebx,12(%esp)
 	leal	-96(%esp),%esp
 	vzeroall
 	movl	(%esi),%eax
@@ -4401,9 +4435,9 @@ sha256_block_data_order:
 	movl	%ecx,24(%esp)
 	movl	%esi,28(%esp)
 	vmovdqa	256(%ebp),%xmm7
-	jmp	.L012grand_avx
+	jmp	.L011grand_avx
 .align	32
-.L012grand_avx:
+.L011grand_avx:
 	vmovdqu	(%edi),%xmm0
 	vmovdqu	16(%edi),%xmm1
 	vmovdqu	32(%edi),%xmm2
@@ -4422,9 +4456,9 @@ sha256_block_data_order:
 	vmovdqa	%xmm5,48(%esp)
 	vmovdqa	%xmm6,64(%esp)
 	vmovdqa	%xmm7,80(%esp)
-	jmp	.L013avx_00_47
+	jmp	.L012avx_00_47
 .align	16
-.L013avx_00_47:
+.L012avx_00_47:
 	addl	$64,%ebp
 	vpalignr	$4,%xmm0,%xmm1,%xmm4
 	movl	%edx,%ecx
@@ -5039,7 +5073,7 @@ sha256_block_data_order:
 	addl	%ecx,%eax
 	vmovdqa	%xmm6,80(%esp)
 	cmpl	$66051,64(%ebp)
-	jne	.L013avx_00_47
+	jne	.L012avx_00_47
 	movl	%edx,%ecx
 	shrdl	$14,%edx,%edx
 	movl	20(%esp),%esi
@@ -5553,7 +5587,7 @@ sha256_block_data_order:
 	vmovdqa	64(%ebp),%xmm7
 	subl	$192,%ebp
 	cmpl	104(%esp),%edi
-	jb	.L012grand_avx
+	jb	.L011grand_avx
 	movl	108(%esp),%esp
 	vzeroall
 	popl	%edi
@@ -5561,5 +5595,5 @@ sha256_block_data_order:
 	popl	%ebx
 	popl	%ebp
 	ret
-.size	sha256_block_data_order,.-.L_sha256_block_data_order_begin
+.size	sha256_block_data_order_avx,.-.L_sha256_block_data_order_avx_begin
 #endif  // !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86) && defined(__ELF__)

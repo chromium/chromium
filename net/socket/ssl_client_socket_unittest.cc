@@ -3230,7 +3230,7 @@ TEST_F(SSLClientSocketTest, SHA1) {
   SSLConfig config;
   config.disable_sha1_server_signatures = true;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_PROTOCOL_ERROR));
+  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
 }
 
 TEST_F(SSLClientSocketFalseStartTest, FalseStartEnabled) {

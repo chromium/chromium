@@ -27,11 +27,13 @@
 #include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/util.h"
+#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_doh_server.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -250,10 +252,13 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
 
 IN_PROC_BROWSER_TEST_F(SSLPolicyTest, InsecureHashPolicy) {
   net::SSLServerConfig ssl_config;
-  // Apply 0x303 to force TLS 1.2 and make the server limited to sha1.
-  ssl_config.version_min = 0x0303;
-  ssl_config.version_max = 0x0303;
-  ssl_config.signature_algorithm_for_testing = 0x0201;
+  // Configure the server at TLS 1.2 and only signing SHA-1. Additionally
+  // require ECDHE to prevent the server from falling back to a non-signing
+  // cipher suite.
+  ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_config.require_ecdhe = true;
+  ssl_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PKCS1_SHA1;
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   // Should be unable to load a page from the test server because the
