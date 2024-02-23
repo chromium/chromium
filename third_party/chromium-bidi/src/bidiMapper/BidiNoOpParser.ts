@@ -79,6 +79,9 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   parseGetSessionParams(params: unknown): Cdp.GetSessionParameters {
     return params as Cdp.GetSessionParameters;
   }
+  parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters {
+    return params as Cdp.ResolveRealmParameters;
+  }
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
     return params as Cdp.SendCommandParameters;
   }

@@ -112,6 +112,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     );
     this.#cdpProcessor = new CdpProcessor(
       browsingContextStorage,
+      realmStorage,
       cdpConnection,
       browserCdpClient
     );
@@ -216,6 +217,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'cdp.getSession':
         return this.#cdpProcessor.getSession(
           this.#parser.parseGetSessionParams(command.params)
+        );
+      case 'cdp.resolveRealm':
+        return this.#cdpProcessor.resolveRealm(
+          this.#parser.parseResolveRealmParams(command.params)
         );
       case 'cdp.sendCommand':
         return await this.#cdpProcessor.sendCommand(

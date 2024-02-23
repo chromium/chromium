@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR
+from anys import ANY_NUMBER, ANY_STR
 from test_helpers import (execute_command, read_JSON_message,
                           send_JSON_command, subscribe, wait_for_event,
                           wait_for_filtered_event)
@@ -205,3 +205,33 @@ async def test_realm_dedicated_worker(websocket, context_id, html):
     # Wait for confirmation that worker was destroyed
     event = await wait_for_event(websocket, 'script.realmDestroyed')
     assert event['params'] == {'realm': worker_realm}
+
+
+@pytest.mark.asyncio
+async def test_realm_cdpResolveRealm(websocket, context_id, html):
+    url = html()
+
+    await subscribe(websocket, ["script.realmCreated"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+
+    realm = response["params"]["realm"]
+
+    result = await execute_command(websocket, {
+        "method": "cdp.resolveRealm",
+        "params": {
+            "realm": realm
+        }
+    })
+
+    assert result == {'executionContextId': ANY_NUMBER}

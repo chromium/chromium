@@ -78,6 +78,9 @@ export class BidiParser implements BidiCommandParameterParser {
   parseGetSessionParams(params: unknown): Cdp.GetSessionParameters {
     return Parser.Cdp.parseGetSessionRequest(params);
   }
+  parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters {
+    return Parser.Cdp.parseResolveRealmRequest(params);
+  }
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
     return Parser.Cdp.parseSendCommandRequest(params);
   }

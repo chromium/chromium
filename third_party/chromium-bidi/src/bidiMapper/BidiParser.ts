@@ -53,6 +53,7 @@ export interface BidiCommandParameterParser {
   // CDP domain
   // keep-sorted start block=yes
   parseGetSessionParams(params: unknown): Cdp.GetSessionParameters;
+  parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters;
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters;
   // keep-sorted end
 

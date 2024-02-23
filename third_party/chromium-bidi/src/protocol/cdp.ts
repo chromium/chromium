@@ -17,7 +17,11 @@
 import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {BrowsingContext, JsUint} from './generated/webdriver-bidi.js';
+import type {
+  BrowsingContext,
+  JsUint,
+  Script,
+} from './generated/webdriver-bidi.js';
 
 export type EventNames = Event['method'];
 
@@ -26,14 +30,20 @@ export type Message = CommandResponse | Event;
 export type Command = {
   id: JsUint;
 } & CommandData;
-export type CommandData = SendCommandCommand | GetSessionCommand;
+export type CommandData =
+  | SendCommandCommand
+  | GetSessionCommand
+  | ResolveRealmCommand;
 
 export type CommandResponse = {
   type: 'success';
   id: JsUint;
   result: ResultData;
 };
-export type ResultData = SendCommandResult | GetSessionResult;
+export type ResultData =
+  | SendCommandResult
+  | GetSessionResult
+  | ResolveRealmResult;
 
 export type SendCommandCommand = {
   method: 'cdp.sendCommand';
@@ -65,6 +75,19 @@ export type GetSessionParameters = {
 
 export type GetSessionResult = {
   session?: Protocol.Target.SessionID;
+};
+
+export type ResolveRealmCommand = {
+  method: 'cdp.resolveRealm';
+  params: ResolveRealmParameters;
+};
+
+export type ResolveRealmParameters = {
+  realm: Script.Realm;
+};
+
+export type ResolveRealmResult = {
+  executionContextId: Protocol.Runtime.ExecutionContextId;
 };
 
 export type Event = {

@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-import type {Cdp} from '../../../protocol/protocol.js';
+import {UnknownErrorException, type Cdp} from '../../../protocol/protocol.js';
 import type {CdpClient, CdpConnection} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
+import type {RealmStorage} from '../script/RealmStorage.js';
 
 export class CdpProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #realmStorage: RealmStorage;
   readonly #cdpConnection: CdpConnection;
   readonly #browserCdpClient: CdpClient;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
+    realmStorage: RealmStorage,
     cdpConnection: CdpConnection,
     browserCdpClient: CdpClient
   ) {
     this.#browsingContextStorage = browsingContextStorage;
+    this.#realmStorage = realmStorage;
     this.#cdpConnection = cdpConnection;
     this.#browserCdpClient = browserCdpClient;
   }
@@ -42,6 +46,15 @@ export class CdpProcessor {
       return {};
     }
     return {session: sessionId};
+  }
+
+  resolveRealm(params: Cdp.ResolveRealmParameters): Cdp.ResolveRealmResult {
+    const context = params.realm;
+    const realm = this.#realmStorage.getRealm({realmId: context});
+    if (realm === undefined) {
+      throw new UnknownErrorException(`Could not find realm ${params.realm}`);
+    }
+    return {executionContextId: realm.executionContextId};
   }
 
   async sendCommand(

@@ -66,6 +66,25 @@ CdpGetSessionResult = {
 
 The command returns the default CDP session for the selected browsing context.
 
+### Command `cdp.resolveRealm`
+
+```cddl
+CdpResolveRealmCommand = {
+   method: "cdp.resolveRealm",
+   params: ScriptEvaluateParameters,
+}
+
+CdpResolveRealmParameters = {
+   realm: Script.Realm,
+}
+
+CdpResolveRealmResult = {
+   executionContextId: text,
+}
+```
+
+The command returns resolves a BiDi realm to its CDP execution context ID.
+
 ### Events `cdp`
 
 ```cddl

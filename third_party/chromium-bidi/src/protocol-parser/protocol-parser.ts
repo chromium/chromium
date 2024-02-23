@@ -330,6 +330,10 @@ export namespace Cdp {
     context: WebDriverBidi.BrowsingContext.BrowsingContextSchema,
   });
 
+  const ResolveRealmRequestSchema = z.object({
+    realm: WebDriverBidi.Script.RealmSchema,
+  });
+
   export function parseSendCommandRequest(
     params: unknown
   ): Protocol.Cdp.SendCommandParameters {
@@ -343,6 +347,12 @@ export namespace Cdp {
     params: unknown
   ): Protocol.Cdp.GetSessionParameters {
     return parseObject(params, GetSessionRequestSchema);
+  }
+
+  export function parseResolveRealmRequest(
+    params: unknown
+  ): Protocol.Cdp.ResolveRealmParameters {
+    return parseObject(params, ResolveRealmRequestSchema);
   }
 }
 
