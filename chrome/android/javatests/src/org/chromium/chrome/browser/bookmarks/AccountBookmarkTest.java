@@ -130,12 +130,12 @@ public class AccountBookmarkTest {
     }
 
     private void checkTopLevelAccountFoldersDisplayed() {
+        // TODO(crbug.com/1510547): This is currently broken because the account reading list
+        // folder doesn't show up without a restart. This should be updated once that folder is
+        // available.
         checkToolbarTitleMatches("Bookmarks");
         onView(withText("In your Google Account")).check(matches(isDisplayed()));
         BookmarkTestUtil.getRecyclerRowViewInteraction("Mobile bookmarks", true)
-                .check(matches(isDisplayed()));
-        onView(withText("Only on this device")).check(matches(isDisplayed()));
-        BookmarkTestUtil.getRecyclerRowViewInteraction("Mobile bookmarks", false)
                 .check(matches(isDisplayed()));
         BookmarkTestUtil.getRecyclerRowViewInteraction("Reading list", false)
                 .check(matches(isDisplayed()));

@@ -329,12 +329,11 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
       /*ignore_visibility=*/true);
 
   // The 2 folders should be: mobile bookmarks, reading list.
-  EXPECT_EQ(5u, folders.size());
+  EXPECT_EQ(4u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
   EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
-  EXPECT_EQ(u"Managed bookmarks", folders[3]->GetTitle());
-  EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
+  EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
 
   // Adding a bookmark to the bookmark bar will include it in the top level
   // folders that are returned.
@@ -364,15 +363,11 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
           /*ignore_visibility=*/false);
 
   // The 2 folders should be: mobile bookmarks, reading list.
-  EXPECT_EQ(4u, folders.size());
+  EXPECT_EQ(2u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-  EXPECT_EQ(u"Mobile bookmarks", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-  EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
-  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-  EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
-  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
 
   // Adding a bookmark to the bookmark bar will include it in the top level
   // folders that are returned.
@@ -380,15 +375,22 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
          GURL("http://foo.com"));
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
       /*ignore_visibility=*/false);
+  // Adding a bookmark node to mobile bookmarks will include it in the list.
+  AddURL(bookmark_model()->mobile_node(), 0, u"second", GURL("http://foo.com"));
+  // Adding to the local reading list will include it in the list.
+  local_or_syncable_reading_list_manager()->Add(GURL("http://foo.com"),
+                                                "third");
+  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
+      /*ignore_visibility=*/false);
   EXPECT_EQ(5u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
   EXPECT_EQ(u"Mobile bookmarks", folders[2]->GetTitle());
-  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-  EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
-  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-  EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
-  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
+  EXPECT_EQ(u"Bookmarks bar", folders[3]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
   EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
   EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
 }

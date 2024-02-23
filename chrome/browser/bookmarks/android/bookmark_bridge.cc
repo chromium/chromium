@@ -416,32 +416,119 @@ void BookmarkBridge::GetTopLevelFolderIds(
   AddBookmarkNodesToBookmarkIdList(
       env, j_result_obj, GetTopLevelFolderIdsImpl(j_ignore_visibility));
 }
+
 std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
     bool ignore_visibility) {
   std::vector<const BookmarkNode*> top_level_folders;
+
   // Query for the top-level folders:
-  // bookmarks bar, mobile node, other node, and managed node (if it exists).
-  // Account bookmarks come first, and local bookmarks after.
-
-  for (const auto& root_child : bookmark_model_->root_node()->children()) {
-    if (!ignore_visibility && !root_child->IsVisible()) {
-      continue;
-    }
-
-    top_level_folders.push_back(root_child.get());
+  // bookmarks bar, mobile node, other node, and managed node (if it exists,
+  // doesn't apply to account bookmarks). Account bookmarks come first, and
+  // local bookmarks after.
+  const BookmarkNode* account_mobile_node =
+      bookmark_model_->account_mobile_node();
+  if (IsPermanentFolderVisible(ignore_visibility, account_mobile_node)) {
+    top_level_folders.push_back(account_mobile_node);
   }
 
-  if (account_reading_list_manager_ &&
-      account_reading_list_manager_->GetRoot()) {
-    top_level_folders.push_back(account_reading_list_manager_->GetRoot());
+  const BookmarkNode* account_bookmark_bar_node =
+      bookmark_model_->account_bookmark_bar_node();
+  if (IsPermanentFolderVisible(ignore_visibility, account_bookmark_bar_node)) {
+    top_level_folders.push_back(account_bookmark_bar_node);
   }
 
-  if (local_or_syncable_reading_list_manager_->GetRoot()) {
-    top_level_folders.push_back(
-        local_or_syncable_reading_list_manager_->GetRoot());
+  const BookmarkNode* account_other_node =
+      bookmark_model_->account_other_node();
+  if (IsPermanentFolderVisible(ignore_visibility, account_other_node)) {
+    top_level_folders.push_back(account_other_node);
+  }
+
+  const BookmarkNode* account_reading_list_node =
+      account_reading_list_manager_ ? account_reading_list_manager_->GetRoot()
+                                    : nullptr;
+  if (IsPermanentFolderVisible(ignore_visibility, account_reading_list_node)) {
+    top_level_folders.push_back(account_reading_list_node);
+  }
+
+  const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
+  if (IsPermanentFolderVisible(ignore_visibility, mobile_node)) {
+    top_level_folders.push_back(mobile_node);
+  }
+
+  const BookmarkNode* bookmark_bar_node = bookmark_model_->bookmark_bar_node();
+  if (IsPermanentFolderVisible(ignore_visibility, bookmark_bar_node)) {
+    top_level_folders.push_back(bookmark_bar_node);
+  }
+
+  const BookmarkNode* other_node = bookmark_model_->other_node();
+  if (IsPermanentFolderVisible(ignore_visibility, other_node)) {
+    top_level_folders.push_back(other_node);
+  }
+
+  const BookmarkNode* reading_list_node =
+      local_or_syncable_reading_list_manager_->GetRoot();
+  if (IsPermanentFolderVisible(ignore_visibility, reading_list_node)) {
+    top_level_folders.push_back(reading_list_node);
+  }
+
+  // Managed node doesn't use the same IsPermanentFolderVisible logic because it
+  // doesn't have a corresponding account folder and shouldn't be shown unless
+  // determined to be visible through the node (aka by BookmarkClient).
+  const BookmarkNode* managed_node =
+      managed_bookmark_service_ ? managed_bookmark_service_->managed_node()
+                                : nullptr;
+  if (managed_node && managed_node->IsVisible()) {
+    top_level_folders.push_back(managed_node);
   }
 
   return top_level_folders;
+}
+
+bool BookmarkBridge::IsPermanentFolderVisible(bool ignore_visibility,
+                                              const BookmarkNode* folder) {
+  // Null folders are never shown.
+  if (!folder) {
+    return false;
+  }
+
+  if (ignore_visibility) {
+    return true;
+  }
+
+  // Account folders only need to rely on the visibility.
+  if (IsAccountBookmarkImpl(folder)) {
+    return folder->IsVisible();
+  }
+
+  const BookmarkNode* account_folder = GetCorrespondingAccountFolder(folder);
+  if (account_folder == nullptr) {
+    // If there's no corresponding account folder, then rely on the status quo
+    // visibility.
+    return folder->IsVisible();
+  } else {
+    // If there is a corresponding account folder, then the local folder should
+    // only be shown when not empty.
+    return folder->children().size() > 0;
+  }
+}
+
+const BookmarkNode* BookmarkBridge::GetCorrespondingAccountFolder(
+    const BookmarkNode* folder) {
+  CHECK(!IsAccountBookmarkImpl(folder));
+
+  if (folder == bookmark_model_->mobile_node()) {
+    return bookmark_model_->account_mobile_node();
+  } else if (folder == bookmark_model_->other_node()) {
+    return bookmark_model_->account_other_node();
+  } else if (folder == bookmark_model_->bookmark_bar_node()) {
+    return bookmark_model_->account_bookmark_bar_node();
+  } else if (folder == local_or_syncable_reading_list_manager_->GetRoot()) {
+    return account_reading_list_manager_
+               ? account_reading_list_manager_->GetRoot()
+               : nullptr;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(JNIEnv* env) {

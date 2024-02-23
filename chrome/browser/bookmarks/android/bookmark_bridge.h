@@ -319,6 +319,10 @@ class BookmarkBridge : public ProfileObserver,
       const bookmarks::BookmarkNode* new_parent_node,
       int parent_type,
       int index);
+  bool IsPermanentFolderVisible(bool ignore_visibility,
+                                const bookmarks::BookmarkNode* folder);
+  const bookmarks::BookmarkNode* GetCorrespondingAccountFolder(
+      const bookmarks::BookmarkNode* folder);
 
   // Override bookmarks::BaseBookmarkModelObserver.
   // Called when there are changes to the bookmark model that don't trigger
