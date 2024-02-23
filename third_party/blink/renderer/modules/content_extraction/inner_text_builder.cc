@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/modules/content_extraction/document_chunker.h"
 
 namespace blink {
 
@@ -125,5 +126,37 @@ void InnerTextBuilder::WillVisit(const Node& element, unsigned offset) {
 void InnerTextBuilder::ChildIFrame::Trace(Visitor* visitor) const {
   visitor->Trace(iframe);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+// static
+mojom::blink::InnerTextFramePtr InnerTextPassagesBuilder::Build(
+    LocalFrame& frame,
+    const mojom::blink::InnerTextParams& params) {
+  auto inner_text_frame = mojom::blink::InnerTextFrame::New();
+  inner_text_frame->token = frame.GetLocalFrameToken();
+  Document* document = frame.GetDocument();
+  if (!document) {
+    return inner_text_frame;
+  }
+
+  // Operate on the document node instead of the body because
+  // the head may contain useful information like title.
+  DocumentChunker document_chunker(
+      params.max_words_per_aggregate_passage.value_or(200),
+      params.greedily_aggregate_sibling_nodes.value_or(true));
+  auto segments = document_chunker.Chunk(*document);
+  inner_text_frame->segments.ReserveInitialCapacity(segments.size());
+  for (const String& s : segments) {
+    inner_text_frame->segments.push_back(
+        mojom::blink::InnerTextSegment::NewText(s));
+  }
+
+  return inner_text_frame;
+}
+
+InnerTextPassagesBuilder::InnerTextPassagesBuilder(
+    const mojom::blink::InnerTextParams& params)
+    : params_(params) {}
 
 }  // namespace blink

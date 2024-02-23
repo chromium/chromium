@@ -74,6 +74,27 @@ class MODULES_EXPORT InnerTextBuilder final : public TextVisitor {
   HeapVector<Member<ChildIFrame>>& child_iframes_;
 };
 
+// An alternative implementation wrapping DocumentChunker passage extraction.
+// This will be used only when one or more of the relevant optional parameters
+// are specified on InnerTextParams.
+class MODULES_EXPORT InnerTextPassagesBuilder final {
+  STACK_ALLOCATED();
+
+ public:
+  InnerTextPassagesBuilder(const InnerTextPassagesBuilder&) = delete;
+  InnerTextPassagesBuilder& operator=(const InnerTextPassagesBuilder&) = delete;
+
+  static mojom::blink::InnerTextFramePtr Build(
+      LocalFrame& frame,
+      const mojom::blink::InnerTextParams& params);
+
+ private:
+  explicit InnerTextPassagesBuilder(
+      const mojom::blink::InnerTextParams& params);
+
+  const mojom::blink::InnerTextParams& params_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CONTENT_EXTRACTION_INNER_TEXT_BUILDER_H_

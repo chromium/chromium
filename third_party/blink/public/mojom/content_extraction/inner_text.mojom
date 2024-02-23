@@ -31,6 +31,20 @@ struct InnerTextParams {
   // be added to the segments of the frame containing the node. The id is
   // a DomNodeId (see WebNode::GetDomeNodeId()).
   int32? node_id;
+
+  // If set, a passage extraction algorithm is applied instead of collecting
+  // inner text from all iframes, and this specifies an aggregation parameter:
+  // The maximum number of words in a passage comprised of multiple nodes. A
+  // passage with text from only a single node may exceed this max. Default 200.
+  uint32? max_words_per_aggregate_passage;
+
+  // If set, a passage extraction algorithm is applied instead of collecting
+  // inner text from all iframes, and this specifies an aggregation parameter:
+  // When true, sibling nodes are greedily aggregated into passages under
+  // max_words_per_aggregate_passage words. When false, each sibling node is
+  // output as a separate passage if they cannot all be combined into a single
+  // passage under max_words_per_aggregate_passage words. Default is true.
+  bool? greedily_aggregate_sibling_nodes;
 };
 
 // Used to obtain the inner-text of a frame, as well as the inner-text of all

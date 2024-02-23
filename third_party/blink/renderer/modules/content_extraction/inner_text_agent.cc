@@ -56,8 +56,16 @@ void InnerTextAgent::Trace(Visitor* visitor) const {
 void InnerTextAgent::GetInnerText(mojom::blink::InnerTextParamsPtr params,
                                   GetInnerTextCallback callback) {
   LocalFrame* frame = GetSupplementable()->GetFrame();
-  std::move(callback).Run(frame ? InnerTextBuilder::Build(*frame, *params)
-                                : nullptr);
+  if (!frame) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  if (params->max_words_per_aggregate_passage.has_value() ||
+      params->greedily_aggregate_sibling_nodes.has_value()) {
+    std::move(callback).Run(InnerTextPassagesBuilder::Build(*frame, *params));
+  } else {
+    std::move(callback).Run(InnerTextBuilder::Build(*frame, *params));
+  }
 }
 
 }  // namespace blink
