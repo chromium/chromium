@@ -110,7 +110,7 @@ void ShowPWAInstallBubble(
     auto delegate = std::make_unique<web_app::WebAppInstallDialogDelegate>(
         web_contents, std::move(web_app_info), std::move(install_tracker),
         std::move(callback), std::move(iph_state), prefs, tracker,
-        InstallDialogType::kSimple, dialog_coordinator->AsWeakPtr());
+        InstallDialogType::kSimple);
     auto delegate_weak_ptr = delegate->AsWeakPtr();
 
     auto dialog_model =
@@ -150,7 +150,7 @@ void ShowPWAInstallBubble(
     auto* dialog_view = new PWAConfirmationBubbleView(
         anchor_view, web_contents->GetWeakPtr(), icon, std::move(web_app_info),
         std::move(install_tracker), std::move(callback), iph_state, prefs,
-        tracker, dialog_coordinator->AsWeakPtr());
+        tracker);
     if (g_dont_close_on_deactivate) {
       dialog_view->set_close_on_deactivate(false);
     }
@@ -158,7 +158,6 @@ void ShowPWAInstallBubble(
     views::BubbleDialogDelegateView::CreateBubble(dialog_view)->Show();
     dialog_delegate = dialog_view->AsBubbleDialogDelegate();
     dialog_coordinator->StartTracking(dialog_delegate);
-
     if (icon) {
       icon->Update();
       DCHECK(icon->GetVisible());

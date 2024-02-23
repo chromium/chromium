@@ -31,9 +31,10 @@
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/widget/widget.h"
 
 namespace web_app {
 namespace {
@@ -117,7 +118,6 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
       GetInstallTracker(browser());
 
   base::RunLoop loop;
-  // Show the PWA install dialog.
   ShowPWAInstallBubble(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker),
@@ -131,13 +131,38 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   GetBubbleView(browser())->CancelDialog();
   loop.Run();
 
-  // TOOD(b/326418546): Figure out a way to support widget close reason in new
-  // install dialog.
-  if (!UniversalInstallEnabled()) {
     histograms.ExpectUniqueSample(
         "WebApp.InstallConfirmation.CloseReason",
         views::Widget::ClosedReason::kCancelButtonClicked, 1);
-  }
+}
+
+IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
+                       AcceptDialogReportsMetrics) {
+  auto app_info = GetAppInfo();
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser());
+
+  base::RunLoop loop;
+  ShowPWAInstallBubble(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      std::move(install_tracker),
+      base::BindLambdaForTesting(
+          [&](bool accepted,
+              std::unique_ptr<WebAppInstallInfo> app_info_callback) {
+            loop.Quit();
+          }));
+
+  base::HistogramTester histogram_tester;
+  views::test::WidgetDestroyedWaiter destroyed_waiter(
+      GetBubbleView(browser())->GetWidget());
+  GetBubbleView(browser())->AcceptDialog();
+  loop.Run();
+  destroyed_waiter.Wait();
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
@@ -146,7 +171,6 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   GURL start_url = app_info->start_url;
 
   base::RunLoop loop;
-  // Show the PWA install dialog.
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser());
   content::WebContents* web_contents =
@@ -256,12 +280,8 @@ IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
   ASSERT_TRUE(dialog_accepted_);
   ASSERT_FALSE(dialog_accepted_.value());
 
-  // TOOD(b/326418546): Figure out a way to support widget close reason in new
-  // install dialog.
-  if (!UniversalInstallEnabled()) {
     histograms.ExpectUniqueSample("WebApp.InstallConfirmation.CloseReason",
                                   views::Widget::ClosedReason::kUnspecified, 1);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

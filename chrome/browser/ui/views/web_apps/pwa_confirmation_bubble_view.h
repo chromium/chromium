@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
@@ -51,9 +50,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
       web_app::AppInstallationAcceptanceCallback callback,
       web_app::PwaInProductHelpState iph_state,
       PrefService* prefs,
-      feature_engagement::Tracker* tracker,
-      base::WeakPtr<web_app::WebAppInstallDialogCoordinator>
-          dialog_coordinator);
+      feature_engagement::Tracker* tracker);
   METADATA_HEADER(PWAConfirmationBubbleView, views::BubbleDialogDelegateView)
  public:
   PWAConfirmationBubbleView(const PWAConfirmationBubbleView&) = delete;
@@ -80,7 +77,6 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
 
  private:
   base::WeakPtr<content::WebContents> web_contents_;
-  raw_ptr<PageActionIconView> highlight_icon_button_ = nullptr;
   std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   web_app::AppInstallationAcceptanceCallback callback_;
@@ -91,7 +87,6 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   web_app::PwaInProductHelpState iph_state_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<feature_engagement::Tracker> tracker_;
-  base::WeakPtr<web_app::WebAppInstallDialogCoordinator> dialog_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_

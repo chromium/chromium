@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
-#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_coordinator.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -93,18 +92,15 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     web_app::AppInstallationAcceptanceCallback callback,
     web_app::PwaInProductHelpState iph_state,
     PrefService* prefs,
-    feature_engagement::Tracker* tracker,
-    base::WeakPtr<web_app::WebAppInstallDialogCoordinator> dialog_coordinator)
+    feature_engagement::Tracker* tracker)
     : LocationBarBubbleDelegateView(anchor_view, web_contents.get()),
       web_contents_(web_contents),
-      highlight_icon_button_(highlight_icon_button),
       web_app_info_(std::move(web_app_info)),
       install_tracker_(std::move(install_tracker)),
       callback_(std::move(callback)),
       iph_state_(iph_state),
       prefs_(prefs),
-      tracker_(tracker),
-      dialog_coordinator_(dialog_coordinator) {
+      tracker_(tracker) {
   SetCloseOnMainFrameOriginNavigation(true);
   DCHECK(web_app_info_);
   DCHECK(prefs_);
@@ -165,7 +161,7 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
 
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
 
-  SetHighlightedButton(highlight_icon_button_);
+  SetHighlightedButton(highlight_icon_button);
 }
 
 PWAConfirmationBubbleView::~PWAConfirmationBubbleView() = default;
@@ -180,8 +176,6 @@ void PWAConfirmationBubbleView::OnWidgetInitialized() {
 
 bool PWAConfirmationBubbleView::OnCloseRequested(
     views::Widget::ClosedReason close_reason) {
-  base::UmaHistogramEnumeration("WebApp.InstallConfirmation.CloseReason",
-                                close_reason);
   webapps::MlInstallUserResponse response;
   switch (close_reason) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
@@ -210,16 +204,6 @@ views::View* PWAConfirmationBubbleView::GetInitiallyFocusedView() {
 }
 
 void PWAConfirmationBubbleView::WindowClosing() {
-  // Stop tracking the bubble view so that the PageActionIconView update can
-  // read the state of the dialog from the BrowserUserData when it gets updated.
-  if (dialog_coordinator_ && dialog_coordinator_->IsShowing()) {
-    dialog_coordinator_->StopTracking();
-  }
-
-  if (highlight_icon_button_) {
-    highlight_icon_button_->Update();
-  }
-
   // If |web_app_info_| is populated, then the bubble was not accepted.
   if (web_app_info_) {
     base::RecordAction(base::UserMetricsAction("WebAppInstallCancelled"));
