@@ -175,7 +175,6 @@ void AudioSourceFetcherImpl::Stop() {
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
                                      base::TimeTicks audio_capture_time,
-                                     const media::AudioGlitchInfo& glitch_info,
                                      double volume,
                                      bool key_pressed) {
   audio_length_ += media::AudioTimestampHelper::FramesToTime(

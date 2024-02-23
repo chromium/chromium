@@ -13,7 +13,6 @@
 #include "base/sync_socket.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "media/base/audio_glitch_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,10 +51,9 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
   ~MockCaptureCallback() override = default;
 
   MOCK_METHOD0(OnCaptureStarted, void());
-  MOCK_METHOD5(Capture,
+  MOCK_METHOD4(Capture,
                void(const AudioBus* audio_source,
                     base::TimeTicks audio_capture_time,
-                    const AudioGlitchInfo& glitch_info,
                     double volume,
                     bool key_pressed));
 
@@ -143,24 +141,6 @@ TEST_P(AudioInputDeviceTest, CreateStream) {
 
   EXPECT_CALL(callback, OnCaptureStarted());
   device->Start();
-
-  // Test that data is propagated properly through the shared memory.
-  uint8_t* ptr = static_cast<uint8_t*>(shared_memory.mapping.memory());
-  AudioInputBuffer* buffer = reinterpret_cast<AudioInputBuffer*>(ptr);
-  uint32_t buffer_index = 0;
-  const base::TimeTicks capture_time =
-      base::TimeTicks() + base::Microseconds(123);
-  const AudioGlitchInfo glitch_info{.duration = base::Microseconds(20000),
-                                    .count = 2};
-  buffer->params.id = 0;
-  buffer->params.capture_time_us =
-      (capture_time - base::TimeTicks()).InMicroseconds();
-  buffer->params.glitch_duration_us = glitch_info.duration.InMicroseconds();
-  buffer->params.glitch_count = glitch_info.count;
-  EXPECT_CALL(callback, Capture(_, capture_time, glitch_info, _, _));
-  browser_socket.Send(&buffer_index, sizeof(buffer_index));
-  ste.RunUntilIdle();
-
   EXPECT_CALL(*input_ipc, CloseStream());
   device->Stop();
 }

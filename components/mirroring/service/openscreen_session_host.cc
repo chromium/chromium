@@ -244,7 +244,6 @@ class OpenscreenSessionHost::AudioCapturingCallback final
   // Called on audio thread.
   void Capture(const media::AudioBus* audio_bus,
                base::TimeTicks audio_capture_time,
-               const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override {
     // TODO(crbug.com/1015467): Don't copy the audio data. Instead, send
