@@ -41,6 +41,10 @@ constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 // labels when no dot is present.
 constexpr CGFloat kDefaultTextLabelSpacing = 4;
 
+// By default, the maximum number of lines to be displayed for the detail text
+// should be one.
+const NSInteger kDefaultDetailTextNumberOfLines = 1;
+
 // Returns the notification dot view for `TableViewDetailIconCell`.
 UIView* NotificationDotView() {
   UIView* notificationDotUIView = [[UIView alloc] init];
@@ -83,6 +87,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   if (self) {
     self.cellClass = [TableViewDetailIconCell class];
     self.badgeType = BadgeType::kNone;
+    _detailTextNumberOfLines = kDefaultDetailTextNumberOfLines;
   }
   return self;
 }
@@ -102,7 +107,7 @@ NewFeatureBadgeView* NewIPHBadgeView() {
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
   [cell setBadgeType:self.badgeType];
 
-  [cell setAllowMultilineDetailText:self.allowMultilineDetailText];
+  [cell setDetailTextNumberOfLines:self.detailTextNumberOfLines];
 }
 
 @end
@@ -139,12 +144,13 @@ NewFeatureBadgeView* NewIPHBadgeView() {
 
 @synthesize detailTextLabel = _detailTextLabel;
 @synthesize textLabel = _textLabel;
-@synthesize allowMultilineDetailText = _allowMultilineDetailText;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    _detailTextNumberOfLines = kDefaultDetailTextNumberOfLines;
+
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
 
@@ -257,8 +263,8 @@ NewFeatureBadgeView* NewIPHBadgeView() {
 
 #pragma mark - Properties
 
-- (void)setAllowMultilineDetailText:(BOOL)allowMultilineDetailText {
-  _allowMultilineDetailText = allowMultilineDetailText;
+- (void)setDetailTextNumberOfLines:(NSInteger)detailTextNumberOfLines {
+  _detailTextNumberOfLines = detailTextNumberOfLines;
 
   [self updateCellForAccessibilityContentSizeCategory:
             UIContentSizeCategoryIsAccessibilityCategory(
@@ -465,10 +471,10 @@ NewFeatureBadgeView* NewIPHBadgeView() {
                   UIUserInterfaceLayoutDirectionLeftToRight
               ? NSTextAlignmentRight
               : NSTextAlignmentLeft;
-      _detailTextLabel.numberOfLines = 1;
+      _detailTextLabel.numberOfLines = kDefaultDetailTextNumberOfLines;
     } else {
       _detailTextLabel.textAlignment = NSTextAlignmentNatural;
-      _detailTextLabel.numberOfLines = _allowMultilineDetailText ? 0 : 1;
+      _detailTextLabel.numberOfLines = _detailTextNumberOfLines;
     }
     _textLabel.numberOfLines = 2;
   }

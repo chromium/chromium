@@ -53,7 +53,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 };
 
 // The minimum scale factor of the title label showing the URL.
-float kTitleLabelMinimumScaleFactor = 0.7f;
+const float kTitleLabelMinimumScaleFactor = 0.7f;
+
+// The maximum number of lines we should show for a page's description in the
+// AboutThisSite section.
+const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
 }  // namespace
 
@@ -369,6 +373,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
       cell.textLabel.text =
           l10n_util::GetNSString(IDS_IOS_PAGE_INFO_ABOUT_THIS_PAGE);
       cell.detailText = _aboutThisSiteInfo.summary;
+      cell.detailTextNumberOfLines = kAboutThisSiteDetailTextNumberOfLines;
       cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
 
       UIImage* icon =

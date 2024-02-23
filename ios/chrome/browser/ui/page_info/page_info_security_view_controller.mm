@@ -164,7 +164,9 @@ enum ItemIdentifier {
           DequeueTableViewCell<TableViewDetailIconCell>(tableView);
       securityHeaderCell.textLabel.text =
           _pageInfoSecurityDescription.securityStatus;
-      securityHeaderCell.allowMultilineDetailText = true;
+      // 0 removes any maximum limit, and makes the detail text use as many
+      // lines as needed.
+      securityHeaderCell.detailTextNumberOfLines = 0;
       securityHeaderCell.detailText = _pageInfoSecurityDescription.message;
       [securityHeaderCell
              setIconImage:_pageInfoSecurityDescription.iconImage
