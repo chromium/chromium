@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_util.h"
@@ -45,6 +46,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -716,6 +718,25 @@ void LockStateController::TakePineImageAndShutdown(bool with_pre_animation) {
     StartShutdownProcess(with_pre_animation);
     return;
   }
+
+  // Create a new layer that mirrors the painted wallpaper view layer. Adds it
+  // to be the bottom-most child of the active desk container layer, which is
+  // the container we are going to take the pine screenshot. With this,
+  // 1) wallpaper will be included in the screenshot besides the content of the
+  //    active desk.
+  // 2) screenshot will be taken on the whole desktop instead of the specific
+  //    area with windows. This guarantees the windows' relative position inside
+  //    the desktop.
+  auto* wallpaper_layer = RootWindowController::ForWindow(root)
+                              ->wallpaper_widget_controller()
+                              ->wallpaper_view()
+                              ->layer();
+  CHECK(wallpaper_layer && wallpaper_layer->children().empty());
+  mirror_wallpaper_layer_ = wallpaper_layer->Mirror();
+  auto* active_desk_layer = active_desk->layer();
+  active_desk_layer->Add(mirror_wallpaper_layer_.get());
+  active_desk_layer->StackAtBottom(mirror_wallpaper_layer_.get());
+
   // TODO(b/321117233): Cancel the operation to take the screenshot and proceed
   // with the shutdown immediately if it takes too long.
   ui::GrabWindowSnapshot(
@@ -744,6 +765,8 @@ void LockStateController::OnPineImageTaken(bool with_pre_animation,
                                            gfx::Image pine_image) {
   SavePineScreenshotDuration(local_state_, prefs::kPineScreenshotTakenDuration,
                              base::TimeTicks::Now() - start_time);
+
+  mirror_wallpaper_layer_.reset();
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,

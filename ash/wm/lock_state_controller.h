@@ -261,6 +261,10 @@ class ASH_EXPORT LockStateController : public aura::WindowTreeHostObserver,
 
   base::OnceCallback<void(bool)> start_unlock_callback_;
 
+  // A new layer that mirrors the wallpaper layer, which will be added to the
+  // layer hierarchy and help include the wallpaper into the pine screenshot.
+  std::unique_ptr<ui::Layer> mirror_wallpaper_layer_;
+
   ScopedSessionObserver scoped_session_observer_;
 
   // The wallpaper blur before entering lock state. Used to restore the
