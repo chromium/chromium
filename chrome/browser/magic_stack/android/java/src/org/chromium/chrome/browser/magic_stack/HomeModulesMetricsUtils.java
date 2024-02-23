@@ -67,6 +67,12 @@ public class HomeModulesMetricsUtils {
 
     @VisibleForTesting static final String HISTOGRAM_MAGIC_STACK_NOT_SCROLLABLE = ".NotScrollable";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_CONFIGURATION_TURN_ON_MODULE = "Settings.TurnOnModule";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE = "Settings.TurnOffModule";
+
     private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
     public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
@@ -284,6 +290,23 @@ public class HomeModulesMetricsUtils {
                         + "."
                         + modulePosition,
                 1);
+    }
+
+    /**
+     * Records when a module is activated or deactivated in the configuration page of the magic
+     * stack.
+     *
+     * @param moduleType The type of module.
+     * @param isEnabled True if the module is turned on.
+     */
+    public static void recordModuleToggledInConfiguration(
+            @ModuleType int moduleType, boolean isEnabled) {
+        String umaName =
+                isEnabled
+                        ? HISTOGRAM_CONFIGURATION_TURN_ON_MODULE
+                        : HISTOGRAM_CONFIGURATION_TURN_OFF_MODULE;
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_OS_PREFIX + umaName, moduleType, ModuleType.NUM_ENTRIES);
     }
 
     private static void recordUma(

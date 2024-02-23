@@ -46,6 +46,25 @@ chromium-metrics-reviews@google.com.
   <variant name="Scrolled"/>
 </variants>
 
+<variants name="ToggleState">
+  <variant name="TurnOffModule"/>
+  <variant name="TurnOnModule"/>
+</variants>
+
+<histogram name="MagicStack.Clank.Settings.{ToggleState}" enum="ModuleType"
+    expires_after="2024-06-20">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records when a module is activated or deactivated in the configuration page
+    of the magic stack. The resulting histogram, which is enumerated, tallies
+    the total number of these actions across various module types. The histogram
+    is logged whenever the state of a module is toggled in configuration page
+    when the magic stack is customizable, Android-only.
+  </summary>
+  <token key="ToggleState" variants="ToggleState"/>
+</histogram>
+
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.OpenCustomizeSettings"
     enum="ModuleType" expires_after="2024-06-20">
@@ -80,17 +99,6 @@ chromium-metrics-reviews@google.com.
     Record the total count of times that the context menu of a module is shown
     on the magic stack of a {ModuleDelegateHost}. The histogram is logged on
     Android-only.
-  </summary>
-  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
-</histogram>
-
-<histogram name="MagicStack.Clank.{ModuleDelegateHost}.Module.Click"
-    enum="ModuleType" expires_after="2024-06-20">
-  <owner>hanxi@chromium.org</owner>
-  <owner>xinyiji@chromium.org</owner>
-  <summary>
-    Record the total count of clicks on different modules of the magic stack on
-    the {ModuleDelegateHost}. The histogram is logged on Android-only.
   </summary>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
 </histogram>
