@@ -58,21 +58,13 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
   for (size_t i = 0; i < remaining; i++) {
     std::string input = *GetNextInput();
     switch (type()) {
-      case AnnotationType::kPageEntities:
-        PostNewResult(BatchAnnotationResult::CreatePageEntitiesResult(
-                          input, std::nullopt),
-                      i);
-        break;
       case AnnotationType::kContentVisibility:
         PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
                           input, std::nullopt),
                       i);
         break;
-      case AnnotationType::kTextEmbedding:
-        PostNewResult(BatchAnnotationResult::CreateTextEmbeddingResult(
-                          input, std::nullopt),
-                      i);
-        break;
+      case AnnotationType::kDeprecatedTextEmbedding:
+      case AnnotationType::kDeprecatedPageEntities:
       case AnnotationType::kUnknown:
         NOTREACHED();
         PostNewResult(
@@ -117,15 +109,8 @@ void PageContentAnnotationJob::PostNewResult(
 
 bool PageContentAnnotationJob::HadAnySuccess() const {
   for (const BatchAnnotationResult& result : results_) {
-    if (result.type() == AnnotationType::kPageEntities && result.entities()) {
-      return true;
-    }
     if (result.type() == AnnotationType::kContentVisibility &&
         result.visibility_score()) {
-      return true;
-    }
-    if (result.type() == AnnotationType::kTextEmbedding &&
-        result.embeddings()) {
       return true;
     }
   }

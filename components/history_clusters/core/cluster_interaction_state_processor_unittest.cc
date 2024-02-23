@@ -12,7 +12,6 @@
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_types.h"
-#include "components/optimization_guide/core/entity_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

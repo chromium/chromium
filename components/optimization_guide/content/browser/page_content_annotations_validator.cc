@@ -67,9 +67,7 @@ PageContentAnnotationsValidator::PageContentAnnotationsValidator(
     : annotator_(annotator) {
   DCHECK(annotator);
   for (AnnotationType type : {
-           AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
-           AnnotationType::kTextEmbedding,
        }) {
     if (features::PageContentAnnotationValidationEnabledForType(type)) {
       enabled_annotation_types_.push_back(type);
@@ -94,9 +92,7 @@ PageContentAnnotationsValidator::MaybeCreateAndStartTimer(
 
   bool enabled_for_any_type = false;
   for (AnnotationType type : {
-           AnnotationType::kPageEntities,
            AnnotationType::kContentVisibility,
-           AnnotationType::kTextEmbedding,
        }) {
     enabled_for_any_type |=
         features::PageContentAnnotationValidationEnabledForType(type);

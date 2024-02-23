@@ -783,15 +783,9 @@ bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
 
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   switch (type) {
-    case AnnotationType::kPageEntities:
-      return cmd->HasSwitch(
-          switches::kPageContentAnnotationsValidationPageEntities);
     case AnnotationType::kContentVisibility:
       return cmd->HasSwitch(
           switches::kPageContentAnnotationsValidationContentVisibility);
-    case AnnotationType::kTextEmbedding:
-      return cmd->HasSwitch(
-          switches::kPageContentAnnotationsValidationTextEmbedding);
     default:
       NOTREACHED();
       break;

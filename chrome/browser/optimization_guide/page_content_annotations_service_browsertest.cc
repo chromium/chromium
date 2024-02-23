@@ -930,28 +930,17 @@ class PageContentAnnotationsServiceBatchVisitTest
         PageContentAnnotationsServiceFactory::GetForProfile(
             browser()->profile());
 
-    annotator_.UsePageEntities(
-        /*model_info=*/std::nullopt,
-        {
-            {
-                "Test Page",
-                {
-                    ScoredEntityMetadata(0.6,
-                                         EntityMetadata("test", "test", {})),
-                    ScoredEntityMetadata(0.4,
-                                         EntityMetadata("page", "page", {})),
-                },
-            },
-            {
-                "sometext",
-                {
-                    ScoredEntityMetadata(0.7,
-                                         EntityMetadata("some", "some", {})),
-                    ScoredEntityMetadata(0.3,
-                                         EntityMetadata("text", "text", {})),
-                },
-            },
-        });
+    annotator_.UseVisibilityScores(
+        /*model_info=*/std::nullopt, {
+                                         {
+                                             "Test Page",
+                                             0.5,
+                                         },
+                                         {
+                                             "sometext",
+                                             0.7,
+                                         },
+                                     });
     service->OverridePageContentAnnotatorForTesting(&annotator_);
   }
 

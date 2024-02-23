@@ -117,12 +117,8 @@ const char kPageContentAnnotationsValidationBatchSizeOverride[] =
 // Enables the specific annotation type to run validation at startup after a
 // delay. A comma separated list of inputs can be given as a value which will be
 // used as input for the validation job.
-const char kPageContentAnnotationsValidationPageEntities[] =
-    "page-content-annotations-validation-page-entities";
 const char kPageContentAnnotationsValidationContentVisibility[] =
     "page-content-annotations-validation-content-visibility";
-const char kPageContentAnnotationsValidationTextEmbedding[] =
-    "page-content-annotations-validation-text-embedding";
 
 // Writes the output of page content annotation validations to the given file.
 const char kPageContentAnnotationsValidationWriteToFile[] =
@@ -323,11 +319,8 @@ std::optional<size_t> PageContentAnnotationsValidationBatchSize() {
 bool LogPageContentAnnotationsValidationToConsole() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(
-             kPageContentAnnotationsValidationPageEntities) ||
-         command_line->HasSwitch(
-             kPageContentAnnotationsValidationContentVisibility) ||
-         command_line->HasSwitch(
-             kPageContentAnnotationsValidationTextEmbedding);
+      kPageContentAnnotationsValidationContentVisibility);
+  ;
 }
 
 std::optional<std::vector<std::string>>
@@ -336,17 +329,9 @@ PageContentAnnotationsValidationInputForType(AnnotationType type) {
 
   std::string value;
   switch (type) {
-    case AnnotationType::kPageEntities:
-      value = command_line->GetSwitchValueASCII(
-          kPageContentAnnotationsValidationPageEntities);
-      break;
     case AnnotationType::kContentVisibility:
       value = command_line->GetSwitchValueASCII(
           kPageContentAnnotationsValidationContentVisibility);
-      break;
-    case AnnotationType::kTextEmbedding:
-      value = command_line->GetSwitchValueASCII(
-          kPageContentAnnotationsValidationTextEmbedding);
       break;
     default:
       break;

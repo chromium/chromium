@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/page_entities_model_handler.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,53 +50,13 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
       registered_model_metadata_;
 };
 
-class FakePageEntitiesModelHandler : public PageEntitiesModelHandler {
- public:
-  explicit FakePageEntitiesModelHandler(
-      const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
-          entries,
-      const base::flat_map<std::string, EntityMetadata>& entity_metadata)
-      : entries_(entries), entity_metadata_(entity_metadata) {}
-  ~FakePageEntitiesModelHandler() override = default;
-
-  void ExecuteModelWithInput(
-      const std::string& text,
-      PageEntitiesMetadataModelExecutedCallback callback) override {
-    auto it = entries_.find(text);
-    std::move(callback).Run(
-        it != entries_.end() ? std::make_optional(it->second) : std::nullopt);
-  }
-
-  void GetMetadataForEntityId(
-      const std::string& entity_id,
-      PageEntitiesModelEntityMetadataRetrievedCallback callback) override {
-    auto it = entity_metadata_.find(entity_id);
-    std::move(callback).Run(it != entity_metadata_.end()
-                                ? std::make_optional(it->second)
-                                : std::nullopt);
-  }
-
-  void AddOnModelUpdatedCallback(base::OnceClosure callback) override {
-    std::move(callback).Run();
-  }
-
-  std::optional<ModelInfo> GetModelInfo() const override {
-    return std::nullopt;
-  }
-
- private:
-  base::flat_map<std::string, std::vector<ScoredEntityMetadata>> entries_;
-  base::flat_map<std::string, EntityMetadata> entity_metadata_;
-};
-
 class PageContentAnnotationsModelManagerTest : public testing::Test {
  public:
   PageContentAnnotationsModelManagerTest() {
     // Enable Visibility but disable Entities.
     scoped_feature_list_.InitWithFeatures(
         {features::kPageVisibilityPageContentAnnotations},
-        {features::kPageEntitiesPageContentAnnotations,
-         features::kPreventLongRunningPredictionModels});
+        {features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 
@@ -136,37 +95,6 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void SendTextEmbeddingModelToExecutor() {
-    model_manager()->RequestAndNotifyWhenModelAvailable(
-        AnnotationType::kTextEmbedding, base::DoNothing());
-    // The executor won't be created so skip everything else.
-    if (!model_manager()->text_embedding_model_handler_) {
-      return;
-    }
-
-    base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
-    // We know that the model executor itself works fine (that's tested
-    // elsewhere), so just make sure that all the plumbing for the model
-    // execution: job, queue, background sequences, etc, are working correctly.
-    base::FilePath model_file_path =
-        source_root_dir.AppendASCII("non_existent_model.tflite");
-    std::unique_ptr<ModelInfo> model_info =
-        TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
-    model_manager()->text_embedding_model_handler_->OnModelUpdated(
-        proto::OPTIMIZATION_TARGET_TEXT_EMBEDDER, *model_info);
-    RunUntilIdle();
-  }
-
-  void SetPageEntitiesModelHandler(
-      const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
-          entries,
-      const base::flat_map<std::string, EntityMetadata>& entity_metadata) {
-    model_manager()->OverridePageEntitiesModelHandlerForTesting(
-        std::make_unique<FakePageEntitiesModelHandler>(entries,
-                                                       entity_metadata));
-  }
-
   ModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
   }
@@ -190,68 +118,6 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 };
-
-TEST_F(PageContentAnnotationsModelManagerTest, PageEntities) {
-  std::vector<ScoredEntityMetadata> input1_entities = {
-      ScoredEntityMetadata(0.5, EntityMetadata("cat", "cat", {})),
-      ScoredEntityMetadata(0.6, EntityMetadata("dog", "dog", {})),
-  };
-  std::vector<ScoredEntityMetadata> input2_entities = {
-      ScoredEntityMetadata(0.7, EntityMetadata("fish", "fish", {})),
-  };
-  SetPageEntitiesModelHandler(
-      {
-          {"input1", input1_entities},
-          {"input2", input2_entities},
-          {"other input",
-           {
-               ScoredEntityMetadata(0.7, EntityMetadata("other", "other", {})),
-           }},
-      },
-      /*entity_metadata=*/{});
-
-  base::HistogramTester histogram_tester;
-  base::RunLoop run_loop;
-  std::vector<BatchAnnotationResult> result;
-  BatchAnnotationCallback callback = base::BindOnce(
-      [](base::RunLoop* run_loop,
-         std::vector<BatchAnnotationResult>* out_result,
-         const std::vector<BatchAnnotationResult>& in_result) {
-        *out_result = in_result;
-        run_loop->Quit();
-      },
-      &run_loop, &result);
-
-  model_manager()->Annotate(std::move(callback), {"input1", "input2"},
-                            AnnotationType::kPageEntities);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
-      "PageEntities",
-      2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchSuccess.PageEntities",
-      true, 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobExecutionTime.PageEntities",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobScheduleTime.PageEntities",
-      1);
-
-  run_loop.Run();
-
-  ASSERT_EQ(result.size(), 2U);
-
-  EXPECT_EQ(result[0].input(), "input1");
-  EXPECT_EQ(result[0].entities(), std::make_optional(input1_entities));
-  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
-  EXPECT_EQ(result[0].type(), AnnotationType::kPageEntities);
-
-  EXPECT_EQ(result[1].input(), "input2");
-  EXPECT_EQ(result[1].entities(), std::make_optional(input2_entities));
-  EXPECT_EQ(result[1].visibility_score(), std::nullopt);
-  EXPECT_EQ(result[1].type(), AnnotationType::kPageEntities);
-}
 
 TEST_F(PageContentAnnotationsModelManagerTest, PageVisibility) {
   base::HistogramTester histogram_tester;
@@ -292,7 +158,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibility) {
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), std::nullopt);
   EXPECT_EQ(result[0].visibility_score(), std::nullopt);
 }
 
@@ -339,7 +204,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
 
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), std::nullopt);
   EXPECT_EQ(result[0].visibility_score(), std::nullopt);
 }
 
@@ -406,133 +270,11 @@ TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
   ASSERT_EQ(result1.size(), 1U);
   EXPECT_EQ(result1[0].input(), "input1");
   EXPECT_EQ(result1[0].type(), AnnotationType::kContentVisibility);
-  EXPECT_EQ(result1[0].entities(), std::nullopt);
   EXPECT_EQ(result1[0].visibility_score(), std::nullopt);
   ASSERT_EQ(result2.size(), 1U);
   EXPECT_EQ(result2[0].input(), "input2");
   EXPECT_EQ(result2[0].type(), AnnotationType::kContentVisibility);
-  EXPECT_EQ(result2[0].entities(), std::nullopt);
   EXPECT_EQ(result2[0].visibility_score(), std::nullopt);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest, TextEmbedding) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kTextEmbeddingBatchAnnotations);
-
-  SendTextEmbeddingModelToExecutor();
-
-  base::HistogramTester histogram_tester;
-
-  base::RunLoop run_loop;
-  std::vector<BatchAnnotationResult> result;
-  BatchAnnotationCallback callback = base::BindOnce(
-      [](base::RunLoop* run_loop,
-         std::vector<BatchAnnotationResult>* out_result,
-         const std::vector<BatchAnnotationResult>& in_result) {
-        *out_result = in_result;
-        run_loop->Quit();
-      },
-      &run_loop, &result);
-
-  model_manager()->Annotate(std::move(callback), {"input"},
-                            AnnotationType::kTextEmbedding);
-  run_loop.Run();
-
-  EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_EMBEDDER, nullptr));
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
-      "TextEmbedding",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchSuccess.TextEmbedding",
-      false, 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
-      "TextEmbedding",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
-      "TextEmbedding",
-      1);
-
-  ASSERT_EQ(result.size(), 1U);
-  EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), std::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
-  EXPECT_EQ(result[0].embeddings(), std::nullopt);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest, TextEmbeddingDisabled) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kTextEmbeddingBatchAnnotations);
-
-  SendTextEmbeddingModelToExecutor();
-
-  base::RunLoop run_loop;
-  std::vector<BatchAnnotationResult> result;
-  BatchAnnotationCallback callback = base::BindOnce(
-      [](base::RunLoop* run_loop,
-         std::vector<BatchAnnotationResult>* out_result,
-         const std::vector<BatchAnnotationResult>& in_result) {
-        *out_result = in_result;
-        run_loop->Quit();
-      },
-      &run_loop, &result);
-
-  model_manager()->Annotate(std::move(callback), {"input"},
-                            AnnotationType::kTextEmbedding);
-  run_loop.Run();
-
-  EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_TEXT_EMBEDDER, nullptr));
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
-      "TextEmbedding",
-      1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.BatchSuccess.TextEmbedding",
-      false, 1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobExecutionTime."
-      "TextEmbedding",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotations.JobScheduleTime."
-      "TextEmbedding",
-      1);
-
-  ASSERT_EQ(result.size(), 1U);
-  EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].entities(), std::nullopt);
-  EXPECT_EQ(result[0].visibility_score(), std::nullopt);
-  EXPECT_EQ(result[0].embeddings(), std::nullopt);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kTextEmbeddingBatchAnnotations);
-
-  EXPECT_FALSE(
-      model_manager()->GetModelInfoForType(AnnotationType::kPageEntities));
-  EXPECT_FALSE(
-      model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
-  EXPECT_FALSE(
-      model_manager()->GetModelInfoForType(AnnotationType::kTextEmbedding));
-
-  SendPageVisibilityModelToExecutor();
-  SendTextEmbeddingModelToExecutor();
-
-  EXPECT_TRUE(
-      model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
-  EXPECT_FALSE(
-      model_manager()->GetModelInfoForType(AnnotationType::kPageEntities));
-  EXPECT_TRUE(
-      model_manager()->GetModelInfoForType(AnnotationType::kTextEmbedding));
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest,
@@ -554,52 +296,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   visibility_run_loop.Run();
 
   EXPECT_TRUE(visibility_callback_success);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest,
-       NotifyWhenModelAvailable_EntitiesOnly) {
-  SetPageEntitiesModelHandler(/*entries=*/{}, /*entity_metadata=*/{});
-
-  base::RunLoop run_loop;
-  bool success = false;
-
-  model_manager()->RequestAndNotifyWhenModelAvailable(
-      AnnotationType::kPageEntities,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool* out_success, bool success) {
-            *out_success = success;
-            run_loop->Quit();
-          },
-          &run_loop, &success));
-
-  run_loop.Run();
-
-  EXPECT_TRUE(success);
-}
-
-TEST_F(PageContentAnnotationsModelManagerTest,
-       NotifyWhenModelAvailable_EmbeddingsOnly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kTextEmbeddingBatchAnnotations);
-
-  SendTextEmbeddingModelToExecutor();
-
-  base::RunLoop embeddings_run_loop;
-  bool embeddings_callback_success = false;
-
-  model_manager()->RequestAndNotifyWhenModelAvailable(
-      AnnotationType::kTextEmbedding,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool* out_success, bool success) {
-            *out_success = success;
-            run_loop->Quit();
-          },
-          &embeddings_run_loop, &embeddings_callback_success));
-
-  embeddings_run_loop.Run();
-
-  EXPECT_TRUE(embeddings_callback_success);
 }
 
 }  // namespace optimization_guide

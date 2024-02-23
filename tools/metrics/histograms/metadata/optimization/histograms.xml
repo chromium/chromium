@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AnnotationType">
   <variant name="ContentVisibility" summary="Content Visibility"/>
-  <variant name="PageEntities" summary="Page Entities"/>
+  <variant name="Deprecated PageEntities" summary="Deprecated - Page Entities"/>
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
@@ -1153,20 +1153,6 @@ chromium-metrics-reviews@google.com.
     BatchAnnotate.
   </summary>
   <token key="AnnotationType" variants="AnnotationType"/>
-</histogram>
-
-<histogram name="OptimizationGuide.PageContentAnnotations.EntityCollection_50"
-    enum="OptimizationGuidePageEntityCollection" expires_after="2023-11-19">
-  <owner>tbansal@chromium.org</owner>
-  <owner>chrome-intelligence-core@google.com</owner>
-  <summary>
-    Emits all collections associated high weight entities (with score equal or
-    higher than 50 on a scale of 0 to 100) associated with a page visit.
-
-    Note that these are emitted when the user browses to a webpage. When that
-    happens, multiple collections may be emitted per webpage. Only the
-    collections associated with high weight entities are recorded.
-  </summary>
 </histogram>
 
 <histogram
