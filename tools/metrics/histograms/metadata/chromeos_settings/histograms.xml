@@ -307,7 +307,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Keyboard.Modifiers.Hash" units="hash"
-    expires_after="2024-03-24">
+    expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -320,7 +320,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Keyboard.Modifiers.{Modifier}RemappedTo.Changed"
-    enum="KeyboardModifierRemappingKeys" expires_after="2024-03-24">
+    enum="KeyboardModifierRemappingKeys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -342,7 +342,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Keyboard.Modifiers.{Modifier}RemappedTo.Started"
-    enum="KeyboardModifierRemappingKeys" expires_after="2024-03-24">
+    enum="KeyboardModifierRemappingKeys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

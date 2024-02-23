@@ -1696,7 +1696,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Inputs.ComboDeviceClassification"
-    enum="ComboDeviceClassification" expires_after="2024-06-30">
+    enum="ComboDeviceClassification" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -2698,7 +2698,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.Hash"
-    units="hash" expires_after="2024-07-28">
+    units="hash" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2714,7 +2714,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.NumberOfKeysReset"
-    units="keys" expires_after="2024-03-22">
+    units="keys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2731,7 +2731,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.NumberOfRemappedKeysOnStart"
-    units="keys" expires_after="2024-07-28">
+    units="keys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2747,7 +2747,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.{Modifier}RemappedTo.Changed"
-    enum="KeyboardModifierRemappingKeys" expires_after="2024-03-22">
+    enum="KeyboardModifierRemappingKeys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2772,7 +2772,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.{Modifier}RemappedTo.Initial"
-    enum="KeyboardModifierRemappingKeys" expires_after="2024-07-28">
+    enum="KeyboardModifierRemappingKeys" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2797,7 +2797,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Changed"
-    enum="SixPackKeyModifier" expires_after="2024-03-22">
+    enum="SixPackKeyModifier" expires_after="2025-03-22">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2821,7 +2821,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.SixPackKeys.{Key}.Initial"
-    enum="SixPackKeyModifier" expires_after="2024-03-22">
+    enum="SixPackKeyModifier" expires_after="2025-03-22">
   <owner>michaelcheco@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2845,7 +2845,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{KeyboardSetting}.Changed"
-    enum="Boolean" expires_after="2024-03-22">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2865,7 +2865,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.{KeyboardSetting}.Initial"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2939,7 +2939,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.Changed"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2961,7 +2961,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.Initial"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -2983,7 +2983,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.{Difference}"
-    enum="PointerSensitivity" expires_after="2024-07-28">
+    enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3006,7 +3006,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSpeedSettings}.Changed"
-    enum="PointerSensitivity" expires_after="2024-03-22">
+    enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3025,7 +3025,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSpeedSettings}.Initial"
-    enum="PointerSensitivity" expires_after="2024-03-22">
+    enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3043,7 +3043,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.{DeviceType}.SetSettingsSucceeded"
-    enum="Boolean" expires_after="2024-08-04">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3060,7 +3060,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.FirstEver.{TimePeriod}"
-    units="times updated" expires_after="2024-06-25">
+    units="times updated" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3073,7 +3073,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.FromDefaults.{TimePeriod}"
-    units="times updated" expires_after="2024-06-25">
+    units="times updated" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3087,7 +3087,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{DeviceType}.SettingsUpdated.Synced.{TimePeriod}"
-    units="times updated" expires_after="2024-06-25">
+    units="times updated" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3101,7 +3101,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Changed"
-    enum="AcceleratorAction" expires_after="2024-07-21">
+    enum="AcceleratorAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3117,7 +3117,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Initial"
-    enum="AcceleratorAction" expires_after="2024-08-11">
+    enum="AcceleratorAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3133,7 +3133,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.AcceleratorAction.Pressed"
-    enum="AcceleratorAction" expires_after="2024-07-21">
+    enum="AcceleratorAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3149,7 +3149,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.DefaultRemapping.CustomizableButton"
-    enum="CustomizableButton" expires_after="2024-07-21">
+    enum="CustomizableButton" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3166,7 +3166,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.DefaultRemapping.Vkey"
-    units="Vkey" expires_after="2024-03-22">
+    units="Vkey" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3183,7 +3183,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Changed"
-    units="KeyEventEncodedInt" expires_after="2024-03-22">
+    units="KeyEventEncodedInt" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3203,7 +3203,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Initial"
-    units="KeyEventEncodedInt" expires_after="2024-03-22">
+    units="KeyEventEncodedInt" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3223,7 +3223,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.KeyEvent.Pressed"
-    units="KeyEventEncodedInt" expires_after="2024-03-22">
+    units="KeyEventEncodedInt" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3243,7 +3243,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Name.Changed.CustomizableButton"
-    enum="CustomizableButton" expires_after="2024-07-28">
+    enum="CustomizableButton" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3259,7 +3259,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Name.Changed.Vkey"
-    units="Vkey" expires_after="2024-03-22">
+    units="Vkey" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3277,7 +3277,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Registered.CustomizableButton"
-    enum="CustomizableButton" expires_after="2024-08-11">
+    enum="CustomizableButton" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3294,7 +3294,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.Registered.Vkey"
-    units="Vkey" expires_after="2024-03-22">
+    units="Vkey" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3310,7 +3310,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Changed"
-    enum="DeviceSettingsStaticShortcutAction" expires_after="2024-03-22">
+    enum="DeviceSettingsStaticShortcutAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3326,7 +3326,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Initial"
-    enum="DeviceSettingsStaticShortcutAction" expires_after="2024-08-11">
+    enum="DeviceSettingsStaticShortcutAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3342,7 +3342,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.ButtonRemapping.StaticShortcutAction.Pressed"
-    enum="DeviceSettingsStaticShortcutAction" expires_after="2024-03-22">
+    enum="DeviceSettingsStaticShortcutAction" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3358,7 +3358,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Changed"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3379,7 +3379,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Initial"
-    enum="Boolean" expires_after="2024-07-28">
+    enum="Boolean" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3400,7 +3400,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.Changed"
-    enum="PointerSensitivity" expires_after="2024-07-28">
+    enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3419,7 +3419,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.Initial"
-    enum="PointerSensitivity" expires_after="2024-07-28">
+    enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -3438,7 +3438,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram
     name="ChromeOS.Settings.Device.{Peripheral}.{SensitivityType}.{Difference}"
-    enum="PointerSensitivity" expires_after="2024-07-28">
+    enum="PointerSensitivity" expires_after="2025-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
