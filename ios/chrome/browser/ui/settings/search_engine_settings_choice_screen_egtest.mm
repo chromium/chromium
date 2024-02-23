@@ -116,10 +116,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return config;
 }
 
-// TODO(crbug.com/326107478): Re-enable this test.
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
-- (void)DISABLED_testChangeSearchEngine {
+- (void)testChangeSearchEngine {
   self.testServer->RegisterRequestHandler(base::BindRepeating(&SearchResponse));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
@@ -151,7 +150,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Yahoo! France")]
+  NSString* yahooSearchEngineName =
+      [SettingsAppInterface frYahooSearchEngineName];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(yahooSearchEngineName)]
       performAction:grey_tap()];
 
   [[EarlGrey

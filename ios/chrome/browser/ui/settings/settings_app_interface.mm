@@ -11,6 +11,7 @@
 #import "components/metrics/metrics_service.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -119,6 +120,18 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   chrome_test_util::GetCurrentWebState()
       ->GetNavigationManager()
       ->AddTransientURLRewriter(&HostToLocalHostRewrite);
+}
+
++ (NSString*)frYahooSearchEngineName {
+  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::yahoo_fr.name);
+}
+
++ (NSString*)usYahooSearchEngineName {
+  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::yahoo.name);
+}
+
++ (NSString*)googleSearchEngineName {
+  return base::SysUTF16ToNSString(TemplateURLPrepopulateData::google.name);
 }
 
 @end
