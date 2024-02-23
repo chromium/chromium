@@ -22,6 +22,15 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
     : public IpProtectionProxyListManager {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ProxyListResult {
+    kFailed = 0,
+    kEmptyList = 1,
+    kPopulatedList = 2,
+    kMaxValue = kPopulatedList,
+  };
+
   explicit IpProtectionProxyListManagerImpl(
       mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
       bool disable_proxy_refreshing_for_testing = false);
@@ -46,7 +55,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManagerImpl
 
  private:
   void RefreshProxyList();
-  void OnGotProxyList(const std::optional<std::vector<net::ProxyChain>>&);
+  void OnGotProxyList(
+      base::TimeTicks refresh_start_time_for_metrics,
+      const std::optional<std::vector<net::ProxyChain>>& proxy_list);
 
   // Latest fetched proxy list.
   std::vector<net::ProxyChain> proxy_list_;

@@ -584,6 +584,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Eligible"/>
 </enum>
 
+<enum name="IpProtectionGetProxyListResult">
+  <int value="0" label="Failed to acquire a list"/>
+  <int value="1" label="Got a list without any valid entries"/>
+  <int value="2" label="Got a list with at least one valid entry"/>
+</enum>
+
 <enum name="IpProtectionProxyChainId">
   <int value="0" label="Unknown"/>
   <int value="1" label="Chain 1"/>

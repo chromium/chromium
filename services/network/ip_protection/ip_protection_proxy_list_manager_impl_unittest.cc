@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/proxy_chain.h"
@@ -18,6 +19,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
+
+namespace {
+
+constexpr char kGetProxyListResultHistogram[] =
+    "NetworkService.IpProtection.GetProxyListResult";
+constexpr char kProxyListRefreshTimeHistogram[] =
+    "NetworkService.IpProtection.ProxyListRefreshTime";
+
+}  // namespace
 
 class MockIpProtectionConfigGetter
     : public network::mojom::IpProtectionConfigGetter {
@@ -118,6 +128,8 @@ class IpProtectionProxyListManagerImplTest : public testing::Test {
 
   // The IpProtectionProxyListImpl being tested.
   std::unique_ptr<IpProtectionProxyListManagerImpl> ipp_proxy_list_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 // The manager gets the proxy list on startup and once again on schedule.
@@ -184,6 +196,39 @@ TEST_F(IpProtectionProxyListManagerImplTest, ProxyListKeptAfterFailure) {
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_proxy_list_->IsProxyListAvailable());
   EXPECT_EQ(ipp_proxy_list_->ProxyList(), exp_proxy_list);
+}
+
+TEST_F(IpProtectionProxyListManagerImplTest, GetProxyListFailureRecorded) {
+  mock_.ExpectGetProxyListCallFailure();
+  ipp_proxy_list_->RequestRefreshProxyList();
+  WaitForProxyListRefresh();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  histogram_tester_.ExpectUniqueSample(
+      kGetProxyListResultHistogram,
+      IpProtectionProxyListManagerImpl::ProxyListResult::kFailed, 1);
+  histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 0);
+}
+
+TEST_F(IpProtectionProxyListManagerImplTest, GotEmptyProxyListRecorded) {
+  mock_.ExpectGetProxyListCall({});
+  ipp_proxy_list_->RequestRefreshProxyList();
+  WaitForProxyListRefresh();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  histogram_tester_.ExpectUniqueSample(
+      kGetProxyListResultHistogram,
+      IpProtectionProxyListManagerImpl::ProxyListResult::kEmptyList, 1);
+  histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 1);
+}
+
+TEST_F(IpProtectionProxyListManagerImplTest, GotPopulatedProxyListRecorded) {
+  mock_.ExpectGetProxyListCall({MakeChain({"a-proxy", "b-proxy"})});
+  ipp_proxy_list_->RequestRefreshProxyList();
+  WaitForProxyListRefresh();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  histogram_tester_.ExpectUniqueSample(
+      kGetProxyListResultHistogram,
+      IpProtectionProxyListManagerImpl::ProxyListResult::kPopulatedList, 1);
+  histogram_tester_.ExpectTotalCount(kProxyListRefreshTimeHistogram, 1);
 }
 
 }  // namespace network

@@ -4424,6 +4424,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.GetProxyListResult"
+    enum="IpProtectionGetProxyListResult" expires_after="2024-07-29">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Whether a call to `IpProtectionConfigCache::GetProxyList()` resulted in
+    obtaining a proxy list. This is measured in
+    `IpProtectionProxyListManagerImpl::OnGotProxyList`.
+
+    If a proxy list was obtained, this histogram also records whether it had at
+    least one valid entry. (It is possible to obtain an empty list from the
+    server, or the list from the server could contain only invalid entries that
+    are rejected by the client.)
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled. Some kind of platform-dependent
+    signin is also required.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.IsProxyListAvailable"
     enum="BooleanAvailable" expires_after="2024-07-29">
   <owner>ashleynewson@chromium.org</owner>
@@ -4461,7 +4482,7 @@ chromium-metrics-reviews@google.com.
     histogram and are instead each measured in independent histograms.
 
     This histogram can only be emitted if both the MaskedDomainList and
-    EneableIpProtectionProxy features are enabled.
+    EnableIpPrivacyProxy features are enabled.
   </summary>
 </histogram>
 
@@ -4473,6 +4494,28 @@ chromium-metrics-reviews@google.com.
     Logged when a proxy chain failure is detected in the proxy delegate's
     `OnFallback` method, with values defined by the `chain_id` value given in
     the GetProxyInfo RPC response.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.ProxyListRefreshTime" units="ms"
+    expires_after="2024-07-29">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Time taken to successfully refresh the IP Protection proxy list, measured
+    from IpProtectionProxyListManagerImpl::RefreshProxyList to
+    IpProtectionProxyListManagerImpl::OnGotProxyList.
+
+    A successful refresh is anything where OnGotProxyList receives a non-nullopt
+    proxy_list, which may include cases where an empty proxy list or a proxy
+    list with only unsuitable entries was fetched over the network. Outright
+    failures and refreshes which were inhibited due to client-side rate limiting
+    will not be measured.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled. Some kind of platform-dependent
+    signin is also required.
   </summary>
 </histogram>
 
