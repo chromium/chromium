@@ -235,7 +235,7 @@ policies][code-reviews] page.
 
 Please note here that a "reviewer" in this context is someone that not
 only provides comment on the CL but also someone who can approve the
-submission by providing a CR+1.
+submission by providing a "Code-Review +1".
 
 Reviewers must be [committers](https://www.chromium.org/getting-involved/become-a-committer/).
 Ideally they should be committers who are familiar with the area of code
@@ -263,9 +263,9 @@ uses multiple systems and a perspective from each is valuable. In this case,
 please make it explicit that you would like both reviewers to review.
 
 Submissions to the chromium/src repository by a change contributor who is
-not a Chromium committer will require two committers to Code-Review+1 the
+not a Chromium committer will require two committers to "Code-Review +1" the
 submissions. If the owner of the CL is already a committer, then only one
-other committer is needed to Code-Review+1.
+other committer is needed to "Code-Review +1".
 
 ### Requesting review
 
@@ -338,7 +338,7 @@ colors to indicate its status:
 
 ## Committing
 
-Changes should generally be committed via the [commit queue][commit-queue].
+Changes are committed via the [commit queue][commit-queue].
 This is done by clicking **Submit to CQ** in the upper right corner, or setting
 the "Commit-Queue +2" label on the change. The commit queue will then
 send the patch to the try bots. If all try bots return green, the change will
@@ -347,9 +347,8 @@ automatically be committed. Yay!
 Sometimes a test might be flaky. If you have an isolated failure that appears
 unrelated to your change, try sending the change to the commit queue again.
 
-Alternatively, a developer with commit access can [directly
-commit][direct-commit] a change, bypassing the commit queue. This should only
-be used in emergencies because it will bypass all the safety nets.
+In emergencies, a developer with commit access can [directly
+commit][direct-commit] a change, bypassing the commit queue and all safety nets.
 
 ## Relanding a change
 
