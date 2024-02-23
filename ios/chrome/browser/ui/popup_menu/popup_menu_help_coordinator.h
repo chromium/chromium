@@ -24,7 +24,9 @@
 // Return nil if no destination is highlighted (default scenario).
 - (NSNumber*)highlightDestination;
 
-- (void)showHistoryOnOverflowMenuIPHInViewController:(UIViewController*)menu;
+// Alerts the help coordinator that the overflow menu opened with the given
+// view controller, so it can show any necessary IPH.
+- (void)showIPHAfterOpenOfOverflowMenu:(UIViewController*)menu;
 
 @end
 

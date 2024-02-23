@@ -393,7 +393,7 @@ using base::UserMetricsAction;
                      animated:YES
                    completion:^{
                      [weakSelf.popupMenuHelpCoordinator
-                         showHistoryOnOverflowMenuIPHInViewController:menu];
+                         showIPHAfterOpenOfOverflowMenu:menu];
                    }];
     return;
   }

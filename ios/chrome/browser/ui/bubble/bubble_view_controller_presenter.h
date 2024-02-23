@@ -101,6 +101,11 @@ typedef NS_ENUM(NSInteger, BubbleViewType);
                     anchorPoint:(CGPoint)anchorPoint
                 anchorViewFrame:(CGRect)anchorViewFrame;
 
+// If `hidden`, the arrow hides behind the bubble; otherwise, it is visible and
+// pointing to the anchor point. If `animated`, the arrow will be slid out of /
+// back in the bubble. If the bubble is not visible, this will have no effect.
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated;
+
 // Removes the bubble from the screen and removes the BubbleViewController from
 // its parent. If the bubble is not visible, has no effect. Can be animated or
 // not. Invokes the dismissal callback. The callback is invoked immediately

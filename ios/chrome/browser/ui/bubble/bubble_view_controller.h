@@ -42,6 +42,13 @@ typedef NS_ENUM(NSInteger, BubbleViewType);
 // view hierarchy.
 - (void)animateContentIn;
 
+// If `hidden`, the arrow hides behind the bubble; otherwise, it is visible and
+// pointing to the anchor point. If `animated`, the arrow will be slid out of /
+// back in the bubble.
+//
+// NOTE: This should only be called when the view is in the view hierarchy.
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated;
+
 // Dismisses the bubble. If `animated` is true, the bubble fades out.
 //
 // The bubble view controller is automatically removed from the view hierarchy.

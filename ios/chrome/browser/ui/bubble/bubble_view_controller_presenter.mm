@@ -255,6 +255,14 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   }
 }
 
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated {
+  if (!self.presenting) {
+    return;
+  }
+
+  [self.bubbleViewController setArrowHidden:hidden animated:animated];
+}
+
 - (void)dismissAnimated:(BOOL)animated
                  reason:(IPHDismissalReasonType)reason
            snoozeAction:(feature_engagement::Tracker::SnoozeAction)action {

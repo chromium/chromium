@@ -127,6 +127,10 @@ BubbleView* BubbleViewWithType(BubbleViewType bubble_view_type,
                    completion:nil];
 }
 
+- (void)setArrowHidden:(BOOL)hidden animated:(BOOL)animated {
+  [self.view setArrowHidden:hidden animated:animated];
+}
+
 - (void)dismissAnimated:(BOOL)animated {
   NSTimeInterval duration = (animated ? kMaterialDuration3 : 0.0);
   [UIView animateWithDuration:duration
