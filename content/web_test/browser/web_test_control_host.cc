@@ -1196,8 +1196,11 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
   if (test_phase_ != DURING_TEST)
     return;
 
+  // Consider a prerender as main window as well since it may be activated to
+  // become the main window.
   const bool main_window =
-      FrameTreeNode::From(frame)->frame_tree().is_primary() &&
+      (FrameTreeNode::From(frame)->frame_tree().is_primary() ||
+       FrameTreeNode::From(frame)->frame_tree().is_prerendering()) &&
       WebContents::FromRenderFrameHost(frame) == main_window_->web_contents();
 
   RenderProcessHost* process_host = frame->GetProcess();

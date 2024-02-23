@@ -477,7 +477,7 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
         R"(if (!window.testRunner._wpt_reftest_setup) {
           window.testRunner._wpt_reftest_setup = true;
 
-          window.addEventListener('load', function() {
+          function observeRefTestFinished() {
             if (window.assert_equals) // In case of a testharness test.
               return;
             window.testRunner.waitUntilDone();
@@ -505,6 +505,15 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
               target.dispatchEvent(event);
             } else {
               document.fonts.ready.then(() => window.testRunner.notifyDone());
+            }
+          };
+
+          window.addEventListener('load', () => {
+            if (document.prerendering) {
+              document.addEventListener('prerenderingchange',
+                  observeRefTestFinished);
+            } else {
+              observeRefTestFinished();
             }
           });
         })")));
@@ -3001,6 +3010,7 @@ void TestRunner::OnFrameReactivated(WebFrameTestProxy& frame) {
     return;
 
   DCHECK(frame.IsMainFrame());
+  DCHECK(!frame.GetWebFrame()->GetDocument().IsPrerendering());
 
   if (frame.GetWebFrame()->IsLoading()) {
     AddLoadingFrame(frame.GetWebFrame());
@@ -3114,6 +3124,11 @@ bool TestRunner::ShouldDumpNavigationPolicy() const {
 
 WebFrameTestProxy* TestRunner::FindInProcessMainWindowMainFrame() {
   for (WebFrameTestProxy* main_frame : main_frames_) {
+    // Prerendering frames are marked as being in the main window but
+    // expect the active main frame from this method.
+    if (main_frame->GetWebFrame()->GetDocument().IsPrerendering()) {
+      continue;
+    }
     if (IsFrameInMainWindow(main_frame->GetWebFrame()))
       return main_frame;
   }
