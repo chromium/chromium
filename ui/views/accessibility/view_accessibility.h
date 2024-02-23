@@ -235,6 +235,8 @@ class VIEWS_EXPORT ViewAccessibility {
   // Deprecated. Use ViewAccessibility::SetIsIgnored instead.
   // See https://crbug.com/324485311.
   void OverrideIsIgnored(bool value);
+  // Deprecated. Use ViewAccessibility::GetIsIgnored instead.
+  // See https://crbug.com/324485311.
   virtual bool IsIgnored() const;
 
   // Deprecated. Use ViewAccessibility::SetHasPopup instead.
