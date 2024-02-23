@@ -151,37 +151,86 @@ TEST_F(FileManagerPathUtilTest, GetMyFilesFolderForProfile) {
 TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   EXPECT_EQ("Downloads", GetPathDisplayTextForSettings(
                              profile_.get(), "/home/chronos/user/Downloads"));
+
   EXPECT_EQ("Downloads",
             GetPathDisplayTextForSettings(
                 profile_.get(), "/home/chronos/u-0123456789abcdef/Downloads"));
 
-  EXPECT_EQ("My files \u203a Downloads",
+  EXPECT_EQ("Downloads › a › b › c",
+            GetPathDisplayTextForSettings(
+                profile_.get(), "/home/chronos/user/Downloads/a/b/c"));
+
+  EXPECT_EQ(
+      "Downloads › a › b › c",
+      GetPathDisplayTextForSettings(
+          profile_.get(), "/home/chronos/u-0123456789abcdef/Downloads/a/b/c"));
+
+  EXPECT_EQ("My files", GetPathDisplayTextForSettings(
+                            profile_.get(), "/home/chronos/user/MyFiles"));
+
+  EXPECT_EQ("My files",
+            GetPathDisplayTextForSettings(
+                profile_.get(), "/home/chronos/u-0123456789abcdef/MyFiles"));
+
+  EXPECT_EQ("My files › a › b › c",
+            GetPathDisplayTextForSettings(profile_.get(),
+                                          "/home/chronos/user/MyFiles/a/b/c"));
+  EXPECT_EQ(
+      "My files › a › b › c",
+      GetPathDisplayTextForSettings(
+          profile_.get(), "/home/chronos/u-0123456789abcdef/MyFiles/a/b/c"));
+
+  EXPECT_EQ("My files › Downloads",
             GetPathDisplayTextForSettings(
                 profile_.get(), "/home/chronos/user/MyFiles/Downloads"));
-  EXPECT_EQ("My files \u203a Downloads",
+
+  EXPECT_EQ("My files › Downloads",
             GetPathDisplayTextForSettings(
                 profile_.get(),
                 "/home/chronos/u-0123456789abcdef/MyFiles/Downloads"));
 
-  EXPECT_EQ("My files \u203a other-folder",
+  EXPECT_EQ("My files › Downloads › a › b › c",
             GetPathDisplayTextForSettings(
-                profile_.get(), "/home/chronos/user/MyFiles/other-folder"));
-  EXPECT_EQ("My files \u203a other-folder",
-            GetPathDisplayTextForSettings(
-                profile_.get(),
-                "/home/chronos/u-0123456789abcdef/MyFiles/other-folder"));
+                profile_.get(), "/home/chronos/user/MyFiles/Downloads/a/b/c"));
 
-  EXPECT_EQ("Play files \u203a foo \u203a bar",
-            GetPathDisplayTextForSettings(
-                profile_.get(), "/run/arc/sdcard/write/emulated/0/foo/bar"));
-  EXPECT_EQ("Linux files \u203a foo",
+  EXPECT_EQ("My files › Downloads › a › b › c",
             GetPathDisplayTextForSettings(
                 profile_.get(),
-                "/media/fuse/crostini_0123456789abcdef_termina_penguin/foo"));
+                "/home/chronos/u-0123456789abcdef/MyFiles/Downloads/a/b/c"));
+
+  EXPECT_NE("My files2", GetPathDisplayTextForSettings(
+                             profile_.get(), "/home/chronos/user/MyFiles2"));
+
+  EXPECT_EQ("Play files",
+            GetPathDisplayTextForSettings(profile_.get(),
+                                          "/run/arc/sdcard/write/emulated/0"));
+
+  EXPECT_EQ("Play files › a › b › c",
+            GetPathDisplayTextForSettings(
+                profile_.get(), "/run/arc/sdcard/write/emulated/0/a/b/c"));
+
+  EXPECT_EQ("Linux files",
+            GetPathDisplayTextForSettings(
+                profile_.get(),
+                "/media/fuse/crostini_0123456789abcdef_termina_penguin"));
+
+  EXPECT_EQ("Linux files › a › b › c",
+            GetPathDisplayTextForSettings(
+                profile_.get(),
+                "/media/fuse/crostini_0123456789abcdef_termina_penguin/a/b/c"));
+
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(profile_.get(),
                                                  "/media/removable/foo"));
+
+  EXPECT_EQ("foo › a › b › c",
+            GetPathDisplayTextForSettings(profile_.get(),
+                                          "/media/removable/foo/a/b/c"));
+
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(profile_.get(),
                                                  "/media/archive/foo"));
+
+  EXPECT_EQ("foo › a › b › c", GetPathDisplayTextForSettings(
+                                   profile_.get(), "/media/archive/foo/a/b/c"));
 
   TestingProfile profile2(FilePath("/home/chronos/u-0123456789abcdef"));
   user_manager_->AddUser(
@@ -191,34 +240,55 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
 
   drive::DriveIntegrationServiceFactory::GetForProfile(&profile2)->SetEnabled(
       true);
+
+  EXPECT_EQ("Google Drive › My Drive",
+            GetPathDisplayTextForSettings(
+                &profile2,
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/root"));
+
   EXPECT_EQ(
-      "Google Drive \u203a My Drive \u203a foo",
+      "Google Drive › My Drive › foo",
       GetPathDisplayTextForSettings(
           &profile2,
           "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/root/foo"));
-  EXPECT_EQ("Google Drive \u203a Shared drives \u203a A Team Drive \u203a foo",
+
+  EXPECT_EQ("Google Drive › Shared drives › A Team Drive",
+            GetPathDisplayTextForSettings(
+                &profile2,
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+                "team_drives/A Team Drive"));
+
+  EXPECT_EQ("Google Drive › Shared drives › A Team Drive › foo",
             GetPathDisplayTextForSettings(
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 "team_drives/A Team Drive/foo"));
-  EXPECT_EQ("Google Drive \u203a Computers \u203a My Other Computer \u203a bar",
+
+  EXPECT_EQ("Google Drive › Computers › My Other Computer",
+            GetPathDisplayTextForSettings(
+                &profile2,
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+                "Computers/My Other Computer"));
+
+  EXPECT_EQ("Google Drive › Computers › My Other Computer › bar",
             GetPathDisplayTextForSettings(
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 "Computers/My Other Computer/bar"));
-  EXPECT_EQ("Google Drive \u203a Shared with me \u203a 1234 \u203a shared",
+
+  EXPECT_EQ("Google Drive › Shared with me › 1234 › shared",
             GetPathDisplayTextForSettings(
                 &profile2,
                 "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
                 ".files-by-id/1234/shared"));
-  EXPECT_EQ(
-      "Google Drive \u203a Shared with me \u203a 1-abc-xyz \u203a shortcut",
-      GetPathDisplayTextForSettings(
-          &profile2,
-          "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
-          ".shortcut-targets-by-id/1-abc-xyz/shortcut"));
 
-  EXPECT_EQ("Google Drive \u203a My Drive \u203a foo",
+  EXPECT_EQ("Google Drive › Shared with me › 1-abc-xyz › shortcut",
+            GetPathDisplayTextForSettings(
+                &profile2,
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/"
+                ".shortcut-targets-by-id/1-abc-xyz/shortcut"));
+
+  EXPECT_EQ("Google Drive › My Drive › foo",
             GetPathDisplayTextForSettings(&profile2, "${google_drive}/foo"));
 
   TestingProfile guest_profile(FilePath("/home/chronos/guest"));
@@ -229,6 +299,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
 
   EXPECT_EQ("Downloads", GetPathDisplayTextForSettings(
                              &guest_profile, "/home/chronos/user/Downloads"));
+
   // Test that a passthrough path doesn't crash on requesting the Drive mount
   // path for a guest profile.
   EXPECT_EQ("foo", GetPathDisplayTextForSettings(&guest_profile, "foo"));

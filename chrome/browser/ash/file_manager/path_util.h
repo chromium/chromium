@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -206,10 +207,10 @@ void ConvertToContentUrls(
     const std::vector<storage::FileSystemURL>& file_system_urls,
     ConvertToContentUrlsCallback callback);
 
-// Replace `prefix` with `replacement` on `s`.
+// Replace `prefix` with `replacement` at the beginning of `*s`.
 bool ReplacePrefix(std::string* s,
-                   const std::string& prefix,
-                   const std::string& replacement);
+                   std::string_view prefix,
+                   std::string_view replacement);
 
 // Convert path into a string suitable for display in settings.
 // Replacements:

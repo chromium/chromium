@@ -929,13 +929,17 @@ void ConvertToContentUrls(
   }
 }
 
-bool ReplacePrefix(std::string* s,
-                   const std::string& prefix,
-                   const std::string& replacement) {
-  if (base::StartsWith(*s, prefix, base::CompareCase::SENSITIVE)) {
-    base::ReplaceFirstSubstringAfterOffset(s, 0, prefix, replacement);
+bool ReplacePrefix(std::string* const s,
+                   const std::string_view prefix,
+                   const std::string_view replacement) {
+  DCHECK(s);
+  if (s->starts_with(prefix) &&
+      (prefix.ends_with('/') || s->size() <= prefix.size() ||
+       (*s)[prefix.size()] == '/')) {
+    s->replace(0, prefix.size(), replacement);
     return true;
   }
+
   return false;
 }
 
