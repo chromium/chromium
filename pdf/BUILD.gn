@@ -104,6 +104,8 @@ if (enable_pdf) {
       "pdfium/pdfium_api_string_buffer_adapter.h",
       "pdfium/pdfium_document.cc",
       "pdfium/pdfium_document.h",
+      "pdfium/pdfium_document_metadata.cc",
+      "pdfium/pdfium_document_metadata.h",
       "pdfium/pdfium_engine.cc",
       "pdfium/pdfium_engine.h",
       "pdfium/pdfium_engine_exports.cc",

@@ -10,10 +10,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -638,13 +638,6 @@ class PDFiumEngine : public PDFEngine,
   // Fetches and populates the fields of `doc_metadata_`. To be called after the
   // document is loaded.
   void LoadDocumentMetadata();
-
-  // Retrieves the value of `field` in the document information dictionary.
-  // Trims whitespace characters from the retrieved value.
-  std::string GetTrimmedMetadataByField(FPDF_BYTESTRING field) const;
-
-  // Retrieves the version of the PDF (e.g. 1.4 or 2.0) as an enum.
-  PdfVersion GetDocumentVersion() const;
 
   // This is a layer between OnKeyDown() and actual tab handling to facilitate
   // testing.

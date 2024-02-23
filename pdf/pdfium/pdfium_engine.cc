@@ -45,9 +45,9 @@
 #include "pdf/loader/url_loader_wrapper_impl.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_transform.h"
-#include "pdf/pdf_utils/dates.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_document.h"
+#include "pdf/pdfium/pdfium_document_metadata.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_permissions.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
@@ -4143,69 +4143,14 @@ void PDFiumEngine::LoadDocumentAttachmentInfoList() {
 }
 
 void PDFiumEngine::LoadDocumentMetadata() {
-  DCHECK(document_loaded_);
+  CHECK(document_loaded_);
 
-  doc_metadata_.version = GetDocumentVersion();
-  doc_metadata_.size_bytes = GetLoadedByteSize();
-  doc_metadata_.page_count = pages_.size();
-  doc_metadata_.linearized = IsLinearized();
-  doc_metadata_.has_attachments = !doc_attachment_info_list_.empty();
-  doc_metadata_.form_type = static_cast<FormType>(FPDF_GetFormType(doc()));
-
-  // Document information dictionary entries
-  doc_metadata_.title = GetTrimmedMetadataByField("Title");
-  doc_metadata_.author = GetTrimmedMetadataByField("Author");
-  doc_metadata_.subject = GetTrimmedMetadataByField("Subject");
-  doc_metadata_.keywords = GetTrimmedMetadataByField("Keywords");
-  doc_metadata_.creator = GetTrimmedMetadataByField("Creator");
-  doc_metadata_.producer = GetTrimmedMetadataByField("Producer");
-  doc_metadata_.creation_date =
-      ParsePdfDate(GetTrimmedMetadataByField("CreationDate"));
-  doc_metadata_.mod_date = ParsePdfDate(GetTrimmedMetadataByField("ModDate"));
-}
-
-std::string PDFiumEngine::GetTrimmedMetadataByField(
-    FPDF_BYTESTRING field) const {
-  DCHECK(doc());
-
-  std::u16string metadata = CallPDFiumWideStringBufferApi(
-      base::BindRepeating(&FPDF_GetMetaText, doc(), field),
-      /*check_expected_size=*/false);
-
-  return base::UTF16ToUTF8(base::TrimWhitespace(metadata, base::TRIM_ALL));
-}
-
-PdfVersion PDFiumEngine::GetDocumentVersion() const {
-  DCHECK(doc());
-
-  int version;
-  if (!FPDF_GetFileVersion(doc(), &version))
-    return PdfVersion::kUnknown;
-
-  switch (version) {
-    case 10:
-      return PdfVersion::k1_0;
-    case 11:
-      return PdfVersion::k1_1;
-    case 12:
-      return PdfVersion::k1_2;
-    case 13:
-      return PdfVersion::k1_3;
-    case 14:
-      return PdfVersion::k1_4;
-    case 15:
-      return PdfVersion::k1_5;
-    case 16:
-      return PdfVersion::k1_6;
-    case 17:
-      return PdfVersion::k1_7;
-    case 18:
-      return PdfVersion::k1_8;
-    case 20:
-      return PdfVersion::k2_0;
-    default:
-      return PdfVersion::kUnknown;
-  }
+  doc_metadata_ = GetPDFiumDocumentMetadata(
+      doc(),
+      /*size_bytes=*/GetLoadedByteSize(),
+      /*page_count=*/pages_.size(),
+      /*linearized=*/IsLinearized(),
+      /*has_attachments=*/!doc_attachment_info_list_.empty());
 }
 
 bool PDFiumEngine::HandleTabEvent(int modifiers) {
