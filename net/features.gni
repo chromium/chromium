@@ -40,12 +40,12 @@ declare_args() {
   # connections use HTTPS.
   include_transport_security_state_preload_list = true
 
-  # Platforms for which certificate verification can be performed using the
-  # builtin cert verifier with the Chrome Root Store, and this can be
-  # configured using the ChromeRootStoreUsed feature flag. When the feature
-  # flag is false, verification may be done with the platform verifier or the
-  # builtin verifier using platform roots, depending on the platform.
-  # See https://crbug.com/1216547 for status.
+  # Platforms for which certificate verification can be performed either using
+  # the builtin cert verifier with the Chrome Root Store, or with the platform
+  # verifier.
+  #
+  # Currently this is used only for Android because WebView does not use the
+  # builtin cert verifier, but uses the Android cert verifier.
   chrome_root_store_optional = is_android && !is_cronet_build
 
   # Platforms for which certificate verification can only be performed using

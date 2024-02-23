@@ -192,10 +192,6 @@ class SystemNetworkContextManager {
     stub_resolver_config_reader_for_testing_ = reader;
   }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  static bool IsUsingChromeRootStore();
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-
  private:
   FRIEND_TEST_ALL_PREFIXES(
       SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,

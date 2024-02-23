@@ -604,7 +604,7 @@ SystemNetworkContextManager::SystemNetworkContextManager(
   // TODO(crbug.com/1501418): If this call is removed, clank crashes on startup.
   // Not sure why.
   content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
-      IsUsingChromeRootStore(), base::DoNothing());
+      true, base::DoNothing());
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -1030,13 +1030,6 @@ bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
   return base::FeatureList::IsEnabled(
       features::kCertificateTransparencyAskBeforeEnabling);
 }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-// static
-bool SystemNetworkContextManager::IsUsingChromeRootStore() {
-  return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
-}
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateNetworkContextParams() {

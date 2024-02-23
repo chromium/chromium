@@ -161,42 +161,20 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
 
 }  // namespace
 
-class NetworkContextChromeRootStoreFeatureFlagTest
+class NetworkContextChromeRootStoreIsUsedTest
     : public NetworkContextWithRealCertVerifierTest,
-      public testing::WithParamInterface<
-          std::tuple<bool, std::optional<bool>>> {
+      public testing::WithParamInterface<bool> {
  public:
-  NetworkContextChromeRootStoreFeatureFlagTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        net::features::kChromeRootStoreUsed, feature_use_chrome_root_store());
-  }
-
   void InitializeCertVerifierServiceFactory(
       mojom::CertVerifierServiceFactory* factory) override {
-    if (param_use_chrome_root_store().has_value()) {
-      factory->SetUseChromeRootStore(*param_use_chrome_root_store(),
-                                     base::DoNothing());
-    }
+    factory->SetUseChromeRootStore(use_chrome_root_store(), base::DoNothing());
   }
 
-  bool feature_use_chrome_root_store() const { return std::get<0>(GetParam()); }
-
-  std::optional<bool> param_use_chrome_root_store() const {
-    return std::get<1>(GetParam());
-  }
-
-  bool expected_use_chrome_root_store() const {
-    if (param_use_chrome_root_store().has_value())
-      return *param_use_chrome_root_store();
-    return feature_use_chrome_root_store();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  bool use_chrome_root_store() const { return GetParam(); }
 };
 
-TEST_P(NetworkContextChromeRootStoreFeatureFlagTest,
-       CombinationOfFeatureFlagAndServiceParamsUsesCorrectVerifier) {
+TEST_P(NetworkContextChromeRootStoreIsUsedTest,
+       ChromeRootStoreCanBeDisabledTest) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::test_server::RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
@@ -219,22 +197,12 @@ TEST_P(NetworkContextChromeRootStoreFeatureFlagTest,
   std::vector<net::NetLogEntry> crs_netlog_entries =
       net_log_observer.GetEntriesWithType(
           net::NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION);
-  EXPECT_EQ(expected_use_chrome_root_store(), !crs_netlog_entries.empty());
+  EXPECT_EQ(use_chrome_root_store(), !crs_netlog_entries.empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NetworkContextChromeRootStoreFeatureFlagTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(std::nullopt, false, true)),
-    [](const testing::TestParamInfo<
-        NetworkContextChromeRootStoreFeatureFlagTest::ParamType>& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
-           std::get<1>(info.param).has_value()
-               ? (*std::get<1>(info.param) ? "ParamTrue" : "ParamFalse")
-               : "ParamNotSet"});
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         NetworkContextChromeRootStoreIsUsedTest,
+                         ::testing::Bool());
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
 }  // namespace cert_verifier

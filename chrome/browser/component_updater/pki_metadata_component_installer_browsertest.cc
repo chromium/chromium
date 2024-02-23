@@ -428,11 +428,6 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
     }
   }
 
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      net::features::kChromeRootStoreUsed};
-#endif
-
   base::OnceClosure crs_config_closure_;
   int64_t last_used_crs_version_ = net::CompiledChromeRootStoreVersion();
 };

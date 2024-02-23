@@ -582,8 +582,6 @@ class CertVerifierServiceChromeRootStoreOptionalTest
     // during this test.
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         false);
-    previous_use_chrome_root_store_ =
-        SystemNetworkContextManager::IsUsingChromeRootStore();
 
     content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
         use_chrome_root_store(), base::DoNothing());
@@ -592,8 +590,9 @@ class CertVerifierServiceChromeRootStoreOptionalTest
   void TearDownOnMainThread() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
         std::nullopt);
+    // Reset to default.
     content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
-        previous_use_chrome_root_store_, base::DoNothing());
+        true, base::DoNothing());
   }
 
   bool use_chrome_root_store() const { return GetParam(); }
@@ -602,9 +601,6 @@ class CertVerifierServiceChromeRootStoreOptionalTest
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-
- private:
-  bool previous_use_chrome_root_store_;
 };
 
 IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {

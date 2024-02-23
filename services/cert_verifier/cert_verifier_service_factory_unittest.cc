@@ -819,12 +819,10 @@ class CertVerifierServiceFactoryBuiltinVerifierTest : public ::testing::Test {
 
  private:
   bool SystemUsesBuiltinVerifier() {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-    return true;
-#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     // On CHROME_ROOT_STORE_OPTIONAL platforms, the tests set
     // use_chrome_root_store=true, so the tests will also work on those
-    // platforms even if the kChromeRootStoreUsed default is false.
+    // platforms.
     // (This doesn't result in missing coverage of the
     // use_chrome_root_store=false case since the only non-CRS implementations
     // remaining don't support CRLSets.)

@@ -10499,10 +10499,8 @@ class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
 
 static bool UsingBuiltinCertVerifier() {
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   return true;
-#elif BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  return base::FeatureList::IsEnabled(features::kChromeRootStoreUsed);
 #else
   return false;
 #endif

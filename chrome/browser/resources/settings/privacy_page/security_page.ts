@@ -97,20 +97,6 @@ export class SettingsSecurityPageElement extends
       },
 
       /**
-       * Whether we should adjust Manage Certificates links to indicate
-       * support for Chrome Root Store.
-       */
-      // TODO(crbug.com/1412591): remove when CRS enterprise policy is removed
-      // for ChromeOS and Linux
-      showChromeRootStoreCertificates_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('showChromeRootStoreCertificates');
-        },
-      },
-
-      /**
        * Whether the secure DNS setting should be displayed.
        */
       showSecureDnsSetting_: {
@@ -229,7 +215,6 @@ export class SettingsSecurityPageElement extends
       },
     };
   }
-  private showChromeRootStoreCertificates_: boolean;
   private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">

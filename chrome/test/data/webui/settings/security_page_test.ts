@@ -58,7 +58,6 @@ suite('Main', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
-      showChromeRootStoreCertificates: true,
       enableHttpsFirstModeNewSettings: true,
     });
   });

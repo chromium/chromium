@@ -35,22 +35,29 @@ const char kRootCertificateFile[] = "root_ca_cert.pem";
 // A certificate issued by the local test root for 127.0.0.1.
 const char kGoodCertificateFile[] = "ok_cert.pem";
 
-scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
+}  // namespace
+
+class TestRootCertsTest : public testing::TestWithParam<bool> {
+ public:
+  scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
+    // If CCV/CRS is optional, test with and without CCV/CRS.
+    if (use_chrome_cert_validator()) {
+      return CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
+          std::make_unique<DoNothingCTVerifier>(),
+          base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
+          /*root_store_data=*/nullptr, /*instance_params=*/{});
+    } else {
+      return CertVerifyProc::CreateSystemVerifyProc(
+          /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get());
+    }
+#elif BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     return CertVerifyProc::CreateBuiltinWithChromeRootStore(
         /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
         std::make_unique<DoNothingCTVerifier>(),
         base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
         /*root_store_data=*/nullptr, /*instance_params=*/{});
-  }
-#endif
-#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-  return CertVerifyProc::CreateBuiltinWithChromeRootStore(
-      /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
-      std::make_unique<DoNothingCTVerifier>(),
-      base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-      /*root_store_data=*/nullptr, /*instance_params=*/{});
 #elif BUILDFLAG(IS_FUCHSIA)
   return CertVerifyProc::CreateBuiltinVerifyProc(
       /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
@@ -61,12 +68,16 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
   return CertVerifyProc::CreateSystemVerifyProc(/*cert_net_fetcher=*/nullptr,
                                                 CRLSet::BuiltinCRLSet().get());
 #endif
-}
+  }
 
-}  // namespace
+  // Whether we use Chrome Cert Validator or not. Only relevant for platforms
+  // where CHROME_ROOT_STORE_OPTIONAL is set; on other platforms both test
+  // params will run the same test.
+  bool use_chrome_cert_validator() { return GetParam(); }
+};
 
 // Test basic functionality when adding from an existing X509Certificate.
-TEST(TestRootCertsTest, AddFromPointer) {
+TEST_P(TestRootCertsTest, AddFromPointer) {
   scoped_refptr<X509Certificate> root_cert =
       ImportCertFromFile(GetTestCertsDirectory(), kRootCertificateFile);
   ASSERT_NE(static_cast<X509Certificate*>(nullptr), root_cert.get());
@@ -87,7 +98,7 @@ TEST(TestRootCertsTest, AddFromPointer) {
 // removed the TestRootCerts. This test acts as a canary/sanity check for
 // the results of the rest of net_unittests, ensuring that the trust status
 // is properly being set and cleared.
-TEST(TestRootCertsTest, OverrideTrust) {
+TEST_P(TestRootCertsTest, OverrideTrust) {
   TestRootCerts* test_roots = TestRootCerts::GetInstance();
   ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
   EXPECT_TRUE(test_roots->IsEmpty());
@@ -146,7 +157,7 @@ TEST(TestRootCertsTest, OverrideTrust) {
   EXPECT_FALSE(restored_verify_result.is_issued_by_known_root);
 }
 
-TEST(TestRootCertsTest, OverrideKnownRoot) {
+TEST_P(TestRootCertsTest, OverrideKnownRoot) {
   TestRootCerts* test_roots = TestRootCerts::GetInstance();
   ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
   EXPECT_TRUE(test_roots->IsEmpty());
@@ -195,7 +206,7 @@ TEST(TestRootCertsTest, OverrideKnownRoot) {
   EXPECT_FALSE(restored_verify_result.is_issued_by_known_root);
 }
 
-TEST(TestRootCertsTest, Moveable) {
+TEST_P(TestRootCertsTest, Moveable) {
   TestRootCerts* test_roots = TestRootCerts::GetInstance();
   ASSERT_NE(static_cast<TestRootCerts*>(nullptr), test_roots);
   EXPECT_TRUE(test_roots->IsEmpty());
@@ -279,6 +290,8 @@ TEST(TestRootCertsTest, Moveable) {
   EXPECT_EQ(bad_status, restored_status);
   EXPECT_EQ(bad_verify_result.cert_status, restored_verify_result.cert_status);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, TestRootCertsTest, ::testing::Bool());
 
 // TODO(rsleevi): Add tests for revocation checking via CRLs, ensuring that
 // TestRootCerts properly injects itself into the validation process. See
