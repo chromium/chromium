@@ -41,6 +41,12 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearch,
              "CustomizeChromeWallpaperSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shows entry point on Customize Chrome Side Panel's Appearance
+// page for Wallpaper Search.";
+BASE_FEATURE(kCustomizeChromeWallpaperSearchButton,
+             "CustomizeChromeWallpaperSearchButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, shows inspiration card in Customize Chrome Side Panel Wallpaper
 // Search.
 BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,

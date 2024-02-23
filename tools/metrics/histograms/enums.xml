@@ -16845,6 +16845,8 @@ from previous Chrome versions.
   <int value="-1798258607" label="AdaptiveCharging:disabled"/>
   <int value="-1797739460" label="brotli-encoding:disabled"/>
   <int value="-1797183993" label="LacrosMergeIcuDataFile:enabled"/>
+  <int value="-1796537928"
+      label="CustomizeChromeWallpaperSearchButton:enabled"/>
   <int value="-1794783272" label="PdfViewerDocumentProperties:disabled"/>
   <int value="-1793587118"
       label="CompressionDictionaryTransportOverHttp1:enabled"/>
@@ -17136,6 +17138,8 @@ from previous Chrome versions.
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
+  <int value="-1643872451"
+      label="CustomizeChromeWallpaperSearchButton:disabled"/>
   <int value="-1643227464"
       label="AutofillEnableUpdateVirtualCardEnrollment:disabled"/>
   <int value="-1643224308"
