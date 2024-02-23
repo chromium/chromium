@@ -566,11 +566,6 @@ INSTANTIATE_TEST_SUITE_P(
 using PDFExtensionBlobNavigationTest = PDFExtensionTest;
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, NewTab) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/pdf/blob_navigation_new_tab.html")));
@@ -585,21 +580,27 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, NewTab) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
   WebContents* new_tab_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(new_tab_contents));
+  if (UseOopif()) {
+    EXPECT_TRUE(
+        GetTestPdfViewerStreamManager(new_tab_contents)
+            ->WaitUntilPdfLoaded(new_tab_contents->GetPrimaryMainFrame()));
+  } else {
+    EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(new_tab_contents));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionBlobNavigationTest, SameTab) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(),
       embedded_test_server()->GetURL("/pdf/blob_navigation_same_tab.html"),
       /*number_of_navigations=*/2));
-  EXPECT_TRUE(
-      pdf_extension_test_util::EnsurePDFHasLoaded(GetActiveWebContents()));
+  auto* contents = GetActiveWebContents();
+  if (UseOopif()) {
+    EXPECT_TRUE(GetTestPdfViewerStreamManager(contents)->WaitUntilPdfLoaded(
+        contents->GetPrimaryMainFrame()));
+  } else {
+    EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, LoadInPlatformApp) {
