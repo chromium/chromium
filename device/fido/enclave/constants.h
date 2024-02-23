@@ -50,6 +50,8 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kResponseErrorKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrapKeyCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGenKeyPairCommandName[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreWrapCommandName[];
 
 // Register request keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kRegisterPubKeysKey[];
@@ -72,6 +74,14 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kKeyPurposeSecurityDomainMemberKey[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kKeyPurposeSecurityDomainSecret[];
+
+// Recovery key store commands.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStorePinHash[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreCertXml[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreSigXml[];
 
 }  // namespace device::enclave
 

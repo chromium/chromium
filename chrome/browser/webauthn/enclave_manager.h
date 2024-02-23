@@ -37,6 +37,7 @@ class UserVerifyingSigningKey;
 
 namespace network {
 class SharedURLLoaderFactory;
+class SimpleURLLoader;
 }  // namespace network
 
 namespace signin {
@@ -47,6 +48,10 @@ class PrimaryAccountAccessTokenFetcher;
 namespace trusted_vault {
 enum class TrustedVaultRegistrationStatus;
 }
+
+namespace trusted_vault_pb {
+class Vault;
+}  // namespace trusted_vault_pb
 
 namespace webauthn_pb {
 class EnclaveLocalState;
@@ -107,6 +112,8 @@ class EnclaveManager : public KeyedService {
   void Start();
   // Register with the enclave if not already registered.
   void RegisterIfNeeded();
+  // Set up an account with a newly-created PIN.
+  void SetupWithPIN(std::string pin);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
@@ -141,6 +148,12 @@ class EnclaveManager : public KeyedService {
 
   const webauthn_pb::EnclaveLocalState& local_state_for_testing() const;
 
+  // These methods get internal URLs so that tests can reply when they're
+  // fetched.
+  static std::string_view recovery_key_store_url_for_testing();
+  static std::string_view recovery_key_store_cert_url_for_testing();
+  static std::string_view recovery_key_store_sig_url_for_testing();
+
  private:
   struct StoreKeysArgs;
   class IdentityObserver;
@@ -161,8 +174,28 @@ class EnclaveManager : public KeyedService {
     kWaitingForEnclaveTokenForWrapping,
     kWrappingSecrets,
     kJoiningDomain,
+    kHashingPIN,
+    kDownloadingRecoveryKeyStoreKeys,
+    kWaitingForEnclaveTokenForPINWrapping,
+    kWrappingPIN,
+    kWaitingForRecoveryKeyStoreTokenForUpload,
+    kWaitingForRecoveryKeyStore,
   };
   static std::string ToString(State);
+
+  enum class FetchedFile {
+    kCertFile,
+    kSigFile,
+  };
+  static std::string ToString(FetchedFile);
+
+  struct HashedPIN {
+    ~HashedPIN() { memset(hashed, 0, sizeof(hashed)); }
+
+    int n = 0;  // The scrypt `N` parameter.
+    uint8_t salt[16];
+    uint8_t hashed[32];
+  };
 
   using None = base::StrongAlias<class None, absl::monostate>;
   using Failure =
@@ -177,13 +210,22 @@ class EnclaveManager : public KeyedService {
       base::StrongAlias<class JoinStatus,
                         trusted_vault::TrustedVaultRegistrationStatus>;
   using AccessToken = base::StrongAlias<class AccessToken, std::string>;
+  using FileFetched =
+      base::StrongAlias<class FileFetched,
+                        std::pair<FetchedFile, std::optional<std::string>>>;
+  using PINHashed =
+      base::StrongAlias<class PINHashed, std::unique_ptr<HashedPIN>>;
+  using Response = base::StrongAlias<class Response, std::string>;
   using Event = absl::variant<None,
                               Failure,
                               FileContents,
                               KeyReady,
                               EnclaveResponse,
                               AccessToken,
-                              JoinStatus>;
+                              JoinStatus,
+                              FileFetched,
+                              PINHashed,
+                              Response>;
   static std::string ToString(const Event&);
 
   // Moves to `kNextAction` if currently `kIdle`, which will trigger the next
@@ -194,6 +236,7 @@ class EnclaveManager : public KeyedService {
   void Loop(Event);
   void ResetActionState();
   void DoNextAction(Event);
+  void FetchComplete(FetchedFile, std::optional<std::string>);
   void StartLoadingState();
   void HandleIdentityChange();
   void StartEnclaveRegistration();
@@ -205,6 +248,12 @@ class EnclaveManager : public KeyedService {
   void DoWrappingSecrets(Event event);
   void JoinDomain();
   void DoJoiningDomain(Event event);
+  void DoHashingPIN(Event event);
+  void DoDownloadingRecoveryKeyStoreKeys(Event event);
+  void DoWaitingForEnclaveTokenForPINWrapping(Event event);
+  void DoWrappingPIN(Event event);
+  void DoWaitingForRecoveryKeyStoreTokenForUpload(Event event);
+  void DoWaitingForRecoveryKeyStore(Event event);
 
   // Can be called at any point to serialise the current value of `local_state_`
   // to disk. Only a single write happens at a time. If a write is already
@@ -217,7 +266,7 @@ class EnclaveManager : public KeyedService {
   void GenerateHardwareKey(
       std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key);
 
-  void GetAccessTokenInternal();
+  void GetAccessTokenInternal(const char* scope);
   static base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
       const webauthn_pb::EnclaveLocalState_User& user,
       const StoreKeysArgs& args);
@@ -239,6 +288,7 @@ class EnclaveManager : public KeyedService {
   bool currently_writing_ = false;
   base::OnceClosure write_finished_callback_;
   std::unique_ptr<StoreKeysArgs> store_keys_args_;
+  std::string pending_pin_;
 
   // These members hold state that only exists for the duration of a sequence of
   // non-idle states. Every time the state machine idles, all these members are
@@ -252,6 +302,13 @@ class EnclaveManager : public KeyedService {
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
+  std::unique_ptr<network::SimpleURLLoader> cert_xml_loader_;
+  std::unique_ptr<network::SimpleURLLoader> sig_xml_loader_;
+  std::unique_ptr<network::SimpleURLLoader> upload_loader_;
+  std::optional<std::string> cert_xml_;
+  std::optional<std::string> sig_xml_;
+  std::unique_ptr<HashedPIN> hashed_pin_;
+  std::unique_ptr<trusted_vault_pb::Vault> vault_;
 
   unsigned store_keys_count_ = 0;
   bool want_registration_ = false;

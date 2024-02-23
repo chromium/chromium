@@ -457,4 +457,5 @@ Refer to README.md for content description and update process.
  <item id="weather_icon" added_in_milestone="123" content_hash_code="07bd5365" os_list="chromeos" file_path="ash/birch/birch_weather_provider.cc" />
  <item id="chromeos_picker_gif_media_fetcher" added_in_milestone="124" content_hash_code="0674a2dd" os_list="chromeos" file_path="ash/picker/picker_asset_fetcher_impl.cc" />
  <item id="birch_calendar_provider" added_in_milestone="124" content_hash_code="07af9ecc" os_list="chromeos" file_path="chrome/browser/ui/ash/birch/birch_calendar_fetcher.cc" />
+ <item id="recovery_key_store_fetch" added_in_milestone="124" content_hash_code="05d9dc45" os_list="linux,windows" file_path="chrome/browser/webauthn/enclave_manager.cc" />
 </annotations>

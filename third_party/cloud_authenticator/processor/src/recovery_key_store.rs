@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! recoverable_key_store contains functions for working with Google's
-//! recoverable key store, also called Vault internally.
+//! recovery_key_store contains functions for working with Google's
+//! recovery key store, also called Vault internally.
 
 use crate::{debug, RequestError};
 use alloc::collections::BTreeMap;
@@ -23,7 +23,7 @@ use cbor::{cbor, MapKey, MapKeyRef, MapLookupKey, Value};
 
 const SECONDS_IN_A_DAY: i64 = 86400;
 
-/// The public keys of the recoverable key store cohorts are published in
+/// The public keys of the recovery key store cohorts are published in
 /// XML files. This module implements a basic XML parser.
 mod xml {
     use alloc::boxed::Box;
@@ -329,7 +329,7 @@ mod xml {
     mod tests {
         use super::Value::Object;
         use super::*;
-        use crate::recoverable_key_store::xml::Element::{List, Single};
+        use crate::recovery_key_store::xml::Element::{List, Single};
 
         #[test]
         fn test_parse() {
@@ -398,7 +398,7 @@ mod xml {
                     ),
                 ])),
             );
-            assert_eq!(expected, parse(crate::recoverable_key_store::SAMPLE_CERTS_XML).unwrap());
+            assert_eq!(expected, parse(crate::recovery_key_store::SAMPLE_CERTS_XML).unwrap());
         }
 
         #[test]
@@ -428,7 +428,7 @@ mod xml {
     }
 }
 
-/// The x509 module provides basic X.509 support since the recoverable key store
+/// The x509 module provides basic X.509 support since the recovery key store
 /// publishes its key in X.509 format.
 mod x509 {
     use super::SECONDS_IN_A_DAY;
@@ -639,7 +639,7 @@ mod x509 {
     #[cfg(test)]
     mod tests {
         use super::*;
-        use crate::recoverable_key_store::ROOT_CERTIFICATE;
+        use crate::recovery_key_store::ROOT_CERTIFICATE;
 
         #[test]
         fn test_parse() {
@@ -724,7 +724,7 @@ mod key_distribution {
     use alloc::vec::Vec;
 
     /// Return an ECDH public key, and certificate path, from an arbitrary
-    /// recoverable key store cohort, given the published XML files. These XML
+    /// recovery key store cohort, given the published XML files. These XML
     /// files are found at
     ///   * https://www.gstatic.com/cryptauthvault/v0/cert.xml
     ///   * https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml
@@ -783,7 +783,7 @@ mod key_distribution {
     }
 
     /// Return an ECDH public key, and certificate path, from an arbitrary
-    /// recoverable key store cohort, given the `cert.xml` file, which must
+    /// recovery key store cohort, given the `cert.xml` file, which must
     /// already have been validated.
     ///
     /// The `current_time` is used for certificate validation and also to
@@ -1055,7 +1055,7 @@ mod key_distribution {
 }
 
 /// The securebox module implements the "securebox" construction that is used
-/// by the recoverable key store.
+/// by the recovery key store.
 ///
 /// Within Google, see go/securebox2
 mod securebox {
@@ -1242,7 +1242,7 @@ fn wrap(
     let mut recovery_key = [0u8; 32];
     crypto::rand_bytes(&mut recovery_key);
 
-    // Within Google, see go/recoverable-key-store-creation
+    // Within Google, see go/recovery-key-store-creation
     let locally_encrypted_recovery_key = securebox::encrypt(
         /* their_public_key= */ None,
         /* shared_secret= */ pin_hash,

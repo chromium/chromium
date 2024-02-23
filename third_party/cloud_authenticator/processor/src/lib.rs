@@ -51,13 +51,13 @@ mod der;
 #[macro_use]
 mod macros;
 mod passkeys;
-mod recoverable_key_store;
+mod recovery_key_store;
 mod spki;
 
 // When building for fuzzing, these functions are re-exported so the fuzzer can
 // call them.
 #[cfg(fuzzing)]
-pub use recoverable_key_store::fuzzing::{x509_parse, xml_parse};
+pub use recovery_key_store::fuzzing::{x509_parse, xml_parse};
 #[cfg(fuzzing)]
 pub use spki::parse as spki_parse;
 
@@ -569,7 +569,7 @@ fn do_request(
         "keys/wrap" => do_keys_wrap(auth, state, request),
         "passkeys/assert" => passkeys::do_assert(auth, state, request),
         "passkeys/create" => passkeys::do_create(auth, state, request),
-        "recoverable_key_store/wrap" => recoverable_key_store::do_wrap(current_time, request),
+        "recovery_key_store/wrap" => recovery_key_store::do_wrap(current_time, request),
         _ => debug("unknown command"),
     }
 }

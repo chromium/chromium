@@ -65,6 +65,7 @@ const char kResponseErrorKey[] = "err";
 const char kRegisterCommandName[] = "device/register";
 const char kWrapKeyCommandName[] = "keys/wrap";
 const char kGenKeyPairCommandName[] = "keys/genpair";
+const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
 const char kRegisterDeviceIdKey[] = "device_id";
@@ -79,5 +80,9 @@ const char kWrappingResponseWrappedPrivateKey[] = "priv_key";
 
 const char kKeyPurposeSecurityDomainMemberKey[] = "security domain member key";
 const char kKeyPurposeSecurityDomainSecret[] = "security domain secret";
+
+const char kRecoveryKeyStorePinHash[] = "pin_hash";
+const char kRecoveryKeyStoreCertXml[] = "cert_xml";
+const char kRecoveryKeyStoreSigXml[] = "sig_xml";
 
 }  // namespace device::enclave

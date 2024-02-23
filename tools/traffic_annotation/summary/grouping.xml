@@ -315,6 +315,7 @@ after discussions on the right group.
       <annotation id="chromeos_picker_gif_media_fetcher"/>
       <annotation id="weather_icon"/>
       <annotation id="birch_calendar_provider"/>
+      <annotation id="recovery_key_store_fetch"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

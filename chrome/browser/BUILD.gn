@@ -4645,6 +4645,7 @@ static_library("browser") {
       "//components/shared_highlighting/core/common",
       "//components/soda",
       "//components/soda:constants",
+      "//components/trusted_vault/proto",
       "//components/ukm/content",
       "//components/user_notes:features",
       "//components/user_notes:user_notes_prefs",
