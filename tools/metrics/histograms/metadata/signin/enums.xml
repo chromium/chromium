@@ -126,6 +126,12 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="SignedInWithNoDeviceAccount">
     User has signed in to Chrome, from a state without any on-device account.
   </int>
+  <int value="24" label="ConfirmManagementShown">
+    User was shown the confirm management screen on signin.
+  </int>
+  <int value="25" label="ConfirmManagementAccepted">
+    User accepted management on signin.
+  </int>
 </enum>
 
 <enum name="AccountReauthenticationEvent">

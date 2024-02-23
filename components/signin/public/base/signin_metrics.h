@@ -318,7 +318,11 @@ enum class AccountConsistencyPromoAction : int {
   // User started with the bottom sheet without a device-account, and signed in
   // to chrome by finishing the add-account and sign-in flows.
   SIGNED_IN_WITH_NO_DEVICE_ACCOUNT = 23,
-  kMaxValue = SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
+  // User was shown the confirm management screen on signin.
+  CONFIRM_MANAGEMENT_SHOWN = 24,
+  // User accepted management on signin.
+  CONFIRM_MANAGEMENT_ACCEPTED = 25,
+  kMaxValue = CONFIRM_MANAGEMENT_ACCEPTED,
 };
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

@@ -24,12 +24,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -40,6 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -65,6 +68,7 @@ public class AccountPickerBottomSheetRenderTest {
         private @EntryPoint int mEntryPoint = EntryPoint.WEB_SIGNIN;
         private boolean mSwitchToTryAgainView;
         private boolean mSwitchToAuthErrorView;
+        private boolean mIsAccountManaged;
 
         CustomAccountPickerDelegate() {}
 
@@ -80,6 +84,10 @@ public class AccountPickerBottomSheetRenderTest {
             mSwitchToAuthErrorView = authError;
         }
 
+        void setAccountManaged(boolean managed) {
+            mIsAccountManaged = managed;
+        }
+
         @Override
         public void onAccountPickerDestroy() {}
 
@@ -90,6 +98,19 @@ public class AccountPickerBottomSheetRenderTest {
             } else if (mSwitchToAuthErrorView) {
                 mediator.switchToAuthErrorView();
             }
+        }
+
+        @Override
+        public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+            callback.onResult(mIsAccountManaged);
+        }
+
+        @Override
+        public void setUserAcceptedAccountManagement(boolean confirmed) {}
+
+        @Override
+        public String extractDomainName(String accountEmail) {
+            return accountEmail;
         }
 
         @Override
@@ -250,6 +271,30 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_auth_error_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    public void testConfirmManagementView(boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountPickerDelegate.setAccountManaged(true);
+        buildAndShowCollapsedBottomSheet();
+
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                });
+        CriteriaHelper.pollUiThread(
+                bottomSheetView.findViewById(R.id.account_picker_confirm_management_description)
+                        ::isShown);
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "confirm_management_sheet");
     }
 
     private void clickContinueButtonAndWaitForErrorView() {

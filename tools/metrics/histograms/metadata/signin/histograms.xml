@@ -198,6 +198,10 @@ chromium-metrics-reviews@google.com.
                  promo, starting an add-account flow."/>
     <variant name="AuthErrorShown"
         summary="The auth error screen was shown to the user."/>
+    <variant name="ConfirmManagementAccepted"
+        summary="User accepted management on signin."/>
+    <variant name="ConfirmManagementShown"
+        summary="User was shown the confirm management screen on signin."/>
     <variant name="DismissedBack"
         summary="User has dismissed the promo by tapping back button."/>
     <variant name="DismissedButton"

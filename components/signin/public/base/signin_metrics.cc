@@ -753,6 +753,13 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
           "Signin.AccountConsistencyPromoAction."
           "AddAccountStartedWithNoDeviceAccount";
       break;
+    case AccountConsistencyPromoAction::CONFIRM_MANAGEMENT_SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.ConfirmManagementShown";
+      break;
+    case AccountConsistencyPromoAction::CONFIRM_MANAGEMENT_ACCEPTED:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.ConfirmManagementAccepted";
+      break;
   }
 
   base::UmaHistogramEnumeration(histogram, access_point,

@@ -28,6 +28,9 @@ class AccountPickerBottomSheetViewBinder {
             if (profileData != null) {
                 view.updateSelectedAccount(profileData);
             }
+        } else if (propertyKey == AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DOMAIN) {
+            view.updateSelectedDomain(
+                    model.get(AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DOMAIN));
         } else if (propertyKey == AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED) {
             view.setOnClickListenerOfContinueButton(
                     model.get(AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED));

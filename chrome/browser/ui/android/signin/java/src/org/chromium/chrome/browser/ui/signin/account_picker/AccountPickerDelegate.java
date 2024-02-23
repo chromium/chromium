@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -24,4 +25,13 @@ public interface AccountPickerDelegate {
     /** Returns the entry point of this delegate. */
     @EntryPoint
     int getEntryPoint();
+
+    /** Calls the callback with the result of SigninManager#isAccountManaged(). */
+    void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback);
+
+    /** See SigninManager#setUserAcceptedAccountManagement. */
+    void setUserAcceptedAccountManagement(boolean confirmed);
+
+    /** See SigninManager#extractDomainName. */
+    String extractDomainName(String accountEmail);
 }

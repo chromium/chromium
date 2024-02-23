@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
@@ -184,6 +185,21 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
             mBottomSheetController.hideContent(
                     mBottomSheetController.getCurrentSheetContent(), true);
         }
+    }
+
+    @Override
+    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+        mSigninManager.isAccountManaged(accountInfo, callback);
+    }
+
+    @Override
+    public void setUserAcceptedAccountManagement(boolean confirmed) {
+        mSigninManager.setUserAcceptedAccountManagement(confirmed);
+    }
+
+    @Override
+    public String extractDomainName(String accountEmail) {
+        return mSigninManager.extractDomainName(accountEmail);
     }
 
     /** Returns the bottom sheet entry point. */

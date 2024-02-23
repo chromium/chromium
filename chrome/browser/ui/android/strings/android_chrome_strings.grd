@@ -2133,6 +2133,9 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGN_IN_MANAGED_ACCOUNT_DESCRIPTION" desc="Description for signing in to managed accounts">
         You are signing in with an account managed by <ph name="MANAGED_DOMAIN">%1$s<ex>Google</ex></ph> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.
       </message>
+      <message name="IDS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE" desc="The subtitle of the Sign in with a managed account dialog when user policies are enabled.">
+        Your organization, <ph name="MANAGED_DOMAIN">%1$s<ex>Google</ex></ph>, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.
+      </message>
       <message name="IDS_SYNC_YOUR_BOOKMARKS" desc="Title for the prompt to signin and enable sync to sync their bookmarks">
         Sync your bookmarks
       </message>

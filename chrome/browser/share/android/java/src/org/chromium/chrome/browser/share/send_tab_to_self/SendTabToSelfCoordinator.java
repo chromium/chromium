@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.StringRes;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -100,12 +101,12 @@ public class SendTabToSelfCoordinator {
     /** Performs sign-in for the promo shown to signed-out users. */
     private static class SendTabToSelfAccountPickerDelegate implements AccountPickerDelegate {
         private final Runnable mOnSignInCompleteCallback;
-        private final Profile mProfile;
+        private final SigninManager mSigninManager;
 
         public SendTabToSelfAccountPickerDelegate(
-                Runnable onSignInCompleteCallback, Profile profile) {
+                Runnable onSignInCompleteCallback, SigninManager signinManager) {
             mOnSignInCompleteCallback = onSignInCompleteCallback;
-            mProfile = profile;
+            mSigninManager = signinManager;
         }
 
         @Override
@@ -113,8 +114,7 @@ public class SendTabToSelfCoordinator {
 
         @Override
         public void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator) {
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-            signinManager.signin(
+            mSigninManager.signin(
                     accountInfo,
                     SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
                     new SigninManager.SignInCallback() {
@@ -128,6 +128,21 @@ public class SendTabToSelfCoordinator {
                             mediator.switchToTryAgainView();
                         }
                     });
+        }
+
+        @Override
+        public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+            mSigninManager.isAccountManaged(accountInfo, callback);
+        }
+
+        @Override
+        public void setUserAcceptedAccountManagement(boolean confirmed) {
+            mSigninManager.setUserAcceptedAccountManagement(confirmed);
+        }
+
+        @Override
+        public String extractDomainName(String accountEmail) {
+            return mSigninManager.extractDomainName(accountEmail);
         }
 
         @Override
@@ -188,7 +203,8 @@ public class SendTabToSelfCoordinator {
                             mWindowAndroid,
                             mController,
                             new SendTabToSelfAccountPickerDelegate(
-                                    this::onSignInComplete, mProfile),
+                                    this::onSignInComplete,
+                                    IdentityServicesProvider.get().getSigninManager(mProfile)),
                             new BottomSheetStrings(),
                             mDeviceLockActivityLauncher);
                     return;

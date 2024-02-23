@@ -119,6 +119,7 @@ android_resources("java_resources") {
     "java/res/layout/account_picker_row.xml",
     "java/res/layout/account_picker_state_auth_error.xml",
     "java/res/layout/account_picker_state_collapsed.xml",
+    "java/res/layout/account_picker_state_confirm_management.xml",
     "java/res/layout/account_picker_state_expanded.xml",
     "java/res/layout/account_picker_state_general_error.xml",
     "java/res/layout/account_picker_state_no_account.xml",

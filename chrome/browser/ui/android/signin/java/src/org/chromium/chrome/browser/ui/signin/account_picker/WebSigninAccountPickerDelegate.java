@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -85,6 +86,21 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
                         mediator.switchToTryAgainView();
                     }
                 });
+    }
+
+    @Override
+    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+        mSigninManager.isAccountManaged(accountInfo, callback);
+    }
+
+    @Override
+    public void setUserAcceptedAccountManagement(boolean confirmed) {
+        mSigninManager.setUserAcceptedAccountManagement(confirmed);
+    }
+
+    @Override
+    public String extractDomainName(String accountEmail) {
+        return mSigninManager.extractDomainName(accountEmail);
     }
 
     @Override

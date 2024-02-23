@@ -25,6 +25,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -53,6 +55,7 @@ public class AccountPickerBottomSheetMediator
     private @Nullable String mSelectedAccountEmail;
     private @Nullable String mDefaultAccountEmail;
     private @Nullable String mAddedAccountEmail;
+    private boolean mAcceptedAccountManagement;
 
     private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
@@ -190,11 +193,21 @@ public class AccountPickerBottomSheetMediator
 
     /** Switches the bottom sheet to the general error view that allows the user to try again. */
     public void switchToTryAgainView() {
+        if (mAcceptedAccountManagement) {
+            // Clear acceptance on failed signin, but do not clear |mAcceptedAccountManagement| so
+            // that if the user chooses to retry, we don't confirm account management again.
+            mAccountPickerDelegate.setUserAcceptedAccountManagement(false);
+        }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_GENERAL_ERROR);
     }
 
     /** Switches the bottom sheet to the auth error view that asks the user to sign in again. */
     public void switchToAuthErrorView() {
+        if (mAcceptedAccountManagement) {
+            // Clear acceptance on failed signin.
+            mAcceptedAccountManagement = false;
+            mAccountPickerDelegate.setUserAcceptedAccountManagement(false);
+        }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_AUTH_ERROR);
     }
 
@@ -238,6 +251,9 @@ public class AccountPickerBottomSheetMediator
             mModel.set(
                     AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA,
                     mProfileDataCache.getProfileDataOrDefault(accountEmail));
+            mModel.set(
+                    AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DOMAIN,
+                    mAccountPickerDelegate.extractDomainName(accountEmail));
         }
     }
 
@@ -257,8 +273,7 @@ public class AccountPickerBottomSheetMediator
      */
     private void onContinueAsClicked() {
         @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
-        if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST
-                || viewState == ViewState.SIGNIN_GENERAL_ERROR) {
+        if (viewState == ViewState.COLLAPSED_ACCOUNT_LIST) {
             if (BuildInfo.getInstance().isAutomotive) {
                 mDeviceLockActivityLauncher.launchDeviceLockActivity(
                         mActivity,
@@ -274,14 +289,50 @@ public class AccountPickerBottomSheetMediator
             } else {
                 signIn();
             }
+        } else if (viewState == ViewState.SIGNIN_GENERAL_ERROR) {
+            // User already accepted account management and is re-trying login.
+            signInAfterCheckingManagement();
         } else if (viewState == ViewState.NO_ACCOUNTS) {
             addAccount();
         } else if (viewState == ViewState.SIGNIN_AUTH_ERROR) {
             updateCredentials();
+        } else if (viewState == ViewState.CONFIRM_MANAGEMENT) {
+            mAcceptedAccountManagement = true;
+            logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED);
+            signInAfterCheckingManagement();
         }
     }
 
     private void signIn() {
+        if (!SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+            signInAfterCheckingManagement();
+            return;
+        }
+        mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
+        CoreAccountInfo accountInfo =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
+                        mSelectedAccountEmail);
+        mAccountPickerDelegate.isAccountManaged(
+                accountInfo,
+                (Boolean isAccountManaged) -> {
+                    if (isAccountManaged) {
+                        logAccountConsistencyPromoAction(
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN);
+                        mModel.set(
+                                AccountPickerBottomSheetProperties.VIEW_STATE,
+                                ViewState.CONFIRM_MANAGEMENT);
+                    } else {
+                        signInAfterCheckingManagement();
+                    }
+                });
+    }
+
+    private void signInAfterCheckingManagement() {
+        if (mAcceptedAccountManagement) {
+            mAccountPickerDelegate.setUserAcceptedAccountManagement(true);
+        }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_IN_PROGRESS);
         if (TextUtils.equals(mSelectedAccountEmail, mAddedAccountEmail)) {
             logAccountConsistencyPromoAction(

@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -91,6 +92,21 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             makeSigninNotAllowedToast();
             mController.hideContent(mController.getCurrentSheetContent(), true);
         }
+    }
+
+    @Override
+    public void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback) {
+        mSigninManager.isAccountManaged(accountInfo, callback);
+    }
+
+    @Override
+    public void setUserAcceptedAccountManagement(boolean confirmed) {
+        mSigninManager.setUserAcceptedAccountManagement(confirmed);
+    }
+
+    @Override
+    public String extractDomainName(String accountEmail) {
+        return mSigninManager.extractDomainName(accountEmail);
     }
 
     @Override
