@@ -197,6 +197,16 @@ public class AccountManagerTestRule implements TestRule {
         mFakeAccountManagerFacade.removeAccount(AccountUtils.createAccountFromName(accountEmail));
     }
 
+    /** See {@link FakeAccountManagerFacade#blockGetCoreAccountInfos(boolean)}. */
+    public void blockGetCoreAccountInfosUpdate(boolean populateCache) {
+        mFakeAccountManagerFacade.blockGetCoreAccountInfos(populateCache);
+    }
+
+    /** See {@link FakeAccountManagerFacade#unblockGetCoreAccountInfos()}. */
+    public void unblockGetCoreAccountInfos() {
+        mFakeAccountManagerFacade.unblockGetCoreAccountInfos();
+    }
+
     /** Converts an account email to its corresponding CoreAccountInfo object. */
     public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
         String accountGaiaId = mFakeAccountManagerFacade.getAccountGaiaId(accountEmail);

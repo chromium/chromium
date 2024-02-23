@@ -105,7 +105,7 @@ public class FullScreenSyncPromoTest {
     public void whenAccountCacheNotPopulated() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPrefManager.setSigninPromoLastShownVersion(38);
-        mFakeAccountManagerFacade.blockGetCoreAccountInfos();
+        mFakeAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
         Assert.assertFalse(
                 FullScreenSyncPromoUtil.launchPromoIfNeeded(
                         mContext, mProfile, mLauncherMock, CURRENT_MAJOR_VERSION));

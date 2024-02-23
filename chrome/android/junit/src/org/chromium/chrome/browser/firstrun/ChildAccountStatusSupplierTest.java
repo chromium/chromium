@@ -60,7 +60,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testNoAccounts() {
-        mAccountManagerFacade.blockGetCoreAccountInfos();
+        mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
         ChildAccountStatusSupplier supplier =
                 new ChildAccountStatusSupplier(
                         mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
@@ -136,7 +136,7 @@ public class ChildAccountStatusSupplierTest {
     public void testNonChildWhenNoAppRestrictions() {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
-        mAccountManagerFacade.blockGetCoreAccountInfos();
+        mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
         doNothing()
                 .when(mFirstRunAppRestrictionInfoMock)
                 .getHasAppRestriction(mCallbackCaptor.capture());
@@ -161,7 +161,7 @@ public class ChildAccountStatusSupplierTest {
     public void testWaitsForAccountManagerFacadeWhenAppRestrictionsFound() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
-        mAccountManagerFacade.blockGetCoreAccountInfos();
+        mAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
         doCallback((Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mFirstRunAppRestrictionInfoMock)
                 .getHasAppRestriction(any());

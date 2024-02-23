@@ -192,7 +192,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAccountHolders.add(AccountHolder.createFromAccount(account));
-                    fireOnAccountsChangedNotification();
+                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                        fireOnAccountsChangedNotification();
+                    }
                 });
     }
 
@@ -200,7 +202,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAccountHolders.add(AccountHolder.createFromAccount(accountInfo));
-                    fireOnAccountsChangedNotification();
+                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                        fireOnAccountsChangedNotification();
+                    }
                 });
     }
 
@@ -212,7 +216,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                     if (!mAccountHolders.remove(accountHolder)) {
                         throw new IllegalArgumentException("Cannot find account:" + accountHolder);
                     }
-                    fireOnAccountsChangedNotification();
+                    if (mBlockedGetCoreAccountInfosPromise == null) {
+                        fireOnAccountsChangedNotification();
+                    }
                 });
     }
 
@@ -233,27 +239,39 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /**
      * Blocks callers from getting accounts through {@link #getCoreAccountInfos()}. After this
      * method is called, subsequent calls to {@link #getCoreAccountInfos()} will return a
-     * non-fulfilled promise. Use {@link #unblockGetCoreAccountInfos()} to unblock this promise.
+     * non-fulfilled promise.
+     *
+     * <p>If populateCache is true then the blocking promise will be fulfilled with the current list
+     * of available accounts. Any account addition/removal later on will not be reflected in {@link
+     * #getCoreAccountInfos()}.
+     *
+     * <p>Use {@link #unblockGetCoreAccountInfos()} to unblock this promise.
      */
-    public void blockGetCoreAccountInfos() {
+    public void blockGetCoreAccountInfos(boolean populateCache) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert mBlockedGetCoreAccountInfosPromise == null;
                     mBlockedGetCoreAccountInfosPromise = new Promise<>();
+                    if (populateCache) {
+                        mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
+                    }
                 });
     }
 
     /**
      * Unblocks callers that are waiting for {@link #getCoreAccountInfos()} result. Use after {@link
-     * #blockGetCoreAccountInfos()} to unblock callers waiting for promises obtained from {@link
-     * #getCoreAccountInfos()}.
+     * #blockGetCoreAccountInfos(boolean)} to unblock callers waiting for promises obtained from
+     * {@link #getCoreAccountInfos()}.
      */
     public void unblockGetCoreAccountInfos() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assert mBlockedGetCoreAccountInfosPromise != null;
-                    mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
+                    if (!mBlockedGetCoreAccountInfosPromise.isFulfilled()) {
+                        mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
+                    }
                     mBlockedGetCoreAccountInfosPromise = null;
+                    fireOnAccountsChangedNotification();
                 });
     }
 
