@@ -50,6 +50,22 @@ class CORE_EXPORT CSSBitsetBase {
   bool operator==(const CSSBitsetBase& o) const { return chunks_ == o.chunks_; }
   bool operator!=(const CSSBitsetBase& o) const { return !(*this == o); }
 
+  inline uint64_t HighPriorityBits() const {
+    static constexpr int from = static_cast<int>(kFirstHighPriorityCSSProperty);
+    static constexpr int to_exclusive =
+        static_cast<int>(kLastHighPriorityCSSProperty) + 1;
+    static_assert(
+        from >= 0,
+        "This function assumes all high-priority properties fit in 64 bits");
+    static_assert(
+        to_exclusive < 64,
+        "This function assumes all high-priority properties fit in 64 bits");
+
+    // NOTE: We need to_exclusive < 64 to have defined shifts.
+    return chunks_.data()[0] & ((uint64_t{1} << to_exclusive) - 1) &
+           ~((uint64_t{1} << from) - 1);
+  }
+
   inline void Set(CSSPropertyID id) {
     size_t bit = static_cast<size_t>(static_cast<unsigned>(id));
     DCHECK_LT(bit, kBits);
