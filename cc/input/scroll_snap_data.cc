@@ -541,7 +541,7 @@ std::optional<SnapSearchResult> SnapContainerData::FindClosestValidAreaInternal(
     if (distance < smallest_distance || candidate.has_focus_within()) {
       smallest_distance = distance;
       closest = candidate;
-    } else if (!closest->has_focus_within()) {
+    } else if (closest && !closest->has_focus_within()) {
       const auto candidate_rect = candidate.rect();
       const auto closest_rect = closest->rect();
       // Prefer snapping to innermost elements when nesting snap areas.
