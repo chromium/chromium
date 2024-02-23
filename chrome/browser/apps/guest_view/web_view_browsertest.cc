@@ -80,6 +80,7 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -994,6 +995,61 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AudibilityStatePropagates) {
   embedder_obs.WaitForCurrentlyAudible(false);
   EXPECT_FALSE(embedder->IsCurrentlyAudible());
   EXPECT_FALSE(guest->IsCurrentlyAudible());
+}
+
+IN_PROC_BROWSER_TEST_F(WebViewTest, SetAudioMuted) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  LoadAppWithGuest("web_view/simple");
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  auto* web_view_guest = extensions::WebViewGuest::FromGuestViewBase(guest);
+  content::WebContents* owner_web_contents = GetEmbedderWebContents();
+
+  // The audio muted state for both WebContents and the WebViewGuest should be
+  // false.
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state can change for the webview when the owner
+  // WebContents is unmuted.
+  web_view_guest->SetAudioMuted(true);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  web_view_guest->SetAudioMuted(false);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state changes to muted for the webview when the
+  // owner WebContents is muted, and WebViewGuest remembers the muted setting of
+  // the guest WebContents.
+  owner_web_contents->SetAudioMuted(true);
+  EXPECT_TRUE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  web_view_guest->SetAudioMuted(true);
+  EXPECT_TRUE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state cannot change from muted for the webview
+  // when the owner WebContents is muted and the WebViewGuest remembers the set
+  // audio muted state for the guest.
+  web_view_guest->SetAudioMuted(false);
+  EXPECT_TRUE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
+
+  // Verify that the audio muted state changes to the last set audio state for
+  // the webview when the owner WebContents changes to unmuted.
+  owner_web_contents->SetAudioMuted(false);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_FALSE(web_view_guest->IsAudioMuted());
+
+  owner_web_contents->SetAudioMuted(true);
+  web_view_guest->SetAudioMuted(true);
+  owner_web_contents->SetAudioMuted(false);
+  EXPECT_FALSE(owner_web_contents->IsAudioMuted());
+  EXPECT_TRUE(web_view_guest->IsAudioMuted());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, WebViewRespectsInsets) {

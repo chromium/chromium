@@ -331,6 +331,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // only ever fire if IsPreferredSizeSupported returns true.
   virtual void OnPreferredSizeChanged(const gfx::Size& pref_size) {}
 
+  // This method is invoked when the owner contents audio muted state changes to
+  // give the container an opportunity to adjust their muted state.
+  virtual void OnOwnerAudioMutedStateUpdated(bool muted);
+
   // Signals that the guest view is ready.  The default implementation signals
   // immediately, but derived class can override this if they need to do
   // asynchronous setup.

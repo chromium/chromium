@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -97,6 +98,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Sets the transparency of the guest.
   void SetAllowTransparency(bool allow);
   bool allow_transparency() const { return allow_transparency_; }
+
+  // Sets the audio muted state of the guest.
+  void SetAudioMuted(bool mute);
+  bool IsAudioMuted();
 
   // Begin or continue a find request.
   void StartFind(const std::u16string& search_text,
@@ -192,6 +197,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void GuestViewDidStopLoading() final;
   void GuestZoomChanged(double old_zoom_level, double new_zoom_level) final;
   bool IsAutoSizeSupported() const final;
+  void OnOwnerAudioMutedStateUpdated(bool muted) final;
   void SignalWhenReady(base::OnceClosure callback) final;
   void WillAttachToEmbedder() final;
   bool RequiresSslInterstitials() const final;
@@ -332,6 +338,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // Stores whether the contents of the guest can be transparent.
   bool allow_transparency_ = false;
+
+  // Stores whether the guest has been muted by the webview.setAudioMuted API.
+  bool is_audio_muted_ = false;
 
   // Handles the JavaScript dialog requests.
   JavaScriptDialogHelper javascript_dialog_helper_;

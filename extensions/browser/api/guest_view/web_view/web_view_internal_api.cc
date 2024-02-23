@@ -1037,7 +1037,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetAudioMutedFunction::Run() {
       web_view_internal::SetAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  GetGuest().web_contents()->SetAudioMuted(params->mute);
+  GetGuest().SetAudioMuted(params->mute);
   return RespondNow(NoArguments());
 }
 
@@ -1052,8 +1052,7 @@ ExtensionFunction::ResponseAction WebViewInternalIsAudioMutedFunction::Run() {
       web_view_internal::IsAudioMuted::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  content::WebContents* web_contents = GetGuest().web_contents();
-  return RespondNow(WithArguments(web_contents->IsAudioMuted()));
+  return RespondNow(WithArguments(GetGuest().IsAudioMuted()));
 }
 
 WebViewInternalGetAudioStateFunction::WebViewInternalGetAudioStateFunction() =

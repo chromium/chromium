@@ -41,6 +41,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/result_codes.h"
@@ -1101,6 +1102,20 @@ void WebViewGuest::CanDownload(const GURL& url,
                                            std::move(callback));
 }
 
+void WebViewGuest::OnOwnerAudioMutedStateUpdated(bool muted) {
+  CHECK(web_contents());
+
+  // Mute the guest WebContents if the owner WebContents has been muted.
+  if (muted) {
+    web_contents()->SetAudioMuted(muted);
+    return;
+  }
+
+  // Apply the stored muted state of the guest WebContents if the owner
+  // WebContents is not muted.
+  web_contents()->SetAudioMuted(is_audio_muted_);
+}
+
 void WebViewGuest::SignalWhenReady(base::OnceClosure callback) {
   auto* manager = WebViewContentScriptManager::Get(browser_context());
   manager->SignalOnScriptsUpdated(std::move(callback));
@@ -1344,6 +1359,24 @@ void WebViewGuest::SetAllowTransparency(bool allow) {
   allow_transparency_ = allow;
 
   SetTransparency(GetGuestMainFrame());
+}
+
+void WebViewGuest::SetAudioMuted(bool mute) {
+  CHECK(web_contents());
+  CHECK(owner_web_contents());
+
+  // Only update the muted state if the owner WebContents is not muted to
+  // prevent the guest frame from ignoring the muted state of the owner.
+  is_audio_muted_ = mute;
+  if (owner_web_contents()->IsAudioMuted()) {
+    return;
+  }
+  web_contents()->SetAudioMuted(is_audio_muted_);
+}
+
+bool WebViewGuest::IsAudioMuted() {
+  CHECK(web_contents());
+  return web_contents()->IsAudioMuted();
 }
 
 void WebViewGuest::SetTransparency(

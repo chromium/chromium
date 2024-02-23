@@ -95,9 +95,10 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   }
 
   void DidUpdateAudioMutingState(bool muted) override {
-    if (IsGuestInitialized()) {
-      guest_->web_contents()->SetAudioMuted(muted);
+    if (!IsGuestInitialized()) {
+      return;
     }
+    guest_->OnOwnerAudioMutedStateUpdated(muted);
   }
 
  private:
@@ -506,6 +507,11 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
   // queued events.
   SignalWhenReady(base::BindOnce(&GuestViewBase::DidAttach,
                                  weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GuestViewBase::OnOwnerAudioMutedStateUpdated(bool muted) {
+  CHECK(web_contents());
+  web_contents()->SetAudioMuted(muted);
 }
 
 void GuestViewBase::SignalWhenReady(base::OnceClosure callback) {
