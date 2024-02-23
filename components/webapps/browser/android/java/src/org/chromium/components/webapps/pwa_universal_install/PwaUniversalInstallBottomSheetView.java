@@ -17,6 +17,7 @@ import android.widget.LinearLayout.LayoutParams;
 
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** The view portion of the PWA Universal Install bottom sheet. */
 public class PwaUniversalInstallBottomSheetView {
@@ -62,8 +63,15 @@ public class PwaUniversalInstallBottomSheetView {
                                         context.getResources().getDisplayMetrics())));
 
         if (arrowId != 0) {
-            ((ImageView) mContentView.findViewById(R.id.arrow_install)).setImageResource(arrowId);
-            ((ImageView) mContentView.findViewById(R.id.arrow_shortcut)).setImageResource(arrowId);
+            ImageView installArrow = mContentView.findViewById(R.id.arrow_install);
+            ImageView shortcutArrow = mContentView.findViewById(R.id.arrow_shortcut);
+            installArrow.setImageResource(arrowId);
+            shortcutArrow.setImageResource(arrowId);
+            if (LocalizationUtils.isLayoutRtl()) {
+                // Flip the image horizontally, so that the arrow points the right way for RTL.
+                installArrow.setScaleX(-1);
+                shortcutArrow.setScaleX(-1);
+            }
         }
         if (installOverlayId != 0 && shortcutOverlayId != 0) {
             ((ImageView) mContentView.findViewById(R.id.install_icon_overlay))
