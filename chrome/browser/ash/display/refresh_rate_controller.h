@@ -8,6 +8,7 @@
 #include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/game_mode/game_mode_controller.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 
 namespace ash {
@@ -23,9 +24,10 @@ using GameMode = ash::ResourcedClient::GameMode;
 // battery saver mode is also active. For high-refresh rate devices, the refresh
 // rate will be throttled while on battery, except when Borealis game mode is
 // active.
-class RefreshRateController
-    : public PowerStatus::Observer,
-      public game_mode::GameModeController::Observer {
+class RefreshRateController : public PowerStatus::Observer,
+                              public game_mode::GameModeController::Observer,
+                              public aura::WindowObserver,
+                              public display::DisplayObserver {
  public:
   RefreshRateController(display::DisplayConfigurator* display_configurator,
                         PowerStatus* power_status,
@@ -41,14 +43,20 @@ class RefreshRateController
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
-  // GameModeController::Observer implementation:
-  void OnSetGameMode(GameMode game_mode,
-                     ash::WindowState* window_state) override;
+  // GameModeController::Observer:
+  void OnSetGameMode(GameMode game_mode, WindowState* window_state) override;
+
+  // WindowObserver:
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+
+  // DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
  private:
-  void RefreshState();
-
-  GameMode game_mode_ = GameMode::OFF;
+  void RefreshThrottleState();
+  void RefreshVrrState();
+  display::RefreshRateThrottleState GetDesiredThrottleState();
 
   // Not owned.
   raw_ptr<display::DisplayConfigurator> display_configurator_;
@@ -60,6 +68,9 @@ class RefreshRateController
   base::ScopedObservation<game_mode::GameModeController,
                           game_mode::GameModeController::Observer>
       game_mode_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      borealis_window_observer_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<RefreshRateController> weak_ptr_factory_{this};
 };

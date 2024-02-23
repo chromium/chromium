@@ -207,16 +207,18 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleOnAC) {
 }
 
 TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
-  constexpr int64_t kDisplayId = 12345;
+  const int64_t display_id = GetPrimaryDisplay().id();
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
-      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  ScopedSetInternalDisplayIds set_internal(display_id);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
   // Expect the initial state to be 120 Hz.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
@@ -231,22 +233,26 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
 
   // Expect the new state to be 60Hz.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
   }
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
 
   // Expect the new state to still be 60Hz.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
   }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
 }
 
 TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
@@ -279,17 +285,20 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnBattery) {
   }
 }
 
-TEST_F(RefreshRateControllerTest, ShouldNotThrottleForBorealis) {
-  constexpr int64_t kDisplayId = 12345;
+TEST_F(RefreshRateControllerTest,
+       ShouldNotThrottleForBorealisOnInternalDisplay) {
+  const int64_t display_id = GetPrimaryDisplay().id();
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
-      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  ScopedSetInternalDisplayIds set_internal(display_id);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
   // Expect the initial state to be 120 Hz.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
@@ -302,25 +311,184 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleForBorealis) {
 
   // Expect the new state to be 60 Hz.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
   }
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
 
   // Expect the new state to be 120 Hz.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_NE(snapshot->current_mode(), nullptr);
     EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
   }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
 }
 
-TEST_F(RefreshRateControllerTest, ShouldNotAffectExternalDisplay) {
+TEST_F(RefreshRateControllerTest,
+       ThrottlingUnaffectedForBorealisOnExternalDisplay) {
+  constexpr int64_t internal_id = 12345;
+  const int64_t external_id = GetPrimaryDisplay().id();
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      external_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
+  SetUpDisplays(std::move(snapshots));
+  ScopedSetInternalDisplayIds set_internal(internal_id);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
+
+  // Expect the initial state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+
+  // Set power state to indicate the device is on battery.
+  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
+      PowerSupplyProperties::DISCONNECTED, 80.0f));
+  controller_->OnPowerStatusChanged();
+
+  // Expect the new state to be 60 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+
+  // Set the game mode to indicate the user is gaming on the external display.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
+
+  // Expect the state to be unaffected.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(internal_id);
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
+}
+
+TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenBorealisWindowMoves) {
+  UpdateDisplay("300x200,300x200");
+  const display::Display primary = GetPrimaryDisplay();
+  const display::Display secondary = GetSecondaryDisplay();
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      primary.id(), display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      secondary.id(), display::DISPLAY_CONNECTION_TYPE_HDMI));
+  SetUpDisplays(std::move(snapshots));
+  ScopedSetInternalDisplayIds set_internal(primary.id());
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(secondary.work_area()));
+  ASSERT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
+      secondary.id());
+
+  // Set power state to indicate the device is on battery.
+  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
+      PowerSupplyProperties::DISCONNECTED, 80.0f));
+  controller_->OnPowerStatusChanged();
+
+  // Set the game mode to indicate the user is gaming on the external display.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
+
+  // Expect the state to be 60Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(primary.id());
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+
+  // Move the borealis window to the internal display.
+  window->SetBoundsInScreen(primary.work_area(), primary);
+  ASSERT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
+      primary.id());
+
+  // Expect the new state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(primary.id());
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
+}
+
+TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenDisplaysChange) {
+  UpdateDisplay("300x200,300x200");
+  const display::Display internal = GetPrimaryDisplay();
+  const display::Display external = GetSecondaryDisplay();
+  std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      internal.id(), display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+  snapshots.push_back(BuildDualRefreshPanelSnapshot(
+      external.id(), display::DISPLAY_CONNECTION_TYPE_HDMI));
+  SetUpDisplays(std::move(snapshots));
+  ScopedSetInternalDisplayIds set_internal(internal.id());
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(external.work_area()));
+  ASSERT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
+      external.id());
+
+  // Set power state to indicate the device is on battery.
+  PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
+      PowerSupplyProperties::DISCONNECTED, 80.0f));
+  controller_->OnPowerStatusChanged();
+
+  // Set the game mode to indicate the user is gaming on the external display.
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
+
+  // Expect the state to be 60Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(internal.id());
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 60.f);
+  }
+
+  // Swap displays causing borealis window to move to the internal display.
+  SwapPrimaryDisplay();
+  ASSERT_EQ(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
+      internal.id());
+
+  // Expect the new state to be 120 Hz.
+  {
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(internal.id());
+    ASSERT_NE(snapshot, nullptr);
+    ASSERT_NE(snapshot->current_mode(), nullptr);
+    EXPECT_EQ(snapshot->current_mode()->refresh_rate(), 120.f);
+  }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
+}
+
+TEST_F(RefreshRateControllerTest, ShouldNotThrottleExternalDisplay) {
   constexpr int64_t kDisplayId = 12345;
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
@@ -381,56 +549,66 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleOnUSBCharger) {
 }
 
 TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
-  constexpr int64_t kDisplayId = 12345;
+  const int64_t display_id = GetPrimaryDisplay().id();
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildVrrPanelSnapshot(
-      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  ScopedSetInternalDisplayIds set_internal(display_id);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
   // Expect VRR to be initially disabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_TRUE(snapshot->IsVrrCapable());
     EXPECT_FALSE(snapshot->IsVrrEnabled());
   }
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
 
   // Expect the new state to have VRR enabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     EXPECT_TRUE(snapshot->IsVrrEnabled());
   }
 
   // Reset the game mode.
-  game_mode_controller_->NotifySetGameMode(GameMode::OFF, nullptr);
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
 
   // Expect the new state to have VRR disabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     EXPECT_FALSE(snapshot->IsVrrEnabled());
   }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
 }
 
 TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
-  constexpr int64_t kDisplayId = 12345;
+  const int64_t display_id = GetPrimaryDisplay().id();
   std::vector<std::unique_ptr<DisplaySnapshot>> snapshots;
   snapshots.push_back(BuildVrrPanelSnapshot(
-      kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
+      display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  ScopedSetInternalDisplayIds set_internal(kDisplayId);
+  ScopedSetInternalDisplayIds set_internal(display_id);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
+                                           ash::WindowState::Get(window.get()));
 
   // Expect the initial state to have VRR enabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     ASSERT_TRUE(snapshot->IsVrrCapable());
     EXPECT_TRUE(snapshot->IsVrrEnabled());
@@ -445,10 +623,13 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
 
   // Expect the new state to have VRR disabled.
   {
-    const DisplaySnapshot* snapshot = GetDisplaySnapshot(kDisplayId);
+    const DisplaySnapshot* snapshot = GetDisplaySnapshot(display_id);
     ASSERT_NE(snapshot, nullptr);
     EXPECT_FALSE(snapshot->IsVrrEnabled());
   }
+
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF,
+                                           ash::WindowState::Get(window.get()));
 }
 
 }  // namespace
