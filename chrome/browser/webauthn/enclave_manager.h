@@ -258,9 +258,9 @@ class EnclaveManager : public KeyedService {
   // Can be called at any point to serialise the current value of `local_state_`
   // to disk. Only a single write happens at a time. If a write is already
   // happening, the request will be queued. If a request is already queued, this
-  // call will be ignored.
+  // call will replace that queued write.
   void WriteState();
-  void DoWriteState();
+  void DoWriteState(std::string serialized);
   void WriteStateComplete(bool success);
 
   void GenerateHardwareKey(
@@ -284,7 +284,7 @@ class EnclaveManager : public KeyedService {
   std::unique_ptr<CoreAccountInfo> primary_account_info_;
   std::unique_ptr<IdentityObserver> identity_observer_;
 
-  bool need_write_ = false;
+  std::optional<std::string> pending_write_;
   bool currently_writing_ = false;
   base::OnceClosure write_finished_callback_;
   std::unique_ptr<StoreKeysArgs> store_keys_args_;

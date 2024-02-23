@@ -1927,23 +1927,23 @@ void EnclaveManager::WriteState() {
         << "State invariant failed on line " << *error_line;
   }
 
-  if (currently_writing_) {
-    need_write_ = true;
-    return;
-  }
-
-  DoWriteState();
-}
-
-void EnclaveManager::DoWriteState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   std::string serialized;
   serialized.reserve(1024);
   local_state_->AppendToString(&serialized);
   const std::array<uint8_t, crypto::kSHA256Length> digest =
       crypto::SHA256Hash(base::as_bytes(base::make_span(serialized)));
   serialized.append(digest.begin(), digest.end());
+
+  if (currently_writing_) {
+    pending_write_ = std::move(serialized);
+    return;
+  }
+
+  DoWriteState(std::move(serialized));
+}
+
+void EnclaveManager::DoWriteState(std::string serialized) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   currently_writing_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -1968,9 +1968,9 @@ void EnclaveManager::WriteStateComplete(bool success) {
     FIDO_LOG(ERROR) << "Failed to write enclave state";
   }
 
-  if (need_write_) {
-    need_write_ = false;
-    DoWriteState();
+  if (pending_write_) {
+    DoWriteState(std::move(*pending_write_));
+    pending_write_.reset();
     return;
   }
 
