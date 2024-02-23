@@ -116,9 +116,9 @@ std::string PopString(content::DOMMessageQueue* message_queue) {
 
 using ::testing::HasSubstr;
 
-class CorbAndCorsExtensionTestBase : public ExtensionBrowserTest {
+class OrbAndCorsExtensionTestBase : public ExtensionBrowserTest {
  public:
-  CorbAndCorsExtensionTestBase() = default;
+  OrbAndCorsExtensionTestBase() = default;
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
@@ -172,14 +172,14 @@ class ServiceWorkerConsoleObserver
       scoped_observation_{this};
 };
 
-class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
+class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
  public:
-  CorbAndCorsExtensionBrowserTest() = default;
+  OrbAndCorsExtensionBrowserTest() = default;
 
-  CorbAndCorsExtensionBrowserTest(const CorbAndCorsExtensionBrowserTest&) =
+  OrbAndCorsExtensionBrowserTest(const OrbAndCorsExtensionBrowserTest&) =
       delete;
-  CorbAndCorsExtensionBrowserTest& operator=(
-      const CorbAndCorsExtensionBrowserTest&) = delete;
+  OrbAndCorsExtensionBrowserTest& operator=(
+      const OrbAndCorsExtensionBrowserTest&) = delete;
 
   void SetUpInProcessBrowserTestFixture() override {
     policy_provider_.SetDefaultReturns(
@@ -271,7 +271,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         std::make_unique<content::ResourceLoadObserver>(web_contents);
   }
 
-  void VerifyFetchWasBlockedByCorb(const GURL& url) {
+  void VerifyFetchWasBlockedByOrb(const GURL& url) {
     // The test must setup resource_load_observer_ for the appropriate web
     // contents before calling this method.
     EXPECT_TRUE(resource_load_observer_);
@@ -290,7 +290,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     }
   }
 
-  void VerifyFetchWasAllowedByCorb(const GURL& url) {
+  void VerifyFetchWasAllowedByOrb(const GURL& url) {
     // The test must setup resource_load_observer_ for the appropriate web
     // contents before calling this method.
     EXPECT_TRUE(resource_load_observer_);
@@ -308,18 +308,18 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
                     ));
   }
 
-  void VerifyCorbWasDisabled(const GURL& url) {
-    // If CORB/ORB doesn't apply, it should not block any request.
-    VerifyFetchWasAllowedByCorb(url);
+  void VerifyOrbWasDisabled(const GURL& url) {
+    // If ORB doesn't apply, it should not block any request.
+    VerifyFetchWasAllowedByOrb(url);
   }
 
-  // Verifies that fetching a CORB-eligible resource from a content script will
+  // Verifies that fetching a ORB-eligible resource from a content script will
   // be blocked by CORS.
   //
-  // This verification helper might not work for non-CORB-eligible resources
-  // like MIME types not covered by CORB (e.g. application/octet-stream) or
+  // This verification helper might not work for non-ORB-eligible resources
+  // like MIME types not covered by ORB (e.g. application/octet-stream) or
   // same-origin responses.
-  void VerifyCorbEligibleFetchFromContentScript(
+  void VerifyOrbEligibleFetchFromContentScript(
       const content::WebContentsConsoleObserver& console_observer,
       const std::string& actual_fetch_result,
       const std::string& expected_fetch_result) {
@@ -329,23 +329,23 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     EXPECT_EQ(kCorsErrorWhenFetching, actual_fetch_result);
     VerifyFetchWasBlockedByCors(console_observer);
 
-    // No verification if the request was blocked by CORB, because
-    // 1) once request_initiator is trustworthy, CORB should only
+    // No verification if the request was blocked by ORB, because
+    // 1) once request_initiator is trustworthy, ORB should only
     //    apply to no-cors requests
-    // 2) some CORS-blocked requests may not reach CORB/response-started
+    // 2) some CORS-blocked requests may not reach ORB/response-started
     //    stage at all (e.g. if CORS blocks a redirect).
 
     // TODO(lukasza): Verify that the request was made in CORS mode (e.g.
     // included an Origin header).
   }
 
-  void VerifyNonCorbElligibleFetchFromContentScript(
+  void VerifyNonOrbElligibleFetchFromContentScript(
       const GURL& url,
       const content::WebContentsConsoleObserver& console_observer,
       const std::string& actual_fetch_result,
       const std::string& expected_fetch_result_prefix) {
-    // Verify that CORB allowed the response.
-    VerifyFetchWasAllowedByCorb(url);
+    // Verify that ORB allowed the response.
+    VerifyFetchWasAllowedByOrb(url);
 
     // Verify that the response body was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, actual_fetch_result);
@@ -421,7 +421,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
                                     content::WebContents* web_contents) {
     return FetchHelper(
         url, web_contents,
-        base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteContentScript,
+        base::BindOnce(&OrbAndCorsExtensionBrowserTest::ExecuteContentScript,
                        base::Unretained(this), base::Unretained(web_contents)));
   }
 
@@ -449,7 +449,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         url,
         content::WebContents::FromRenderFrameHost(
             execution_target.render_frame_host()),
-        base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteRegularScript,
+        base::BindOnce(&OrbAndCorsExtensionBrowserTest::ExecuteRegularScript,
                        base::Unretained(this),
                        execution_target.render_frame_host()));
   }
@@ -460,7 +460,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
                                   content::RenderFrameHost* parent_frame) {
     return FetchHelper(
         url, content::WebContents::FromRenderFrameHost(parent_frame),
-        base::BindOnce(&CorbAndCorsExtensionBrowserTest::ExecuteInSrcDocFrame,
+        base::BindOnce(&OrbAndCorsExtensionBrowserTest::ExecuteInSrcDocFrame,
                        base::Unretained(this), base::Unretained(parent_frame)));
   }
 
@@ -550,8 +550,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   // The function should return true if script execution started successfully.
   //
   // Currently used "implementations":
-  // - CorbAndCorsExtensionBrowserTest::ExecuteContentScript(web_contents)
-  // - CorbAndCorsExtensionBrowserTest::ExecuteRegularScript(web_contents)
+  // - OrbAndCorsExtensionBrowserTest::ExecuteContentScript(web_contents)
+  // - OrbAndCorsExtensionBrowserTest::ExecuteRegularScript(web_contents)
   // - ExecuteScriptInBackgroundPageNoWait(profile, ext_id)
   using FetchCallback =
       base::OnceCallback<bool(const std::string& fetch_script)>;
@@ -574,7 +574,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
   std::unique_ptr<content::ResourceLoadObserver> resource_load_observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromDeclarativeContentScript_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL cross_site_resource(
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Test case #1: Declarative script injected after a browser-initiated
   // navigation of the main frame.
   {
-    // Monitor CORB behavior + result of the fetch.
+    // Monitor ORB behavior + result of the fetch.
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     content::DOMMessageQueue message_queue(active_web_contents());
 
@@ -605,15 +605,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
-    // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+    // VerifyOrbEligibleFetchFromContentScript).
+    VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                              "nosniff.xml - body\n");
   }
 
   // Test case #2: Declarative script injected after a renderer-initiated
   // creation of an about:blank frame.
   {
-    // Monitor CORB behavior + result of the fetch.
+    // Monitor ORB behavior + result of the fetch.
     content::WebContentsConsoleObserver console_observer(active_web_contents());
     content::DOMMessageQueue message_queue(active_web_contents());
 
@@ -630,17 +630,17 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
-    // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+    // VerifyOrbEligibleFetchFromContentScript).
+    VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                              "nosniff.xml - body\n");
   }
 }
 
 // Test that verifies the current, baked-in (but not necessarily desirable
 // behavior) where a content script injected by an extension can bypass
-// CORS (and CORB) for any hosts the extension has access to.
+// CORS (and ORB) for any hosts the extension has access to.
 // See also https://crbug.com/846346.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -665,14 +665,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
-  // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+  // VerifyOrbEligibleFetchFromContentScript).
+  VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                            "nosniff.xml - body\n");
 }
 
 // Tests that extension permission to bypass CORS is revoked after the extension
 // is unloaded.  See also https://crbug.com/843381.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_UnloadedExtension) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const extensions::Extension* extension = InstallExtension();
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     content::ExecuteScriptAsync(active_web_contents(), kFetchInitiatingScript);
     std::string fetch_result = PopString(&queue);
 
-    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+    VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                              "nosniff.xml - body\n");
   }
 
@@ -755,16 +755,16 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     content::ExecuteScriptAsync(active_web_contents(), kFetchInitiatingScript);
     std::string fetch_result = PopString(&queue);
 
-    // Verify that the fetch was blocked by CORS.  (CORB only applies to
+    // Verify that the fetch was blocked by CORS.  (ORB only applies to
     // `no-cors` requests.)
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     VerifyFetchWasBlockedByCors(console_observer);
-    VerifyFetchWasAllowedByCorb(cross_site_resource);
+    VerifyFetchWasAllowedByOrb(cross_site_resource);
   }
 }
 
 // Test that <all_urls> permission does not apply to hosts blocked by policy.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ContentScriptVsHostBlockedByPolicy_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtensionWithPermissionToAllUrls());
@@ -796,8 +796,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
-    // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+    // VerifyOrbEligibleFetchFromContentScript).
+    VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                              "nosniff.xml - body\n");
   }
 
@@ -812,16 +812,16 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string fetch_result =
         FetchViaContentScript(cross_site_resource, active_web_contents());
 
-    // Verify that the fetch was blocked by CORS.  (CORB only applies to
+    // Verify that the fetch was blocked by CORS.  (ORB only applies to
     // `no-cors` requests.)
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
     VerifyFetchWasBlockedByCors(console_observer);
-    VerifyFetchWasAllowedByCorb(cross_site_resource);
+    VerifyFetchWasAllowedByOrb(cross_site_resource);
   }
 }
 
 // Test that <all_urls> permission does not apply to hosts blocked by policy.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ContentScriptVsHostBlockedByPolicy_AllowedTextResource) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtensionWithPermissionToAllUrls());
@@ -852,9 +852,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string fetch_result =
         FetchViaContentScript(cross_site_resource, active_web_contents());
 
-    // Verify that the fetch was allowed by CORB.  CORS expectations differ
+    // Verify that the fetch was allowed by ORB.  CORS expectations differ
     // depending on exact scenario.
-    VerifyNonCorbElligibleFetchFromContentScript(
+    VerifyNonOrbElligibleFetchFromContentScript(
         cross_site_resource, console_observer, fetch_result,
         "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
   }
@@ -872,15 +872,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify that the fetch was blocked by CORS.
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
-    VerifyFetchWasAllowedByCorb(cross_site_resource);
+    VerifyFetchWasAllowedByOrb(cross_site_resource);
     VerifyFetchWasBlockedByCors(console_observer);
   }
 }
 
-class CorbAndCorsUserHostRestrictionsBrowserTest
-    : public CorbAndCorsExtensionBrowserTest {
+class OrbAndCorsUserHostRestrictionsBrowserTest
+    : public OrbAndCorsExtensionBrowserTest {
  public:
-  CorbAndCorsUserHostRestrictionsBrowserTest() {
+  OrbAndCorsUserHostRestrictionsBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         extensions_features::kExtensionsMenuAccessControl,
         extensions_features::kExtensionsMenuAccessControlWithPermittedSites};
@@ -891,7 +891,7 @@ class CorbAndCorsUserHostRestrictionsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsUserHostRestrictionsBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsUserHostRestrictionsBrowserTest,
                        PolicyVsUserHostRestrictions) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtensionWithPermissionToAllUrls());
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsUserHostRestrictionsBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_PermissionToAllUrls) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtensionWithPermissionToAllUrls());
@@ -962,15 +962,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
-  // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+  // VerifyOrbEligibleFetchFromContentScript).
+  VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                            "nosniff.xml - body\n");
 }
 // Verification that granting file access to extensions doesn't relax CORS in
 // case of requests to file: URLs (even from content scripts of extensions with
 // <all_urls> permission).  See also https://crbug.com/1049604#c14.
 IN_PROC_BROWSER_TEST_F(
-    CorbAndCorsExtensionBrowserTest,
+    OrbAndCorsExtensionBrowserTest,
     FromProgrammaticContentScript_PermissionToAllUrls_FileUrls) {
   // Install the extension and verify that the extension has access to file URLs
   // (<all_urls> permission is not sufficient - the extension has to be
@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(
     // FileURLLoaderFactory.
     EXPECT_EQ("XHR ERROR", xhr_result);
     VerifyFetchWasBlockedByCors(console_observer);
-    VerifyFetchWasAllowedByCorb(same_dir_resource);
+    VerifyFetchWasAllowedByOrb(same_dir_resource);
   }
 
   // Inject a content script that performs a cross-origin XHR from another file:
@@ -1045,13 +1045,13 @@ IN_PROC_BROWSER_TEST_F(
     // and was granted file access).
     EXPECT_EQ("XHR ERROR", xhr_result);
     VerifyFetchWasBlockedByCors(console_observer);
-    VerifyFetchWasAllowedByCorb(same_dir_resource);
+    VerifyFetchWasAllowedByOrb(same_dir_resource);
   }
 }
 
-// Coverage of *.subdomain.com extension permissions for CORB-eligible fetches
+// Coverage of *.subdomain.com extension permissions for ORB-eligible fetches
 // (via nosniff.xml).
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_SubdomainPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1080,17 +1080,17 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify whether the fetch worked or not (expectations differ depending on
     // various factors - see the body of
-    // VerifyCorbEligibleFetchFromContentScript).
-    VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+    // VerifyOrbEligibleFetchFromContentScript).
+    VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                              "nosniff.xml - body\n");
   }
 }
 
 // Test that verifies the current, baked-in (but not necessarily desirable
 // behavior) where a content script injected by an extension can bypass
-// CORS (and CORB) for any hosts the extension has access to.
+// CORS (and ORB) for any hosts the extension has access to.
 // See also https://crbug.com/1034408 and https://crbug.com/846346.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_RedirectToNoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1118,14 +1118,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
-  // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+  // VerifyOrbEligibleFetchFromContentScript).
+  VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                            "nosniff.xml - body\n");
 }
 
 // Test that verifies CORS-allowed fetches work for targets that are not
 // covered by the extension permissions.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ContentScript_CorsAllowedByServer_NoPermissionToTarget) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1151,12 +1151,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // Verify that the fetch succeeded (because of the server's
   // Access-Control-Allow-Origin response header).
   EXPECT_EQ("cors-ok.txt - body\n", fetch_result);
-  VerifyFetchWasAllowedByCorb(cross_site_resource);
+  VerifyFetchWasAllowedByOrb(cross_site_resource);
 }
 
-// Test that verifies that CORS blocks non-CORB-eligible fetches for targets
+// Test that verifies that CORS blocks non-ORB-eligible fetches for targets
 // that are not covered by the extension permissions.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ContentScript_CorsIgnoredByServer_NoPermissionToTarget) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1186,15 +1186,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
   VerifyFetchWasBlockedByCors(console_observer);
 
-  // Verify that the fetch was allowed by CORB (because CORB doesn't apply to
+  // Verify that the fetch was allowed by ORB (because ORB doesn't apply to
   // CORS requests).
-  VerifyFetchWasAllowedByCorb(cross_site_resource);
+  VerifyFetchWasAllowedByOrb(cross_site_resource);
 }
 
 // Tests that same-origin fetches (same-origin relative to the webpage the
 // content script is injected into) are allowed.  See also
 // https://crbug.com/918660.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_SameOrigin) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1219,12 +1219,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify that no blocking occurred.
   EXPECT_THAT(fetch_result, ::testing::StartsWith("nosniff.xml - body"));
-  VerifyFetchWasAllowedByCorb(same_origin_resource);
+  VerifyFetchWasAllowedByOrb(same_origin_resource);
 }
 
-// Test that responses that would have been allowed by CORB anyway are not
+// Test that responses that would have been allowed by ORB anyway are not
 // reported to LogInitiatorSchemeBypassingDocumentBlocking.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_AllowedTextResource) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1248,9 +1248,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   std::string fetch_result =
       FetchViaContentScript(cross_site_resource, active_web_contents());
 
-  // Verify that the fetch was allowed by CORB.  CORS expectations differ
+  // Verify that the fetch was allowed by ORB.  CORS expectations differ
   // depending on exact scenario.
-  VerifyNonCorbElligibleFetchFromContentScript(
+  VerifyNonOrbElligibleFetchFromContentScript(
       cross_site_resource, console_observer, fetch_result,
       "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
 }
@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 //
 // (Specifically, this makes sure RFHI is passing the correct factory
 // parameter to URLLoaderFactoryParamsHelper::CreateForIsolatedWorld.)
-class TrustTokenExtensionBrowserTest : public CorbAndCorsExtensionBrowserTest {
+class TrustTokenExtensionBrowserTest : public OrbAndCorsExtensionBrowserTest {
  public:
   TrustTokenExtensionBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -1341,10 +1341,10 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-// Coverage of *.subdomain.com extension permissions for non-CORB eligible
+// Coverage of *.subdomain.com extension permissions for non-ORB eligible
 // fetches (via save_page/text.txt).
 IN_PROC_BROWSER_TEST_F(
-    CorbAndCorsExtensionBrowserTest,
+    OrbAndCorsExtensionBrowserTest,
     FromProgrammaticContentScript_AllowedTextResource_SubdomainPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1374,16 +1374,16 @@ IN_PROC_BROWSER_TEST_F(
     std::string fetch_result =
         FetchViaContentScript(allowed_url, active_web_contents());
 
-    // Verify that CORB sniffing allowed the response.
-    VerifyNonCorbElligibleFetchFromContentScript(
+    // Verify that ORB sniffing allowed the response.
+    VerifyNonOrbElligibleFetchFromContentScript(
         allowed_url, console_observer, fetch_result,
         "text-object.txt: ae52dd09-9746-4b7e-86a6-6ada5e2680c2");
   }
 }
 
-// Test that responses that would have been allowed by CORB after sniffing are
-// included in the AllowedByCorbButNotCors UMA.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+// Test that responses that would have been allowed by ORB after sniffing are
+// included in the AllowedByOrbButNotCors UMA.
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_AllowedAfterSniffing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1408,14 +1408,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   std::string fetch_result =
       FetchViaContentScript(cross_site_resource, active_web_contents());
 
-  // Verify that CORB sniffing allowed the response.
-  VerifyNonCorbElligibleFetchFromContentScript(
+  // Verify that ORB sniffing allowed the response.
+  VerifyNonOrbElligibleFetchFromContentScript(
       cross_site_resource, console_observer, fetch_result, "\xEF\xBF\xBDPNG");
 }
 
-// Test that responses are blocked by CORB, but have empty response body are not
+// Test that responses are blocked by ORB, but have empty response body are not
 // reported to LogInitiatorSchemeBypassingDocumentBlocking.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromProgrammaticContentScript_EmptyAndBlocked) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1440,14 +1440,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
   // Verify whether the fetch worked or not (expectations differ depending on
   // various factors - see the body of
-  // VerifyCorbEligibleFetchFromContentScript).
-  VerifyCorbEligibleFetchFromContentScript(console_observer, fetch_result,
+  // VerifyOrbEligibleFetchFromContentScript).
+  VerifyOrbEligibleFetchFromContentScript(console_observer, fetch_result,
                                            "" /* expected_response_body */);
 }
 
 // Test that requests from an extension background page use relaxed CORS
 // processing.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1470,11 +1470,11 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 
     // Verify that no blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
-    VerifyCorbWasDisabled(cross_site_resource);
+    VerifyOrbWasDisabled(cross_site_resource);
   }
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_NoSniffXml_OriginAccessList) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1503,9 +1503,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
             network::cors::OriginAccessList::AccessState::kAllowed);
 }
 
-// Test that requests from an extension background page use relaxed CORB
+// Test that requests from an extension background page use relaxed ORB
 // processing in `no-cors` mode.  See also https://crbug.com/1252173.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_NoSniffXml_NoCors) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1535,10 +1535,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 }
 
-// Test that requests from an extension background page use relaxed CORB
+// Test that requests from an extension background page use relaxed ORB
 // processing.  This test covers split-mode extensions - see:
 // https://developer.chrome.com/docs/extensions/mv2/manifest/incognito/#split)
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_IncognitoSplitMode) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1603,15 +1603,15 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   }
 }
 
-// Test that CORB+CORS are enforced for extensions with no permissions to
+// Test that ORB+CORS are enforced for extensions with no permissions to
 // http/https origins.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ExtensionWithNoHttpPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // "permission" entry in the manifest below mimics the PDF extension which
   // has no permissions to http/https origins (and therefore doesn't care
-  // about relaxed CORB and/or CORS).
+  // about relaxed ORB and/or CORS).
   const char kManifest[] = R"(
       {
         "name": "CrossOriginReadBlockingTest - Extension",
@@ -1640,8 +1640,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     // the test setup, rather than the behavior this test was created for.
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
 
-    // CORB only applies to `no-cors` requests.
-    VerifyFetchWasAllowedByCorb(cross_site_resource1);
+    // ORB only applies to `no-cors` requests.
+    VerifyFetchWasAllowedByOrb(cross_site_resource1);
   }
 
   // Perform a cross-origin `no-cors` request from the background page.
@@ -1680,13 +1680,13 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     } else {
       EXPECT_EQ(fetch_result, "");
     }
-    VerifyFetchWasBlockedByCorb(cross_site_resource2);
+    VerifyFetchWasBlockedByOrb(cross_site_resource2);
   }
 }
 
-// Test that CORB+CORS are enforced for extensions with optional permissions to
+// Test that ORB+CORS are enforced for extensions with optional permissions to
 // http/https origins.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ExtensionWithOptionalHttpPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1722,8 +1722,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string fetch_result = FetchViaFrame(cross_site_url, test_frame);
     EXPECT_EQ(kCorsErrorWhenFetching, fetch_result);
 
-    // In presence of optional HTTP permissions CORB is disabled.
-    VerifyCorbWasDisabled(cross_site_url);
+    // In presence of optional HTTP permissions ORB is disabled.
+    VerifyOrbWasDisabled(cross_site_url);
   }
 
   // Grant the optional permissions to the extension.
@@ -1750,14 +1750,14 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     std::string fetch_result = FetchViaFrame(cross_site_url, test_frame);
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
-    // In presence of optional HTTP permissions CORB is disabled.
-    VerifyCorbWasDisabled(cross_site_url);
+    // In presence of optional HTTP permissions ORB is disabled.
+    VerifyOrbWasDisabled(cross_site_url);
   }
 }
 
 // Test that requests from an extension page hosted in a foreground tab use
-// relaxed CORB processing.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+// relaxed ORB processing.
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromForegroundPage_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -1845,9 +1845,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 }
 
 // Test that requests from an extension page hosted in a foreground tab use
-// relaxed CORB processing.  This test covers split-mode extensions - see:
+// relaxed ORB processing.  This test covers split-mode extensions - see:
 // https://developer.chrome.com/docs/extensions/mv2/manifest/incognito/#split
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromForegroundPage_IncognitoSplitMode) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -1913,10 +1913,10 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 }
 
 // Test that requests from an extension's service worker to the network use
-// relaxed CORB processing (both in the case of requests that 1) are initiated
+// relaxed ORB processing (both in the case of requests that 1) are initiated
 // by the service worker and/or 2) are ignored by the service worker and fall
 // back to the network).
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromRegisteredServiceWorker_NoSniffXml) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -2014,7 +2014,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   FromBackgroundServiceWorker_NoSniffXml
 #endif
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        MAYBE_FromBackgroundServiceWorker_NoSniffXml) {
   // Install the extension with a service worker that can be asked to start a
   // fetch to an arbitrary URL.
@@ -2070,11 +2070,11 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
         content::JsReplace(kFetchTemplate, nosniff_xml_with_permission));
     std::string fetch_result = PopString(&queue);
 
-    // Verify that no CORB or CORS blocking occurred.
+    // Verify that no ORB or CORS blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
 
-    // CORB should be disabled for extension origins.
-    VerifyCorbWasDisabled(nosniff_xml_with_permission);
+    // ORB should be disabled for extension origins.
+    VerifyOrbWasDisabled(nosniff_xml_with_permission);
   }
 
   // Test a request to a website *not* covered by extension permissions.
@@ -2095,8 +2095,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
     console_observer.WaitForMessages();
     VerifyFetchWasBlockedByCors(console_observer);
 
-    // CORB should be disabled for extension origins.
-    VerifyCorbWasDisabled(nosniff_xml_with_permission);
+    // ORB should be disabled for extension origins.
+    VerifyOrbWasDisabled(nosniff_xml_with_permission);
   }
 }
 
@@ -2121,7 +2121,7 @@ class ReadyToCommitWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        ProgrammaticContentScriptVsWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(InstallExtension());
@@ -2213,9 +2213,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   EXPECT_EQ("LOADED", content::EvalJs(active_web_contents(), kScript));
 }
 
-class CorbAndCorsAppBrowserTest : public PlatformAppBrowserTest {
+class OrbAndCorsAppBrowserTest : public PlatformAppBrowserTest {
  public:
-  CorbAndCorsAppBrowserTest() = default;
+  OrbAndCorsAppBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
@@ -2226,7 +2226,7 @@ class CorbAndCorsAppBrowserTest : public PlatformAppBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
+IN_PROC_BROWSER_TEST_F(OrbAndCorsAppBrowserTest, WebViewContentScript) {
   // Load the test app.
   const char kManifest[] = R"(
       {
@@ -2305,12 +2305,12 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsAppBrowserTest, WebViewContentScript) {
 
     std::string fetch_result = PopString(&queue);
 
-    // Verify that no CORB or CORS blocking occurred.
+    // Verify that no ORB or CORS blocking occurred.
     EXPECT_EQ("nosniff.xml - body\n", fetch_result);
   }
 }
 
-using OriginHeaderExtensionBrowserTest = CorbAndCorsExtensionBrowserTest;
+using OriginHeaderExtensionBrowserTest = OrbAndCorsExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
                        OriginHeaderInCrossOriginGetRequest) {
@@ -2455,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(OriginHeaderExtensionBrowserTest,
               ::testing::Not(::testing::HasSubstr("Origin: chrome-extension")));
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        RequestHeaders_InSameOriginFetch_FromContentScript) {
   // Sec-Fetch-Site only works on secure origins - setting up a https test
   // server to help with this.
@@ -2498,7 +2498,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
                              testing::Pair("Sec-Fetch-Site", "same-origin")}));
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        RequestHeaders_InSameOriginXhr_FromContentScript) {
   // Sec-Fetch-Site only works on secure origins - setting up a https test
   // server to help with this.
@@ -2543,7 +2543,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
                              testing::Pair("Sec-Fetch-Site", "same-origin")}));
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest, CorsFromContentScript) {
   std::string cors_resource_path = "/cors-subresource-to-intercept";
   net::test_server::ControllableHttpResponse cors_request(
       embedded_test_server(), cors_resource_path);
@@ -2591,9 +2591,9 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
   cors_request.Send("cors-allowed-body");
   cors_request.Done();
 
-  // Verify that no CORB blocking occurred.
+  // Verify that no ORB blocking occurred.
   //
-  // CORB blocks responses based on Access-Control-Allow-Origin, oblivious to
+  // ORB blocks responses based on Access-Control-Allow-Origin, oblivious to
   // whether the Origin request header was present (and/or if the extension is
   // exempted from CORS).  The Access-Control-Allow-Origin header is compared
   // with the request_initiator of the fetch (the origin of |page_url|) and the
@@ -2602,7 +2602,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
   EXPECT_EQ("cors-allowed-body", fetch_result);
 }
 
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_ActiveTabPermission) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2718,7 +2718,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 // Similar to FromBackgroundPage_ActiveTabPermission, but focues on interaction
 // between the regular background page and the separate incognito background
 // page in "split" mode.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_ActiveTabPermission_SplitMode) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
@@ -2821,7 +2821,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 // steps that (at one point) forced additional, persistent leaking of incognito
 // permission into the regular profile's background page.  See also
 // https://crbug.com/1167262.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_ActiveTabPermission_SplitMode2) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
@@ -2953,7 +2953,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
 // Similar to FromBackgroundPage_ActiveTabPermission, but focues on behavior
 // of the background page when it is shared between the regular and the
 // incognito profiles in "spanning" mode.
-IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
                        FromBackgroundPage_ActiveTabPermission_SpanningMode) {
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"(
