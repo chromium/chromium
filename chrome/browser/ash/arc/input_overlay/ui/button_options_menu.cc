@@ -124,29 +124,20 @@ class DoneButton : public views::LabelButton {
     views::HighlightPathGenerator::Install(
         this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                   gfx::Insets(), /*corner_radius=*/kDoneButtonCornerRadius));
+
+    // Set up highlight and focus ring for `DoneButton`.
+    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                          /*highlight_on_hover=*/false,
+                                          /*highlight_on_focus=*/false);
+    auto* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetHaloInset(kDoneButtonHaloInset);
+    focus_ring->SetHaloThickness(kDoneButtonHaloThickness);
   }
 
   DoneButton(const DoneButton&) = delete;
   DoneButton& operator=(const DoneButton&) = delete;
 
   ~DoneButton() override = default;
-
- private:
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-
-    // Set up highlight and focus ring for `DoneButton`.
-    ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                          /*highlight_on_hover=*/true,
-                                          /*highlight_on_focus=*/false);
-
-    // `StyleUtil::SetUpInkDropForButton()` reinstalls the focus ring, so it
-    // needs to set the focus ring size after calling
-    // `StyleUtil::SetUpInkDropForButton()`.
-    auto* focus_ring = views::FocusRing::Get(this);
-    focus_ring->SetHaloInset(kDoneButtonHaloInset);
-    focus_ring->SetHaloThickness(kDoneButtonHaloThickness);
-  }
 };
 
 BEGIN_METADATA(DoneButton)

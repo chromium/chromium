@@ -78,10 +78,8 @@ constexpr char kHelpUrl[] =
 void UpdateFocusRingOnThemeChanged(views::Button* button) {
   // Set up highlight and focus ring for `button`.
   ash::StyleUtil::SetUpInkDropForButton(
-      /*button=*/button, gfx::Insets(), /*highlight_on_hover=*/true,
-      /*highlight_on_focus=*/true, /*background_color=*/
-      button->GetColorProvider()->GetColor(
-          cros_tokens::kCrosSysHoverOnProminent));
+      /*button=*/button, gfx::Insets(), /*highlight_on_hover=*/false,
+      /*highlight_on_focus=*/false);
 
   // `StyleUtil::SetUpInkDropForButton()` reinstalls the focus ring, so it
   // needs to set the focus ring size after calling
@@ -148,6 +146,9 @@ class EditingList::AddContainerButton : public views::Button {
     views::HighlightPathGenerator::Install(
         add_button_, std::make_unique<views::RoundRectHighlightPathGenerator>(
                          gfx::Insets(), kAddButtonCornerRadius));
+
+    UpdateFocusRingOnThemeChanged(this);
+    UpdateFocusRingOnThemeChanged(add_button_);
   }
 
   AddContainerButton(const AddContainerButton&) = delete;
@@ -186,14 +187,6 @@ class EditingList::AddContainerButton : public views::Button {
   void OnTitleChanged() {
     CHECK(add_button_);
     add_button_->SetTooltipText(title_->GetText());
-  }
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-
-    UpdateFocusRingOnThemeChanged(this);
-    UpdateFocusRingOnThemeChanged(add_button_);
   }
 
   // Owned by views hierarchy.
