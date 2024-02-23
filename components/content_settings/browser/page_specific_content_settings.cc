@@ -1180,9 +1180,8 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
   // Camera and/or Mic permission request could auto-ignore in case of a page
   // refresh. In this case `OnMediaStreamPermissionSet` should not store media
   // stream state and it should not update activity indicators.
-  if (freeze_indicators_ &&
-      (new_microphone_camera_state.Has(kMicrophoneBlocked) ||
-       new_microphone_camera_state.Has(kCameraBlocked))) {
+  if (freeze_indicators_ && (new_microphone_camera_state.HasAny(
+                                {kMicrophoneBlocked, kCameraBlocked}))) {
     return;
   }
 
@@ -1213,7 +1212,6 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
   }
 
   if (microphone_camera_state_ != new_microphone_camera_state) {
-    microphone_camera_state_ = new_microphone_camera_state;
     if (!is_updating_synced_pscs_) {
       base::AutoReset<bool> auto_reset(&is_updating_synced_pscs_, true);
       if (auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture()) {
@@ -1221,6 +1219,21 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
                                                 new_microphone_camera_state);
       }
     }
+
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kLeftHandSideActivityIndicators)) {
+      // Microphone and Camera share an activity indicator view. If a blocked
+      // indicator is displayed, there is no need to re-show it and it will be
+      // reset automatically. An in-use indicator will be shown/hidden in
+      // `OnCapturingStateChanged`.
+      if (microphone_camera_state_.HasAny(
+              {kCameraAccessed, kMicrophoneAccessed})) {
+        return;
+      }
+    }
+
+    microphone_camera_state_ = new_microphone_camera_state;
+
     MaybeUpdateLocationBar();
   }
 

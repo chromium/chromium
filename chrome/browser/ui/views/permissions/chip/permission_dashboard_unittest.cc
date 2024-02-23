@@ -147,9 +147,18 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCamera) {
 
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
-  pscs->OnMediaStreamPermissionSet(GURL("http://a.com"), {});
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
   base::RunLoop().RunUntilIdle();
 
+  ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_CAMERA));
+  EXPECT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing()
+                  [ContentSettingsType::MEDIASTREAM_CAMERA]
+                      .IsRunning());
+
+  pscs->get_indicators_hiding_delay_timer_for_testing()
+      [ContentSettingsType::MEDIASTREAM_CAMERA]
+          .FireNow();
   EXPECT_FALSE(indicator_chip->GetVisible());
   EXPECT_FALSE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
@@ -188,7 +197,20 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraMic) {
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  pscs->OnMediaStreamPermissionSet(GURL("http://a.com"), {});
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
+  // Because indicator is displayed for both camera and mic, disabling only one
+  // does not trigger a delay timer.
+  EXPECT_FALSE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_CAMERA));
+
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, false);
+  ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  pscs->get_indicators_hiding_delay_timer_for_testing()
+      [ContentSettingsType::MEDIASTREAM_MIC]
+          .FireNow();
 
   // Wait for the collapse animation to finish.
   WaitForAnimationCompletion();
@@ -240,25 +262,23 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
 
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
-  pscs->OnMediaStreamPermissionSet(
-      GURL("http://a.com"),
-      {content_settings::PageSpecificContentSettings::kCameraAccessed,
-       content_settings::PageSpecificContentSettings::kMicrophoneAccessed});
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, true);
 
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->is_animating());
   // The indicator stays collapsed.
   EXPECT_FALSE(dashboard_controller->is_verbose());
 
+  EXPECT_TRUE(pscs->GetMicrophoneCameraState().HasAll(
+      {content_settings::PageSpecificContentSettings::kCameraAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneAccessed}));
+
   EXPECT_TRUE(
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  pscs->OnMediaStreamPermissionSet(
-      GURL("http://a.com"),
-      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed});
-  base::RunLoop().RunUntilIdle();
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_CAMERA, false);
+
   EXPECT_TRUE(indicator_chip->GetVisible());
   EXPECT_FALSE(indicator_chip->is_animating());
   // The indicator stays collapsed.
@@ -268,8 +288,14 @@ TEST_F(PermissionDashboardUnitTest, DisplayLHSIndicatorForCameraAndThenMic) {
       pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_TRUE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
 
-  pscs->OnMediaStreamPermissionSet(GURL("http://a.com"), {});
-  base::RunLoop().RunUntilIdle();
+  pscs->OnCapturingStateChanged(ContentSettingsType::MEDIASTREAM_MIC, false);
+  ASSERT_TRUE(pscs->get_indicators_hiding_delay_timer_for_testing().contains(
+      ContentSettingsType::MEDIASTREAM_MIC));
+
+  pscs->get_indicators_hiding_delay_timer_for_testing()
+      [ContentSettingsType::MEDIASTREAM_MIC]
+          .FireNow();
+
   EXPECT_FALSE(indicator_chip->GetVisible());
 }
 #endif

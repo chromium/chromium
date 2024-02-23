@@ -469,6 +469,11 @@ class PageSpecificContentSettings
     return media_blocked_indicator_timer_;
   }
 
+  std::map<ContentSettingsType, base::OneShotTimer>&
+  get_indicators_hiding_delay_timer_for_testing() {
+    return indicators_hiding_delay_timer_;
+  }
+
  private:
   friend class content::PageUserData<PageSpecificContentSettings>;
 
