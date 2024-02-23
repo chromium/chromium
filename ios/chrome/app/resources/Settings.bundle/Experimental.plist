@@ -172,7 +172,6 @@
 				<string></string>
 				<string>promos_manager::Promo::AppStoreRating</string>
 				<string>promos_manager::Promo::DefaultBrowser</string>
-				<string>promos_manager::Promo::Choice</string>
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
 				<string>promos_manager::Promo::OmniboxPosition</string>
 				<string>promos_manager::Promo::DockingPromo</string>
@@ -183,7 +182,6 @@
 				<string>Disabled (No Promos Forced)</string>
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
-				<string>Waffle</string>
 				<string>Post Restore Default Browser Alert</string>
 				<string>Omnibox Position</string>
 				<string>Docking Promo</string>

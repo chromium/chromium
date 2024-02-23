@@ -327,20 +327,6 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
-  if (kIPHiOSChoiceScreenFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->used =
-        EventConfig("choice_screen_used", Comparator(ANY, 0), 365, 365);
-    // Should not be subject to impression limits, as it is a choice the user
-    // has to make.
-    config->trigger =
-        EventConfig("choice_screen_trigger", Comparator(ANY, 0), 365, 365);
-    return config;
-  }
-
   if (kIPHiOSDockingPromoRemindMeLaterFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

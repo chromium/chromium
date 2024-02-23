@@ -142,7 +142,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSShareToolbarItemFeature,
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
-    &kIPHiOSChoiceScreenFeature,
     &kIPHiOSParcelTrackingFeature,
     &kIPHiOSPullToRefreshFeature,
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
