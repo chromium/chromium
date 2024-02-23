@@ -36,7 +36,7 @@ public class HistoryAdapterTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
-        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
+        mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider, false);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
     }

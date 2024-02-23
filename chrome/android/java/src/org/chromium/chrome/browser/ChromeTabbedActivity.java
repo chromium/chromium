@@ -107,6 +107,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
+import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
 import org.chromium.chrome.browser.hub.HubColorScheme;
@@ -1364,6 +1365,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mTabModelSelector.selectModel(/* incognito= */ false);
                 mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
             }
+            // Launch history on an already running instance of Chrome.
+            maybeLaunchHistory();
         }
     }
 
@@ -1761,6 +1764,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 } else {
                     mAppLaunchDrawBlocker.onActiveTabAvailable(isTabNtp);
                 }
+                // Launch history as a resumption of a previous Chrome journey.
+                maybeLaunchHistory();
             }
 
             if (getSavedInstanceState() != null) {
@@ -1825,6 +1830,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
 
         mAppLaunchDrawBlocker.onActiveTabAvailable(isTabRegularNtp(getActivityTab()));
+        // Launch history as a fresh instance of Chrome.
+        maybeLaunchHistory();
     }
 
     private void recordExternalIntentSourceUMA(Intent intent) {
@@ -2088,6 +2095,20 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private boolean useNewColdStartHeuristic() {
         return ChromeFeatureList.sPaintPreviewNewColdStartHeuristic.isEnabled();
+    }
+
+    private void maybeLaunchHistory() {
+        // Can be launched as (1) a fresh instance of Chrome (2) a new intent on an already running
+        // instance of Chrome or (3) a resumption of a previous Chrome journey.
+        if (!ChromeFeatureList.sAppSpecificHistory.isEnabled()) return;
+
+        boolean shouldLaunchHistory =
+                IntentUtils.safeGetBooleanExtra(
+                        getIntent(), IntentHandler.EXTRA_OPEN_HISTORY, false);
+        if (shouldLaunchHistory) {
+            HistoryManagerUtils.showHistoryManager(
+                    this, getActivityTab(), getTabModelSelector().isIncognitoSelected());
+        }
     }
 
     @Override

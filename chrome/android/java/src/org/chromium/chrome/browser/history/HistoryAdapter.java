@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
@@ -41,9 +42,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     // Headers
     private View mPrivacyDisclaimerBottomSpace;
+    private Button mHistoryOpenInChromeButton;
     private Button mClearBrowsingDataButton;
     private HeaderItem mPrivacyDisclaimerHeaderItem;
     private HeaderItem mClearBrowsingDataButtonHeaderItem;
+    private HeaderItem mHistoryOpenInChromeHeaderItem;
 
     // Footers
     private MoreProgressButton mMoreProgressButton;
@@ -58,19 +61,24 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mClearOnNextQueryComplete;
     private boolean mPrivacyDisclaimersVisible;
     private boolean mClearBrowsingDataButtonVisible;
+    private boolean mShowOpenInChromeHeader;
     private String mQueryText = EMPTY_QUERY;
     private String mHostName;
     private String mAppId; // Not used if null i.e. query all entries regardless of app ID
 
     private boolean mDisableScrollToLoadForTest;
 
-    public HistoryAdapter(HistoryContentManager manager, HistoryProvider provider) {
+    public HistoryAdapter(
+            HistoryContentManager manager,
+            HistoryProvider provider,
+            boolean showOpenInChromeHeader) {
         setHasStableIds(true);
         mHistoryProvider = provider;
         mHistoryProvider.setObserver(this);
         mManager = manager;
         mFaviconHelper = new DefaultFaviconHelper();
         mItemViews = new ArrayList<>();
+        mShowOpenInChromeHeader = showOpenInChromeHeader;
     }
 
     /** Called when the activity/native page is destroyed. */
@@ -321,6 +329,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                         clearBrowsingDataButtonContainer.findViewById(
                                 R.id.clear_browsing_data_button);
 
+        if (ChromeFeatureList.sAppSpecificHistory.isEnabled() && mShowOpenInChromeHeader) {
+            ViewGroup historyOpenInChromeButtonContainer = getCctOpenInChromeButtonContainer(null);
+
+            mHistoryOpenInChromeHeaderItem = new HeaderItem(1, historyOpenInChromeButtonContainer);
+            mHistoryOpenInChromeButton =
+                    (Button)
+                            historyOpenInChromeButtonContainer.findViewById(
+                                    R.id.open_full_chrome_history_button);
+        }
+
         updateClearBrowsingDataButtonVisibility();
         setPrivacyDisclaimer();
     }
@@ -334,6 +352,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         Button clearBrowsingDataButton =
                 (Button) viewGroup.findViewById(R.id.clear_browsing_data_button);
         clearBrowsingDataButton.setOnClickListener(v -> mManager.onClearBrowsingDataClicked());
+        return viewGroup;
+    }
+
+    ViewGroup getCctOpenInChromeButtonContainer(ViewGroup parent) {
+        ViewGroup viewGroup =
+                (ViewGroup)
+                        LayoutInflater.from(mManager.getContext())
+                                .inflate(R.layout.open_full_chrome_history_header, parent, true);
+        Button clearBrowsingDataButton =
+                (Button) viewGroup.findViewById(R.id.open_full_chrome_history_button);
+        clearBrowsingDataButton.setOnClickListener(v -> mManager.onOpenFullChromeHistoryClicked());
         return viewGroup;
     }
 
@@ -365,7 +394,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mPrivacyDisclaimersVisible) args.add(mPrivacyDisclaimerHeaderItem);
         if (mClearBrowsingDataButtonVisible) args.add(mClearBrowsingDataButtonHeaderItem);
-
+        if (ChromeFeatureList.sAppSpecificHistory.isEnabled() && mShowOpenInChromeHeader) {
+            args.add(mHistoryOpenInChromeHeaderItem);
+        }
         setHeaders(args.toArray(new HeaderItem[args.size()]));
     }
 

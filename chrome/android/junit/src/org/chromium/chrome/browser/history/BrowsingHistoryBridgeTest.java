@@ -64,7 +64,7 @@ public class BrowsingHistoryBridgeTest {
         // Ensure the app ID passed from BrowsingHistoryBridge is stored in the item
         // object, and later gets passed down when marking the item for removal.
         HistoryContentManager contentManager = mock(HistoryContentManager.class);
-        HistoryAdapter adapter = new HistoryAdapter(contentManager, mBrowsingHistoryBridge);
+        HistoryAdapter adapter = new HistoryAdapter(contentManager, mBrowsingHistoryBridge, false);
         mBrowsingHistoryBridge.setObserver(adapter);
 
         List<HistoryItem> items = new ArrayList<>();

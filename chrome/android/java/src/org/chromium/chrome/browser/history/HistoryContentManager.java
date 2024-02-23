@@ -84,6 +84,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         /** Called to notify when the privacy disclaimer visibility has changed. */
         void onPrivacyDisclaimerHasChanged();
 
+        /** Called after a user clicks the open full Chrome history button. */
+        void onOpenFullChromeHistoryClicked();
+
         /** Called to notify when the user's sign in or pref state has changed. */
         void onUserAccountStateChanged();
 
@@ -189,7 +192,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // explicitly redirects to use regular profile for Incognito case.
         mHistoryAdapter =
                 new HistoryAdapter(
-                        this, sProviderForTests != null ? sProviderForTests : historyProvider);
+                        this,
+                        sProviderForTests != null ? sProviderForTests : historyProvider,
+                        !shouldShowClearDataIfAvailable);
 
         // Create a recycler view.
         mRecyclerView =
@@ -510,6 +515,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     /** Called after a user clicks the clear data button. */
     void onClearBrowsingDataClicked() {
         mObserver.onClearBrowsingDataClicked();
+    }
+
+    /** Called after a user clicks the open full Chrome history button. */
+    void onOpenFullChromeHistoryClicked() {
+        mObserver.onOpenFullChromeHistoryClicked();
     }
 
     /** Removes the list header. */

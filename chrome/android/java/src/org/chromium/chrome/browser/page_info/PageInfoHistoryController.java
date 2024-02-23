@@ -213,6 +213,10 @@ public class PageInfoHistoryController
 
     // HistoryContentManager.Observer
     @Override
+    public void onOpenFullChromeHistoryClicked() {}
+
+    // HistoryContentManager.Observer
+    @Override
     public void onPrivacyDisclaimerHasChanged() {}
 
     // HistoryContentManager.Observer
