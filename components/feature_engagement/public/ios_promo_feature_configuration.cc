@@ -126,6 +126,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->session_rate = Comparator(ANY, 0);
     config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config->groups.push_back(kiOSTailoredDefaultBrowserPromosGroup.name);
 
     config->trigger =
         EventConfig("all_tabs_promo_trigger", Comparator(EQUAL, 0),
@@ -144,6 +145,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->session_rate = Comparator(ANY, 0);
     config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config->groups.push_back(kiOSTailoredDefaultBrowserPromosGroup.name);
 
     config->trigger =
         EventConfig("made_for_ios_promo_trigger", Comparator(EQUAL, 0),
@@ -163,6 +165,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config->session_rate = Comparator(ANY, 0);
     config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config->groups.push_back(kiOSTailoredDefaultBrowserPromosGroup.name);
 
     config->trigger =
         EventConfig("stay_safe_promo_trigger", Comparator(EQUAL, 0),

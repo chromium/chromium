@@ -48,6 +48,19 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
 
     return config;
   }
+
+  if (kiOSTailoredDefaultBrowserPromosGroup.name == group->name) {
+    std::optional<GroupConfig> config = GroupConfig();
+    config->valid = true;
+    config->session_rate = Comparator(EQUAL, 0);
+
+    // Only one of the tailored promos ever can be shown.
+    config->trigger =
+        EventConfig("tailored_default_browser_promos_group_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
   if (kIPHDummyGroup.name == group->name) {

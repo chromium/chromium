@@ -23,6 +23,9 @@ BASE_FEATURE(kiOSFullscreenPromosGroup,
 BASE_FEATURE(kiOSDefaultBrowserPromosGroup,
              "IPH_iOSDefaultBrowserPromosGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kiOSTailoredDefaultBrowserPromosGroup,
+             "IPH_iOSTailoredDefaultBrowserPromosGroup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace feature_engagement

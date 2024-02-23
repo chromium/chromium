@@ -421,3 +421,39 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature));
 }
+
+// Test only one of the tailored promos will show.
+TEST_F(DefaultBrowserFeatureEngagementTest, TailoredDefaultBrowserGroupTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoStaySafeFeature,
+       feature_engagement::kIPHiOSPromoMadeForIOSFeature});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoStaySafeFeature));
+
+  // Make sure the preconditions are satisfied for the Stay Safe promo.
+  tracker->NotifyEvent("stay_safe_promo_conditions_met");
+  SatisfyChromeOpenCondition(tracker.get());
+
+  // Make sure that the promo would have triggered before another tailored promo
+  // is shown.
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoStaySafeFeature));
+
+  // Mark one of the tailored group promos as displayed.
+  tracker->NotifyEvent("made_for_ios_promo_trigger");
+  tracker->NotifyEvent("tailored_default_browser_promos_group_trigger");
+
+  // The promo cannot be triggered because another tailored promo already was
+  // shown.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoStaySafeFeature));
+
+  // After a year it should still not show trigger another promo.
+  test_clock_.Advance(base::Days(365));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoStaySafeFeature));
+}
