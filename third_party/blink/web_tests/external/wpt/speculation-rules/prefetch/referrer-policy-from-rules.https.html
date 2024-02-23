@@ -59,8 +59,7 @@ subsetTest(promise_test, async t => {
   await agent.setReferrerPolicy("unsafe-url");
 
   const nextURL = agent.getExecutorURL({ hostname: PREFETCH_PROXY_BYPASS_HOST, page: 2 });
-  await agent.forceSinglePrefetch(
-      nextURL, { referrer_policy: "no-referrer", requires: ["anonymous-client-ip-when-cross-origin"] });
+  await agent.forceSinglePrefetch(nextURL, { referrer_policy: "no-referrer" });
   await agent.navigate(nextURL);
 
   // This referring page's referrer policy would not be eligible for
@@ -120,8 +119,7 @@ subsetTest(promise_test, async t => {
   const expectedReferrer = agent.getExecutorURL().origin + "/";
 
   const nextURL = agent.getExecutorURL({ hostname: PREFETCH_PROXY_BYPASS_HOST, page: 2 });
-  await agent.forceSinglePrefetch(
-      nextURL, { referrer_policy: "unsafe-url", requires: ["anonymous-client-ip-when-cross-origin"] });
+  await agent.forceSinglePrefetch(nextURL, { referrer_policy: "unsafe-url" });
   await agent.navigate(nextURL);
 
   // This referring page's referrer policy would normally make it eligible for
