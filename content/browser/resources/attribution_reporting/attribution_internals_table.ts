@@ -230,6 +230,7 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
           this.cols_!.forEach(
               (render, idx) => render(tr.cells[idx]!, updatedData));
           this.styleRow_(tr, updatedData);
+          trs.push(tr);
         }
       }
     }
