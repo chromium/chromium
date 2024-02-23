@@ -1450,7 +1450,9 @@ void HTMLSelectElement::ChangeRendering() {
   }
   if (!InActiveDocument())
     return;
-  GetDocument().GetStyleEngine().ChangeRenderingForHTMLSelect(*this);
+  SetForceReattachLayoutTree();
+  SetNeedsStyleRecalc(kLocalStyleChange, StyleChangeReasonForTracing::Create(
+                                             style_change_reason::kControl));
 }
 
 const ComputedStyle* HTMLSelectElement::OptionStyle() const {

@@ -4178,35 +4178,6 @@ const CounterStyle& StyleEngine::FindCounterStyleAcrossScopes(
   return CounterStyle::GetDecimal();
 }
 
-void StyleEngine::ChangeRenderingForHTMLSelect(HTMLSelectElement& select) {
-  // TODO(crbug.com/1191353): SetForceReattachLayoutTree() should be the correct
-  // way to create a new layout tree for a select element that changes rendering
-  // and not style, but the code for updating the selected index relies on the
-  // layout tree to be deleted. To work around that, we do a synchronous
-  // DetachLayoutTree as if the subtree is taken out of the flat tree.
-  // DetachLayoutTree will clear dirty bits which means we also need to simulate
-  // that we are in a dom removal to make the style recalc root be updated
-  // correctly.
-  StyleEngine::DetachLayoutTreeScope detach_scope(*this);
-  StyleEngine::DOMRemovalScope removal_scope(*this);
-  To<Element>(select).DetachLayoutTree();
-  // If the recalc root is in this subtree, DetachLayoutTree() above clears the
-  // bits and we need to update the root. Otherwise the AssertRootNodeInvariants
-  // will fail for SetNeedsStyleRecalc below.
-  if (Element* parent = select.GetStyleRecalcParent()) {
-    style_recalc_root_.SubtreeModified(*parent);
-  } else if (GetDocument() == select.parentNode()) {
-    // Style recalc parent being null either means the select element is not
-    // part of the flat tree or the document root node. In the latter case all
-    // dirty bits will be cleared by DetachLayoutTree() and we can clear the
-    // recalc root.
-    style_recalc_root_.Clear();
-  }
-  select.SetNeedsStyleRecalc(
-      kLocalStyleChange,
-      StyleChangeReasonForTracing::Create(style_change_reason::kControl));
-}
-
 void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(injected_user_style_sheets_);

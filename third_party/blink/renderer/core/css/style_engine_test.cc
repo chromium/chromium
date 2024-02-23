@@ -102,10 +102,6 @@ class StyleEngineTest : public PageTestBase {
     return GetStyleEngine().style_recalc_root_.GetRootNode();
   }
 
-  LayoutObject* GetParentForDetachedSubtree() {
-    return GetStyleEngine().parent_for_detached_subtree_.Get();
-  }
-
   const CSSValue* ComputedValue(Element* element, String property_name) {
     CSSPropertyRef ref(property_name, GetDocument());
     DCHECK(ref.IsValid());
@@ -5651,17 +5647,6 @@ TEST_F(StyleEngineTest, CascadeLayerActiveStyleSheetVectorNullRuleSetCrash) {
 
   // Should not crash
   UpdateAllLifecyclePhases();
-}
-
-TEST_F(StyleEngineTest, ChangeRenderingForHTMLSelect_DetachParent) {
-  GetDocument().body()->setInnerHTML(R"HTML(
-    <select id="select"></select>
-  )HTML");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetParentForDetachedSubtree());
-  GetStyleEngine().ChangeRenderingForHTMLSelect(To<HTMLSelectElement>(
-      *GetDocument().getElementById(AtomicString("select"))));
-  EXPECT_FALSE(GetParentForDetachedSubtree());
 }
 
 TEST_F(StyleEngineTest, EmptyDetachParent) {

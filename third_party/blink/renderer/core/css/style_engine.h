@@ -87,7 +87,6 @@ class ElementRuleCollector;
 class Font;
 class FontSelector;
 class HTMLBodyElement;
-class HTMLSelectElement;
 class MediaQueryEvaluator;
 class Node;
 class ReferenceFilterOperation;
@@ -641,7 +640,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     }
     return nullptr;
   }
-  void ChangeRenderingForHTMLSelect(HTMLSelectElement& select);
   void DetachedFromParent(LayoutObject* parent) {
     // This method will be called for every LayoutObject while detaching a
     // subtree. Since the trees are detached bottom up, the last parent passed
