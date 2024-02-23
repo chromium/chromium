@@ -25,6 +25,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -78,7 +79,9 @@ constexpr char kCvc[] = "123";
 class TestAutofillManager : public BrowserAutofillManager {
  public:
   TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {}
+      : BrowserAutofillManager(driver, client, "en-US") {
+    test_api(*this).set_limit_before_refill(base::Minutes(1));
+  }
 
   static TestAutofillManager& GetForRenderFrameHost(
       content::RenderFrameHost* rfh) {
@@ -551,15 +554,8 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
 };
 
 // Tests that a newly emerging frame with a field triggers a refill.
-// TODO(crbug.com/1486516): Test is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_RefillDynamicFormWithNewFrame \
-  DISABLED_RefillDynamicFormWithNewFrame
-#else
-#define MAYBE_RefillDynamicFormWithNewFrame RefillDynamicFormWithNewFrame
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
-                       MAYBE_RefillDynamicFormWithNewFrame) {
+                       RefillDynamicFormWithNewFrame) {
   const FormStructure* form = LoadFormWithAppearingFrame();
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
@@ -567,15 +563,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
 }
 
 // Tests that a newly emerging field inside a frame triggers a refill.
-// TODO(crbug.com/1486516): Test is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_RefillDynamicFormWithNewField \
-  DISABLED_RefillDynamicFormWithNewField
-#else
-#define MAYBE_RefillDynamicFormWithNewField RefillDynamicFormWithNewField
-#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
-                       MAYBE_RefillDynamicFormWithNewField) {
+                       RefillDynamicFormWithNewField) {
   const FormStructure* form = LoadFormWithAppearingField();
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
