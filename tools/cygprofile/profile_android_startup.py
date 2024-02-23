@@ -328,6 +328,9 @@ class AndroidProfileTool:
     ] + ['-v'] * self._verbosity
     logging.debug('Running telemetry command: %s', cmd)
     self._RunCommand(cmd)
+    # TODO(crbug.com/324927538): Remove after debugging.
+    if self._verbosity >= 4:
+      print(self._device.adb.Logcat(dump=True))
     data = self._PullProfileData()
     self._DeleteDeviceData()
     return data
