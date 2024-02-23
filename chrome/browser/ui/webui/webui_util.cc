@@ -62,7 +62,8 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
     source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ImgSrc,
         "img-src chrome://resources chrome://theme chrome://image "
-        "chrome://favicon2 data: 'self';");
+        "chrome://favicon2 chrome://app-icon chrome://extension-icon "
+        "blob: data: 'self';");
   }
 
   // webui-test is required for tests. Scripts from //resources are allowed
