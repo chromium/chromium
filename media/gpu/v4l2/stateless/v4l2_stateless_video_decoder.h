@@ -121,7 +121,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   void HandleDequeuedOutputBuffers(Buffer buffer);
   void HandleDequeuedInputBuffers(Buffer buffer);
 
-  // Callback for VideoFrame destructor observer that will enqueue the output
+  // Callback for frame destructor observer that will enqueue the output
   // buffer after it is done being used.
   void EnqueueDecodedOutputBufferByFrameID(uint64_t frame_id);
 

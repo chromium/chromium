@@ -13,6 +13,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/stateless/stateless_device.h"
 
@@ -115,21 +116,21 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   // they can later be referenced.
   void RegisterDequeuedBuffer(Buffer& buffer);
 
-  // Retrieve a |VideoFrame| by |frame_id| that has already been decoded and
+  // Retrieve a |FrameResource| by |frame_id| that has already been decoded and
   // dequeued. Returns |nullptr| if there isn't a corresponding frame that has
   // been dequeued yet.
-  scoped_refptr<VideoFrame> GetVideoFrame(uint64_t frame_id);
+  scoped_refptr<FrameResource> GetFrame(uint64_t frame_id);
 
  private:
-  // Create |VideoFrame| by exporting the dmabuf backing the buffer.
-  scoped_refptr<VideoFrame> CreateVideoFrame(const Buffer& buffer);
+  // Create |FrameResource| by exporting the dmabuf backing the buffer.
+  scoped_refptr<FrameResource> CreateFrame(const Buffer& buffer);
 
   std::string Description() override;
 
   BufferFormat buffer_format_;
 
-  // Vector to hold |VideoFrame|s for the life of the queue.
-  std::vector<scoped_refptr<VideoFrame>> video_frames_;
+  // Vector to hold |FrameResource|s for the life of the queue.
+  std::vector<scoped_refptr<FrameResource>> frames_;
 
   // A mapping from frame id to buffer buffer index. Once a frame is decoded it
   // placed in this map. The frame id to buffer index mapping is how the input

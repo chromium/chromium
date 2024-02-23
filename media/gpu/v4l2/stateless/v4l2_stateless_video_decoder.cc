@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/gpu/chromeos/image_processor.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/stateless/h264_delegate.h"
@@ -405,9 +404,8 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
 
     // Retrieve the index of the corresponding dequeued buffer. It is expected
     // that a buffer may not be ready.
-    scoped_refptr<VideoFrame> video_frame =
-        output_queue_->GetVideoFrame(frame_id);
-    if (!video_frame) {
+    scoped_refptr<FrameResource> frame = output_queue_->GetFrame(frame_id);
+    if (!frame) {
       DVLOGF(5) << "No dequeued buffer ready for frame id : " << frame_id;
       return;
     }
@@ -417,8 +415,8 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
     const auto surface = std::move(display_queue_.front());
     display_queue_.pop();
 
-    auto wrapped_frame = VideoFrame::WrapVideoFrame(
-        video_frame, video_frame->format(), surface->GetVisibleRect(),
+    auto wrapped_frame = frame->CreateWrappingFrame(
+        surface->GetVisibleRect(),
         aspect_ratio_.GetNaturalSize(surface->GetVisibleRect()));
 
     // Move the metadata associated with the surface over to the video frame.
@@ -442,9 +440,9 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
 
     DVLOGF(4) << wrapped_frame->AsHumanReadableString();
 
-    // |output_cb_| passes the frame off to the pipeline for further
+    // |output_cb_| passes the video frame off to the pipeline for further
     // processing or display.
-    output_cb_.Run(VideoFrameResource::Create(std::move(wrapped_frame)));
+    output_cb_.Run(std::move(wrapped_frame));
   }
 }
 

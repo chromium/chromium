@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
+#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 
 namespace {
@@ -343,7 +344,7 @@ bool OutputQueue::NegotiateFormat() {
   return false;
 }
 
-scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(const Buffer& buffer) {
+scoped_refptr<FrameResource> OutputQueue::CreateFrame(const Buffer& buffer) {
   const VideoPixelFormat video_format =
       buffer_format_.fourcc.ToVideoPixelFormat();
   const size_t num_color_planes = VideoFrame::NumPlanes(video_format);
@@ -404,9 +405,11 @@ scoped_refptr<VideoFrame> OutputQueue::CreateVideoFrame(const Buffer& buffer) {
     return nullptr;
   }
 
-  return VideoFrame::WrapExternalDmabufs(
+  // TODO(nhebert): Migrate to NativePixmap-backed FrameResource when it is
+  // ready.
+  return VideoFrameResource::Create(VideoFrame::WrapExternalDmabufs(
       *layout, gfx::Rect(buffer_format_.resolution), buffer_format_.resolution,
-      std::move(dmabuf_fds), base::TimeDelta());
+      std::move(dmabuf_fds), base::TimeDelta()));
 }
 
 bool OutputQueue::PrepareBuffers(size_t num_buffers) {
@@ -416,17 +419,19 @@ bool OutputQueue::PrepareBuffers(size_t num_buffers) {
     return false;
   }
 
-  // Create a video frame for each buffer
-  video_frames_.reserve(buffers_.size());
+  // Create a FrameResource for each buffer
+  frames_.reserve(buffers_.size());
 
-  // VideoFrames are used to display the decoded buffers. They wrap the
-  // underlying DMABUF by referencing the index of the V4L2 buffers;
+  // FrameResource objects are by VideoDecoderPipeline to encapsulate decoded
+  // buffers. They wrap the underlying DMABUF of elements of |buffers_|. The
+  // the index of the encapsulating FrameResource in |frames_| is aligned to the
+  // corresponding buffer's index in |buffers_|.
   for (const auto& buffer : buffers_) {
-    auto video_frame = CreateVideoFrame(buffer);
-    if (!video_frame) {
+    auto frame = CreateFrame(buffer);
+    if (!frame) {
       return false;
     }
-    video_frames_.push_back(std::move(video_frame));
+    frames_.push_back(std::move(frame));
   }
 
   // Queue all buffers after allocation in anticipation of being used.
@@ -465,7 +470,7 @@ void OutputQueue::RegisterDequeuedBuffer(Buffer& buffer) {
   CHECK(result.second) << "Buffer already in map";
 }
 
-scoped_refptr<VideoFrame> OutputQueue::GetVideoFrame(uint64_t frame_id) {
+scoped_refptr<FrameResource> OutputQueue::GetFrame(uint64_t frame_id) {
   DVLOGF(5) << "Attempting to use frame with id : " << frame_id;
   // The frame_id is copied from the input buffer to the output buffer. This is
   // the only way to know which output buffer contains the decoded picture for
@@ -475,7 +480,7 @@ scoped_refptr<VideoFrame> OutputQueue::GetVideoFrame(uint64_t frame_id) {
     const uint32_t index = it->second;
     DVLOGF(4) << "Found match (" << index << ") for frame id of (" << frame_id
               << ").";
-    return video_frames_[index];
+    return frames_[index];
   }
 
   // The corresponding frame may not have been dequeued when this function has
