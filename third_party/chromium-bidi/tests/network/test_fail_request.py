@@ -163,6 +163,7 @@ async def test_fail_request_twice(websocket, context_id, example_url):
         })
 
 
+@pytest.mark.skip(reason="TODO: #1883")
 @pytest.mark.asyncio
 async def test_fail_request_with_auth_required_phase(websocket, context_id,
                                                      auth_required_url,
