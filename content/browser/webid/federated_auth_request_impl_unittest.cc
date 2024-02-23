@@ -5355,8 +5355,7 @@ TEST_F(FederatedAuthRequestImplTest,
 // Test button flow failure outside of user activation.
 TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
   base::test::ScopedFeatureList list;
-  list.InitWithFeatures(
-      {features::kFedCmAuthz, features::kFedCmIdpSigninStatusEnabled}, {});
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
@@ -5371,9 +5370,45 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
                                /*standalone_console_message=*/std::nullopt,
                                /*selected_idp_config_url=*/std::nullopt};
 
-  RunAuthTest(parameters, error, kConfigurationValid);
+  // Button flow request gets rejected without delay.
+  RunAuthDontWaitForCallback(parameters, kConfigurationValid);
+  CheckAuthExpectations(kConfigurationValid, error);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+}
+
+// Test the button flow request fails without delay if IdP config is wrong.
+TEST_F(FederatedAuthRequestImplTest, ButtonFlowWellKnownNotInList) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  RequestExpectations request_not_in_list = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  const char* idp_config_url =
+      kDefaultRequestParameters.identity_providers[0].provider;
+  const char* kWellKnownMismatchConfigUrl = "https://mismatch.example";
+  EXPECT_NE(std::string(idp_config_url), kWellKnownMismatchConfigUrl);
+
+  MockConfiguration config = kConfigurationValid;
+  config.idp_info[idp_config_url].well_known = {
+      {kWellKnownMismatchConfigUrl}, {ParseStatus::kSuccess, net::HTTP_OK}};
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  // Button flow request gets rejected without delay.
+  RunAuthDontWaitForCallback(parameters, config);
+  CheckAuthExpectations(config, request_not_in_list);
+
+  EXPECT_TRUE(DidFetchWellKnownAndConfig());
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
 TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {

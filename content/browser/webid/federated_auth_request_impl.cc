@@ -783,14 +783,13 @@ void FederatedAuthRequestImpl::RequestToken(
   // TODO(crbug.com/1307709): handle button mode with multiple IdP.
   if (IsFedCmButtonModeEnabled() &&
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
-    if (render_frame_host().HasTransientUserActivation()) {
-      rp_mode_ = RpMode::kButton;
-    } else {
+    rp_mode_ = RpMode::kButton;
+    if (!render_frame_host().HasTransientUserActivation()) {
       // TODO(crbug.com/1487270): use a more specific error.
       CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                TokenStatus::kUnhandledRequest,
                                /*token_error=*/std::nullopt,
-                               /*should_delay_callback=*/true);
+                               /*should_delay_callback=*/false);
       return;
     }
   }
@@ -903,7 +902,7 @@ void FederatedAuthRequestImpl::RequestToken(
             CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                      TokenStatus::kUnhandledRequest,
                                      /*token_error=*/std::nullopt,
-                                     /*should_delay_callback=*/true);
+                                     /*should_delay_callback=*/false);
             return;
           }
         }
@@ -1150,9 +1149,9 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             blink::mojom::ConsoleMessageLevel::kError,
             *fetch_error.additional_console_error_message);
       }
-      OnFetchDataForIdpFailed(std::move(idp_info), fetch_error.result,
-                              fetch_error.token_status,
-                              /*should_delay_callback=*/true);
+      OnFetchDataForIdpFailed(
+          std::move(idp_info), fetch_error.result, fetch_error.token_status,
+          /*should_delay_callback=*/rp_mode_ == RpMode::kWidget);
       continue;
     }
     // The login url should be valid unless IdP login status API is disabled.
@@ -1200,7 +1199,7 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
           std::move(idp_info),
           FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
           TokenStatus::kNotSignedInWithIdp,
-          /*should_delay_callback=*/true);
+          /*should_delay_callback=*/rp_mode_ == RpMode::kWidget);
       continue;
     }
 
@@ -1313,6 +1312,10 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
   MaybeShowAccountsDialog();
 }
 
+// TODO(crbug.com/326275666): In the button flow we should inform users that
+// their sign-in attempt has failed instead of failing silently. We should delay
+// the promise rejection until the user acknowledged the failure. e.g. by
+// closing the loading modal.
 void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
     const std::unique_ptr<IdentityProviderInfo> idp_info,
     blink::mojom::FederatedAuthRequestResult result,
@@ -2122,7 +2125,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,
         /*token_error=*/std::nullopt,
-        /*should_delay_callback=*/true);
+        /*should_delay_callback=*/false);
     return;
   }
 
@@ -2182,7 +2185,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
                            weak_ptr_factory_.GetWeakPtr(),
                            idp->config->config_url, status, result.token,
                            /*token_error=*/std::nullopt,
-                           /*should_delay_callback=*/true);
+                           /*should_delay_callback=*/false);
 
   // When fetching id tokens we show a "Verify" sheet to users in case fetching
   // takes a long time due to latency etc. In case that the fetching process is
