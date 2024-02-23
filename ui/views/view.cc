@@ -3449,6 +3449,10 @@ void View::LayoutImmediately(bool collect_trace) {
 
   ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
+
+  ++current_layout_call_depth_;
+  ++max_layout_call_depth_;
+
   if (collect_trace) {
     TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
     // Layout run separately in if and else statement since we need to keep the
@@ -3460,6 +3464,12 @@ void View::LayoutImmediately(bool collect_trace) {
 
   UMA_HISTOGRAM_COUNTS_100("Views.InvalidatesDuringLayout",
                            invalidates_during_layout_);
+  --current_layout_call_depth_;
+  if (current_layout_call_depth_ == 0) {
+    UMA_HISTOGRAM_EXACT_LINEAR("Views.LayoutCallDepth", max_layout_call_depth_,
+                               6);
+    max_layout_call_depth_ = 0;
+  }
 }
 
 // Input -----------------------------------------------------------------------
