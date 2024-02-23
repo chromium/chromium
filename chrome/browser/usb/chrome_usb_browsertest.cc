@@ -1390,8 +1390,9 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
 #define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
   DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
 #endif
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
-                       DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
+IN_PROC_BROWSER_TEST_F(
+    WebUsbExtensionBrowserTest,
+    MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context = browser()
                                                ->profile()
                                                ->GetDefaultStoragePartition()
