@@ -878,6 +878,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                             fraction);
                     int color = Color.rgb(red, green, blue);
                     background.setColor(color);
+                    notifyToolbarColorChanged(color);
                     setHandleViewBackgroundColor(color);
                 });
         mBrandColorTransitionAnimation.addListener(
@@ -909,6 +910,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         mTint = tint;
         mLocationBar.updateColors();
         setToolbarHairlineColor(background);
+        notifyToolbarColorChanged(background);
     }
 
     @Override
