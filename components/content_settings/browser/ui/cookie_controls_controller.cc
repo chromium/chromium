@@ -503,29 +503,6 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   ApplyMetadataChanges(settings_map_, url, std::move(metadata));
 
   recent_reloads_count_ = recent_reloads_count;
-
-  // TODO(b/317883749): Remove logic below.
-  // Only inform the observers if there is a potential confidence level change.
-  if (recent_reloads_count_ < features::kUserBypassUIReloadCount.Get() &&
-      !has_exception_expired_since_last_visit_) {
-    return;
-  }
-
-  for (auto& observer : observers_) {
-    observer.OnUserBypassIconStatusChanged(
-        ShouldUserBypassIconBeVisible(
-            status.protections_on, status.controls_visible,
-            GetAllowedThirdPartyCookiesSitesCount() +
-                GetBlockedThirdPartyCookiesSitesCount()),
-        status.protections_on, status.blocking_status,
-        ShouldHighlightUserBypass());
-    // TODO(b/317883749): Deprecate this function after removing clank
-    // dependencies.
-    observer.OnBreakageConfidenceLevelChanged(GetConfidenceLevel(
-        status.status, status.enforcement,
-        SiteDataAccessed(GetAllowedThirdPartyCookiesSitesCount(),
-                         GetBlockedThirdPartyCookiesSitesCount())));
-  }
 }
 
 void CookieControlsController::OnPageFinishedLoading() {

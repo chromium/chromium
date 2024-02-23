@@ -775,10 +775,6 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // After the second reload and accessing storage, UB should highlight.
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
-                           /*icon_visible=*/false, /*protections_on=*/true,
-                           CookieBlocking3pcdStatus::kNotIn3pcd,
-                           /*should_highlight=*/true));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
   EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
@@ -846,10 +842,6 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
   testing::Mock::VerifyAndClearExpectations(mock());
 
   // After the second reload and accessing storage, UB should be highlighted.
-  EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
-                           /*icon_visible=*/false, /*protections_on=*/true,
-                           CookieBlocking3pcdStatus::kNotIn3pcd,
-                           /*should_highlight=*/true));
   EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0));
   EXPECT_CALL(*mock(), OnUserBypassIconStatusChanged(
                            /*icon_visible=*/true, /*protections_on=*/true,
