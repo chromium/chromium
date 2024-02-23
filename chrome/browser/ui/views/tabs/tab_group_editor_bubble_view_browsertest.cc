@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/event.h"
@@ -172,14 +174,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::PointF(),
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   views::test::ButtonTestApi(move_group_button).NotifyClick(released_event);
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
 
   EXPECT_EQ(0u, group_model->ListTabGroups().size());
   EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* active_browser = browser_list->GetLastActive();
+  Browser* active_browser = chrome::FindLastActive();
   ASSERT_NE(active_browser, browser());
   EXPECT_EQ(1, active_browser->tab_strip_model()->count());
   EXPECT_EQ(

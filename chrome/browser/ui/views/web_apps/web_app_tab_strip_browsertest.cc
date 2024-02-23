@@ -201,6 +201,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   // Install the site with the user display mode set to kTabbed.
   webapps::AppId app_id;
   {
+    ui_test_utils::BrowserChangeObserver app_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     base::RunLoop run_loop;
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider);
@@ -225,6 +227,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
             }),
         /*use_fallback=*/true);
     run_loop.Run();
+    ui_test_utils::WaitForBrowserSetLastActive(app_browser_observer.Wait());
   }
 
   // After installing a tabbed display mode app the install page should pop out
@@ -646,12 +649,16 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser);
 
   chrome::NewTab(app_browser);
 
   size_t initial_browser_count = BrowserList::GetInstance()->size();
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::MoveTabsToNewWindow(app_browser, {1});
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
 
   EXPECT_EQ(initial_browser_count + 1, BrowserList::GetInstance()->size());
 
@@ -675,10 +682,14 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser);
   chrome::NewTab(app_browser);
 
   // Open a second app browser window.
+  ui_test_utils::BrowserChangeObserver app_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::MoveTabsToNewWindow(app_browser, {1});
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser_observer.Wait());
   Browser* app_browser2 = BrowserList::GetInstance()->GetLastActive();
 
   EXPECT_EQ(app_browser->tab_strip_model()->count(), 1);

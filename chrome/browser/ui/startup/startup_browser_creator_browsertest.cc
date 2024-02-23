@@ -220,9 +220,13 @@ Browser* OpenNewBrowser(Profile* profile) {
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
                                     chrome::startup::IsFirstRun::kYes);
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   creator.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
                  /*restore_tabbed_browser=*/true);
-  return chrome::FindBrowserWithProfile(profile);
+  Browser* new_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
+  return new_browser;
 }
 
 Browser* CloseBrowserAndOpenNew(Browser* browser, Profile* profile) {
