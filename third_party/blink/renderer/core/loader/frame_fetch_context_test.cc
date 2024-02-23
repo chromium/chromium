@@ -1534,8 +1534,7 @@ TEST_F(FrameFetchContextTest, AllowImageWhenDetached) {
 
   dummy_page_holder = nullptr;
 
-  EXPECT_TRUE(GetFetchContext()->AllowImage(true, url));
-  EXPECT_TRUE(GetFetchContext()->AllowImage(false, url));
+  EXPECT_TRUE(GetFetchContext()->AllowImage());
 }
 
 TEST_F(FrameFetchContextTest, PopulateResourceRequestWhenDetached) {

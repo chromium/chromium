@@ -34,8 +34,6 @@ class WebTestContentSettingsClient : public RenderFrameObserver,
   void OnDestruct() override;
 
   // blink::WebContentSettingsClient:
-  bool AllowImage(bool enabled_per_settings,
-                  const blink::WebURL& image_url) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
                              const blink::WebURL& script_url) override;
   bool AllowStorageAccessSync(StorageType storage_type) override;

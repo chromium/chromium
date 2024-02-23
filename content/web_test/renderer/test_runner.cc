@@ -338,7 +338,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetEffectiveConnectionType(const std::string& connection_type);
   void SetFilePathForMockFileDialog(const std::string& path);
   void SetMockSpellCheckerEnabled(bool enabled);
-  void SetImagesAllowed(bool allowed);
   void SetIsolatedWorldInfo(int world_id,
                             v8::Local<v8::Value> security_origin,
                             v8::Local<v8::Value> content_security_policy);
@@ -747,7 +746,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("setMockSpellCheckerEnabled",
                  &TestRunnerBindings::SetMockSpellCheckerEnabled)
       .SetMethod("setIconDatabaseEnabled", &TestRunnerBindings::NotImplemented)
-      .SetMethod("setImagesAllowed", &TestRunnerBindings::SetImagesAllowed)
       .SetMethod("setIsolatedWorldInfo",
                  &TestRunnerBindings::SetIsolatedWorldInfo)
       .SetMethod("setJavaScriptCanAccessClipboard",
@@ -1670,13 +1668,6 @@ void TestRunnerBindings::SetCaretBrowsingEnabled() {
   }
   blink::WebView* web_view = GetWebFrame()->View();
   web_view->GetSettings()->SetCaretBrowsingEnabled(true);
-}
-
-void TestRunnerBindings::SetImagesAllowed(bool allowed) {
-  if (!frame_) {
-    return;
-  }
-  runner_->SetImagesAllowed(allowed, *frame_);
 }
 
 void TestRunnerBindings::SetStorageAllowed(bool allowed) {
@@ -3459,11 +3450,6 @@ void TestRunner::DumpUserGestureInFrameLoadCallbacks(
 
 void TestRunner::DumpTitleChanges(WebFrameTestProxy& source) {
   web_test_runtime_flags_.set_dump_title_changes(true);
-  OnWebTestRuntimeFlagsChanged(source);
-}
-
-void TestRunner::SetImagesAllowed(bool allowed, WebFrameTestProxy& source) {
-  web_test_runtime_flags_.set_images_allowed(allowed);
   OnWebTestRuntimeFlagsChanged(source);
 }
 

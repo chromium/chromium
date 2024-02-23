@@ -80,8 +80,6 @@ class ContentSettingsAgentImpl
   void AllowStorageAccess(StorageType storage_type,
                           base::OnceCallback<void(bool)> callback) override;
   bool AllowStorageAccessSync(StorageType type) override;
-  bool AllowImage(bool enabled_per_settings,
-                  const blink::WebURL& image_url) override;
   bool AllowScript(bool enabled_per_settings) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
                              const blink::WebURL& script_url) override;

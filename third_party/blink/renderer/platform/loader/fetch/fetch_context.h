@@ -106,7 +106,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
 
   virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                                  const AtomicString& initiator_type);
-  virtual bool AllowImage(bool, const KURL&) const { return false; }
+  virtual bool AllowImage() const { return false; }
   virtual std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,

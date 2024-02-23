@@ -1199,7 +1199,46 @@ void NavigateAndWait(content::TestRenderFrame* frame,
   waiter.Wait();
 }
 
+class FakeContentSettingsClient : public blink::WebContentSettingsClient {
+ public:
+  FakeContentSettingsClient() = default;
+
+  void DidNotAllowImage() override { ++did_not_allow_image_count_; }
+
+  int did_not_allow_image_count_ = 0;
+};
+
 }  // namespace
+
+// Checks that when images are blocked, the ContentSettingsAgent receives a
+// callback.
+TEST_F(RenderFrameImplTest, ContentSettingsCallbackImageBlocked) {
+  // Create a fake content settings client to track image blocked callbacks.
+  FakeContentSettingsClient fake_content_settings_client;
+  GetMainRenderFrame()->GetWebFrame()->SetContentSettingsClient(
+      &fake_content_settings_client);
+
+  // Navigate to a URL that consists of a red square.
+  std::string data_url_contents =
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZAQMAAAD+JxcgAAAAA1BMVEX/"
+      "AAAZ4gk3AAAAC0lEQVR4AWMYSAAAAH0AAVFwgb4AAAAASUVORK5CYII=";
+
+  auto common_params = blink::CreateCommonNavigationParams();
+  common_params->url = GURL(data_url_contents);
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
+  blink::mojom::CommitNavigationParamsPtr commit_params =
+      blink::CreateCommitNavigationParams();
+  commit_params->content_settings->allow_image = false;
+  content::TestRenderFrame* frame =
+      static_cast<TestRenderFrame*>(GetMainRenderFrame());
+
+  NavigateAndWait(frame, common_params->Clone(), commit_params->Clone(),
+                  web_view_);
+
+  EXPECT_EQ(1, fake_content_settings_client.did_not_allow_image_count_);
+}
 
 // Regression test for crbug.com/232410: Load a page with JS blocked. Then,
 // allow JS and reload the page. In each case, only one of noscript or script

@@ -45,9 +45,7 @@ class MockFetchContext : public FetchContext {
     tagged_urls_ = std::move(tagged_urls);
   }
 
-  bool AllowImage(bool images_enabled, const KURL&) const override {
-    return true;
-  }
+  bool AllowImage() const override { return true; }
   std::optional<ResourceRequestBlockedReason> CanRequest(
       ResourceType,
       const ResourceRequest&,

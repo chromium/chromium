@@ -3872,4 +3872,12 @@ const mojom::RendererContentSettingsPtr& LocalFrame::GetContentSettings() {
   return loader_.GetDocumentLoader()->GetContentSettings();
 }
 
+bool LocalFrame::ImagesEnabled() {
+  DCHECK(!IsDetached());
+
+  bool allow_image_renderer = GetSettings()->GetImagesEnabled();
+  bool allow_image_content_setting = GetContentSettings()->allow_image;
+  return allow_image_renderer && allow_image_content_setting;
+}
+
 }  // namespace blink

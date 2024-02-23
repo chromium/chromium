@@ -5,18 +5,15 @@ jsTestIsAsync = true;
 
 description("Blocked images can be reloaded, so neither onload nor onerror is called. Only check here that onload is never called when image is blocked.");
 
-if (window.testRunner)
-    testRunner.dumpPermissionClientCallbacks();
-
 document.write('<img src="resources/boston.gif" onload="loaded()">');
 
 function loaded()
 {
     debug("PASS: first image loaded");
-    if (window.testRunner && testRunner.setImagesAllowed)
-        testRunner.setImagesAllowed(false);
+    if (window.internals)
+        internals.settings.setImagesEnabled(false);
     else
-        debug("This test requires testRunner.setImagesAllowed, so it be can't run in a browser.");
+        debug("This test requires windows.internals, so it be can't run in a browser.");
 
     // Load an image not in cache.
     var img = document.createElement('img');

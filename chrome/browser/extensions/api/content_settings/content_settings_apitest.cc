@@ -455,7 +455,6 @@ class ImageContentSettingApiTest : public ExtensionApiTest {
         R"(
            chrome.contentSettings['images'].set({
              primaryPattern: 'http://*.example1.com/*',
-             secondaryPattern: 'http://*.example2.com/*',
              setting: 'block',
              scope: 'regular'
            });
@@ -484,11 +483,8 @@ class ImageContentSettingApiTest : public ExtensionApiTest {
   TestExtensionDir test_extension_dir_;
 };
 
-// Tests that secondary patterns for image content settings perform
-// resource-scoped origin blocking. For example:
-//   primaryPattern: 'example1.com'
-//   secondaryPattern: 'example2.com'
-// Should only block images with origin=example2.com.
+// Tests that image content setting primary pattern can be used to block image
+// loads.
 IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
   LoadImageContentSettingExtension();
   std::string page_js =
@@ -528,16 +524,15 @@ IN_PROC_BROWSER_TEST_F(ImageContentSettingApiTest, OriginBlocking) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example1_index));
 
   // The onload event will fire when there are no more pending image loads. We
-  // should then have two messages -- one for the onload event and one for
-  // "example 1" loading. "example 2" was blocked and should never load.
+  // should then have one messages -- one for the onload event. Neither "example
+  // 1" nor "example 2" should have loaded.
   EXPECT_TRUE(body_load_observer.Wait());
 
   std::vector<std::u16string> message_strings;
   for (const auto& message : observer.messages()) {
     message_strings.push_back(message.message);
   }
-  EXPECT_THAT(message_strings,
-              testing::UnorderedElementsAre(u"example1 load", u"body load"));
+  EXPECT_THAT(message_strings, testing::UnorderedElementsAre(u"body load"));
 }
 
 }  // namespace extensions

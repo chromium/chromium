@@ -46,11 +46,6 @@ class WebContentSettingsClient {
   // Blocks until done.
   virtual bool AllowStorageAccessSync(StorageType storage_type) { return true; }
 
-  // Controls whether images are allowed for this frame.
-  virtual bool AllowImage(bool enabled_per_settings, const WebURL& image_url) {
-    return enabled_per_settings;
-  }
-
   // Controls whether scripts are allowed to execute for this frame.
   virtual bool AllowScript(bool enabled_per_settings) {
     return enabled_per_settings;

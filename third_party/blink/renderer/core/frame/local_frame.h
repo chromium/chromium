@@ -918,6 +918,12 @@ class CORE_EXPORT LocalFrame final
   // Can only be called while the frame is not detached.
   const mojom::RendererContentSettingsPtr& GetContentSettings();
 
+  // Returns whether images are allowed to load for the current frame. This is a
+  // convenience method that checks both renderer content settings and frame
+  // settings.
+  // Can only be called while the frame is not detached.
+  bool ImagesEnabled();
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.

@@ -657,7 +657,6 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
       blob_registry_remote_(init.context_lifecycle_notifier),
       context_lifecycle_notifier_(init.context_lifecycle_notifier),
       auto_load_images_(true),
-      images_enabled_(true),
       allow_stale_resources_(false),
       image_fetched_(false) {
   InstanceCounters::IncrementCounter(InstanceCounters::kResourceFetcherCounter);
@@ -1673,7 +1672,7 @@ bool ResourceFetcher::IsImageResourceDisallowedToBeReused(
   if (existing_resource.GetType() != ResourceType::kImage)
     return false;
 
-  return !Context().AllowImage(images_enabled_, existing_resource.Url());
+  return !Context().AllowImage();
 }
 
 ResourceFetcher::RevalidationPolicy
@@ -1916,20 +1915,8 @@ void ResourceFetcher::SetAutoLoadImages(bool enable) {
   ReloadImagesIfNotDeferred();
 }
 
-void ResourceFetcher::SetImagesEnabled(bool enable) {
-  if (enable == images_enabled_)
-    return;
-
-  images_enabled_ = enable;
-
-  if (!images_enabled_)
-    return;
-
-  ReloadImagesIfNotDeferred();
-}
-
 bool ResourceFetcher::ShouldDeferImageLoad(const KURL& url) const {
-  return !Context().AllowImage(images_enabled_, url) ||
+  return !Context().AllowImage() ||
          (!auto_load_images_ && !url.ProtocolIsData());
 }
 

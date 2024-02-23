@@ -854,8 +854,9 @@ void Page::SettingsChanged(ChangeType change_type) {
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-          local_frame->GetDocument()->Fetcher()->SetImagesEnabled(
-              GetSettings().GetImagesEnabled());
+          // Notify the fetcher that the image loading setting has changed,
+          // which may cause previously deferred requests to load.
+          local_frame->GetDocument()->Fetcher()->ReloadImagesIfNotDeferred();
           local_frame->GetDocument()->Fetcher()->SetAutoLoadImages(
               GetSettings().GetLoadsImagesAutomatically());
         }

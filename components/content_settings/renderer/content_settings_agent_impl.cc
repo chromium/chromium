@@ -158,7 +158,7 @@ void ContentSettingsAgentImpl::BindContentSettingsManager(
 void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   // Clear "block" flags for the new page. This needs to happen before any of
-  // `allowScript()`, `allowScriptFromSource()`, `allowImage()`, or
+  // `allowScript()`, `allowScriptFromSource()`, or
   // `allowPlugins()` is called for the new page so that these functions can
   // correctly detect that a piece of content flipped from "not blocked" to
   // "blocked".
@@ -279,23 +279,6 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
   return result;
-}
-
-bool ContentSettingsAgentImpl::AllowImage(bool enabled_per_settings,
-                                          const WebURL& image_url) {
-  bool allow = enabled_per_settings;
-  if (enabled_per_settings) {
-    if (IsAllowlistedForContentSettings())
-      return true;
-
-    if (content_setting_rules_) {
-      allow = GetContentSettingFromRules(content_setting_rules_->image_rules,
-                                         image_url) != CONTENT_SETTING_BLOCK;
-    }
-  }
-  if (!allow)
-    DidBlockContentType(ContentSettingsType::IMAGES);
-  return allow;
 }
 
 bool ContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {

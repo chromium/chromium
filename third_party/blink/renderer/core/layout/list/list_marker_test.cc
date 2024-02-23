@@ -49,7 +49,7 @@ class ListMarkerTest : public RenderingTest {
 };
 
 TEST_F(ListMarkerTest, FallbackToTextWhenImagesDisable) {
-  GetDocument().Fetcher()->SetImagesEnabled(false);
+  GetDocument().GetSettings()->SetImagesEnabled(false);
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #decimal {

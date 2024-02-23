@@ -105,7 +105,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                          const AtomicString& initiator_type) override;
-  bool AllowImage(bool images_enabled, const KURL&) const override;
+  bool AllowImage() const override;
 
   void PopulateResourceRequest(ResourceType,
                                const std::optional<float> resource_width,
