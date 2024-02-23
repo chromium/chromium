@@ -131,12 +131,10 @@ bool ShouldRemoveSetting(bool off_the_record,
                          bool restore_session,
                          content_settings::SessionModel session_model,
                          base::Clock* clock) {
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kActiveContentSettingExpiry)) {
-    return false;
-  }
-  // Delete if an expriation date is set and in the past.
-  if (!expiration.is_null() && (expiration < clock->Now())) {
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kActiveContentSettingExpiry) &&
+      !expiration.is_null() && expiration < clock->Now()) {
+    // Delete if an expiration date is set and in the past.
     return true;
   }
 

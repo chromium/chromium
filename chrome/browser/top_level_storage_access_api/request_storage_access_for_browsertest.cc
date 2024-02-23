@@ -816,6 +816,22 @@ IN_PROC_BROWSER_TEST_F(
             "");
 }
 
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       PRE_PermissionGrantsResetAfterRestart) {
+  SetBlockThirdPartyCookies(true);
+  NavigateToPageWithFrame(kHostA);
+  ASSERT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+  ASSERT_EQ("granted", QueryPermission(GetPrimaryMainFrame(), kHostB));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       PermissionGrantsResetAfterRestart) {
+  SetBlockThirdPartyCookies(true);
+  NavigateToPageWithFrame(kHostA);
+  EXPECT_EQ("prompt", QueryPermission(GetPrimaryMainFrame(), kHostB));
+}
+
 class RequestStorageAccessForWithCHIPSBrowserTest
     : public RequestStorageAccessForBaseBrowserTest {
  public:

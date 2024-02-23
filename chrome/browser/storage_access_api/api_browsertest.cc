@@ -2072,6 +2072,27 @@ IN_PROC_BROWSER_TEST_P(
       Gt(0));
 }
 
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
+                       PRE_PermissionGrantsResetAfterRestart) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  ASSERT_EQ("granted", QueryPermission(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
+                       PermissionGrantsResetAfterRestart) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  EXPECT_EQ("prompt", QueryPermission(GetFrame()));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     StorageAccessAPIWithFirstPartySetsBrowserTest,
