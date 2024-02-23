@@ -130,10 +130,10 @@ UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
       << base::UTF16ToUTF8(template_url.short_name());
   std::u16string engine_keyword = template_url.data().keyword();
   int resource_id = search_engines::GetIconResourceId(engine_keyword);
-  CHECK_NE(resource_id, -1, base::NotFatalUntil::M124)
-      << base::UTF16ToUTF8(engine_keyword);
   if (resource_id == -1) {
-    return nil;
+    // It is possible to have no resource id for a prepopulated search engine
+    // that was selected from a country outside of EEA countries.
+    return [UIImage imageNamed:@"default_world_favicon"];
   }
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
   return resource_bundle.GetNativeImageNamed(resource_id).ToUIImage();
