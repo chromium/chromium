@@ -135,8 +135,6 @@ class CAPTURE_EXPORT CameraHalDelegate final
   class PowerManagerClientProxy;
   class VideoCaptureDeviceDelegateMap;
 
-  friend class base::RefCountedThreadSafe<CameraHalDelegate>;
-
   void OnRegisteredCameraHalClient(int32_t result);
 
   void GetSupportedFormats(const cros::mojom::CameraInfoPtr& camera_info,
