@@ -131,7 +131,7 @@ TEST_P(InlineCursorTest, BidiLevelInlineBoxLTR) {
       "abc<b id=def>def</b><bdo dir=rtl><b id=ghi>GHI</b></bdo>jkl</div>");
   Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
   EXPECT_THAT(list,
-              ElementsAre("#linebox", "abc:0", "#def:0", "#ghi:1", "jkl:0"));
+              ElementsAre("#linebox", "abc:0", "#def:0", "#ghi:3", "jkl:0"));
 }
 
 TEST_P(InlineCursorTest, BidiLevelInlineBoxRTL) {
@@ -141,7 +141,7 @@ TEST_P(InlineCursorTest, BidiLevelInlineBoxRTL) {
       "abc<b id=def>def</b><bdo dir=rtl><b id=ghi>GHI</b></bdo>jkl</div>");
   Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
   EXPECT_THAT(list,
-              ElementsAre("#linebox", "#ghi:3", "jkl:2", "#def:1", "abc:2"));
+              ElementsAre("#linebox", "abc:2", "#def:2", "#ghi:3", "jkl:2"));
 }
 
 TEST_P(InlineCursorTest, BidiLevelSimpleLTR) {
@@ -150,8 +150,8 @@ TEST_P(InlineCursorTest, BidiLevelSimpleLTR) {
       "<bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>DEF</bdo><br>"
       "123, jkl <bdo dir=rtl>MNO</bdo></div>");
   Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
-  EXPECT_THAT(list, ElementsAre("#linebox", "DEF:1", "abc:2", "GHI:1", ":0",
-                                "#linebox", "123, jkl:0", "MNO:1"));
+  EXPECT_THAT(list, ElementsAre("#linebox", "DEF:3", "abc:6", "GHI:3", ":0",
+                                "#linebox", "123, jkl:0", "MNO:3"));
 }
 
 TEST_P(InlineCursorTest, BidiLevelSimpleRTL) {
@@ -161,7 +161,7 @@ TEST_P(InlineCursorTest, BidiLevelSimpleRTL) {
       "123, jkl <bdo dir=rtl>MNO</bdo></div>");
   Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
   EXPECT_THAT(
-      list, ElementsAre("#linebox", ":0", "DEF:3", "abc:4", "GHI:3", "#linebox",
+      list, ElementsAre("#linebox", ":0", "DEF:3", "abc:6", "GHI:3", "#linebox",
                         "MNO:3", ":1", "jkl:2", ",:1", "123:2"));
 }
 

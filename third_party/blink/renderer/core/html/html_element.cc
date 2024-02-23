@@ -227,12 +227,11 @@ bool HTMLElement::ShouldSerializeEndTag() const {
 }
 
 static inline CSSValueID UnicodeBidiAttributeForDirAuto(HTMLElement* element) {
+  CHECK(!element->HasTagName(html_names::kBdoTag));
   if (element->HasTagName(html_names::kPreTag) ||
-      element->HasTagName(html_names::kTextareaTag))
+      element->HasTagName(html_names::kTextareaTag)) {
     return CSSValueID::kPlaintext;
-  // FIXME: For bdo element, dir="auto" should result in "bidi-override isolate"
-  // but we don't support having multiple values in unicode-bidi yet.
-  // See https://bugs.webkit.org/show_bug.cgi?id=73164.
+  }
   return CSSValueID::kIsolate;
 }
 
@@ -347,9 +346,11 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     // with `rendering.html#bidi-rendering`. Make sure any changes here are
     // congruent with changes made there.
     if (EqualIgnoringASCIICase(value, "auto")) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kUnicodeBidi,
-          UnicodeBidiAttributeForDirAuto(this));
+      if (!HasTagName(html_names::kBdoTag)) {
+        AddPropertyToPresentationAttributeStyle(
+            style, CSSPropertyID::kUnicodeBidi,
+            UnicodeBidiAttributeForDirAuto(this));
+      }
     } else {
       if (IsValidDirAttribute(value)) {
         AddPropertyToPresentationAttributeStyle(
@@ -357,10 +358,6 @@ void HTMLElement::CollectStyleForPresentationAttribute(
       } else if (IsA<HTMLBodyElement>(*this)) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kDirection, "ltr");
-      }
-      if (!HasTagName(html_names::kBdoTag)) {
-        AddPropertyToPresentationAttributeStyle(
-            style, CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
       }
     }
   } else if (name.Matches(xml_names::kLangAttr)) {

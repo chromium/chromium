@@ -1179,19 +1179,19 @@ TEST_F(OffsetMappingTest, BiDiAroundForcedBreakInPreLine) {
   const Node* text = GetElementById("bdo")->firstChild();
   const OffsetMapping& mapping = GetOffsetMapping();
 
-  EXPECT_EQ(String(u"\u202Efoo\u202C"
+  EXPECT_EQ(String(u"\u2068\u202Efoo\u202C\u2069"
                    u"\n"
-                   u"\u202Ebar\u202C"),
+                   u"\u2068\u202Ebar\u202C\u2069"),
             mapping.GetText());
 
   // Offset mapping should skip generated BiDi control characters.
   ASSERT_EQ(3u, mapping.GetUnits().size());
   TEST_UNIT(mapping.GetUnits()[0], OffsetMappingUnitType::kIdentity, text, 0u,
-            3u, 1u, 4u);  // "foo"
+            3u, 2u, 5u);  // "foo"
   TEST_UNIT(mapping.GetUnits()[1], OffsetMappingUnitType::kIdentity, text, 3u,
-            4u, 5u, 6u);  // "\n"
+            4u, 7u, 8u);  // "\n"
   TEST_UNIT(mapping.GetUnits()[2], OffsetMappingUnitType::kIdentity, text, 4u,
-            7u, 7u, 10u);  // "bar"
+            7u, 10u, 13u);  // "bar"
   TEST_RANGE(mapping.GetRanges(), text, 0u, 3u);
 }
 
@@ -1203,19 +1203,19 @@ TEST_F(OffsetMappingTest, BiDiAroundForcedBreakInPreWrap) {
   const Node* text = GetElementById("bdo")->firstChild();
   const OffsetMapping& mapping = GetOffsetMapping();
 
-  EXPECT_EQ(String(u"\u202Efoo\u202C"
+  EXPECT_EQ(String(u"\u2068\u202Efoo\u202C\u2069"
                    u"\n"
-                   u"\u202Ebar\u202C"),
+                   u"\u2068\u202Ebar\u202C\u2069"),
             mapping.GetText());
 
   // Offset mapping should skip generated BiDi control characters.
   ASSERT_EQ(3u, mapping.GetUnits().size());
   TEST_UNIT(mapping.GetUnits()[0], OffsetMappingUnitType::kIdentity, text, 0u,
-            3u, 1u, 4u);  // "foo"
+            3u, 2u, 5u);  // "foo"
   TEST_UNIT(mapping.GetUnits()[1], OffsetMappingUnitType::kIdentity, text, 3u,
-            4u, 5u, 6u);  // "\n"
+            4u, 7u, 8u);  // "\n"
   TEST_UNIT(mapping.GetUnits()[2], OffsetMappingUnitType::kIdentity, text, 4u,
-            7u, 7u, 10u);  // "bar"
+            7u, 10u, 13u);  // "bar"
   TEST_RANGE(mapping.GetRanges(), text, 0u, 3u);
 }
 
@@ -1227,19 +1227,19 @@ TEST_F(OffsetMappingTest, BiDiAroundForcedBreakInPre) {
   const Node* text = GetElementById("bdo")->firstChild();
   const OffsetMapping& mapping = GetOffsetMapping();
 
-  EXPECT_EQ(String(u"\u202Efoo\u202C"
+  EXPECT_EQ(String(u"\u2068\u202Efoo\u202C\u2069"
                    u"\n"
-                   u"\u202Ebar\u202C"),
+                   u"\u2068\u202Ebar\u202C\u2069"),
             mapping.GetText());
 
   // Offset mapping should skip generated BiDi control characters.
   ASSERT_EQ(3u, mapping.GetUnits().size());
   TEST_UNIT(mapping.GetUnits()[0], OffsetMappingUnitType::kIdentity, text, 0u,
-            3u, 1u, 4u);  // "foo"
+            3u, 2u, 5u);  // "foo"
   TEST_UNIT(mapping.GetUnits()[1], OffsetMappingUnitType::kIdentity, text, 3u,
-            4u, 5u, 6u);  // "\n"
+            4u, 7u, 8u);  // "\n"
   TEST_UNIT(mapping.GetUnits()[2], OffsetMappingUnitType::kIdentity, text, 4u,
-            7u, 7u, 10u);  // "bar"
+            7u, 10u, 13u);  // "bar"
   TEST_RANGE(mapping.GetRanges(), text, 0u, 3u);
 }
 
