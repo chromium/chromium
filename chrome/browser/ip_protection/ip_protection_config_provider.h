@@ -145,7 +145,7 @@ class IpProtectionConfigProvider
  private:
   friend class IpProtectionConfigProviderTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderIdentityBrowserTest,
                            BackoffTimeResetAfterProfileAvailabilityChange);
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderUserSettingBrowserTest,
                            OnIpProtectionEnabledChanged);
