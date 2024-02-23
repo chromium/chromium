@@ -94,8 +94,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
     }
     device_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice, this));
   }
 
   // chromeos::PowerManagerClient::Observer:
@@ -109,8 +108,7 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
     }
     device_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&PowerManagerClientProxy::TryOpenOrCloseDevice, this));
   }
 
   void TryOpenOrCloseDevice() {
@@ -142,8 +140,6 @@ class VideoCaptureDeviceChromeOSDelegate::PowerManagerClientProxy
   base::WeakPtr<VideoCaptureDeviceChromeOSDelegate> device_;
   scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> dbus_task_runner_;
-
-  base::WeakPtrFactory<PowerManagerClientProxy> weak_ptr_factory_{this};
 };
 
 VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
