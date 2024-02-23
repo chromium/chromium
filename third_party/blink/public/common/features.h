@@ -1536,7 +1536,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcHideLocalIpsWithMdns);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace);
 // Initialize VideoEncodeAccelerator on the first encode.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcMultiplexCodec);
 // Feature flag for batching sending of WebRTC RTP UDP packets.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcSendPacketBatch);
 // If enabled, the WebRTC_* threads in peerconnection module will use

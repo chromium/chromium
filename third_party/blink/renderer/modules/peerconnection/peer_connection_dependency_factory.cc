@@ -694,14 +694,6 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
                               WrapCrossThreadWeakPersistent(
                                   webrtc_video_perf_reporter_.Get())));
 
-  // Enable Multiplex codec in SDP optionally.
-  if (base::FeatureList::IsEnabled(blink::features::kWebRtcMultiplexCodec)) {
-    webrtc_encoder_factory = std::make_unique<webrtc::MultiplexEncoderFactory>(
-        std::move(webrtc_encoder_factory));
-    webrtc_decoder_factory = std::make_unique<webrtc::MultiplexDecoderFactory>(
-        std::move(webrtc_decoder_factory));
-  }
-
   if (blink::Platform::Current()->UsesFakeCodecForPeerConnection()) {
     webrtc_encoder_factory =
         std::make_unique<webrtc::FakeVideoEncoderFactory>();
