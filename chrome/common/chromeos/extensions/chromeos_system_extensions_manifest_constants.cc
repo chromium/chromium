@@ -10,10 +10,6 @@ const char kInvalidChromeOSSystemExtensionDeclaration[] =
     "Invalid value for 'chromeos_system_extension'. Must be a dictionary.";
 const char kInvalidExternallyConnectableDeclaration[] =
     "chromeos_system_extension's 'externally_connectable' key must be present "
-    "and its value must contain exactly one allowlisted origin in 'matches' "
-    "array";
-const char kInvalidExternallyConnectableDeclarationWithIWA[] =
-    "chromeos_system_extension's 'externally_connectable' key must be present "
     "and its value must contain only allowlisted origins in 'matches' array";
 const char kInvalidChromeOSSystemExtensionId[] =
     "'chromeos_system_extension' is not allowed for specified extension ID.";

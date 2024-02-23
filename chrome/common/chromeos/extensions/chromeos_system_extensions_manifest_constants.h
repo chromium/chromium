@@ -11,12 +11,9 @@ namespace chromeos {
 // type.
 extern const char kInvalidChromeOSSystemExtensionDeclaration[];
 // Error message returned when a chromeos_system_extension's
-// externally_connectable key contains other than one origin.
-extern const char kInvalidExternallyConnectableDeclaration[];
-// Error message returned when a chromeos_system_extension's
 // externally_connectable key contains other than allowed origin when IWA is
 // supported.
-extern const char kInvalidExternallyConnectableDeclarationWithIWA[];
+extern const char kInvalidExternallyConnectableDeclaration[];
 // Error message returned when extension id is not allowed.
 extern const char kInvalidChromeOSSystemExtensionId[];
 }  // namespace chromeos

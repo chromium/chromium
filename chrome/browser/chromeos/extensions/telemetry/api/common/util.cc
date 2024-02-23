@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
@@ -32,8 +31,7 @@ namespace {
 bool IsWebContentsSecure(content::WebContents* contents) {
   // TODO(b/290909386): Remove this line once we reach a conclusion on
   // how we should perform security check on IWA.
-  if (chromeos::features::IsIWAForTelemetryExtensionAPIEnabled() &&
-      contents->GetLastCommittedURL().SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (contents->GetLastCommittedURL().SchemeIs(chrome::kIsolatedAppScheme)) {
     return true;
   }
   // Ensure the URL connection is secure (e.g. valid certificate).

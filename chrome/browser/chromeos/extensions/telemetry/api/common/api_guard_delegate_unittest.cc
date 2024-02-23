@@ -49,7 +49,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -551,7 +550,6 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
     feature_list_.InitWithFeatures(
         {
             ::ash::features::kShimlessRMA3pDiagnostics,
-            ::chromeos::features::kIWAForTelemetryExtensionAPI,
         },
         {});
 

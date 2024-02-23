@@ -33,11 +33,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -845,10 +843,6 @@ TEST_F(TelemetryExtensionEventManagerTest, RemoveExtensionCutsConnection) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TelemetryExtensionEventManagerTest, RegisterEventIWASuccess) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ::chromeos::features::kIWAForTelemetryExtensionAPI);
-
   auto info = ScopedChromeOSSystemExtensionInfo::CreateForTesting();
   // TODO(b/293560424): Remove this override after we add some valid IWA id to
   // the allowlist.

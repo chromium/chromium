@@ -28,7 +28,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
@@ -179,7 +178,6 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
         {
             ash::features::kShimlessRMA3pDiagnostics,
             ash::features::kShimlessRMA3pDiagnosticsDevMode,
-            chromeos::features::kIWAForTelemetryExtensionAPI,
         },
         {});
     ASSERT_TRUE(testing_profile_manager_.SetUp());

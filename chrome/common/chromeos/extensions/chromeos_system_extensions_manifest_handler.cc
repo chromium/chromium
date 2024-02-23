@@ -46,12 +46,6 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
 
   const auto& extension_info = GetChromeOSExtensionInfoById(extension->id());
 
-  if (!features::IsIWAForTelemetryExtensionAPIEnabled()) {
-    // Verifies allowlisted origins.
-    return matches_list->size() == 1 &&
-           matches_list->front().GetString() == extension_info.pwa_origin;
-  }
-
   std::optional<std::string> iwa_origin;
   if (extension_info.iwa_id.has_value()) {
     iwa_origin =
@@ -90,10 +84,7 @@ bool ChromeOSSystemExtensionHandler::Parse(extensions::Extension* extension,
   // Verifies that chromeos_system_extension's externally_connectable key exists
   // and contains one origin only.
   if (!VerifyExternallyConnectableDefinition(extension)) {
-    *error =
-        base::ASCIIToUTF16(features::IsIWAForTelemetryExtensionAPIEnabled()
-                               ? kInvalidExternallyConnectableDeclarationWithIWA
-                               : kInvalidExternallyConnectableDeclaration);
+    *error = base::ASCIIToUTF16(kInvalidExternallyConnectableDeclaration);
     return false;
   }
 
