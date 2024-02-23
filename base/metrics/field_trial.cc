@@ -954,6 +954,19 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     pickle.WriteString(trial_name);
     pickle.WriteString(group_name);
     pickle.WriteBool(is_overridden);
+
+    if (prev_entry->pickle_size == pickle.size() &&
+        memcmp(prev_entry->GetPickledDataPtr(), pickle.data(), pickle.size()) ==
+            0) {
+      // If the new entry is going to be the exact same as the existing one,
+      // then simply keep the existing one to avoid taking extra space in the
+      // allocator. This should mean that this trial has no params.
+      std::map<std::string, std::string> params;
+      CHECK(prev_entry->GetParams(&params));
+      CHECK(params.empty());
+      continue;
+    }
+
     size_t total_size = sizeof(FieldTrial::FieldTrialEntry) + pickle.size();
     FieldTrial::FieldTrialEntry* new_entry =
         allocator->New<FieldTrial::FieldTrialEntry>(total_size);
