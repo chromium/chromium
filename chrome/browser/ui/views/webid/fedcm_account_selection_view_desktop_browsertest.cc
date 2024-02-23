@@ -27,7 +27,9 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         std::make_unique<FedCmAccountSelectionView>(delegate());
   }
 
-  void ShowUi(const std::string& name) override {
+  void ShowUi(const std::string& name) override { ShowAccounts(); }
+
+  void ShowAccounts(Account::SignInMode mode = Account::SignInMode::kExplicit) {
     std::vector<content::IdentityRequestAccount> accounts = {
         {"id", "email", "name", "given_name", GURL(),
          /*login_hints=*/std::vector<std::string>(),
@@ -39,7 +41,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn, /*request_permission=*/true,
           /*has_login_status_mismatch=*/false}},
-        Account::SignInMode::kExplicit, blink::mojom::RpMode::kWidget,
+        mode, blink::mojom::RpMode::kWidget,
         /*new_account_idp*/ std::nullopt);
   }
 
@@ -58,7 +60,9 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     return account_selection_view_.get();
   }
 
- private:
+  void ResetAccountSelectionView() { account_selection_view_ = nullptr; }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeDelegate> delegate_;
   std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
@@ -118,6 +122,22 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
   browser()->tab_strip_model()->GetActiveWebContents()->WasShown();
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
+                       ModalDialogThenShowThenCloseModalDialog) {
+  PreShow();
+  delegate_->SetAccountSelectedCallback(base::BindOnce(
+      &FedCmAccountSelectionViewBrowserTest::ResetAccountSelectionView,
+      base::Unretained(this)));
+  account_selection_view_->ShowModalDialog(GURL("https://example.test/"));
+  // Because a modal dialog is up, this should save the accounts for later.
+  ShowAccounts(Account::SignInMode::kAuto);
+  // This should trigger auto re-authn without crashing.
+  account_selection_view_->CloseModalDialog();
+  // The account selected callback should have been called, thus the view
+  // should be null now.
+  EXPECT_EQ(nullptr, account_selection_view_);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, DetachAndDelete) {
