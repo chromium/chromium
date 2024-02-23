@@ -10,40 +10,53 @@
  * We define them here since they don't actually exist as bindings under
  * chrome.brailleDisplayPrivate.*.
  */
-import {Key, KeyCode, KeyName} from '/common/key_code.js';
+import {KeyCodeData} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-/**
- * The set of commands sent from a braille display.
- * @enum {string}
- */
-export const BrailleKeyCommand = {
-  PAN_LEFT: 'pan_left',
-  PAN_RIGHT: 'pan_right',
-  LINE_UP: 'line_up',
-  LINE_DOWN: 'line_down',
-  TOP: 'top',
-  BOTTOM: 'bottom',
-  ROUTING: 'routing',
-  SECONDARY_ROUTING: 'secondary_routing',
-  DOTS: 'dots',
-  CHORD: 'chord',
-  STANDARD_KEY: 'standard_key',
-};
+interface Modifiers {
+  altKey?: boolean;
+  ctrlKey?: boolean;
+  shiftKey?: boolean;
+}
 
+// TODO(b/326623426): Move DomKeyCode to common/.
+enum DomKeyCode {
+  ARROW_DOWN = 'ArrowDown',
+  ARROW_LEFT = 'ArrowLeft',
+  ARROW_RIGHT = 'ArrowRight',
+  ARROW_UP = 'ArrowUp',
+  AUDIO_VOLUME_DOWN = 'AudioVolumeDown',
+  AUDIO_VOLUME_UP = 'AudioVolumeUp',
+  BACKSPACE = 'Backspace',
+  DELETE = 'Delete',
+  END = 'End',
+  ENTER = 'Enter',
+  ESCAPE = 'Escape',
+  HOME = 'Home',
+  INSERT = 'Insert',
+  PAGE_DOWN = 'PageDown',
+  PAGE_UP = 'PageUp',
+  TAB = 'Tab',
+}
+
+/** The set of commands sent from a braille display. */
+export enum BrailleKeyCommand {
+  PAN_LEFT = 'pan_left',
+  PAN_RIGHT = 'pan_right',
+  LINE_UP = 'line_up',
+  LINE_DOWN = 'line_down',
+  TOP = 'top',
+  BOTTOM = 'bottom',
+  ROUTING = 'routing',
+  SECONDARY_ROUTING = 'secondary_routing',
+  DOTS = 'dots',
+  CHORD = 'chord',
+  STANDARD_KEY = 'standard_key',
+}
 
 /**
  * Represents a key event from a braille display.
  *
- * @typedef {{command: BrailleKeyCommand,
- *            displayPosition: (undefined|number),
- *            brailleDots: (undefined|number),
- *            standardKeyCode: (undefined|string),
- *            standardKeyChar: (undefined|string),
- *            altKey: (undefined|boolean),
- *            ctrlKey: (undefined|boolean),
- *            shiftKey: (undefined|boolean)
- *          }}
  *  command The name of the command.
  *  displayPosition The 0-based position relative to the start of the currently
  *                  displayed text.  Used for commands that involve routing
@@ -57,37 +70,46 @@ export const BrailleKeyCommand = {
  * ctrlKey Whether the control key was pressed.
  * shiftKey Whether the shift key was pressed.
  */
-export const BrailleKeyEvent = {
+export interface BrailleKeyEvent {
+  command: BrailleKeyCommand;
+  displayPosition?: number;
+  brailleDots?: number;
+  standardKeyCode?: string;
+  standardKeyChar?: string;
+  altKey?: boolean;
+  ctrlKey?: boolean;
+  shiftKey?: boolean;
+}
+
+export namespace BrailleKeyEvent {
   /**
    * Returns the numeric key code for a DOM level 4 key code string.
    * NOTE: Only the key codes produced by the brailleDisplayPrivate API are
    * supported.
-   * @param {string} code DOM level 4 key code.
-   * @return {Key.Code|undefined} The numeric key code, or {@code undefined}
-   *     if unknown.
+   * @param code DOM level 4 key code.
+   * @return The numeric key code, or {@code undefined} if unknown.
    */
-  keyCodeToLegacyCode(code) {
-    return BrailleKeyEvent.legacyKeyCodeMap_[code];
-  },
+  export function keyCodeToLegacyCode(code: string): number {
+    return BrailleKeyEvent.legacyKeyCodeMap[code];
+  }
 
   /**
    * Returns a char value appropriate for a synthezised key event for a given
    * key code.
-   * @param {string} keyCode The DOM level 4 key code.
-   * @return {number} Integral character code.
+   * @param keyCode The DOM level 4 key code.
+   * @return Integer character code.
    */
-  keyCodeToCharValue(keyCode) {
-    /** @const */
-    const SPECIAL_CODES = {
-      [KeyName.BACK]: 0x08,
-      [KeyName.TAB]: 0x09,
-      [KeyName.RETURN]: 0x0A,
+  export function keyCodeToCharValue(keyCode: string): number {
+    const SPECIAL_CODES: Record<string, number> = {
+      [DomKeyCode.BACKSPACE]: 0x08,
+      [DomKeyCode.TAB]: 0x09,
+      [DomKeyCode.ENTER]: 0x0A,
     };
     // Note, the Chrome virtual keyboard falls back on the first character of
     // the key code if the key is not one of the above.  Do the same here.
     return SPECIAL_CODES[keyCode] || keyCode.charCodeAt(0);
-  },
-};
+  }
+
 
 
 
@@ -110,9 +132,8 @@ export const BrailleKeyEvent = {
 
 /**
  * Maps a braille pattern to a standard key code.
- * @type {!Object<number, string>}
  */
-BrailleKeyEvent.brailleDotsToStandardKeyCode = {
+export const brailleDotsToStandardKeyCode: Record<number,string> = {
   0b1: 'A',
   0b11: 'B',
   0b1001: 'C',
@@ -151,21 +172,16 @@ BrailleKeyEvent.brailleDotsToStandardKeyCode = {
   0b10100: '9',
 };
 
-/**
- * Maps a braille chord pattern to a standard key code.
- * @type {!Object<number, string>}
- */
-BrailleKeyEvent.brailleChordsToStandardKeyCode = {
-  0b1000000: KeyName.BACK,
-  0b10100: KeyName.TAB,
-  0b110101: KeyName.ESCAPE,
-  0b101000: KeyName.RETURN,
+/** Maps a braille chord pattern to a standard key code. */
+export const brailleChordsToStandardKeyCode: Record<number,string> = {
+  0b1000000: DomKeyCode.BACKSPACE,
+  0b10100: DomKeyCode.TAB,
+  0b110101: DomKeyCode.ESCAPE,
+  0b101000: DomKeyCode.ENTER,
 };
 
-/**
- * Maps a braille dot chord pattern to standard key modifiers.
- */
-BrailleKeyEvent.brailleDotsToModifiers = {
+/** Maps a braille dot chord pattern to standard key modifiers. */
+export const brailleDotsToModifiers: Record<number, Modifiers> = {
   0b010010: {ctrlKey: true},
   0b100100: {altKey: true},
   0b1000100: {shiftKey: true},
@@ -173,54 +189,56 @@ BrailleKeyEvent.brailleDotsToModifiers = {
   0b1100100: {altKey: true, shiftKey: true},
 };
 
-/**
- * Map from DOM level 4 key codes to legacy numeric key codes.
- * @private {Object<Key.Code>}
- */
-BrailleKeyEvent.legacyKeyCodeMap_ = {
-  [KeyName.BACK]: KeyCode.BACK,
-  [KeyName.TAB]: KeyCode.TAB,
-  [KeyName.RETURN]: KeyCode.RETURN,
-  [KeyName.ESCAPE]: KeyCode.ESCAPE,
-  'Home': KeyCode.HOME,
-  'ArrowLeft': KeyCode.LEFT,
-  'ArrowUp': KeyCode.UP,
-  'ArrowRight': KeyCode.RIGHT,
-  'ArrowDown': KeyCode.DOWN,
-  'PageUp': KeyCode.PRIOR,
-  'PageDown': KeyCode.NEXT,
-  'End': KeyCode.END,
-  [KeyName.INSERT]: KeyCode.INSERT,
-  [KeyName.DELETE]: KeyCode.DELETE,
-  'AudioVolumeDown': KeyCode.VOLUME_DOWN,
-  'AudioVolumeUp': KeyCode.VOLUME_UP,
+/** Map from DOM level 4 key codes to legacy numeric key codes. */
+export const legacyKeyCodeMap: Record<string, number> = {
+  [DomKeyCode.BACKSPACE]: KeyCodeData.BACK.code,
+  [DomKeyCode.TAB]: KeyCodeData.TAB.code,
+  [DomKeyCode.ENTER]: KeyCodeData.RETURN.code,
+  [DomKeyCode.ESCAPE]: KeyCodeData.ESCAPE.code,
+  [DomKeyCode.HOME]: KeyCodeData.HOME.code,
+  [DomKeyCode.ARROW_LEFT]: KeyCodeData.LEFT.code,
+  [DomKeyCode.ARROW_UP]: KeyCodeData.UP.code,
+  [DomKeyCode.ARROW_RIGHT]: KeyCodeData.RIGHT.code,
+  [DomKeyCode.ARROW_DOWN]: KeyCodeData.DOWN.code,
+  [DomKeyCode.PAGE_UP]: KeyCodeData.PRIOR.code,
+  [DomKeyCode.PAGE_DOWN]: KeyCodeData.NEXT.code,
+  [DomKeyCode.END]: KeyCodeData.END.code,
+  [DomKeyCode.INSERT]: KeyCodeData.INSERT.code,
+  [DomKeyCode.DELETE]: KeyCodeData.DELETE.code,
+  [DomKeyCode.AUDIO_VOLUME_DOWN]: KeyCodeData.VOLUME_DOWN.code,
+  [DomKeyCode.AUDIO_VOLUME_UP]: KeyCodeData.VOLUME_UP.code,
 };
+}
 
 // Add 0-9.
 for (let i = '0'.charCodeAt(0); i < '9'.charCodeAt(0); ++i) {
-  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] =
+  BrailleKeyEvent.legacyKeyCodeMap[String.fromCharCode(i)] =
       /** @type {Key.Code} */ (i);
 }
 
 // Add A-Z.
 for (let i = 'A'.charCodeAt(0); i < 'Z'.charCodeAt(0); ++i) {
-  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] =
+  BrailleKeyEvent.legacyKeyCodeMap[String.fromCharCode(i)] =
       /** @type {Key.Code} */ (i);
 }
 
 // Add the F1 to F12 keys.
 for (let i = 0; i < 12; ++i) {
-  BrailleKeyEvent.legacyKeyCodeMap_['F' + (i + 1)] =
+  BrailleKeyEvent.legacyKeyCodeMap['F' + (i + 1)] =
       /** @type {Key.Code} */ (112 + i);
 }
 
 /**
  * The state of a braille display as represented in the
  * chrome.brailleDisplayPrivate API.
- * @typedef {{available: boolean, textRowCount: number,
- *     textColumnCount: number, cellSize: number}}
+ * TODO: Convert this to an interface once the typescript migration is complete.
  */
-export let BrailleDisplayState;
+export abstract class BrailleDisplayState {
+  abstract available: boolean;
+  abstract cellSize: number;
+  abstract textColumnCount: number;
+  abstract textRowCount: number;
+}
 
 TestImportManager.exportForTesting(
     ['BrailleKeyCommand', BrailleKeyCommand],
