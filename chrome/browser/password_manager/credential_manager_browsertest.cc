@@ -267,16 +267,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
 };
 
 // Tests.
-// TODO(crbug.com/326170284) Flaky on Mac, fix and re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AccountChooserWithOldCredentialAndNavigation \
-  DISABLED_AccountChooserWithOldCredentialAndNavigation
-#else
-#define MAYBE_AccountChooserWithOldCredentialAndNavigation \
-  AccountChooserWithOldCredentialAndNavigation
-#endif
+
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
-                       MAYBE_AccountChooserWithOldCredentialAndNavigation) {
+                       AccountChooserWithOldCredentialAndNavigation) {
   // Save credentials with 'skip_zero_click'.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
@@ -418,16 +411,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   }
 }
 
-// TODO(crbug.com/326170284) Flaky on Mac, fix and re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_StoreUpdatesPasswordOfExistingCredential \
-  DISABLED_StoreUpdatesPasswordOfExistingCredential
-#else
-#define MAYBE_StoreUpdatesPasswordOfExistingCredential \
-  StoreUpdatesPasswordOfExistingCredential
-#endif
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
-                       MAYBE_StoreUpdatesPasswordOfExistingCredential) {
+                       StoreUpdatesPasswordOfExistingCredential) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
           ProfilePasswordStoreFactory::GetForProfile(
@@ -727,16 +712,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_EQ(u"P4SSW0RD", passwords[www_url.spec()].front().password_value);
 }
 
-// TODO(crbug.com/326170284) Flaky on Mac, fix and re-enable.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ObsoleteHttpCredentialMovedOnMigrationToHstsSite \
-  DISABLED_ObsoleteHttpCredentialMovedOnMigrationToHstsSite
-#else
-#define MAYBE_ObsoleteHttpCredentialMovedOnMigrationToHstsSite \
-  ObsoleteHttpCredentialMovedOnMigrationToHstsSite
-#endif
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
-                       MAYBE_ObsoleteHttpCredentialMovedOnMigrationToHstsSite) {
+                       ObsoleteHttpCredentialMovedOnMigrationToHstsSite) {
   // Add an http credential to the password store.
   GURL https_origin = https_test_server().base_url();
   ASSERT_TRUE(https_origin.SchemeIs(url::kHttpsScheme));
