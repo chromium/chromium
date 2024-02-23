@@ -34,7 +34,6 @@ class LayoutObject;
 //
 // An element is a scroll adjustment container if it is a scroll container, has
 // sticky position, or is anchor-positioned.
-// TODO(crbug.com/40947467): Implement adjustment for chained anchored.
 //
 // Also stores a similar snapshot for the target of the
 // 'position-fallback-bounds' property.
@@ -121,7 +120,6 @@ class AnchorPositionScrollData
     // - scroll offsets of scroll containers,
     // - opposite of sticky offsets of stick-positioned containers,
     // - `accumulated_offset` of anchor-positioned containers.
-    // TODO(crbug.com/40947467): Implement adjustment for chained anchored.
     gfx::Vector2dF accumulated_offset;
 
     // Sum of the scroll origins of scroll containers in the above containers.

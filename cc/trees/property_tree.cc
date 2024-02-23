@@ -562,7 +562,12 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
                        .FindNodeFromElementId(container_id)) {
       container_transform_id = container_transform->id;
       accumulated_offset -= StickyPositionOffset(container_transform);
-      // TODO(crbug.com/40947467): Adjust for chained anchored containers.
+      // Adjust for chained anchor positioned offset. Note that "-=" here is
+      // different from the blink version in anchor_position_scroll_data.cc
+      // because AnchorPositionOffset() is the opposite of
+      // blink::AnchorPositionScrollData::AccmulatedOffset().
+      accumulated_offset -= AnchorPositionOffset(
+          container_transform, max_updated_node_id, update_data);
     }
     if (container_transform_id > max_updated_node_id) {
       // The adjustment depends on a later transform node that may contain

@@ -109,7 +109,22 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
             gfx::Vector2dF(box_model->StickyPositionOffset());
       }
     }
-    // TODO(crbug.com/40947467): Adjust for sticky and chained anchored.
+    if (const auto* box = DynamicTo<LayoutBox>(container)) {
+      if (box->NeedsAnchorPositionScrollAdjustment()) {
+        // Add accumulated offset from chained anchor-positioned element.
+        // If the data of that element is not up-to-date, when it's updated,
+        // we'll schedule needed update according to the type of the change.
+        result.adjustment_container_ids.push_back(
+            CompositorElementIdFromUniqueObjectId(
+                box->UniqueId(), CompositorElementIdNamespace::
+                                     kAnchorPositionScrollTranslation));
+        result.accumulated_offset +=
+            gfx::Vector2dF(To<Element>(box->GetNode())
+                               ->GetAnchorPositionScrollData()
+                               ->ComputeDefaultAnchorAdjustmentData()
+                               .accumulated_offset);
+      }
+    }
   }
   return result;
 }
