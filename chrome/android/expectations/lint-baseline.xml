@@ -432,6 +432,17 @@
 
     <issue
         id="NewApi"
+        message="Call requires API level 29 (current min is 26): `clearAllContentCaptureData`"
+        errorLine1="            contentCaptureController.clearAllContentCaptureData();"
+        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
+            line="43"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 26): `notifyViewAppeared`"
         errorLine1="        return notifyViewAppeared(parentPlatformSessionData, data);"
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
