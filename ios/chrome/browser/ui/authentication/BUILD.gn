@@ -236,6 +236,7 @@ source_set("eg_test_support+eg2") {
     "//base",
     "//base/test:test_support",
     "//components/signin/public/base",
+    "//components/sync/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/browser/signin/model:capabilities_types",

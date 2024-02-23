@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
@@ -125,12 +124,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
 }
 
 // Tests that history sync opt-in is not presented after sign-in a second time.
@@ -178,12 +177,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
 }
 
 // Tests that history sync opt-in is presented for the following scenario:
@@ -238,12 +237,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
 }
 
 // Tests sign-in and accept history sync opt-in from the settings when having
@@ -276,12 +275,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
 }
 
 // For a signed out user without device accounts, tests that the sign-in row is
@@ -539,12 +538,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // Verify that the identity is still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -632,12 +631,12 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
   // Verify that the History Sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // Verify that the identity is still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }

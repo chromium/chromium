@@ -197,6 +197,8 @@ specific_include_rules = {
     # TODO(crbug.com/1294160): browser should not depend on UI, this is a
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
+    # Use ios/chrome/browser/ui/authentication/signin_earl_grey.h instead
+    "-ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
     # Blanket exception for tests to be allowed to depend on everything.
     "+ios/chrome/browser",
   ],

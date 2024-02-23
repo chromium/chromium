@@ -11,7 +11,9 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -52,6 +54,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [SigninEarlGreyAppInterface forgetFakeIdentity:fakeIdentity];
 }
 
+- (NSString*)primaryAccountGaiaID {
+  return [SigninEarlGreyAppInterface primaryAccountGaiaID];
+}
+
+- (BOOL)isSignedOut {
+  return [SigninEarlGreyAppInterface isSignedOut];
+}
+
 - (void)signOut {
   [SigninEarlGreyAppInterface signOut];
   [self verifySignedOut];
@@ -60,6 +70,15 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
   [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
   [self verifySignedInWithFakeIdentity:identity];
+}
+
+- (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
+}
+
+- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url {
+  [SigninEarlGreyAppInterface
+      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
 }
 
 - (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
@@ -158,6 +177,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [[EarlGrey
       selectElementWithMatcher:getSettingsGoogleSyncAndServicesCellMatcher]
       assertWithMatcher:grey_nil()];
+}
+
+- (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {
+  [SigninEarlGreyAppInterface setSelectedType:type enabled:enabled];
+}
+
+- (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type {
+  return [SigninEarlGreyAppInterface isSelectedTypeEnabled:type];
 }
 
 @end

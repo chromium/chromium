@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -62,8 +61,7 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
@@ -85,8 +83,7 @@
   // Show the web sign-in consistency dialog for the last time.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
@@ -97,8 +94,7 @@
       [ChromeEarlGrey userIntegerPref:prefs::kSigninWebSignDismissalCount],
       @"Dismissal count should be increased to the max value");
   // Asks for the web sign-in consistency that should not succeed.
-  [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   GREYAssertEqual(
       kDefaultWebSignInDismissalCount,
@@ -115,8 +111,7 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           WebSigninPrimaryButtonMatcher()]
@@ -148,8 +143,7 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           WebSigninPrimaryButtonMatcher()]
@@ -175,8 +169,7 @@
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGreyAppInterface
-      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
+  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           WebSigninPrimaryButtonMatcher()]

@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
@@ -1284,9 +1283,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kReadingList)
-              enabled:NO];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kReadingList)
+                          enabled:NO];
 
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
@@ -1335,9 +1333,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kReadingList)
-              enabled:NO];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kReadingList)
+                          enabled:NO];
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
                         SigninPromoViewModeSignedInWithPrimaryAccount];
@@ -1375,9 +1372,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kReadingList)
-              enabled:NO];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kReadingList)
+                          enabled:NO];
   OpenReadingList();
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
                         SigninPromoViewModeSignedInWithPrimaryAccount];
@@ -1441,9 +1437,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // By default, `signinWithFakeIdentity` above enables reading list data type,
   // so turn it off.
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kReadingList)
-              enabled:NO];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kReadingList)
+                          enabled:NO];
 
   // Sign out.
   [SigninEarlGreyUI signOut];

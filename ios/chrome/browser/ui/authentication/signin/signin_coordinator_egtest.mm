@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
@@ -624,7 +623,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // app.
 - (void)testInterruptReauthSignin {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey triggerReauthDialogWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -1024,12 +1023,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // Verify that the identity is still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
@@ -1070,12 +1069,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
   // Verify that the identity is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }

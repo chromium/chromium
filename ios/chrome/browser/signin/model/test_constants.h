@@ -11,7 +11,7 @@
 extern NSString* const kFakeAuthActivityViewIdentifier;
 // Accessibility identifier for the add account button in
 // FakeAuthActivityViewController. See
-// `+[SigninEarlGreyAppInterface addFakeIdentityForSSOAuthAddAccountFlow:]`.
+// `+[SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:]`.
 extern NSString* const kFakeAuthAddAccountButtonIdentifier;
 // Accessibility identifier for the cancel button in
 // FakeAuthActivityViewController.

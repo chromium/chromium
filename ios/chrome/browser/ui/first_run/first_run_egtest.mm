@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -1605,12 +1604,12 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is granted.
   // Verify that MSBB consent is granted.
   GREYAssertTrue(
@@ -1644,12 +1643,12 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is not granted.
   // Verify that MSBB consent is not granted.
   GREYAssertFalse(

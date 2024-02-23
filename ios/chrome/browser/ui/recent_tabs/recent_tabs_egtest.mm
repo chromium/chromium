@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
@@ -408,12 +407,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is granted.
   // Verify that MSBB consent is granted.
   GREYAssertTrue(
@@ -463,12 +462,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is not granted.
   // Verify that MSBB consent is not granted.
   GREYAssertFalse(
@@ -521,12 +520,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Verify that the History Sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
 }
 
 // Tests that no promo to sign-in + sync is shown to a user who is signed out
@@ -641,12 +640,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be enabled.");
-  GREYAssertTrue([SigninEarlGreyAppInterface
-                     isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                 @"Tabs sync should be enabled.");
+  GREYAssertTrue(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be enabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is granted.
   // Verify that MSBB consent is granted.
   GREYAssertTrue(
@@ -695,12 +694,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
-      [SigninEarlGreyAppInterface
+      [SigninEarlGrey
           isSelectedTypeEnabled:syncer::UserSelectableType::kHistory],
       @"History sync should be disabled.");
-  GREYAssertFalse([SigninEarlGreyAppInterface
-                      isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
-                  @"Tabs sync should be disabled.");
+  GREYAssertFalse(
+      [SigninEarlGrey isSelectedTypeEnabled:syncer::UserSelectableType::kTabs],
+      @"Tabs sync should be disabled.");
   // TODO(crbug.com/1467853): Verify that sync consent is not granted.
   // Verify that MSBB consent is not granted.
   GREYAssertFalse(
@@ -717,9 +716,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testNoPromoIfSignedInAndTabsEnabled_SyncToSigninEnabled {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kTabs)
-              enabled:YES];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kTabs)
+                          enabled:YES];
 
   OpenRecentTabsPanel();
   [[EarlGrey
@@ -783,9 +781,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Tapping the promo opens the page to re-enable the toggle.
 - (void)testShowPromoIfSyncingAndDisabledTabs {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [SigninEarlGreyAppInterface
-      setSelectedType:(syncer::UserSelectableType::kTabs)
-              enabled:NO];
+  [SigninEarlGrey setSelectedType:(syncer::UserSelectableType::kTabs)
+                          enabled:NO];
 
   OpenRecentTabsPanel();
   [[EarlGrey
