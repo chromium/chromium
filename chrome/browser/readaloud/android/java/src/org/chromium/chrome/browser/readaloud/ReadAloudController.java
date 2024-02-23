@@ -598,8 +598,10 @@ public class ReadAloudController
         resetCurrentPlayback();
         mCurrentlyPlayingTab = tab;
         mTranslationObserverHandle =
-                TranslateBridge.addTranslationObserver(
-                        mCurrentlyPlayingTab.getWebContents(), mTranslationObserver);
+                mCurrentlyPlayingTab.getWebContents() != null
+                        ? TranslateBridge.addTranslationObserver(
+                                mCurrentlyPlayingTab.getWebContents(), mTranslationObserver)
+                        : 0L;
 
         if (!mPlaybackHooks.voicesInitialized()) {
             mPlaybackHooks.initVoices();
@@ -610,7 +612,7 @@ public class ReadAloudController
         mPlayerCoordinator.playTabRequested();
 
         final String playbackLanguage = getLanguageForNewPlayback(tab);
-        boolean isTranslated = TranslateBridge.isPageTranslated(tab.getWebContents());
+        boolean isTranslated = isTranslated(tab);
         var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
         // TODO: Don't show entrypoints for unsupported languages
         if (voices == null || voices.isEmpty()) {
@@ -824,6 +826,13 @@ public class ReadAloudController
         return getLanguage(language);
     }
 
+    /** A utinilty function doing null checks. */
+    boolean isTranslated(Tab tab) {
+        return tab.getWebContents() == null
+                ? false
+                : TranslateBridge.isPageTranslated(tab.getWebContents());
+    }
+
     /** Is language string includes locale, strip it */
     private String getLanguage(String language) {
         if (language.contains("-")) {
@@ -869,8 +878,7 @@ public class ReadAloudController
         if (mCurrentlyPlayingTab == null) {
             return false;
         }
-        return timepointsSupported(mCurrentlyPlayingTab)
-                && !TranslateBridge.isPageTranslated(mCurrentlyPlayingTab.getWebContents());
+        return timepointsSupported(mCurrentlyPlayingTab) && !isTranslated(mCurrentlyPlayingTab);
     }
 
     @Override

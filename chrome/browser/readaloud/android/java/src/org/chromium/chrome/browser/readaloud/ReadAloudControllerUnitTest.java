@@ -1336,6 +1336,34 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testTranslationListenerRegistration_nullWebContents() {
+        // Play tab.
+        when(mTab.getWebContents()).thenReturn(null);
+        requestAndStartPlayback();
+
+        assertEquals(0, mFakeTranslateBridge.getObserverCount());
+
+        // stopping playback should not a listener
+        mController.maybeStopPlayback(mTab);
+        assertEquals(0, mFakeTranslateBridge.getObserverCount());
+    }
+
+    @Test
+    public void testIsPageTranslated_nullWebContent() {
+        mFakeTranslateBridge.setIsPageTranslated(true);
+
+        when(mTab.getWebContents()).thenReturn(null);
+        assertFalse(mController.isTranslated(mTab));
+    }
+
+    @Test
+    public void testIsPageTranslated() {
+
+        mFakeTranslateBridge.setIsPageTranslated(true);
+        assertTrue(mController.isTranslated(mTab));
+    }
+
+    @Test
     public void testIsTranslatedChangedStopsPlayback() {
         // Play tab.
         requestAndStartPlayback();
