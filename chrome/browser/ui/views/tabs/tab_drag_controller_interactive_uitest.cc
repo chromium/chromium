@@ -2084,20 +2084,18 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Move to the first tab and drag it enough so that it detaches.
   int tab_0_width = tab_strip->tab_at(0)->width();
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   DragTabAndNotify(tab_strip,
                    base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                       ReleaseInputAfterWindowDetached,
                                   base::Unretained(this), tab_0_width));
-  Browser* new_browser = new_browser_observer.Wait();
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
+
   // Should no longer be dragging.
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
 
   // There should now be another browser.
   ASSERT_EQ(2u, browser_list->size());
+  Browser* new_browser = browser_list->get(1);
   ASSERT_TRUE(new_browser->window()->IsActive());
   TabStrip* tab_strip2 = GetTabStripForBrowser(new_browser);
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
