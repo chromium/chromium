@@ -663,6 +663,12 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="UNKNOWN"/>
 </enum>
 
+<enum name="SyncErrorUiAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Button clicked"/>
+</enum>
+
 <enum name="SyncFeatureOrTransport">
   <int value="0" label="Full Sync feature."/>
   <int value="1" label="Sync transport only."/>

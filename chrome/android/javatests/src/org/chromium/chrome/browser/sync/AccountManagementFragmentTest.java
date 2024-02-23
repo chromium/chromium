@@ -32,6 +32,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -41,12 +42,14 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -120,6 +123,7 @@ public class AccountManagementFragmentTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -311,12 +315,19 @@ public class AccountManagementFragmentTest {
                         });
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
+
+        HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.ClientOutOfDate",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in and open settings.
         mSigninTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
     @Test
@@ -332,12 +343,20 @@ public class AccountManagementFragmentTest {
                         });
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
+
+        // Expect no records.
+        HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Sync.IdentityErrorCard.ClientOutOfDate")
+                        .build();
+
         // Sign in and open settings.
         mSigninTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
     @Test
@@ -365,12 +384,20 @@ public class AccountManagementFragmentTest {
                         });
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
+
+        // Expect no records.
+        HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Sync.IdentityErrorCard.ClientOutOfDate")
+                        .build();
+
         // Sign in, enable sync and open settings.
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
     @Test
@@ -385,6 +412,12 @@ public class AccountManagementFragmentTest {
                             return fakeSyncServiceImpl;
                         });
 
+        // Expect no records initially.
+        HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Sync.IdentityErrorCard.ClientOutOfDate")
+                        .build();
+
         // Sign in and open settings.
         mSigninTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -392,12 +425,19 @@ public class AccountManagementFragmentTest {
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // No error card exists right now.
         onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        watchIdentityErrorCardShownHistogram.assertExpected();
+
+        watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.ClientOutOfDate",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
 
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
 
         // Error card is showing now.
         onViewWaiting(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        watchIdentityErrorCardShownHistogram.assertExpected();
     }
 
     @Test
@@ -415,6 +455,11 @@ public class AccountManagementFragmentTest {
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
 
+        HistogramWatcher watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.IdentityErrorCard.ClientOutOfDate",
+                        SyncSettingsUtils.ErrorUiAction.SHOWN);
+
         // Sign in and open settings.
         mSigninTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -422,11 +467,19 @@ public class AccountManagementFragmentTest {
         onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
         // The error card exists right now.
         onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+        watchIdentityErrorCardShownHistogram.assertExpected();
+
+        // Expect no records now.
+        watchIdentityErrorCardShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Sync.IdentityErrorCard.ClientOutOfDate")
+                        .build();
 
         // Clear the error.
         fakeSyncService.setRequiresClientUpgrade(false);
 
         // No error card exists anymore.
         onView(withId(R.id.identity_error_card)).check(doesNotExist());
+        watchIdentityErrorCardShownHistogram.assertExpected();
     }
 }

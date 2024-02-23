@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SyncErrorReason">
+  <variant name=".AuthError" summary="Auth error."/>
+  <variant name=".ClientOutOfDate" summary="Client out of date."/>
+  <variant name=".PassphraseRequired" summary="Passphrase required."/>
+  <variant name=".SyncSetupIncomplete" summary="Sync setup incomplete."/>
+  <variant name=".TrustedVaultKeyRequiredForEverything"
+      summary="Trusted vault keys required for everything."/>
+  <variant name=".TrustedVaultKeyRequiredForPasswords"
+      summary="Trusted vault keys required for passwords."/>
+  <variant name=".TrustedVaultRecoverabilityDegradedForEverything"
+      summary="Trusted vault recoverability degraded for everything."/>
+  <variant name=".TrustedVaultRecoverabilityDegradedForPasswords"
+      summary="Trusted vault recoverability degraded for passwords."/>
+</variants>
+
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
@@ -668,6 +683,41 @@ chromium-metrics-reviews@google.com.
     should be compared to counts in the &quot;Remote&quot; buckets of
     Sync.ModelTypeEntityChange3.History.
   </summary>
+</histogram>
+
+<histogram name="Sync.IdentityErrorCard{SyncErrorReason}"
+    enum="SyncErrorUiAction" expires_after="2025-02-20">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Android only.
+
+    Identity error card is shown to signed-in non-syncing users, whenever the
+    user navigates to account settings and there exists an identity error.
+
+    Recorded whenever an error card is shown to the user, and if the user
+    interacts with the card (i.e. presses the button to resolve the error).
+  </summary>
+  <token key="SyncErrorReason"/>
+</histogram>
+
+<histogram name="Sync.IdentityErrorMessage{SyncErrorReason}"
+    enum="SyncErrorUiAction" expires_after="2025-02-20">
+  <owner>ankushkush@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Android only.
+
+    Identity error message is shown to signed-in non-syncing users with an
+    identity error, when certain conditions are met.
+
+    Recorded whenever a message is shown to the user, and if the user interacts
+    with the message(i.e. either dismissing the message or pressing the button
+    to resolve the error).
+  </summary>
+  <token key="SyncErrorReason"/>
 </histogram>
 
 <histogram name="Sync.IncomingInvalidationStatus"

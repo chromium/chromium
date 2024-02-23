@@ -81,6 +81,25 @@ public class SyncSettingsUtils {
         int OTHER_ERRORS = 128;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // These are the actions users can taken on error cards, messages, and notifications.
+    // Keep in sync with SyncErrorUiAction enum in sync/enums.xml, and SyncErrorPromptUIAction enum
+    // in signin/enums.xml.
+    @IntDef({
+        ErrorUiAction.SHOWN,
+        ErrorUiAction.DISMISSED,
+        ErrorUiAction.BUTTON_CLICKED,
+        ErrorUiAction.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ErrorUiAction {
+        int SHOWN = 0;
+        int DISMISSED = 1;
+        int BUTTON_CLICKED = 2;
+        int NUM_ENTRIES = 3;
+    }
+
     // Class to wrap the details of an error card.
     public static class ErrorCardDetails {
         public @StringRes int message;
@@ -623,6 +642,37 @@ public class SyncSettingsUtils {
                 // fall through
             default:
                 return null;
+        }
+    }
+
+    /**
+     * Gets the corresponding histogram name suffix for the error.
+     *
+     * @param error Error reason.
+     * @return Suffix for the histogram.
+     */
+    public static String getHistogramSuffixForError(@SyncError int error) {
+        assert error != SyncError.NO_ERROR;
+        switch (error) {
+            case SyncError.AUTH_ERROR:
+                return ".AuthError";
+            case SyncError.PASSPHRASE_REQUIRED:
+                return ".PassphraseRequired";
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+                return ".SyncSetupIncomplete";
+            case SyncError.CLIENT_OUT_OF_DATE:
+                return ".ClientOutOfDate";
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return ".TrustedVaultKeyRequiredForEverything";
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return ".TrustedVaultKeyRequiredForPasswords";
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return ".TrustedVaultRecoverabilityDegradedForEverything";
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return ".TrustedVaultRecoverabilityDegradedForPasswords";
+            default:
+                assert false;
+                return "";
         }
     }
 }

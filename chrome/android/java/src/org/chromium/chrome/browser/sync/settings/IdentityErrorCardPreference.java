@@ -13,9 +13,11 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorCardDetails;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.sync.SyncService;
 
@@ -78,10 +80,20 @@ public class IdentityErrorCardPreference extends Preference
     }
 
     private void update() {
-        mIdentityError = SyncSettingsUtils.getIdentityError(mSyncService);
+        @SyncError int error = SyncSettingsUtils.getIdentityError(mSyncService);
+        if (error == mIdentityError) {
+            // Nothing changed.
+            return;
+        }
+        mIdentityError = error;
         if (shouldShowErrorCard()) {
             setVisible(true);
             notifyChanged();
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Sync.IdentityErrorCard"
+                            + SyncSettingsUtils.getHistogramSuffixForError(mIdentityError),
+                    ErrorUiAction.SHOWN,
+                    ErrorUiAction.NUM_ENTRIES);
         } else {
             setVisible(false);
         }
@@ -97,7 +109,15 @@ public class IdentityErrorCardPreference extends Preference
         error.setText(context.getString(error_card_details.message));
         button.setText(context.getString(error_card_details.buttonLabel));
 
-        button.setOnClickListener(v -> mListener.onIdentityErrorCardButtonClicked(mIdentityError));
+        button.setOnClickListener(
+                v -> {
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Sync.IdentityErrorCard"
+                                    + SyncSettingsUtils.getHistogramSuffixForError(mIdentityError),
+                            ErrorUiAction.BUTTON_CLICKED,
+                            ErrorUiAction.NUM_ENTRIES);
+                    mListener.onIdentityErrorCardButtonClicked(mIdentityError);
+                });
     }
 
     /** {@link SyncService.SyncStateChangedListener} implementation. */

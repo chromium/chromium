@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.messages.DismissReason;
@@ -81,17 +82,6 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
         int TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS = 5;
         int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING = 6;
         int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 7;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({Action.SHOWN, Action.DISMISSED, Action.BUTTON_CLICKED, Action.NUM_ENTRIES})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface Action {
-        int SHOWN = 0;
-        int DISMISSED = 1;
-        int BUTTON_CLICKED = 2;
-        int NUM_ENTRIES = 3;
     }
 
     private final @MessageType int mType;
@@ -194,7 +184,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
         SyncErrorMessageImpressionTracker.updateLastShownTime();
-        recordHistogram(Action.SHOWN);
+        recordHistogram(ErrorUiAction.SHOWN);
     }
 
     @Override
@@ -230,7 +220,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 break;
         }
 
-        recordHistogram(Action.BUTTON_CLICKED);
+        recordHistogram(ErrorUiAction.BUTTON_CLICKED);
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
@@ -249,43 +239,49 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
         // This metric should be recorded only on explicit dismissal.
         if (reason == DismissReason.GESTURE) {
-            recordHistogram(Action.DISMISSED);
+            recordHistogram(ErrorUiAction.DISMISSED);
         }
     }
 
-    private void recordHistogram(@Action int action) {
+    private void recordHistogram(@ErrorUiAction int action) {
         assert mType != MessageType.NOT_SHOWN;
-        String name = "Signin.SyncErrorMessage.";
+        @SyncError int error = SyncError.NO_ERROR;
+        // TODO(crbug.com/1503649): Remove MessageType enum.
         switch (mType) {
             case MessageType.AUTH_ERROR:
-                name += "AuthError";
+                error = SyncError.AUTH_ERROR;
                 break;
             case MessageType.PASSPHRASE_REQUIRED:
-                name += "PassphraseRequired";
+                error = SyncError.PASSPHRASE_REQUIRED;
                 break;
             case MessageType.SYNC_SETUP_INCOMPLETE:
-                name += "SyncSetupIncomplete";
+                error = SyncError.SYNC_SETUP_INCOMPLETE;
                 break;
             case MessageType.CLIENT_OUT_OF_DATE:
-                name += "ClientOutOfDate";
+                error = SyncError.CLIENT_OUT_OF_DATE;
                 break;
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-                name += "TrustedVaultKeyRequiredForEverything";
+                error = SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING;
                 break;
             case MessageType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                name += "TrustedVaultKeyRequiredForPasswords";
+                error = SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
                 break;
             case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                name += "TrustedVaultRecoverabilityDegradedForEverything";
+                error = SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING;
                 break;
             case MessageType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                name += "TrustedVaultRecoverabilityDegradedForPasswords";
+                error = SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
                 break;
             default:
                 assert false;
                 break;
         }
-        RecordHistogram.recordEnumeratedHistogram(name, action, Action.NUM_ENTRIES);
+        String name =
+                (mSyncService.hasSyncConsent()
+                                ? "Signin.SyncErrorMessage"
+                                : "Sync.IdentityErrorMessage")
+                        + SyncSettingsUtils.getHistogramSuffixForError(error);
+        RecordHistogram.recordEnumeratedHistogram(name, action, ErrorUiAction.NUM_ENTRIES);
     }
 
     // TODO(crbug.com/1503649): Use mType instead error.
