@@ -11,9 +11,11 @@
 #include "base/debug/alias.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/dc_layer_overlay.h"
+#include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
@@ -26,8 +28,10 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_base.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/ipc/common/gpu_client_ids.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
@@ -60,6 +64,157 @@ NOINLINE void CheckForLoopFailures() {
   g_last_reshape_failure = now;
 }
 
+class SharedImageMailboxWithFactoryPtr {
+ public:
+  struct ScopedTraits {
+    static SharedImageMailboxWithFactoryPtr InvalidValue() { return {}; }
+
+    static void Free(SharedImageMailboxWithFactoryPtr scoped_shared_image) {
+      CHECK(!scoped_shared_image.mailbox_.IsZero());
+      CHECK(scoped_shared_image.factory_);
+      CHECK(scoped_shared_image.factory_->DestroySharedImage(
+          scoped_shared_image.mailbox_));
+    }
+  };
+
+  SharedImageMailboxWithFactoryPtr() = default;
+  SharedImageMailboxWithFactoryPtr(const gpu::Mailbox& mailbox,
+                                   gpu::SharedImageFactory& factory)
+      : mailbox_(mailbox), factory_(&factory) {
+    CHECK(!mailbox.IsZero());
+  }
+
+  bool operator==(const SharedImageMailboxWithFactoryPtr& other) const {
+    return std::tie(mailbox_, factory_) ==
+           std::tie(other.mailbox_, other.factory_);
+  }
+
+  const gpu::Mailbox& mailbox() const { return mailbox_; }
+
+ private:
+  gpu::Mailbox mailbox_;
+  raw_ptr<gpu::SharedImageFactory> factory_ = nullptr;
+};
+
+using ScopedSharedImageMailbox =
+    base::ScopedGeneric<SharedImageMailboxWithFactoryPtr,
+                        SharedImageMailboxWithFactoryPtr::ScopedTraits>;
+
+bool CopySharedImage(gpu::SharedContextState* context_state,
+                     gpu::SkiaImageRepresentation* src_representation,
+                     gpu::SkiaImageRepresentation* dst_representation) {
+  CHECK_EQ(src_representation->size(), dst_representation->size());
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedReadAccess>
+      src_read_access = src_representation->BeginScopedReadAccess(
+          &begin_semaphores, &end_semaphores);
+  // We expect the source image to be initialized with no outstanding writes.
+  CHECK(src_read_access);
+  CHECK(begin_semaphores.empty());
+  CHECK(end_semaphores.empty());
+
+  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
+      dst_write_access = dst_representation->BeginScopedWriteAccess(
+          &begin_semaphores, &end_semaphores,
+          gpu::SkiaImageRepresentation::AllowUnclearedAccess::kYes);
+  if (!dst_write_access) {
+    LOG(ERROR) << "Failed to create write access for dst";
+    return false;
+  }
+
+  sk_sp<SkImage> src_image = src_read_access->CreateSkImage(context_state);
+  if (!src_image) {
+    LOG(ERROR) << "Failed to create SkImage for src";
+    return false;
+  }
+
+  const bool flip_y =
+      src_representation->surface_origin() != kTopLeft_GrSurfaceOrigin;
+  if (flip_y) {
+    dst_write_access->surface()->getCanvas()->scale(1, -1);
+    dst_write_access->surface()->getCanvas()->translate(
+        0, -src_representation->size().height());
+  }
+
+  SkPaint non_blending_blit;
+  non_blending_blit.setBlendMode(SkBlendMode::kSrc);
+  SkRect bounds = gfx::RectToSkRect(gfx::Rect(src_representation->size()));
+  dst_write_access->surface()->getCanvas()->drawImageRect(
+      src_image.get(), /*src=*/bounds, /*dst=*/bounds, SkSamplingOptions(),
+      &non_blending_blit, SkCanvas::kFast_SrcRectConstraint);
+  dst_representation->SetCleared();
+
+  CHECK(!src_read_access->HasBackendSurfaceEndState());
+
+  GrFlushInfo flush_info = {
+      .fNumSemaphores = end_semaphores.size(),
+      .fSignalSemaphores = end_semaphores.data(),
+  };
+  GrSemaphoresSubmitted flush_result = context_state->gr_context()->flush(
+      dst_write_access->surface(), flush_info);
+  CHECK_EQ(flush_result, GrSemaphoresSubmitted::kYes);
+
+  dst_write_access->ApplyBackendSurfaceEndState();
+
+  return true;
+}
+
+ScopedSharedImageMailbox CopyQuadResource(
+    gpu::SharedContextState* context_state,
+    gpu::raster::GrShaderCache* gr_shader_cache,
+    gpu::SharedImageFactory& shared_image_factory,
+    gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
+    gpu::Mailbox src_mailbox) {
+  std::unique_ptr<gpu::SkiaImageRepresentation> src_representation =
+      shared_image_representation_factory->ProduceSkia(
+          src_mailbox, scoped_refptr<gpu::SharedContextState>(context_state));
+  if (!src_representation) {
+    LOG(ERROR) << "Failed to create Skia representation for quad resource src";
+    return {};
+  }
+
+  // TODO(crbug.com/1524141): We don't expect any HDR content with delegated
+  // compositing due to OverlayProcessorWin bailing when it sees the color
+  // conversion pass.
+  CHECK(!src_representation->color_space().IsHDR());
+
+  const gpu::Mailbox overlay_dst = gpu::Mailbox::GenerateForSharedImage();
+  const SharedImageFormat dst_format = SinglePlaneFormat::kBGRA_8888;
+  const gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();
+  const bool success = shared_image_factory.CreateSharedImage(
+      overlay_dst, dst_format, src_representation->size(), dst_color_space,
+      kTopLeft_GrSurfaceOrigin, src_representation->alpha_type(), nullptr,
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+          gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE,
+      "OutputDeviceDComp_QuadResourceCopy");
+  if (!success) {
+    LOG(ERROR) << "Failed to create shared image for quad resource copy dst";
+    return {};
+  }
+  ScopedSharedImageMailbox overlay_image({overlay_dst, shared_image_factory});
+
+  std::unique_ptr<gpu::SkiaImageRepresentation> dst_representation =
+      shared_image_representation_factory->ProduceSkia(
+          overlay_image.get().mailbox(),
+          scoped_refptr<gpu::SharedContextState>(context_state));
+  // We don't expect |DCompSurfaceImageBacking::ProduceSkia| to fail.
+  CHECK(dst_representation);
+
+  std::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  if (gr_shader_cache) {
+    cache_use.emplace(gr_shader_cache, gpu::kDisplayCompositorClientId);
+  }
+  if (!CopySharedImage(context_state, src_representation.get(),
+                       dst_representation.get())) {
+    LOG(ERROR) << "Failed to copy quad resource src to dst";
+    return {};
+  }
+
+  return overlay_image;
+}
+
 }  // namespace
 
 // Holds reference needed to keep overlay textures alive.
@@ -70,6 +225,11 @@ class SkiaOutputDeviceDComp::OverlayData {
   explicit OverlayData(
       std::unique_ptr<gpu::OverlayImageRepresentation> representation)
       : representation_(std::move(representation)) {}
+
+  OverlayData(std::unique_ptr<gpu::OverlayImageRepresentation> representation,
+              ScopedSharedImageMailbox quad_resource_copy)
+      : representation_(std::move(representation)),
+        quad_resource_copy_(std::move(quad_resource_copy)) {}
 
   ~OverlayData() = default;
   OverlayData(OverlayData&& other) = default;
@@ -93,12 +253,20 @@ class SkiaOutputDeviceDComp::OverlayData {
 
   void EndOverlayAccess() { access_.reset(); }
 
+  // True of this overlay represents a quad with a non-scanout resource that
+  // needs a separate scanout copy to send to DComp.
+  bool IsQuadResourceCopy() const { return quad_resource_copy_.is_valid(); }
+
  private:
   std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
   std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess> access_;
+
+  ScopedSharedImageMailbox quad_resource_copy_;
 };
 
 SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
+    SkiaOutputSurfaceDependency* deps,
+    gpu::SharedImageFactory* shared_image_factory,
     gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
     gpu::SharedContextState* context_state,
     scoped_refptr<gl::Presenter> presenter,
@@ -111,7 +279,12 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
                        std::move(did_swap_buffer_complete_callback)),
       shared_image_representation_factory_(shared_image_representation_factory),
       context_state_(context_state),
-      presenter_(std::move(presenter)) {
+      presenter_(std::move(presenter)),
+      gr_shader_cache_(deps->GetGrShaderCache()),
+      shared_image_manager_(base::raw_ref<gpu::SharedImageManager>::from_ptr(
+          deps->GetSharedImageManager())),
+      shared_image_factory_(base::raw_ref<gpu::SharedImageFactory>::from_ptr(
+          shared_image_factory)) {
   DCHECK(!feature_info->workarounds()
               .disable_post_sub_buffers_for_onscreen_surfaces);
   capabilities_.uses_default_gl_framebuffer = true;
@@ -190,11 +363,74 @@ void SkiaOutputDeviceDComp::OnPresentFinished(
       kv.second.EndOverlayAccess();
   }
 
+  if (force_failure_on_next_swap_) {
+    result.swap_result = gfx::SwapResult::SWAP_FAILED;
+    force_failure_on_next_swap_ = false;
+  }
+
   FinishSwapBuffers(std::move(result), swap_size, std::move(frame));
+}
+
+bool SkiaOutputDeviceDComp::EnsureDCompSurfaceCopiesForNonOverlayResources(
+    const SkiaOutputSurface::OverlayList& overlays) {
+  for (auto& overlay : overlays) {
+    if (overlay.resource_size_in_pixels.IsEmpty() || overlay.mailbox.IsZero()) {
+      // No resource to copy, we can safely skip this overlay.
+      continue;
+    }
+
+    if (overlays_.contains(overlay.mailbox)) {
+      // Resource already has an active overlay access.
+      continue;
+    }
+
+    // Lookup the mailbox's usage after checking for existing copies since the
+    // mailbox lookup is protected by a lock.
+    const std::optional<uint32_t> candidate_image_usage =
+        shared_image_manager_->GetUsageForMailbox(overlay.mailbox);
+    const bool needs_dcomp_copy =
+        candidate_image_usage.has_value() &&
+        (candidate_image_usage.value() & gpu::SHARED_IMAGE_USAGE_SCANOUT) == 0;
+    if (needs_dcomp_copy) {
+      ScopedSharedImageMailbox quad_resource_copy = CopyQuadResource(
+          context_state_, gr_shader_cache_, shared_image_factory_.get(),
+          shared_image_representation_factory_,
+          /*src_mailbox=*/overlay.mailbox);
+      if (!quad_resource_copy.is_valid()) {
+        LOG(ERROR) << "Failed to copy quad resource to dcomp surface.";
+        return false;
+      }
+
+      std::unique_ptr<gpu::OverlayImageRepresentation> overlay_representation =
+          shared_image_representation_factory_->ProduceOverlay(
+              quad_resource_copy.get().mailbox());
+      // We don't expect |DCompSurfaceImageBacking::ProduceOverlay| to fail.
+      CHECK(overlay_representation);
+
+      overlays_.emplace(overlay.mailbox,
+                        OverlayData(std::move(overlay_representation),
+                                    std::move(quad_resource_copy)));
+    }
+  }
+
+  DVLOG(1) << "quad resource copies = "
+           << base::ranges::count_if(
+                  overlays_,
+                  [](const auto& kv) { return kv.second.IsQuadResourceCopy(); })
+           << " / overlays = " << overlays.size();
+
+  return true;
 }
 
 void SkiaOutputDeviceDComp::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
+  if (base::FeatureList::IsEnabled(
+          features::kCopyNonOverlayResourcesToDCompSurfaces)) {
+    if (!EnsureDCompSurfaceCopiesForNonOverlayResources(overlays)) {
+      ForceFailureOnNextSwap();
+    }
+  }
+
   for (auto& dc_layer : overlays) {
     // Only use the first shared image mailbox for accessing as an overlay.
     const gpu::Mailbox& mailbox = dc_layer.mailbox;
@@ -247,6 +483,10 @@ SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
 
   std::tie(it, std::ignore) = overlays_.emplace(mailbox, std::move(overlay));
   return it->second.BeginOverlayAccess();
+}
+
+void SkiaOutputDeviceDComp::ForceFailureOnNextSwap() {
+  force_failure_on_next_swap_ = true;
 }
 
 bool SkiaOutputDeviceDComp::Reshape(const SkImageInfo& image_info,

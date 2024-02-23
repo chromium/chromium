@@ -2166,6 +2166,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
             GetDidSwapBuffersCompleteCallback(), GetReleaseOverlaysCallback());
 #else   // !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
+            dependency_, shared_image_factory_.get(),
             shared_image_representation_factory_.get(), context_state_.get(),
             presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback());
@@ -2319,6 +2320,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
   if (presenter_) {
     output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
+        dependency_, shared_image_factory_.get(),
         shared_image_representation_factory_.get(), context_state_.get(),
         presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());

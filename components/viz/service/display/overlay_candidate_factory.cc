@@ -330,9 +330,11 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     ResourceId resource_id,
     bool y_flipped,
     OverlayCandidate& candidate) const {
-  if (resource_id != kInvalidResourceId &&
-      !resource_provider_->IsOverlayCandidate(resource_id))
+  if (!context_.allow_non_overlay_resources &&
+      resource_id != kInvalidResourceId &&
+      !resource_provider_->IsOverlayCandidate(resource_id)) {
     return CandidateStatus::kFailNotOverlay;
+  }
 
   if (quad->visible_rect.IsEmpty())
     return CandidateStatus::kFailVisible;
