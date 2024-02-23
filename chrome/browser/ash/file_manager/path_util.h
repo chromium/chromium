@@ -26,8 +26,7 @@ class DataTransferEndpoint;
 struct FileInfo;
 }  // namespace ui
 
-namespace file_manager {
-namespace util {
+namespace file_manager::util {
 
 // Absolute path for FuseBox media mount point (sans a trailing slash).
 extern const base::FilePath::CharType kFuseBoxMediaPath[];
@@ -253,7 +252,6 @@ std::vector<ui::FileInfo> ParseFileSystemSources(
     const ui::DataTransferEndpoint* source,
     const base::Pickle& pickle);
 
-}  // namespace util
-}  // namespace file_manager
+}  // namespace file_manager::util
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_PATH_UTIL_H_
