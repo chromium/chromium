@@ -9,9 +9,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 
 namespace base {
@@ -32,6 +36,16 @@ BASE_FEATURE(kThreadControllerSetsProfilerMetadata,
 // initialization on other clients but that's still way better than the current
 // situation which is reporting all the time.
 std::atomic<bool> g_thread_controller_sets_profiler_metadata{true};
+
+// ThreadController interval metrics are mostly of interest for intervals that
+// are not trivially short. Under a certain threshold it's unlikely that
+// intervention from developers would move metrics. Log with suffix for
+// intervals under a threshold chosen via tracing data. To validate the
+// threshold makes sense and does not filter out too many samples
+// ThreadController.ActiveIntervalDuration can be used.
+constexpr TimeDelta kNonTrivialActiveIntervalLength = Milliseconds(1);
+constexpr TimeDelta kMediumActiveIntervalLength = Milliseconds(100);
+
 }  // namespace
 
 ThreadController::ThreadController(const TickClock* time_source)
@@ -69,6 +83,26 @@ bool ThreadController::RunLevelTracker::RunLevel::ShouldRecordSampleMetadata() {
       std::memory_order_relaxed);
 }
 
+std::string ThreadController::RunLevelTracker::RunLevel::GetSuffixForHistogram(
+    TimeDelta duration) {
+  StringPiece time_suffix;
+  // No time specified
+  if (duration == TimeDelta()) {
+    time_suffix = "Any";
+  } else if (duration < kNonTrivialActiveIntervalLength) {
+    time_suffix = "Short";
+  } else if (duration < kMediumActiveIntervalLength) {
+    time_suffix = "Medium";
+  }
+
+  StringPiece thread_name = "Other";
+  if (!time_keeper_->thread_name().empty()) {
+    thread_name = time_keeper_->thread_name();
+  }
+
+  return base::StrCat({".", time_suffix, ".", thread_name});
+}
+
 void ThreadController::EnableMessagePumpTimeKeeperMetrics(
     const char* thread_name) {
   // MessagePump runs too fast, a low-res clock would result in noisy metrics.
@@ -86,6 +120,8 @@ void ThreadController::RunLevelTracker::EnableTimeKeeperMetrics(
 void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
     const char* thread_name) {
   DCHECK(!histogram_);
+  thread_name_ = thread_name;
+
   histogram_ = LinearHistogram::FactoryGet(
       JoinString({"Scheduling.MessagePumpTimeKeeper", thread_name}, "."), 1,
       Phase::kLastPhase, Phase::kLastPhase + 1,
@@ -168,7 +204,7 @@ void ThreadController::RunLevelTracker::OnWorkStarted(LazyNow& lazy_now) {
     }
 
     // Going from kIdle or kInBetweenWorkItems to kRunningWorkItem.
-    run_levels_.top().UpdateState(kRunningWorkItem);
+    run_levels_.top().UpdateState(kRunningWorkItem, lazy_now);
   }
 }
 
@@ -206,7 +242,7 @@ void ThreadController::RunLevelTracker::OnWorkEnded(LazyNow& lazy_now,
   // Whether we exited a nested run-level or not: the current run-level is now
   // transitioning from kRunningWorkItem to kInBetweenWorkItems.
   DCHECK_EQ(run_levels_.top().state(), kRunningWorkItem);
-  run_levels_.top().UpdateState(kInBetweenWorkItems);
+  run_levels_.top().UpdateState(kInBetweenWorkItems, lazy_now);
 }
 
 void ThreadController::RunLevelTracker::OnIdle(LazyNow& lazy_now) {
@@ -216,7 +252,7 @@ void ThreadController::RunLevelTracker::OnIdle(LazyNow& lazy_now) {
 
   DCHECK_NE(run_levels_.top().state(), kRunningWorkItem);
   time_keeper_.RecordEndOfPhase(kIdleWork, lazy_now);
-  run_levels_.top().UpdateState(kIdle);
+  run_levels_.top().UpdateState(kIdle, lazy_now);
 }
 
 void ThreadController::RunLevelTracker::RecordScheduleWork() {
@@ -265,13 +301,13 @@ ThreadController::RunLevelTracker::RunLevel::RunLevel(
     // phase ends.
     time_keeper_->RecordEndOfPhase(kWorkItemSuspendedOnNested, lazy_now);
   }
-  UpdateState(initial_state);
+  UpdateState(initial_state, lazy_now);
 }
 
 ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
   if (!was_moved_) {
     DCHECK(exit_lazy_now_);
-    UpdateState(kIdle);
+    UpdateState(kIdle, *exit_lazy_now_);
     if (is_nested_) {
       // Attribute the entire time in this nested RunLevel to kNested phase. If
       // this wasn't the last nested RunLevel, this is ignored and will be
@@ -293,7 +329,93 @@ ThreadController::RunLevelTracker::RunLevel::~RunLevel() {
 ThreadController::RunLevelTracker::RunLevel::RunLevel(RunLevel&& other) =
     default;
 
-void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
+void ThreadController::RunLevelTracker::RunLevel::LogPercentageMetric(
+    const char* name,
+    int percentage,
+    base::TimeDelta interval_duration) {
+  UmaHistogramPercentage(
+      base::StrCat({name, GetSuffixForHistogram(TimeDelta())}), percentage);
+  UmaHistogramPercentage(
+      base::StrCat({name, GetSuffixForHistogram(interval_duration)}),
+      percentage);
+}
+
+void ThreadController::RunLevelTracker::RunLevel::LogIntervalMetric(
+    const char* name,
+    base::TimeDelta value,
+    base::TimeDelta interval_duration) {
+  // Log towards "Any" thread suffix first.
+  UmaHistogramTimes(base::StrCat({name, GetSuffixForHistogram(TimeDelta())}),
+                    value);
+  if (interval_duration < kNonTrivialActiveIntervalLength) {
+    UmaHistogramCustomMicrosecondsTimes(
+        base::StrCat({name, GetSuffixForHistogram(interval_duration)}), value,
+        base::Microseconds(1), kNonTrivialActiveIntervalLength, 100);
+  } else if (interval_duration < kMediumActiveIntervalLength) {
+    UmaHistogramCustomTimes(
+        base::StrCat({name, GetSuffixForHistogram(interval_duration)}), value,
+        kNonTrivialActiveIntervalLength, kMediumActiveIntervalLength, 100);
+  }
+}
+
+void ThreadController::RunLevelTracker::RunLevel::LogOnActiveMetrics(
+    LazyNow& lazy_now) {
+  CHECK(last_active_start_.is_null());
+  CHECK(last_active_threadtick_start_.is_null());
+
+  if (!last_active_end_.is_null()) {
+    const base::TimeDelta idle_time = lazy_now.Now() - last_active_end_;
+    LogIntervalMetric("ThreadController.IdleDuration", idle_time, idle_time);
+    last_active_end_ = base::TimeTicks();
+  }
+
+  // Taking thread ticks can be expensive. Make sure to do it rarely enough to
+  // not have a discernible impact on performance.
+  static const bool thread_ticks_supported = ThreadTicks::IsSupported();
+  if (thread_ticks_supported && metrics_sub_sampler_.ShouldSample(0.001)) {
+    last_active_start_ = lazy_now.Now();
+    last_active_threadtick_start_ = ThreadTicks::Now();
+  }
+}
+
+void ThreadController::RunLevelTracker::RunLevel::LogOnIdleMetrics(
+    LazyNow& lazy_now) {
+  if (!last_active_start_.is_null()) {
+    const base::TimeDelta elapsed_ticks = lazy_now.Now() - last_active_start_;
+    base::TimeDelta elapsed_thread_ticks =
+        ThreadTicks::Now() - last_active_threadtick_start_;
+
+    // Round to 100% in case of clock imprecisions making it look like
+    // there's impossibly more ThreadTicks than TimeTicks elapsed.
+    elapsed_thread_ticks = std::min(elapsed_thread_ticks, elapsed_ticks);
+
+    LogIntervalMetric("ThreadController.ActiveIntervalDuration", elapsed_ticks,
+                      elapsed_ticks);
+    LogIntervalMetric("ThreadController.ActiveIntervalOffCpuDuration",
+                      elapsed_ticks - elapsed_thread_ticks, elapsed_ticks);
+    LogIntervalMetric("ThreadController.ActiveIntervalOnCpuDuration",
+                      elapsed_thread_ticks, elapsed_ticks);
+
+    // If the interval was shorter than a tick, 100% on-cpu time is assumed.
+    int active_interval_cpu_percentage =
+        elapsed_ticks.is_zero()
+            ? 100
+            : static_cast<int>(
+                  (elapsed_thread_ticks * 100).IntDiv(elapsed_ticks));
+
+    LogPercentageMetric("ThreadController.ActiveIntervalOnCpuPercentage",
+                        active_interval_cpu_percentage, elapsed_ticks);
+
+    // Reset timings.
+    last_active_start_ = base::TimeTicks();
+    last_active_threadtick_start_ = base::ThreadTicks();
+    last_active_end_ = lazy_now.Now();
+  }
+}
+
+void ThreadController::RunLevelTracker::RunLevel::UpdateState(
+    State new_state,
+    LazyNow& lazy_now) {
   // The only state that can be redeclared is idle, anything else should be a
   // transition.
   DCHECK(state_ != new_state || new_state == kIdle)
@@ -308,9 +430,11 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
 
   // Change of state.
   if (is_active) {
+    LogOnActiveMetrics(lazy_now);
+
     // Flow emission is found at
     // ThreadController::RunLevelTracker::RecordScheduleWork.
-    TRACE_EVENT_BEGIN("base", "ThreadController active",
+    TRACE_EVENT_BEGIN("base", "ThreadController active", lazy_now.Now(),
                       *terminating_wakeup_flow_lambda_);
 
     if (ShouldRecordSampleMetadata()) {
@@ -323,7 +447,10 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(State new_state) {
     if (ShouldRecordSampleMetadata()) {
       thread_controller_sample_metadata_.Remove();
     }
-    TRACE_EVENT_END("base");
+
+    LogOnIdleMetrics(lazy_now);
+
+    TRACE_EVENT_END("base", lazy_now.Now());
     // TODO(crbug.com/1021571): Remove this once fixed.
     PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
   }

@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/cancelable_callback.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -23,9 +24,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker_impl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
@@ -99,6 +103,13 @@ enum class WakeUpType {
   kAlign,
 };
 
+// Expresses whether metrics subsampling in ThreadController should always or
+// never sample which affects the count of calls to Now().
+enum class MetricsSampling {
+  kMetricsOn,
+  kMetricsOff,
+};
+
 enum class TestQueuePriority : TaskQueue::QueuePriority {
   kControlPriority = 0,
   kHighestPriority = 1,
@@ -132,10 +143,21 @@ std::string ToString(WakeUpType type) {
   }
 }
 
+std::string ToString(MetricsSampling sampling) {
+  switch (sampling) {
+    case MetricsSampling::kMetricsOn:
+      return "MetricsOn";
+    case MetricsSampling::kMetricsOff:
+      return "MetricsOff";
+  }
+}
+
 std::string GetTestNameSuffix(
-    const testing::TestParamInfo<std::tuple<RunnerType, WakeUpType>>& info) {
+    const testing::TestParamInfo<
+        std::tuple<RunnerType, WakeUpType, MetricsSampling>>& info) {
   return StrCat({"With", ToString(std::get<0>(info.param)).substr(1),
-                 ToString(std::get<1>(info.param))});
+                 ToString(std::get<1>(info.param)),
+                 ToString(std::get<2>(info.param))});
 }
 
 TaskQueueImpl* GetTaskQueueImpl(TaskQueue* task_queue) {
@@ -390,7 +412,8 @@ class FixtureWithMockMessagePump : public Fixture {
 // instead of templated ones. The latter would be more verbose as all method
 // calls to the fixture would need to be like this->method()
 class SequenceManagerTest
-    : public testing::TestWithParam<std::tuple<RunnerType, WakeUpType>>,
+    : public testing::TestWithParam<
+          std::tuple<RunnerType, WakeUpType, MetricsSampling>>,
       public Fixture {
  public:
   SequenceManagerTest() {
@@ -402,6 +425,33 @@ class SequenceManagerTest
         fixture_ =
             std::make_unique<FixtureWithMockMessagePump>(GetWakeUpType());
         break;
+    }
+
+    if (GetSampling() == MetricsSampling::kMetricsOn) {
+      always_sample_scoper_.emplace();
+    } else {
+      never_sample_scoper_.emplace();
+    }
+  }
+
+  // Accounts for the extra calls to Now() that come when sampling is enabled.
+  int GetExtraNowSampleCount() {
+    // When no extra metrics are sampled there are no extra Now() calls.
+    if (GetSampling() == MetricsSampling::kMetricsOff) {
+      return 0;
+    }
+
+    // In both cases when sampling metrics there is a new call to Now() when
+    // ThreadController goes idle and the LazyNow instance used
+    // has no value. There is an equivalent use of LazyNow upon becoming active.
+    // In the case of RunnerType::kMessagePump the LazyNow has no value but it
+    // does when using RunnerType::kMockTaskRunner since it was already
+    // populated on entering OnWorkStarted().
+    switch (GetUnderlyingRunnerType()) {
+      case RunnerType::kMockTaskRunner:
+        return 1;
+      case RunnerType::kMessagePump:
+        return 2;
     }
   }
 
@@ -470,23 +520,37 @@ class SequenceManagerTest
 
   RunnerType GetUnderlyingRunnerType() { return std::get<0>(GetParam()); }
   WakeUpType GetWakeUpType() { return std::get<1>(GetParam()); }
+  MetricsSampling GetSampling() { return std::get<2>(GetParam()); }
 
   TimeTicks FromStartAligned(TimeDelta delta) const override {
     return fixture_->FromStartAligned(delta);
   }
 
  private:
+  std::optional<base::MetricsSubSampler::ScopedAlwaysSampleForTesting>
+      always_sample_scoper_;
+  std::optional<base::MetricsSubSampler::ScopedNeverSampleForTesting>
+      never_sample_scoper_;
   debug::CrashKeyString dummy_key_{"dummy", debug::CrashKeySize::Size64};
   std::unique_ptr<Fixture> fixture_;
 };
 
 auto GetTestTypes() {
   return testing::Values(
-      std::make_tuple(RunnerType::kMessagePump, WakeUpType::kDefault),
+      std::make_tuple(RunnerType::kMessagePump, WakeUpType::kDefault,
+                      MetricsSampling::kMetricsOn),
+      std::make_tuple(RunnerType::kMessagePump, WakeUpType::kDefault,
+                      MetricsSampling::kMetricsOff),
 #if !BUILDFLAG(IS_WIN)
-      std::make_tuple(RunnerType::kMessagePump, WakeUpType::kAlign),
+      std::make_tuple(RunnerType::kMessagePump, WakeUpType::kAlign,
+                      MetricsSampling::kMetricsOn),
+      std::make_tuple(RunnerType::kMessagePump, WakeUpType::kAlign,
+                      MetricsSampling::kMetricsOff),
 #endif
-      std::make_tuple(RunnerType::kMockTaskRunner, WakeUpType::kDefault));
+      std::make_tuple(RunnerType::kMockTaskRunner, WakeUpType::kDefault,
+                      MetricsSampling::kMetricsOn),
+      std::make_tuple(RunnerType::kMockTaskRunner, WakeUpType::kDefault,
+                      MetricsSampling::kMetricsOff));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -568,7 +632,14 @@ TEST_P(SequenceManagerTest, NowNotCalledIfUnneeded) {
 
   RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(0, GetNowTicksCallCount());
+  // In the absence of calls to Now() for TimeObserver the only calls will
+  // come from metrics. There will be one call when the ThreadController
+  // becomes active and one when it becomes idle.
+  int extra_call_count = 0;
+  if (GetSampling() == MetricsSampling::kMetricsOn) {
+    extra_call_count = 2;
+  }
+  EXPECT_EQ(0 + extra_call_count, GetNowTicksCallCount());
 }
 
 TEST_P(SequenceManagerTest,
@@ -589,7 +660,7 @@ TEST_P(SequenceManagerTest,
   RunLoop().RunUntilIdle();
   // Now is called when we start work and then for each task when it's
   // completed. 1 + 6  = 7 calls.
-  EXPECT_EQ(7, GetNowTicksCallCount());
+  EXPECT_EQ(7 + GetExtraNowSampleCount(), GetNowTicksCallCount());
 }
 
 TEST_P(SequenceManagerTest,
@@ -614,7 +685,7 @@ TEST_P(SequenceManagerTest,
   RunLoop().RunUntilIdle();
   // Now is called each time a task is queued, when first task is started
   // running, and when a task is completed. 1 + 6 * 2 = 13 calls.
-  EXPECT_EQ(13, GetNowTicksCallCount());
+  EXPECT_EQ(13 + GetExtraNowSampleCount(), GetNowTicksCallCount());
 }
 
 void NullTask() {}

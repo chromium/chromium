@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
@@ -319,6 +320,8 @@ class BASE_EXPORT ThreadController {
       // for it.
       void RecordEndOfPhase(Phase phase, LazyNow& lazy_now);
 
+      const std::string& thread_name() const { return thread_name_; }
+
      private:
       enum class ShouldRecordReqs {
         // Regular should-record requirements.
@@ -341,6 +344,7 @@ class BASE_EXPORT ThreadController {
 
       static const char* PhaseToEventName(Phase phase);
 
+      std::string thread_name_;
       // Cumulative time deltas for each phase, reported and reset when >=100ms.
       std::array<TimeDelta, Phase::kLastPhase + 1> deltas_ = {};
       // Set at the start of the first work item out-of-idle. Consumed from the
@@ -387,7 +391,7 @@ class BASE_EXPORT ThreadController {
       RunLevel(RunLevel&& other);
       RunLevel& operator=(RunLevel&&) = delete;
 
-      void UpdateState(State new_state);
+      void UpdateState(State new_state, LazyNow& lazy_now);
 
       State state() const { return state_; }
 
@@ -398,10 +402,28 @@ class BASE_EXPORT ThreadController {
       }
 
      private:
+      void LogPercentageMetric(const char* name,
+                               int value,
+                               base::TimeDelta interval_duration);
+      void LogIntervalMetric(const char* name,
+                             base::TimeDelta value,
+                             base::TimeDelta interval_duration);
+      void LogOnActiveMetrics(LazyNow& lazy_now);
+      void LogOnIdleMetrics(LazyNow& lazy_now);
+
+      base::TimeTicks last_active_end_;
+      base::TimeTicks last_active_start_;
+      base::ThreadTicks last_active_threadtick_start_;
+      MetricsSubSampler metrics_sub_sampler_;
+
       State state_ = kIdle;
       bool is_nested_;
 
       bool ShouldRecordSampleMetadata();
+
+      // Get full suffix for histogram logging purposes. |duration| should equal
+      // TimeDelta() when not applicable.
+      std::string GetSuffixForHistogram(TimeDelta duration);
 
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.
