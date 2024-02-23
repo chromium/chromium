@@ -58,7 +58,7 @@ def _GetTarballPath(gcs_tarball_prefix: str) -> str:
   return f'{gcs_tarball_prefix}/{platform}-{arch}/core.tar.gz'
 
 
-def _GetVersionFromManifest() -> Optional[str]:
+def _GetCurrentVersionFromManifest() -> Optional[str]:
   if not os.path.exists(_VERSION_FILE):
     return None
   with open(_VERSION_FILE) as f:
@@ -90,11 +90,12 @@ def main():
     args.version = args.version[len('version:'):]
 
   gcs_tarball_prefix = GetSDKOverrideGCSPath()
-  new_version = gcs_tarball_prefix if gcs_tarball_prefix else args.version
-  curr_version = _GetVersionFromManifest()
-
-  if new_version == curr_version:
-    return 0
+  if not gcs_tarball_prefix:
+    # sdk_override contains the full path but not only the version id. But since
+    # the scenario is limited to dry-run, it's not worth complexity to extract
+    # the version id.
+    if args.version == _GetCurrentVersionFromManifest():
+      return 0
 
   make_clean_directory(SDK_ROOT)
 
@@ -112,18 +113,18 @@ def main():
                    check=True,
                    text=True,
                    input=ensure_file)
+
+    # Verify that the downloaded version matches the expected one.
+    downloaded_version = _GetCurrentVersionFromManifest()
+    if downloaded_version != args.version:
+      logging.error(
+          'SDK version after download does not match expected (downloaded:%s '
+          'vs expected:%s)', downloaded_version, args.version)
+      return 3
   else:
     logging.info('Downloading SDK from GCS...')
     DownloadAndUnpackFromCloudStorage(_GetTarballPath(gcs_tarball_prefix),
                                       SDK_ROOT)
-
-  # Verify that the downloaded version matches the expected one.
-  downloaded_version = _GetVersionFromManifest()
-  if downloaded_version != new_version:
-    logging.error(
-        'SDK version after download does not match expected (downloaded:%s vs expected:%s)',
-        downloaded_version, new_version)
-    return 3
 
   # Build rules (e.g. fidl_library()) depend on updates to the top-level
   # manifest to spot when to rebuild for an SDK update. Ensure that ninja
