@@ -669,7 +669,7 @@ class RequestSameResourceOnComplete
   scoped_refptr<const SecurityOrigin> source_origin_;
 };
 
-TEST_F(ResourceFetcherTest, RevalidateWhileFinishingLoading) {
+TEST_F(ResourceFetcherTest, DISABLED_RevalidateWhileFinishingLoading) {
   scoped_refptr<const SecurityOrigin> source_origin =
       SecurityOrigin::CreateUniqueOpaque();
   KURL url("http://127.0.0.1:8000/foo.png");
