@@ -339,11 +339,9 @@ class XPy:
             self._env['CXXFLAGS'] += f' -isysroot {sdk_path}'
             self._env['LDFLAGS'] += f' -isysroot {sdk_path}'
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
-                f' -Clink-arg=-isysroot -Clink-arg={sdk_path} -Clink-arg=-Wl,-no_fixup_chains'
-            )
+                f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-                f' -Clink-arg=-isysroot -Clink-arg={sdk_path} -Clink-arg=-Wl,-no_fixup_chains'
-            )
+                f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
             # Rust compiletests don't get any of the RUSTFLAGS that we set here
             # and then the clang linker can't find `-lSystem`, unless we set the
             # `SDKROOT`.
@@ -605,10 +603,6 @@ def GitApplyCherryPicks():
     # https://github.com/rust-lang/rust/pull/119185 has been merged.
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                   '14947b410ad23a09251180af50486e247f70b465')
-
-    # TODO: Remove once https://github.com/rust-lang/rust/issues/120830 is resolved.
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  '64fe2093da164e63a7e56fceaf9aa62e6731ad55')
 
     print('Finished applying cherry-picks.')
 

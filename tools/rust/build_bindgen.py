@@ -170,7 +170,7 @@ def main():
         env['CFLAGS'] += f' -isysroot {sdk_path}'
         env['CXXFLAGS'] += f' -isysroot {sdk_path}'
         env['LDFLAGS'] += f' -isysroot {sdk_path}'
-        env['RUSTFLAGS'] += f' -Clink-arg=-isysroot -Clink-arg={sdk_path} -Clink-arg=-Wl,-no_fixup_chains'
+        env['RUSTFLAGS'] += f' -Clink-arg=-isysroot -Clink-arg={sdk_path}'
 
     cargo_args = [
         'build',

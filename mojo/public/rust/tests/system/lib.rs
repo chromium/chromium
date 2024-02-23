@@ -178,7 +178,7 @@ fn test() {
     let goodbye = "goodbye".to_string().into_bytes();
     let mut write_buf = producer.begin().expect("error on write begin");
     expect_ge!(write_buf.len(), goodbye.len());
-    std::mem::MaybeUninit::write_slice(&mut write_buf[0..goodbye.len()], &goodbye);
+    std::mem::MaybeUninit::copy_from_slice(&mut write_buf[0..goodbye.len()], &goodbye);
     // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
     // so they are initialized.
     unsafe {
