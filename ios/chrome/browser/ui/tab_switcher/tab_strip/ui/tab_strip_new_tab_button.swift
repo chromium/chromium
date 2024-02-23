@@ -6,9 +6,24 @@ import UIKit
 
 /// UIView that contains an `UIButton` that opens a new tab.
 class TabStripNewTabButton: UIView {
+  private let button: UIButton = UIButton(type: .custom)
 
   /// Delegate that informs the receiver of actions on the new tab button.
   public var delegate: TabStripNewTabButtonDelegate?
+
+  /// View used for by the `layoutGuideCenter`.
+  public var layoutGuideView: UIView { return button }
+
+  /// `IPHHighlighted` state of the button.
+  public var IPHHighlighted: Bool = false {
+    didSet {
+      button.configuration?.baseForegroundColor =
+        IPHHighlighted ? UIColor.init(named: kSolidWhiteColor) : UIColor(named: kTextSecondaryColor)
+      button.backgroundColor =
+        IPHHighlighted
+        ? UIColor(named: kBlueColor) : UIColor(named: kGroupedSecondaryBackgroundColor)
+    }
+  }
 
   /// `true` if the user is in incognito.
   public var isIncognito: Bool {
@@ -16,8 +31,6 @@ class TabStripNewTabButton: UIView {
       self.updateAccessibilityIdentifier()
     }
   }
-
-  private let button: UIButton = UIButton(type: .custom)
 
   override init(frame: CGRect) {
     isIncognito = false

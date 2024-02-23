@@ -8,7 +8,7 @@ import ios_chrome_browser_shared_ui_util_util_swift
 /// View Controller displaying the TabStrip.
 @objcMembers
 class TabStripViewController: UIViewController, TabStripCellDelegate,
-  TabStripConsumer, TabStripNewTabButtonDelegate
+  TabStripConsumer, TabStripCommands, TabStripNewTabButtonDelegate
 {
 
   // The enum used by the data source to manage the sections.
@@ -74,7 +74,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   /// The LayoutGuideCenter.
   @objc public var layoutGuideCenter: LayoutGuideCenter? {
     didSet {
-      layoutGuideCenter?.reference(view: newTabButton, under: kNewTabButtonGuide)
+      layoutGuideCenter?.reference(view: newTabButton.layoutGuideView, under: kNewTabButtonGuide)
     }
   }
 
@@ -272,6 +272,12 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     snapshot.deleteItems([oldItem])
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: false)
+  }
+
+  // MARK: - TabStripCommands
+
+  func setNewTabButtonOnTabStripIPHHighlighted(_ IPHHighlighted: Bool) {
+    newTabButton.IPHHighlighted = IPHHighlighted
   }
 
   // MARK: - TabStripCellDelegate

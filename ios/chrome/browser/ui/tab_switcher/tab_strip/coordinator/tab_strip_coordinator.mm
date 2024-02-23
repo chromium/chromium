@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
@@ -60,6 +62,10 @@
 
   self.tabStripViewController.mutator = self.mediator;
   self.tabStripViewController.dragDropHandler = self.mediator;
+
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self.tabStripViewController
+                   forProtocol:@protocol(TabStripCommands)];
 }
 
 - (void)stop {
@@ -67,6 +73,8 @@
   _sharingCoordinator = nil;
   [self.mediator disconnect];
   self.mediator = nil;
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(TabStripCommands)];
   self.tabStripViewController = nil;
 }
 

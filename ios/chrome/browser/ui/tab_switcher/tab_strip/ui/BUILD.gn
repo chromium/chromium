@@ -20,6 +20,7 @@ swift_source_set("swift") {
     ":ui",
     ":utils",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/metrics:metrics_bridge",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
