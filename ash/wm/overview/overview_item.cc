@@ -1049,6 +1049,36 @@ void OverviewItem::OnWindowDestroying(aura::Window* window) {
   CHECK_EQ(GetWindow(), window);
 
   if (is_being_dragged_) {
+    // Crash keys for helping debug http://b/322807117.
+    // OI_OWD stands for `OverviewItem::OnWindowDestroying`. Here using the
+    // short version since the log method has a character count limit of 40.
+    OverviewWindowDragController* controller =
+        overview_session_->window_drag_controller();
+    SCOPED_CRASH_KEY_BOOL("OI_OWD", "in_tablet_mode",
+                          Shell::Get()->IsInTabletMode());
+    SCOPED_CRASH_KEY_BOOL("OI_OWD", "controller", !!controller);
+    SCOPED_CRASH_KEY_BOOL("OI_OWD", "is_touch_dragging",
+                          controller && controller->is_touch_dragging());
+    SCOPED_CRASH_KEY_BOOL("OI_OWD", "item", controller && controller->item());
+    SCOPED_CRASH_KEY_NUMBER(
+        "OI_OWD", "drag_behavior",
+        controller
+            ? static_cast<int>(
+                  controller->current_drag_behavior_for_testing())  // IN-TEST
+            : -1);
+
+    SCOPED_CRASH_KEY_NUMBER("OI_OWD", "display_count",
+                            Shell::GetAllRootWindows().size());
+    std::stringstream ss;
+    ss << WindowState::Get(window)->GetStateType();
+    SCOPED_CRASH_KEY_STRING32("OI_OWD", "item_state_type", ss.str());
+
+    auto* snap_group_controller = SnapGroupController::Get();
+    SCOPED_CRASH_KEY_BOOL(
+        "OI_OWD", "snap_group",
+        snap_group_controller &&
+            snap_group_controller->GetSnapGroupForGivenWindow(window));
+
     CHECK_EQ(this, overview_session_->window_drag_controller()->item());
     overview_session_->window_drag_controller()->ResetGesture();
   }
