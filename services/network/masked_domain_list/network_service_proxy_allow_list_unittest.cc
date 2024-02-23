@@ -118,7 +118,8 @@ TEST_F(NetworkServiceProxyAllowListTest, AllowlistIsPopulatedWhenMDLUsed) {
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list.UseMaskedDomainList(mdl);
+  allow_list.UseMaskedDomainList(mdl,
+                                 /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list.IsPopulated());
 }
@@ -133,8 +134,10 @@ TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchHttp) {
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
       GURL("http://example.com"),
@@ -156,8 +159,10 @@ TEST_F(NetworkServiceProxyAllowListTest, ShouldMatchThirdPartyToTopLevelFrame) {
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
       GURL("https://example.com"),
@@ -180,8 +185,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
       GURL("https://example.com"),
@@ -204,8 +211,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(GURL("https://example.com"),
                                            net::NetworkAnonymizationKey()));
@@ -224,8 +233,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_FALSE(allow_list_no_bypass.Matches(
       GURL("https://other.com"),
@@ -246,8 +257,10 @@ TEST_F(NetworkServiceProxyAllowListTest,
   auto* resource_owner = mdl.add_resource_owners();
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(allow_list_no_bypass.Matches(
       GURL("https://example.com"),
@@ -268,8 +281,10 @@ TEST_F(NetworkServiceProxyAllowListTest, AllowListWithoutBypassUsesLessMemory) {
   resource_owner->set_owner_name("foo");
   resource_owner->add_owned_properties("property.com");
   resource_owner->add_owned_resources()->set_domain("example.com");
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_GT(allow_list_first_party_bypass.EstimateMemoryUsage(),
             allow_list_no_bypass.EstimateMemoryUsage());
@@ -309,8 +324,10 @@ TEST_P(NetworkServiceProxyAllowListExperimentGroupMatchTest, Match) {
   resource->add_experiment_group_ids(1);
   resource->add_experiment_group_ids(2);
 
-  allow_list_no_bypass.UseMaskedDomainList(mdl);
-  allow_list_first_party_bypass.UseMaskedDomainList(mdl);
+  allow_list_no_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
+  allow_list_first_party_bypass.UseMaskedDomainList(
+      mdl, /*exclusion_list=*/std::vector<std::string>());
 
   GURL request_url(base::StrCat({"https://", p.req}));
   auto network_anonymization_key =
@@ -321,6 +338,27 @@ TEST_P(NetworkServiceProxyAllowListExperimentGroupMatchTest, Match) {
                                                     network_anonymization_key));
   EXPECT_EQ(p.matches, allow_list_no_bypass.Matches(request_url,
                                                     network_anonymization_key));
+}
+
+TEST_F(NetworkServiceProxyAllowListTest, ExclusionSetDomainsRemovedFromMDL) {
+  NetworkServiceProxyAllowList allow_list_no_bypass(
+      network::mojom::IpProtectionProxyBypassPolicy::kExclusionList);
+  std::set<std::string> mdl_domains(
+      {"com", "example.com", "subdomain.example.com",
+       "sub.subdomain.example.com", "unrelated-example.com", "example.net",
+       "subdomain.example.net", "example.com.example.net", "excluded-tld",
+       "included-tld", "subdomain.excluded-tld", "subdomain.included-tld"});
+  std::set<std::string> exclusion_set(
+      {"example.com", "excluded-tld", "irrelevant-tld"});
+  std::set<std::string> mdl_domains_after_exclusions(
+      {"com", "unrelated-example.com", "example.net", "subdomain.example.net",
+       "example.com.example.net", "included-tld", "subdomain.included-tld"});
+  std::set<std::string> empty_exclusion_set({});
+
+  EXPECT_TRUE(allow_list_no_bypass.ExcludeDomainsFromMDL(
+                  mdl_domains, exclusion_set) == mdl_domains_after_exclusions);
+  EXPECT_TRUE(allow_list_no_bypass.ExcludeDomainsFromMDL(
+                  mdl_domains, empty_exclusion_set) == mdl_domains);
 }
 
 INSTANTIATE_TEST_SUITE_P(

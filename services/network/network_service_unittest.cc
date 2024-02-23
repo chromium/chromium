@@ -187,7 +187,9 @@ TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
   auto* resourceOwner = mdl.add_resource_owners();
   resourceOwner->set_owner_name("foo");
   resourceOwner->add_owned_resources()->set_domain("example.com");
-  service()->UpdateMaskedDomainList(mdl.SerializeAsString());
+  service()->UpdateMaskedDomainList(
+      mdl.SerializeAsString(),
+      /*exclusion_list=*/std::vector<std::string>());
   task_environment()->RunUntilIdle();
 
   mojom::NetworkContextParamsPtr params = CreateContextParams();
@@ -212,7 +214,9 @@ TEST_F(NetworkServiceTest,
   auto* resourceOwner = mdl.add_resource_owners();
   resourceOwner->set_owner_name("foo");
   resourceOwner->add_owned_resources()->set_domain("example.com");
-  service()->UpdateMaskedDomainList(mdl.SerializeAsString());
+  service()->UpdateMaskedDomainList(
+      mdl.SerializeAsString(),
+      /*exclusion_list=*/std::vector<std::string>());
   task_environment()->RunUntilIdle();
 
   mojom::NetworkContextParamsPtr params = CreateContextParams();
@@ -1082,7 +1086,9 @@ TEST_F(NetworkServiceTest, SetMaskedDomainList) {
   resourceOwner->set_owner_name("foo");
   resourceOwner->add_owned_resources()->set_domain("example.com");
 
-  service()->UpdateMaskedDomainList(mdl.SerializeAsString());
+  service()->UpdateMaskedDomainList(
+      mdl.SerializeAsString(),
+      /*exclusion_list=*/std::vector<std::string>());
 
   EXPECT_TRUE(service()->network_service_proxy_allow_list()->IsPopulated());
 }
