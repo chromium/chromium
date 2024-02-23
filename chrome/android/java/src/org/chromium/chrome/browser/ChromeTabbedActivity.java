@@ -1733,11 +1733,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 PartnerBrowserCustomizations.getInstance()
                         .setOnInitializeAsyncFinished(
                                 () -> {
-                                    boolean isActivityFinishingOrDestroyed =
-                                            isActivityFinishingOrDestroyed();
-                                    PartnerBrowserCustomizations.logActivityFinishingOrDestroyed(
-                                            isActivityFinishingOrDestroyed);
-                                    if (!isActivityFinishingOrDestroyed) {
+                                    if (!isActivityFinishingOrDestroyed()) {
                                         createInitialTab();
                                     }
                                 },
@@ -1795,7 +1791,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // If the start surface or grid tab switcher will be shown on start, do not create a new
         // tab.
         String url = null;
-        long createInitialTabStartTime = SystemClock.elapsedRealtime();
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         if (!shouldShowOverviewPageOnStart) {
             GURL homepageGurl = HomepageManager.getHomepageGurl();
@@ -1815,7 +1810,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         PartnerBrowserCustomizations.getInstance()
                 .onCreateInitialTab(
                         url,
-                        createInitialTabStartTime,
                         shouldShowOverviewPageOnStart,
                         getLifecycleDispatcher(),
                         HomepageManager::getHomepageCharacterizationHelper);

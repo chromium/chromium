@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTestUtils.HomepageCharacterizationHelperStub;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.CustomizationProviderDelegateType;
-import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.TaskCompletion;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -199,19 +198,6 @@ public class PartnerCustomizationsUmaUnitTest {
                         .build();
         PartnerCustomizationsUma.logPartnerCustomizationUsage(
                 PartnerCustomizationsUma.CustomizationUsage.HOMEPAGE);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void testLogDelegateUnusedReason() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Android.PartnerCustomization.DelegateUnusedReason",
-                                DelegateUnusedReason.GSERVICES_TIMESTAMP_MISSING)
-                        .build();
-        PartnerCustomizationsUma.logDelegateUnusedReason(
-                DelegateUnusedReason.GSERVICES_TIMESTAMP_MISSING);
         histogramWatcher.assertExpected();
     }
 
@@ -498,22 +484,12 @@ public class PartnerCustomizationsUmaUnitTest {
         return builder;
     }
 
-    private void expectCustomizationInitDuration(HistogramWatcher.Builder builder, int duration) {
-        builder.expectIntRecord(
-                "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks", duration);
-    }
-
     private void expectInitializationCompleted(
             HistogramWatcher.Builder builder,
             boolean wasHomepageCached,
             @CustomizationProviderDelegateType int whichDelegate,
             @TaskCompletion int taskCompletion,
             int durationNeeded) {
-        if (taskCompletion == COMPLETED_IN_TIME || taskCompletion == COMPLETED_TOO_LATE) {
-            builder.expectIntRecord(
-                    "Android.PartnerCustomization.LoadDuration." + delegateName(whichDelegate),
-                    END_TIME - START_TIME);
-        }
         builder.expectIntRecord("Android.PartnerCustomization.TaskCompletion", taskCompletion);
         builder.expectIntRecord(
                 "Android.PartnerCustomization.TaskCompletion." + delegateName(whichDelegate),
@@ -523,24 +499,6 @@ public class PartnerCustomizationsUmaUnitTest {
                     "Android.PartnerCustomization.TaskCompletionNotCached."
                             + delegateName(whichDelegate),
                     taskCompletion);
-        }
-        if (taskCompletion == COMPLETED_TOO_LATE) {
-            builder.expectIntRecord(
-                    "Android.PartnerCustomization.DurationNeededForAsyncCompletion",
-                    durationNeeded);
-            builder.expectIntRecord(
-                    "Android.PartnerCustomization.DurationNeededForAsyncCompletion."
-                            + delegateName(whichDelegate),
-                    durationNeeded);
-            if (!wasHomepageCached) {
-                builder.expectIntRecord(
-                        "Android.PartnerCustomization.DurationNeededForAsyncCompletionNotCached",
-                        durationNeeded);
-                builder.expectIntRecord(
-                        "Android.PartnerCustomization.DurationNeededForAsyncCompletionNotCached."
-                                + delegateName(whichDelegate),
-                        durationNeeded);
-            }
         }
     }
 
@@ -565,7 +523,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateNtpIncorrectlyBeforeCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_INCORRECTLY, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 NOT_CACHED,
@@ -578,13 +535,12 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -594,7 +550,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateNtpCorrectlyBeforeCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_CORRECTLY, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 NOT_CACHED,
@@ -608,12 +563,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_NTP);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, false);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -623,7 +577,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateNtpUnknownBeforeCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_UNKNOWN, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(builder, NOT_CACHED, SOME_DELEGATE, CANCELLED, UNUSED_TIME);
 
         HistogramWatcher histograms = builder.build();
@@ -633,12 +586,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_NTP);
         mPartnerCustomizationsUma.logAsyncInitCancelled();
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, false);
+        mPartnerCustomizationsUma.logAsyncInitFinalized(false);
         // Customization never completes probably due to the async task timing out due to a slow
         // delegate
 
@@ -650,7 +602,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreatePartnerHomepageBeforeCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 NOT_CACHED,
@@ -664,12 +615,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -679,7 +629,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateOtherHomepageBeforeCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(OTHER_CUSTOM_HOMEPAGE, false, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 NOT_CACHED,
@@ -693,12 +642,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HomepageCharacterizationHelperStub::nonPartnerHelper);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -713,7 +661,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateNtpCorrectlyCached() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_CORRECTLY, CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 CACHED,
@@ -727,12 +674,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_NTP);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, false);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -742,7 +688,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreatePartnerHomepageCached() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 CACHED,
@@ -756,12 +701,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, false);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -771,20 +715,18 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateNtpCorrectlyAfterCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(NTP_CORRECTLY, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder, NOT_CACHED, SOME_DELEGATE, COMPLETED_IN_TIME, UNUSED_TIME);
         HistogramWatcher histograms = builder.build();
 
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, false);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(false);
 
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NTP_URL,
-                CREATE_AFTER_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_NTP);
@@ -797,20 +739,18 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreatePartnerHomepageAfterCustomization() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder, NOT_CACHED, SOME_DELEGATE, COMPLETED_IN_TIME, UNUSED_TIME);
         HistogramWatcher histograms = builder.build();
 
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         mPartnerCustomizationsUma.onCreateInitialTab(
                 true,
                 NON_NTP_URL,
-                CREATE_AFTER_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
@@ -828,16 +768,11 @@ public class PartnerCustomizationsUmaUnitTest {
         HistogramWatcher.Builder beforeStartedBuilder =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
-                                "Android.PartnerCustomization.DurationNeededForAsyncCompletion")
-                        .expectNoRecords("Android.PartnerCustomization.TaskCompletion")
-                        .expectNoRecords(
-                                "Android.PartnerCustomization.HomepageCustomizationOutcome")
-                        .expectNoRecords("Android.PartnerCustomization.DelegateUnusedReason");
+                                "Android.PartnerCustomization.HomepageCustomizationOutcome");
 
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                CREATE_BEFORE_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
@@ -846,7 +781,6 @@ public class PartnerCustomizationsUmaUnitTest {
         // Histograms should be emitted once the Async task starts up.
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 NOT_CACHED,
@@ -857,8 +791,8 @@ public class PartnerCustomizationsUmaUnitTest {
 
         mPartnerCustomizationsUma.logAsyncInitStarted(START_TIME);
         PartnerCustomizationsUma.logPartnerCustomizationDelegate(SOME_DELEGATE);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();
@@ -872,7 +806,6 @@ public class PartnerCustomizationsUmaUnitTest {
     public void testCreateInitialTabCalledMultipleTimes() {
         HistogramWatcher.Builder builder =
                 expectCustomizationOutcome(PARTNER_CUSTOM_HOMEPAGE, NOT_CACHED, SOME_DELEGATE);
-        expectCustomizationInitDuration(builder, END_TIME - START_TIME);
         expectInitializationCompleted(
                 builder,
                 NOT_CACHED,
@@ -886,7 +819,6 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
@@ -894,12 +826,11 @@ public class PartnerCustomizationsUmaUnitTest {
         mPartnerCustomizationsUma.onCreateInitialTab(
                 false,
                 NON_NTP_URL,
-                CREATE_DURING_CUSTOMIZATION_A_BIT_LATER_TIME,
                 false,
                 mActivityLifecycleDispatcherMock,
                 HELPER_FOR_PARTNER_NON_NTP);
-        mPartnerCustomizationsUma.logAsyncInitCompleted(END_TIME);
-        mPartnerCustomizationsUma.logAsyncInitFinalized(START_TIME, END_TIME, true);
+        mPartnerCustomizationsUma.logAsyncInitCompleted();
+        mPartnerCustomizationsUma.logAsyncInitFinalized(true);
 
         captureObserverFromLifecycleMockForEnabledFeature().onFinishNativeInitialization();
         histograms.assertExpected();

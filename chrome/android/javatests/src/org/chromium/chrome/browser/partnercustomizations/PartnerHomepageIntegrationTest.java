@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration test suite for partner homepage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class PartnerHomepageIntegrationTest {
     @Rule
     public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
@@ -72,26 +73,6 @@ public class PartnerHomepageIntegrationTest {
                 Uri.parse(
                         ChromeTabUtils.getUrlStringOnUiThread(
                                 mActivityTestRule.getActivity().getActivityTab())));
-        Assert.assertEquals(
-                "<Android.PartnerBrowserCustomizationInitDuration> not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.PartnerBrowserCustomizationInitDuration"));
-        Assert.assertEquals(
-                "<Android.PartnerBrowserCustomizationInitDuration.WithCallbacks> not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks"));
-        Assert.assertEquals(
-                "<Android.PartnerCustomizationInitializedBeforeInitialTab> not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.PartnerCustomizationInitializedBeforeInitialTab"));
-        Assert.assertEquals(
-                "<Android.PartnerCustomizationInitializedBeforeInitialTab> should record true.",
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.PartnerCustomizationInitializedBeforeInitialTab", 1));
     }
 
     /** Clicking the homepage button should load homepage in the current tab. */
