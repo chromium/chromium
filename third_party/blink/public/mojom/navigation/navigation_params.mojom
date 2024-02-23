@@ -396,7 +396,7 @@ struct CommitNavigationParams {
 
   // Encoded version of blink::PageState, opaque history state (received by
   // UpdateState Mojo message).
-  string page_state;
+  mojo_base.mojom.ByteString page_state;
 
   // For browser-initiated navigations, this is the unique id of the
   // NavigationEntry being navigated to. (For renderer-initiated navigations it
