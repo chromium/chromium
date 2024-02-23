@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -184,10 +185,9 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
 }
 
-// Tests that both the 2 steps of the history on overflow menu IPH is displayed.
-// The 2nd step is only displayed if the user taps on the menu while the 1st
-// step IPH is displayed.
-- (void)testOverflowMenuIPHForHistoryShow2Steps {
+// Tests that both the 2 steps of the history on overflow menu IPH is displayed,
+// when the user opens the menu while the 1st step is displayed.
+- (void)testOverflowMenuIPHForHistoryShow2StepsWhenUserOpensMenu {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
@@ -226,8 +226,59 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   }  // End of the sync disabler scope.
 }
 
+// Tests that both the 2 steps of the history on overflow menu IPH is displayed,
+// when the user lets the first step times out.
+- (void)testOverflowMenuIPHForHistoryShow2StepsWhen1stStepTimeout {
+  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The overflow menu IPH only exists when the overflow menu is enabled.")
+  }
+
+  // Enable the IPH flag for this test
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.iph_feature_enabled = "IPH_iOSHistoryOnOverflowMenuFeature";
+  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
+  // Force the conditions that allow the iph to show.
+  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
+  config.additional_args.push_back("SyncedAndFirstDevice");
+
+  // The IPH appears immediately on startup, so don't open a new tab when the
+  // app starts up.
+  [[self class] testForStartup];
+
+  // Scope for the synchronization disabled.
+  {
+    ScopedSynchronizationDisabler syncDisabler;
+
+    [[AppLaunchManager sharedManager]
+        ensureAppLaunchedWithConfiguration:config];
+
+    // The app relaunch (to enable a feature flag) may take a while, therefore
+    // the timeout is extended to 15 seconds.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                @"BubbleViewLabelIdentifier")
+                                    timeout:base::Seconds(15)];
+
+    // Wait for the first IPH to time out.
+    const int bufferForTimeout = 5;
+    [ChromeEarlGrey
+        waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                   @"BubbleViewLabelIdentifier")
+                                       timeout:
+                                           base::Seconds(
+                                               (int)kBubbleVisibilityDuration +
+                                               bufferForTimeout)];
+
+    // Open the tools menu and verify the second tooltip is visible.
+    [ChromeEarlGreyUI openToolsMenu];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+  }  // End of the sync disabler scope.
+}
+
 // Tests that the 2nd step of history on overflow menu IPH is not displayed, if
-// the 1st step IPH is ignored by the user and self-dismissed.
+// the 1st step IPH is dismissed by the user by tapping outside.
 - (void)testOverflowMenuIPHForHistoryNotShow2ndStep {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(
@@ -259,11 +310,11 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
         waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                                 @"BubbleViewLabelIdentifier")
                                     timeout:base::Seconds(15)];
-    // The IPH should self-dismiss in 5 seconds.
-    [ChromeEarlGrey
-        waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
-                                                   @"BubbleViewLabelIdentifier")
-                                       timeout:base::Seconds(7)];
+    // Dismiss the IPH by tapping outside.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            @"BubbleViewLabelIdentifier")]
+        performAction:grey_tapAtPoint(CGPointMake(0, 0))];
+
     // Open the tools menu and verify the 2nd step is not shown.
     [ChromeEarlGreyUI openToolsMenu];
     GREYAssert(![ChromeEarlGrey

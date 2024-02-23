@@ -15,8 +15,6 @@
 
 namespace {
 
-// How long, in seconds, the bubble is visible on the screen.
-const NSTimeInterval kBubbleVisibilityDuration = 5.0;
 // How long, in seconds, the long duration bubble is visible on the screen. Ex.
 // Follow in-product help(IPH) bubble.
 const NSTimeInterval kBubbleVisibilityLongDuration = 8.0;

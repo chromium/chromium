@@ -19,6 +19,8 @@ extern NSString* const kBubbleViewImageViewIdentifier;
 extern NSString* const kBubbleViewSnoozeButtonIdentifier;
 // Accessibility identifier for the arrow view.
 extern NSString* const kBubbleViewArrowViewIdentifier;
+// How long, in seconds, the bubble is visible on the screen.
+extern NSTimeInterval const kBubbleVisibilityDuration;
 
 // Direction for the bubble to point.
 typedef NS_ENUM(NSInteger, BubbleArrowDirection) {

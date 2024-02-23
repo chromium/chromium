@@ -21,3 +21,5 @@ NSString* const kBubbleViewSnoozeButtonIdentifier =
 // Accessibility identifier for the arrow view.
 NSString* const kBubbleViewArrowViewIdentifier =
     @"kBubbleViewArrowViewIdentifier";
+// How long, in seconds, the bubble is visible on the screen.
+NSTimeInterval const kBubbleVisibilityDuration = 5.0;
