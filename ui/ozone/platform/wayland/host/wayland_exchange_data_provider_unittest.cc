@@ -63,6 +63,28 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   EXPECT_EQ("pickled-str", read_pickled_str);
 }
 
+TEST(WaylandExchangeDataProviderTest, FileContents) {
+  constexpr std::string kName("filename");
+  constexpr std::string kContents("contents");
+  const std::string kMimeType("application/octet-stream;name=\"filename\"");
+
+  WaylandExchangeDataProvider provider;
+  provider.AddData(ToClipboardData(kContents), kMimeType);
+
+  std::vector<std::string> mime_types = provider.BuildMimeTypesList();
+  EXPECT_THAT(mime_types, ::testing::Contains(kMimeType));
+
+  base::FilePath get_file_name;
+  std::string get_file_contents;
+  EXPECT_TRUE(provider.GetFileContents(&get_file_name, &get_file_contents));
+  EXPECT_EQ(kName, get_file_name.value());
+  EXPECT_EQ(kContents, get_file_contents);
+
+  std::string extracted;
+  EXPECT_TRUE(provider.ExtractData(kMimeType, &extracted));
+  EXPECT_EQ(kContents, extracted);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST(WaylandExchangeDataProviderTest, AddAndExtractDataTransferEndpoint) {
   std::string kExpectedEncodedDte =
