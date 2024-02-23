@@ -943,28 +943,19 @@ bool ReplacePrefix(std::string* const s,
   return false;
 }
 
-std::string GetPathDisplayTextForSettings(Profile* profile,
-                                          const std::string& path) {
+std::string GetPathDisplayTextForSettings(Profile* const profile,
+                                          const std::string_view path) {
   std::string result(path);
   DriveIntegrationService* service =
       DriveIntegrationServiceFactory::FindForProfile(profile);
   if (service && !service->is_enabled()) {
     service = nullptr;
   }
-  if (ReplacePrefix(&result, "/home/chronos/user/Downloads",
-                    kFolderNameDownloads)) {
-  } else if (ReplacePrefix(&result,
-                           "/home/chronos/" + profile->GetBaseName().value() +
-                               "/Downloads",
-                           kFolderNameDownloads)) {
+
+  if (ReplacePrefix(&result, "/home/chronos/user/MyFiles", "My files")) {
   } else if (ReplacePrefix(
-                 &result,
-                 std::string("/home/chronos/user/") + kFolderNameMyFiles,
+                 &result, profile->GetPath().Append(kFolderNameMyFiles).value(),
                  "My files")) {
-  } else if (ReplacePrefix(&result,
-                           "/home/chronos/" + profile->GetBaseName().value() +
-                               "/" + kFolderNameMyFiles,
-                           "My files")) {
   } else if (service &&
              ReplacePrefix(
                  &result,
@@ -1037,7 +1028,7 @@ std::string GetPathDisplayTextForSettings(Profile* profile,
     // Strip prefix of "/media/archive/" including trailing slash.
   }
 
-  base::ReplaceChars(result, "/", " \u203a ", &result);
+  base::ReplaceChars(result, "/", " › ", &result);
   return result;
 }
 

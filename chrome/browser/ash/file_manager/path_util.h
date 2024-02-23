@@ -213,17 +213,19 @@ bool ReplacePrefix(std::string* s,
                    std::string_view replacement);
 
 // Convert path into a string suitable for display in settings.
-// Replacements:
-// * /home/chronos/user/Downloads                => Downloads
-// * /home/chronos/u-<hash>/Downloads            => Downloads
-// * /media/fuse/drivefs-<hash>/root             => Google Drive
-// * /media/fuse/drivefs-<hash>/team_drives      => Team Drives
-// * /media/fuse/drivefs-<hash>/Computers        => Computers
+// Replacement examples:
+// * /home/chronos/user/MyFiles                  => My files
+// * /home/chronos/u-<hash>/MyFiles              => My files
+// * /media/fuse/drivefs-<hash>/root             => Google Drive › My Drive
+// * /media/fuse/drivefs-<hash>/team_drives      => Google Drive › Team Drives
+// * /media/fuse/drivefs-<hash>/Computers        => Google Drive › Computers
 // * /run/arc/sdcard/write/emulated/0            => Play files
 // * /media/fuse/crostini_<hash>_termina_penguin => Linux files
-// * '/' with ' \u203a ' (angled quote sign) for display purposes.
+// * /media/archive/<id>                         => <id>
+// * /media/removable/<id>                       => <id>
+// * '/' with ' › ' (angled quote sign) for display purposes.
 std::string GetPathDisplayTextForSettings(Profile* profile,
-                                          const std::string& path);
+                                          std::string_view path);
 
 // Extracts |mount_name|, |file_system_name|, and |full_path| from given
 // |absolute_path|.

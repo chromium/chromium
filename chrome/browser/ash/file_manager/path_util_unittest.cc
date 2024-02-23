@@ -149,22 +149,6 @@ TEST_F(FileManagerPathUtilTest, GetMyFilesFolderForProfile) {
 }
 
 TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
-  EXPECT_EQ("Downloads", GetPathDisplayTextForSettings(
-                             profile_.get(), "/home/chronos/user/Downloads"));
-
-  EXPECT_EQ("Downloads",
-            GetPathDisplayTextForSettings(
-                profile_.get(), "/home/chronos/u-0123456789abcdef/Downloads"));
-
-  EXPECT_EQ("Downloads › a › b › c",
-            GetPathDisplayTextForSettings(
-                profile_.get(), "/home/chronos/user/Downloads/a/b/c"));
-
-  EXPECT_EQ(
-      "Downloads › a › b › c",
-      GetPathDisplayTextForSettings(
-          profile_.get(), "/home/chronos/u-0123456789abcdef/Downloads/a/b/c"));
-
   EXPECT_EQ("My files", GetPathDisplayTextForSettings(
                             profile_.get(), "/home/chronos/user/MyFiles"));
 
@@ -235,8 +219,7 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   TestingProfile profile2(FilePath("/home/chronos/u-0123456789abcdef"));
   user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId(profile2.GetProfileUserName(), "12345"));
-  PrefService* prefs = profile2.GetPrefs();
-  prefs->SetString(drive::prefs::kDriveFsProfileSalt, "a");
+  profile2.GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 
   drive::DriveIntegrationServiceFactory::GetForProfile(&profile2)->SetEnabled(
       true);
@@ -297,8 +280,8 @@ TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
   ASSERT_TRUE(
       drive::DriveIntegrationServiceFactory::GetForProfile(&guest_profile));
 
-  EXPECT_EQ("Downloads", GetPathDisplayTextForSettings(
-                             &guest_profile, "/home/chronos/user/Downloads"));
+  EXPECT_EQ("My files", GetPathDisplayTextForSettings(
+                            &guest_profile, "/home/chronos/user/MyFiles"));
 
   // Test that a passthrough path doesn't crash on requesting the Drive mount
   // path for a guest profile.
