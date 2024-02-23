@@ -15,6 +15,7 @@ import * as localDev from './local_dev.js';
 import {getCameraDirectory, getObjectURL} from './models/file_system.js';
 import {ChromeHelper, getInstanceImpl} from './mojo/chrome_helper.js';
 import {
+  LidState,
   ScreenState,
   StorageMonitorStatus,
   ToteMetricFormat,
@@ -159,6 +160,11 @@ export class ChromeHelperFake extends ChromeHelper {
 
   override openWifiDialog(_config: WifiConfig): void {
     /* Do nothing. */
+  }
+
+  override async initLidStateMonitor(_onChange: (lidStatus: LidState) => void):
+      Promise<LidState> {
+    return LidState.kNotPresent;
   }
   /* eslint-enable @typescript-eslint/require-await */
 }

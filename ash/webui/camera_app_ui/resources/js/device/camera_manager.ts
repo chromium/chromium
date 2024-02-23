@@ -13,7 +13,7 @@ import {Point} from '../geometry.js';
 import * as metrics from '../metrics.js';
 import {isLocalDev} from '../models/load_time_data.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
-import {ScreenState} from '../mojo/type.js';
+import {LidState, ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import {PerfLogger} from '../perf.js';
 import * as state from '../state.js';
@@ -267,6 +267,13 @@ export class CameraManager implements EventListener {
     }
     const isTablet = await helper.initTabletModeMonitor(setTablet);
     setTablet(isTablet);
+
+    function setLidClosed(lidState: LidState) {
+      state.set(state.State.LID_CLOSED, lidState === LidState.kClosed);
+    }
+
+    const lidState = await helper.initLidStateMonitor(setLidClosed);
+    setLidClosed(lidState);
 
     const handleScreenStateChange = async () => {
       if (this.screenOff) {

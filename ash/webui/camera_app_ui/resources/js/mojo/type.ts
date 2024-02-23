@@ -18,6 +18,7 @@ export {
   DocumentOutputFormat,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
+  LidStateMonitorCallbackRouter,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,
@@ -85,3 +86,7 @@ export {
   CameraMetadataTag,
 } from
     '../../mojom/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
+export {
+  LidState,
+} from
+    '../../mojom/media/capture/video/chromeos/mojom/system_event_monitor.mojom-webui.js';

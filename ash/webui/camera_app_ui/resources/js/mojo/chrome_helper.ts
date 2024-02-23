@@ -20,6 +20,8 @@ import {
   DocumentOutputFormat,
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
+  LidState,
+  LidStateMonitorCallbackRouter,
   Rotation,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
@@ -227,6 +229,9 @@ export abstract class ChromeHelper {
   abstract openStorageManagement(): void;
 
   abstract openWifiDialog(config: WifiConfig): void;
+
+  abstract initLidStateMonitor(onChange: (lidStatus: LidState) => void):
+      Promise<LidState>;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -467,5 +472,16 @@ class ChromeHelperImpl extends ChromeHelper {
 
   override openWifiDialog(config: WifiConfig): void {
     this.remote.openWifiDialog(config);
+  }
+
+  override async initLidStateMonitor(onChange: (lidStatus: LidState) => void):
+      Promise<LidState> {
+    const monitorCallbackRouter =
+        wrapEndpoint(new LidStateMonitorCallbackRouter());
+    monitorCallbackRouter.update.addListener(onChange);
+
+    const {lidStatus} = await this.remote.setLidStateMonitor(
+        monitorCallbackRouter.$.bindNewPipeAndPassRemote());
+    return lidStatus;
   }
 }

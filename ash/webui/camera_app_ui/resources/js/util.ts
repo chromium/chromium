@@ -205,6 +205,13 @@ export function getDefaultFacing(): Facing {
 }
 
 /**
+ * Checks if the lid is closed or not.
+ */
+export function isLidClosed(): boolean {
+  return state.get(state.State.LID_CLOSED);
+}
+
+/**
  * Toggle checked value of element.
  */
 export function toggleChecked(

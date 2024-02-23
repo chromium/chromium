@@ -52,4 +52,9 @@ mojom("jpeg_accelerator") {
 mojom("system_event_monitor") {
   sources = [ "system_event_monitor.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  webui_module_path = "/media/capture/video/chromeos/mojom"
+
+  # ChromeOS is still heavily reliant on legacy bindings.
+  generate_legacy_js_bindings = true
 }

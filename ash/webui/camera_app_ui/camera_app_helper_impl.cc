@@ -13,10 +13,12 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
+#include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/utils/pdf_conversion.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -578,6 +580,26 @@ void CameraAppHelperImpl::OpenWifiDialog(
     camera_app::mojom::WifiConfigPtr wifi_config) {
   camera_app_ui_->delegate()->OpenWifiDialog(
       FromMojoWifiConfig(std::move(wifi_config)));
+}
+
+void CameraAppHelperImpl::SetLidStateMonitor(
+    mojo::PendingRemote<LidStateMonitor> monitor,
+    SetLidStateMonitorCallback callback) {
+  CHECK(ash::mojo_service_manager::IsServiceManagerBound());
+  lid_callback_ = std::move(callback);
+  lid_state_monitor_ = mojo::Remote<LidStateMonitor>(std::move(monitor));
+  ash::mojo_service_manager::GetServiceManagerProxy()->Request(
+      /*service_name=*/chromeos::mojo_services::kCrosSystemEventMonitor,
+      std::nullopt, monitor_.BindNewPipeAndPassReceiver().PassPipe());
+  monitor_->AddLidObserver(lid_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void CameraAppHelperImpl::OnLidStateChanged(cros::mojom::LidState state) {
+  if (!lid_callback_.is_null()) {
+    std::move(lid_callback_).Run(state);
+  } else if (lid_state_monitor_.is_bound()) {
+    lid_state_monitor_->Update(state);
+  }
 }
 
 }  // namespace ash

@@ -6,6 +6,7 @@ module ash.camera_app.mojom;
 
 import "ash/components/arc/mojom/camera_intent.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
+import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -86,6 +87,12 @@ interface ExternalScreenMonitor {
 interface CameraUsageOwnershipMonitor {
   // Updates when the camera usage ownership is changed.
   OnCameraUsageOwnershipChanged(bool has_usage) => ();
+};
+
+// Interface to monitor lid state changes.
+interface LidStateMonitor {
+  // Updates when the lid state is changed.
+  Update(cros.mojom.LidState lid_status);
 };
 
 // The window states that we care about.
@@ -307,4 +314,9 @@ interface CameraAppHelper {
   // connection directly, no error message will be returned when the config is
   // incorrect.
   OpenWifiDialog(WifiConfig config);
+
+  // Registers a LidStateMonitor instance and returns the initial status.
+  // Calling the Update() whenever the lid state changes.
+  SetLidStateMonitor(pending_remote<LidStateMonitor> monitor)
+      => (cros.mojom.LidState lid_status);
 };

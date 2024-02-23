@@ -41,6 +41,7 @@ static_library("camera_app_ui") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/web_applications",
+    "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/utils",
     "//components/arc",
     "//components/media_device_salt",
@@ -48,6 +49,7 @@ static_library("camera_app_ui") {
     "//content/public/browser",
     "//content/public/common",
     "//media/capture:capture_lib",
+    "//media/capture/video/chromeos/mojom:system_event_monitor",
     "//mojo/public/cpp/bindings",
     "//mojo/public/js:resources_grit",
     "//net",
@@ -101,6 +103,7 @@ mojom("mojo_bindings") {
   deps = [
     "//ash/components/arc/mojom:camera_intent",
     "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types",
+    "//media/capture/video/chromeos/mojom:system_event_monitor",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

@@ -52,6 +52,7 @@ mojo_files = [
   "media/capture/video/chromeos/mojom/camera_features.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.ts",
   "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.ts",
+  "media/capture/video/chromeos/mojom/system_event_monitor.mojom-webui.ts",
 ]
 
 mojo_files_deps = [
@@ -60,6 +61,7 @@ mojo_files_deps = [
   "//chromeos/services/machine_learning/public/mojom:document_scanner_param_types_ts__generator",
   "//media/capture/mojom:image_capture_ts__generator",
   "//media/capture/video/chromeos/mojom:cros_camera_common_ts__generator",
+  "//media/capture/video/chromeos/mojom:system_event_monitor_ts__generator",
 ]
 
 preprocess_if_expr("copy_mojo_ts") {
