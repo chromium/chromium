@@ -702,9 +702,10 @@ base::debug::CrashKeyString* GetNavigationRequestIsSameDocumentCrashKey() {
 
 // Start a new nested async event with the given name.
 void EnterChildTraceEvent(const char* name, NavigationRequest* request) {
-  // Tracing no longer outputs the end event name, so we can simply pass an
-  // empty string here.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", request->GetNavigationId());
+  // Passing nullptr as the event name will match the end event with the last
+  // unmatched begin event.
+  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr,
+                                  request->GetNavigationId());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", name,
                                     request->GetNavigationId());
 }
@@ -715,9 +716,10 @@ void EnterChildTraceEvent(const char* name,
                           NavigationRequest* request,
                           const char* arg_name,
                           ArgType arg_value) {
-  // Tracing no longer outputs the end event name, so we can simply pass an
-  // empty string here.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", request->GetNavigationId());
+  // Passing nullptr as the event name will match the end event with the last
+  // unmatched begin event.
+  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr,
+                                  request->GetNavigationId());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "navigation", name, request->GetNavigationId(), arg_name, arg_value);
 }
@@ -2072,9 +2074,9 @@ NavigationRequest::~NavigationRequest() {
   DCHECK(is_safe_to_delete_);
 #endif
 
-  // Close the last child event. Tracing no longer outputs the end event name,
-  // so we can simply pass an empty string here.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "", navigation_id_);
+  // Close the last child event. Passing nullptr as the event name will match
+  // the end event with the last unmatched begin event.
+  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr, navigation_id_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", "NavigationRequest",
                                   navigation_id_);
 
