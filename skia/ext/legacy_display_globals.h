@@ -12,7 +12,6 @@ namespace skia {
 class SK_API LegacyDisplayGlobals {
  public:
   static void SetCachedPixelGeometry(SkPixelGeometry pixel_geometry);
-  static SkPixelGeometry GetCachedPixelGeometry();
 
   // Returns a SkSurfaceProps with the cached geometry settings.
   static SkSurfaceProps GetSkSurfaceProps();

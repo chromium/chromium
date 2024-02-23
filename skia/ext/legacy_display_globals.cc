@@ -17,11 +17,6 @@ void LegacyDisplayGlobals::SetCachedPixelGeometry(
 }
 
 // static
-SkPixelGeometry LegacyDisplayGlobals::GetCachedPixelGeometry() {
-  return g_pixel_geometry;
-}
-
-// static
 SkSurfaceProps LegacyDisplayGlobals::GetSkSurfaceProps() {
   return GetSkSurfaceProps(0);
 }

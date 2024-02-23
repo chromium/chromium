@@ -151,6 +151,7 @@
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "sql/sql_memory_dump_provider.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -993,6 +994,13 @@ int BrowserMainLoop::PostCreateThreads() {
 int BrowserMainLoop::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PreMainMessageLoopRun");
 
+  auto font_render_params =
+      gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr);
+  skia::LegacyDisplayGlobals::SetCachedPixelGeometry(
+      gfx::FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+          font_render_params.subpixel_rendering));
+  viz::GpuHostImpl::InitFontRenderParams(font_render_params);
+
 #if BUILDFLAG(IS_ANDROID)
   bool use_display_wide_color_gamut =
       GetContentClient()->browser()->GetWideColorGamutHeuristic() ==
@@ -1328,11 +1336,6 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   // BrowserGpuChannelHostFactory below, since that depends on an initialized
   // GpuDiskCacheFactory.
   InitGpuDiskCacheFactorySingleton();
-
-  // Initialize the FontRenderParams. This needs to be initialized before gpu
-  // process initialization below.
-  viz::GpuHostImpl::InitFontRenderParams(
-      gfx::GetFontRenderParams(gfx::FontRenderParamsQuery(), nullptr));
 
   bool always_uses_gpu = true;
   bool established_gpu_channel = false;

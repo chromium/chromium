@@ -220,6 +220,8 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
                       gpu::SurfaceHandle child_window);
 #endif
 
+  void MaybeSendFontRenderParams();
+
  private:
   friend class GpuHostImplTestApi;
 
