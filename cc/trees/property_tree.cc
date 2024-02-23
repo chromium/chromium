@@ -191,17 +191,53 @@ void TransformTree::ResetChangeTracking() {
   }
 }
 
+void TransformTree::UpdateAllTransforms(
+    const ViewportPropertyIds& viewport_property_ids) {
+  if (!needs_update()) {
+#if DCHECK_IS_ON()
+    // If the transform tree does not need an update, no TransformNode should
+    // need a local transform update.
+    for (int i = kContentsRootPropertyNodeId; i < static_cast<int>(size());
+         ++i) {
+      DCHECK(!Node(i)->needs_local_transform_update);
+    }
+#endif
+    return;
+  }
+
+  UpdateTransformsData update_data;
+  do {
+    size_t last_num_stale_forward_dependencies =
+        update_data.stale_forward_dependencies.size();
+    for (int i = kContentsRootPropertyNodeId; i < static_cast<int>(size());
+         ++i) {
+      UpdateTransforms(i, &viewport_property_ids, &update_data);
+    }
+    CHECK(last_num_stale_forward_dependencies == 0 ||
+          update_data.stale_forward_dependencies.size() <
+              last_num_stale_forward_dependencies);
+  } while (!update_data.stale_forward_dependencies.empty());
+
+  set_needs_update(false);
+}
+
+TransformTree::UpdateTransformsData::UpdateTransformsData() = default;
+TransformTree::UpdateTransformsData::~UpdateTransformsData() = default;
+
 void TransformTree::UpdateTransforms(
     int id,
-    const ViewportPropertyIds* viewport_property_ids) {
+    const ViewportPropertyIds* viewport_property_ids,
+    UpdateTransformsData* update_data) {
   TransformNode* node = Node(id);
   TransformNode* parent_node = parent(node);
   DCHECK(parent_node);
+  gfx::Transform old_to_parent = node->to_parent;
+  gfx::Vector2dF old_snap_amount = node->snap_amount;
   // TODO(flackr): Only dirty when scroll offset changes.
   if (node->sticky_position_constraint_id >= 0 ||
       node->anchor_position_scroll_data_id >= 0 ||
       node->needs_local_transform_update || node->should_undo_overscroll) {
-    UpdateLocalTransform(node, viewport_property_ids);
+    UpdateLocalTransform(node, viewport_property_ids, update_data);
   } else {
     UndoSnapping(node);
   }
@@ -211,6 +247,16 @@ void TransformTree::UpdateTransforms(
   UpdateTransformChanged(node, parent_node);
   UpdateNodeAndAncestorsAreAnimatedOrInvertible(node, parent_node);
   UpdateNodeOrAncestorsWillChangeTransform(node, parent_node);
+
+  // If `node` has been depended by a previous node and neither its `to_parent`
+  // nor its `snap_amount` is changed, the depending node actually got correct
+  // data, so remove `id` from `stale_forward_dependencies`. Note that we
+  // should check all changes that may affect the depending transform node.
+  // For now forward dependency only happens in AnchorPositionOffset().
+  if (update_data && node->to_parent == old_to_parent &&
+      node->snap_amount == old_snap_amount) {
+    update_data->stale_forward_dependencies.erase(id);
+  }
 
   DCHECK(!node->needs_local_transform_update);
 }
@@ -484,24 +530,46 @@ const AnchorPositionScrollData* TransformTree::GetAnchorPositionScrollData(
   return &anchor_position_scroll_data_[node->anchor_position_scroll_data_id];
 }
 
-gfx::Vector2dF TransformTree::AnchorPositionOffset(TransformNode* node) {
+gfx::Vector2dF TransformTree::AnchorPositionOffset(
+    TransformNode* node,
+    int max_updated_node_id,
+    UpdateTransformsData* update_data) {
   const AnchorPositionScrollData* data = GetAnchorPositionScrollData(node->id);
   if (!data)
     return gfx::Vector2dF();
+
+  // `update_data` can be null if UpdateTransforms() is called from
+  // PropertyTreeBuilder (for layer tree mode for ui), but we should not have
+  // anchor position in chrome ui.
+  CHECK(update_data);
+
   gfx::Vector2dF accumulated_offset(0, 0);
   for (ElementId container_id : data->adjustment_container_ids) {
-    const ScrollNode* scroll_node =
-        property_trees()->scroll_tree().FindNodeFromElementId(container_id);
-    if (!scroll_node) {
-      continue;
+    int container_transform_id = kInvalidNodeId;
+    if (const ScrollNode* scroll_node =
+            property_trees()->scroll_tree().FindNodeFromElementId(
+                container_id)) {
+      container_transform_id = scroll_node->transform_id;
+      const TransformNode* transform_node = Node(container_transform_id);
+      // We don't ever expect that an anchor node or any of its scrolling
+      // containers should have an invalid transform_id.
+      DCHECK(container_transform_id != kInvalidPropertyNodeId);
+      accumulated_offset += transform_node->scroll_offset.OffsetFromOrigin();
+      // TODO(crbug.com/325613705): Should we consider snap_amount here?
+    } else if (TransformNode* container_transform =
+                   property_trees()
+                       ->transform_tree_mutable()
+                       .FindNodeFromElementId(container_id)) {
+      container_transform_id = container_transform->id;
+      accumulated_offset -= StickyPositionOffset(container_transform);
+      // TODO(crbug.com/40947467): Adjust for chained anchored containers.
     }
-    const TransformNode* transform_node = Node(scroll_node->transform_id);
-    // We don't ever expect that an anchor node or any of its scrolling
-    // containers should have an invalid transform_id.
-    DCHECK(scroll_node->transform_id != kInvalidPropertyNodeId);
-    accumulated_offset += transform_node->scroll_offset.OffsetFromOrigin();
-    // TODO(crbug.com/40947467): Adjust for sticky and chained anchored
-    // containers.
+    if (container_transform_id > max_updated_node_id) {
+      // The adjustment depends on a later transform node that may contain
+      // stale data. See UpdateAllTransforms() and UpdateTransforms() for how
+      // stale forward dependencies are handled.
+      update_data->stale_forward_dependencies.insert(container_transform_id);
+    }
   }
   gfx::Vector2dF result = data->accumulated_scroll_origin - accumulated_offset;
   if (!data->needs_scroll_adjustment_in_x) {
@@ -556,7 +624,8 @@ void TransformTree::UndoOverscroll(
 
 void TransformTree::UpdateLocalTransform(
     TransformNode* node,
-    const ViewportPropertyIds* viewport_property_ids) {
+    const ViewportPropertyIds* viewport_property_ids,
+    UpdateTransformsData* update_data) {
   gfx::Transform transform;
   transform.Translate3d(node->post_translation.x() + node->origin.x(),
                         node->post_translation.y() + node->origin.y(),
@@ -573,7 +642,7 @@ void TransformTree::UpdateLocalTransform(
                       node->scroll_offset.OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
   if (node->anchor_position_scroll_data_id >= 0) {
-    transform.Translate(AnchorPositionOffset(node));
+    transform.Translate(AnchorPositionOffset(node, node->id - 1, update_data));
     // Make sure the damage rect is tracked.
     node->transform_changed = true;
   }

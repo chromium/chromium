@@ -177,10 +177,30 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   bool OnTransformAnimated(ElementId element_id,
                            const gfx::Transform& transform);
   void ResetChangeTracking();
-  // Updates the parent, target, and screen space transforms and snapping.
+
+  // Updates the parent, target, and screen space transforms and snapping for
+  // all nodes.
+  void UpdateAllTransforms(const ViewportPropertyIds& viewport_property_ids);
+  // UpdateAllTransforms() may update the transform tree in multiple passes.
+  // This struct stores data collected and used across the passes.
+  struct UpdateTransformsData {
+    UpdateTransformsData();
+    ~UpdateTransformsData();
+    // A transform node may depend on a later transform node (e.g. an anchor
+    // position offset node references later adjustment container nodes). When
+    // the former is updated, the latter id will be stored in this set assuming
+    // the depended data is stale. When the latter node is updated, its id will
+    // be removed from this set if it hasn't changed anything affecting the
+    // depending node. If this set is not empty after a pass,
+    // UpdateAllTransforms() will run another pass.
+    base::flat_set<int> stale_forward_dependencies;
+  };
+
+  // Updates transforms for a node.
   void UpdateTransforms(
       int id,
-      const ViewportPropertyIds* viewport_property_ids = nullptr);
+      const ViewportPropertyIds* viewport_property_ids = nullptr,
+      UpdateTransformsData* update_data = nullptr);
   void UpdateTransformChanged(TransformNode* node, TransformNode* parent_node);
   void UpdateNodeAndAncestorsAreAnimatedOrInvertible(
       TransformNode* node,
@@ -268,9 +288,12 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
-  gfx::Vector2dF AnchorPositionOffset(TransformNode* node);
+  gfx::Vector2dF AnchorPositionOffset(TransformNode* node,
+                                      int max_updated_node_id,
+                                      UpdateTransformsData* update_data);
   void UpdateLocalTransform(TransformNode* node,
-                            const ViewportPropertyIds* viewport_property_ids);
+                            const ViewportPropertyIds* viewport_property_ids,
+                            UpdateTransformsData* update_data);
   void UpdateScreenSpaceTransform(TransformNode* node,
                                   TransformNode* parent_node);
   void UpdateAnimationProperties(TransformNode* node,

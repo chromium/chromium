@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/non_overflowing_scroll_range.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -72,25 +72,42 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
     const LayoutObject& anchor_or_bounds) const {
   CHECK(owner_->GetLayoutObject());
   AnchorPositionScrollData::AdjustmentData result;
-  const PaintLayer* starting_layer =
-      anchor_or_bounds.ContainingScrollContainerLayer(
-          true /*ignore_layout_view_for_fixed_pos*/);
-  const PaintLayer* bounding_layer =
-      owner_->GetLayoutObject()->ContainingScrollContainerLayer(
-          true /*ignore_layout_view_for_fixed_pos*/);
-  for (const PaintLayer* layer = starting_layer;
-       layer && layer != bounding_layer;
-       layer = layer->GetLayoutObject().ContainingScrollContainerLayer(
-           true /*ignore_layout_view_for_fixed_pos*/)) {
-    const PaintLayerScrollableArea* scrollable_area =
-        layer->GetScrollableArea();
-    result.adjustment_container_ids.push_back(
-        scrollable_area->GetScrollElementId());
-    result.accumulated_offset += scrollable_area->GetScrollOffset();
-    result.accumulated_scroll_origin +=
-        scrollable_area->ScrollOrigin().OffsetFromOrigin();
-    if (scrollable_area->GetLayoutBox()->IsLayoutView()) {
-      result.containers_include_viewport = true;
+
+  auto container_ignore_layout_view_for_fixed_pos =
+      [](const LayoutObject& o) -> const LayoutObject* {
+    const auto* container = o.Container();
+    if (o.IsFixedPositioned() && container->IsLayoutView()) {
+      return nullptr;
+    }
+    return container;
+  };
+
+  const auto* bounding_container =
+      container_ignore_layout_view_for_fixed_pos(*owner_->GetLayoutObject());
+  for (const auto* container = &anchor_or_bounds;
+       container && container != bounding_container;
+       container = container_ignore_layout_view_for_fixed_pos(*container)) {
+    if (container != &anchor_or_bounds && container->IsScrollContainer()) {
+      const PaintLayerScrollableArea* scrollable_area =
+          To<LayoutBox>(container)->GetScrollableArea();
+      result.adjustment_container_ids.push_back(
+          scrollable_area->GetScrollElementId());
+      result.accumulated_offset += scrollable_area->GetScrollOffset();
+      result.accumulated_scroll_origin +=
+          scrollable_area->ScrollOrigin().OffsetFromOrigin();
+      if (scrollable_area->GetLayoutBox()->IsLayoutView()) {
+        result.containers_include_viewport = true;
+      }
+    }
+    if (const auto* box_model = DynamicTo<LayoutBoxModelObject>(container)) {
+      if (box_model->StickyConstraints()) {
+        result.adjustment_container_ids.push_back(
+            CompositorElementIdFromUniqueObjectId(
+                box_model->UniqueId(),
+                CompositorElementIdNamespace::kStickyTranslation));
+        result.accumulated_offset -=
+            gfx::Vector2dF(box_model->StickyPositionOffset());
+      }
     }
     // TODO(crbug.com/40947467): Adjust for sticky and chained anchored.
   }
