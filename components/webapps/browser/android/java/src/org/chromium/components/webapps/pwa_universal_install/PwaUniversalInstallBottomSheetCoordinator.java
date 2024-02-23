@@ -14,6 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.AppType;
 import org.chromium.content_public.browser.WebContents;
@@ -24,10 +25,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class PwaUniversalInstallBottomSheetCoordinator {
     public static boolean sEnableManualIconFetching;
 
+    // UniversalInstallDialogActions defined in tools/metrics/histograms/enums.xml
+    public static final int DIALOG_SHOWN = 0;
+    public static final int INSTALL_APP = 1;
+    public static final int OPEN_EXISTING_APP = 2;
+    public static final int CREATE_SHORTCUT = 3;
+    public static final int CREATE_SHORTCUT_TO_APP = 4;
+    // Keep this one at the end and increment appropriately when adding new tasks.
+    public static final int DIALOG_RESULT_COUNT = 5;
+
     private final BottomSheetController mController;
     private final PwaUniversalInstallBottomSheetView mView;
     private final PwaUniversalInstallBottomSheetContent mContent;
     private final PwaUniversalInstallBottomSheetMediator mMediator;
+    private @AppType int mAppType = AppType.COUNT;
 
     private final Runnable mInstallCallback;
     private final Runnable mAddShortcutCallback;
@@ -76,20 +87,30 @@ public class PwaUniversalInstallBottomSheetCoordinator {
      * @return True if showing is successful.
      */
     public boolean show() {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.UniversalInstall.DialogAction", DIALOG_SHOWN, DIALOG_RESULT_COUNT);
         return mController.requestShowContent(mContent, /* animate= */ true);
     }
 
     private void onInstallClicked() {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.UniversalInstall.DialogAction", INSTALL_APP, DIALOG_RESULT_COUNT);
         mController.hideContent(mContent, /* animate= */ true);
         mInstallCallback.run();
     }
 
     private void onAddShortcutClicked() {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.UniversalInstall.DialogAction",
+                mAppType == AppType.SHORTCUT ? CREATE_SHORTCUT : CREATE_SHORTCUT_TO_APP,
+                DIALOG_RESULT_COUNT);
         mController.hideContent(mContent, /* animate= */ true);
         mAddShortcutCallback.run();
     }
 
     private void onOpenAppClicked() {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.UniversalInstall.DialogAction", OPEN_EXISTING_APP, DIALOG_RESULT_COUNT);
         mController.hideContent(mContent, /* animate= */ true);
         mOpenAppCallback.run();
     }
@@ -105,7 +126,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
 
     @CalledByNative
     public void onAppDataFetched(@AppType int appType, Bitmap icon, boolean adaptive) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "WebApk.UniversalInstall.DialogShownForAppType", appType, AppType.COUNT);
         mView.setIcon(icon, adaptive);
+        mAppType = appType;
 
         boolean alreadyInstalled =
                 mMediator.getModel().get(PwaUniversalInstallProperties.VIEW_STATE)

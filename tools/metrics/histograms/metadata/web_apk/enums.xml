@@ -56,6 +56,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Show install prompt"/>
 </enum>
 
+<enum name="UniversalInstallDialogActions">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Install app"/>
+  <int value="2" label="Open existing app"/>
+  <int value="3" label="Create shortcut (regular)"/>
+  <int value="4" label="Create shortcut (to app"/>
+</enum>
+
+<enum name="WebApkAppType">
+  <int value="0" label="Native"/>
+  <int value="1" label="WebApk"/>
+  <int value="2" label="Shortcut"/>
+  <int value="3" label="WebApk (homebrew)"/>
+</enum>
+
 <enum name="WebApkGooglePlayInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Install delegate unavailable"/>

@@ -267,6 +267,27 @@ chromium-metrics-reviews@google.com.
   <token key="WebApkDistributorType" variants="WebApkDistributorType"/>
 </histogram>
 
+<histogram name="WebApk.UniversalInstall.DialogAction"
+    enum="UniversalInstallDialogActions" expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records what happens in the Universal Install dialog (dialog opened, app
+    installed, shortcut created, etc). Recorded once per action taken in the
+    dialog.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.UniversalInstall.DialogShownForAppType"
+    enum="WebApkAppType" expires_after="2025-02-23">
+  <owner>finnur@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records for which app type the Universal Install dialog was shown. Recorded
+    once per dialog shown, after it has figured out which type app it is.
+  </summary>
+</histogram>
+
 <histogram name="WebApk.Update.GooglePlayUpdateResult"
     enum="WebApkGooglePlayInstallResult" expires_after="2024-06-30">
   <owner>hartmanng@chromium.org</owner>

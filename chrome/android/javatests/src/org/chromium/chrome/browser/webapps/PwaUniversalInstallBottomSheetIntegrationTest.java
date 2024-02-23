@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -63,6 +64,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
             new DisableAnimationsTestRule();
 
     private static final String TAG = "PwaUniInstallIntegrTest";
+
+    private static final String HISTOGRAM_DIALOG_TYPE =
+            "WebApk.UniversalInstall.DialogShownForAppType";
+    private static final String HISTOGRAM_DIALOG_ACTION = "WebApk.UniversalInstall.DialogAction";
 
     private PwaUniversalInstallBottomSheetCoordinator mPwaUniversalInstallBottomSheetCoordinator;
 
@@ -214,6 +219,13 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaUniversalInstall"})
     public void testInstallWebappCallback() throws Exception {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 1) // Install app.
+                        .build();
+
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertDialogShowsCheckingApp();
 
@@ -224,6 +236,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         onView(withId(R.id.arrow_install)).perform(click());
         mOnInstallCallback.waitForNext("Install event not signaled");
         assertDialogShowing(false);
+
+        watcher.assertExpected();
     }
 
     @Test
@@ -248,6 +262,13 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaUniversalInstall"})
     public void testAddShortcutCallback() throws Exception {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.SHORTCUT)
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 3) // Create shortcut.
+                        .build();
+
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertDialogShowsCheckingApp();
 
@@ -258,6 +279,33 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         onView(withId(R.id.arrow_shortcut)).perform(click());
         mOnAddShortcutCallback.waitForNext("Shortcut event not signaled");
         assertDialogShowing(false);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaUniversalInstall"})
+    public void testAddShortcutToWebappCallback() throws Exception {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 4) // Create shortcut to app.
+                        .build();
+
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
+        assertDialogShowsCheckingApp();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
+        assertDialogShowsInstallable();
+
+        onView(withId(R.id.arrow_shortcut)).perform(click());
+        mOnAddShortcutCallback.waitForNext("Shortcut event not signaled");
+        assertDialogShowing(false);
+
+        watcher.assertExpected();
     }
 
     @Test
@@ -282,6 +330,13 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaUniversalInstall"})
     public void testOpenAppCallback() throws Exception {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 2) // Open existing.
+                        .build();
+
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ true);
         assertDialogShowsAlreadyInstalledPreIconCheck();
 
@@ -292,6 +347,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         onView(withId(R.id.arrow_install)).perform(click());
         mOnOpenAppCallback.waitForNext("Open app event not signaled");
         assertDialogShowing(false);
+
+        watcher.assertExpected();
     }
 
     @Test
@@ -316,6 +373,13 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaUniversalInstall"})
     public void testCallbackDisabledIfInstallDisabled() throws Exception {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.SHORTCUT)
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 0) // Dialog shown.
+                        .expectIntRecord(HISTOGRAM_DIALOG_ACTION, 3) // Create shortcut.
+                        .build();
+
         showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertDialogShowsCheckingApp();
 
@@ -331,6 +395,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         // But clicking the Shortcut option should close it.
         onView(withId(R.id.option_text_shortcut)).perform(click());
         assertDialogShowing(false);
+
+        watcher.assertExpected();
     }
 
     private void assertDialogShowing(boolean expectShowing) {
