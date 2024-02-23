@@ -25,7 +25,6 @@
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
 
@@ -129,18 +128,6 @@ void HistoryClustersAction::RecordActionShown(size_t position,
       history::ClusterKeywordData::ClusterKeywordType>(
       "ClusterKeywordType", matched_keyword_data_.type,
       matched_keyword_data_.GetKeywordTypeLabel(), executed);
-
-  // Record entity collection UMA metrics.
-  if (matched_keyword_data_.entity_collections.empty()) {
-    return;
-  }
-  const auto& collection_str = matched_keyword_data_.entity_collections.front();
-  const optimization_guide::PageEntityCollection collection =
-      optimization_guide::GetPageEntityCollectionForString(collection_str);
-  const auto collection_label =
-      optimization_guide::GetPageEntityCollectionLabel(collection_str);
-  RecordShownUsedEnumAndCtrMetrics<optimization_guide::PageEntityCollection>(
-      "PageEntityCollection", collection, collection_label, executed);
 }
 
 void HistoryClustersAction::Execute(ExecutionContext& context) const {
