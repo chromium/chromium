@@ -28,25 +28,22 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
 
   AutofillPopupHideHelper::HidingParams hiding_params = {
       .hide_on_text_field_change = false};
-
   AutofillPopupHideHelper::HidingCallback hiding_callback =
       base::BindRepeating([](AutofillFieldPromoControllerImpl& controller,
                              PopupHidingReason) { controller.Hide(); },
                           std::ref(*this));
-
   AutofillPopupHideHelper::PictureInPictureDetectionCallback
       pip_detection_callback = base::BindRepeating(
-          [](base::WeakPtr<AutofillFieldPromoView> view) {
-            return view && view->OverlapsWithPictureInPictureWindow();
+          [](AutofillFieldPromoControllerImpl& controller) {
+            return controller.promo_view_ &&
+                   controller.promo_view_->OverlapsWithPictureInPictureWindow();
           },
-          promo_view_);
-
+          std::ref(*this));
   // The hide helper is destroyed on hide, so it cannot outlive the popup
   // controller.
   promo_hide_helper_ = AutofillPopupHideHelper::CreateAutofillPopupHideHelper(
       web_contents_, std::move(hiding_params), std::move(hiding_callback),
       std::move(pip_detection_callback));
-
   // If the hide helper is null, then no frame has focus.
   if (!promo_hide_helper_) {
     Hide();
