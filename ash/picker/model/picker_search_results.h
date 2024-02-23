@@ -5,7 +5,6 @@
 #ifndef ASH_PICKER_MODEL_PICKER_SEARCH_RESULTS_H_
 #define ASH_PICKER_MODEL_PICKER_SEARCH_RESULTS_H_
 
-#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -14,24 +13,34 @@
 
 namespace ash {
 
+enum class ASH_EXPORT PickerSectionType {
+  kCategories,
+  kSuggestions,
+  kExpressions,
+  kLinks,
+  kFiles,
+  kGifs,
+  kRecentlyUsed,
+};
+
 // The search results for a particular Picker query.
 class ASH_EXPORT PickerSearchResults {
  public:
   // Search results are divided into different sections.
   class Section {
    public:
-    explicit Section(const std::u16string& heading,
+    explicit Section(PickerSectionType type,
                      base::span<const PickerSearchResult> results);
     Section(const Section& other);
     Section& operator=(const Section& other);
     ~Section();
 
-    const std::u16string& heading() const;
+    PickerSectionType type() const;
 
     base::span<const PickerSearchResult> results() const;
 
    private:
-    std::u16string heading_;
+    PickerSectionType type_;
 
     std::vector<PickerSearchResult> results_;
   };

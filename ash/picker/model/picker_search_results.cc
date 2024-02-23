@@ -4,17 +4,15 @@
 
 #include "ash/picker/model/picker_search_results.h"
 
-#include <string>
-
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 
 namespace ash {
 
 PickerSearchResults::Section::Section(
-    const std::u16string& heading,
+    PickerSectionType type,
     base::span<const PickerSearchResult> results)
-    : heading_(heading), results_(results.begin(), results.end()) {}
+    : type_(type), results_(results.begin(), results.end()) {}
 
 PickerSearchResults::Section::Section(const Section& other) = default;
 
@@ -23,8 +21,8 @@ PickerSearchResults::Section& PickerSearchResults::Section::operator=(
 
 PickerSearchResults::Section::~Section() = default;
 
-const std::u16string& PickerSearchResults::Section::heading() const {
-  return heading_;
+PickerSectionType PickerSearchResults::Section::type() const {
+  return type_;
 }
 
 base::span<const PickerSearchResult> PickerSearchResults::Section::results()

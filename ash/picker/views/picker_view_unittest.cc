@@ -236,7 +236,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
         future.SetValue();
         callback.Run(PickerSearchResults({{
             PickerSearchResults::Section(
-                u"section", {{PickerSearchResult::Text(u"result")}}),
+                PickerSectionType::kExpressions,
+                {{PickerSearchResult::Text(u"result")}}),
         }}));
       }));
   auto widget =
@@ -290,8 +291,9 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
         search_called.SetValue();
         callback.Run(PickerSearchResults({{
             PickerSearchResults::Section(
-                u"section", {{PickerSearchResult::Category(
-                                PickerCategory::kBrowsingHistory)}}),
+                PickerSectionType::kExpressions,
+                {{PickerSearchResult::Category(
+                    PickerCategory::kBrowsingHistory)}}),
         }}));
       }));
   auto widget =
@@ -421,15 +423,16 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
   ASSERT_TRUE(search_called.Wait());
 
   search_callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(u"section", {}),
+      PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
   }}));
 
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(picker_view->search_results_view_for_testing()
-                  .section_views_for_testing(),
-              ElementsAre(Pointee(Property(
-                  "title", &PickerSectionView::title_label_for_testing,
-                  Property("text", &views::Label::GetText, u"section")))));
+  EXPECT_THAT(
+      picker_view->search_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "title", &PickerSectionView::title_label_for_testing,
+          Property("text", &views::Label::GetText, u"Matching expressions")))));
 }
 
 TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
@@ -439,7 +442,7 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         if (!search1_called.IsReady()) {
           callback.Run(PickerSearchResults({{
-              PickerSearchResults::Section(u"section", {}),
+              PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
           }}));
           search1_called.SetValue();
         } else {
@@ -461,11 +464,12 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
 
   // Results page should keep old results until new results arrive.
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(picker_view->search_results_view_for_testing()
-                  .section_views_for_testing(),
-              ElementsAre(Pointee(Property(
-                  "title", &PickerSectionView::title_label_for_testing,
-                  Property("text", &views::Label::GetText, u"section")))));
+  EXPECT_THAT(
+      picker_view->search_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "title", &PickerSectionView::title_label_for_testing,
+          Property("text", &views::Label::GetText, u"Matching expressions")))));
 }
 
 TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
@@ -476,7 +480,7 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         if (!search1_called.IsReady()) {
           callback.Run(PickerSearchResults({{
-              PickerSearchResults::Section(u"section", {}),
+              PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
           }}));
           search1_called.SetValue();
         } else {
@@ -497,16 +501,17 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(search2_called.Wait());
   search2_callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(u"section2", {}),
+      PickerSearchResults::Section(PickerSectionType::kLinks, {}),
   }}));
 
   // Results page should show the new results.
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
-  EXPECT_THAT(picker_view->search_results_view_for_testing()
-                  .section_views_for_testing(),
-              ElementsAre(Pointee(Property(
-                  "title", &PickerSectionView::title_label_for_testing,
-                  Property("text", &views::Label::GetText, u"section2")))));
+  EXPECT_THAT(
+      picker_view->search_results_view_for_testing()
+          .section_views_for_testing(),
+      ElementsAre(Pointee(Property(
+          "title", &PickerSectionView::title_label_for_testing,
+          Property("text", &views::Label::GetText, u"Matching links")))));
 }
 
 TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
@@ -516,7 +521,8 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
         search_called.SetValue();
         callback.Run(PickerSearchResults({{
             PickerSearchResults::Section(
-                u"section", {{PickerSearchResult::Text(u"result")}}),
+                PickerSectionType::kExpressions,
+                {{PickerSearchResult::Text(u"result")}}),
         }}));
       }));
   auto widget =
@@ -799,7 +805,7 @@ TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
       [&](FakePickerViewDelegate::SearchResultsCallback callback) {
         future.SetValue();
         callback.Run(PickerSearchResults({{
-            PickerSearchResults::Section(u"section", {}),
+            PickerSearchResults::Section(PickerSectionType::kExpressions, {}),
         }}));
       }));
   auto widget =
@@ -822,7 +828,8 @@ TEST_F(PickerViewTest, PressingEnterSelectsSearchResult) {
         future.SetValue();
         callback.Run(PickerSearchResults({{
             PickerSearchResults::Section(
-                u"section", {{PickerSearchResult::Text(u"result")}}),
+                PickerSectionType::kExpressions,
+                {{PickerSearchResult::Text(u"result")}}),
         }}));
       }));
   auto widget =

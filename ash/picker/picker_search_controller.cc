@@ -160,26 +160,27 @@ void PickerSearchController::PublishBurnInResults() {
 
   std::vector<PickerSearchResults::Section> sections;
   if (!suggested_results_.empty()) {
-    sections.push_back(
-        PickerSearchResults::Section(u"Suggested", suggested_results_));
+    sections.push_back(PickerSearchResults::Section(
+        PickerSectionType::kSuggestions, suggested_results_));
   }
   if (!category_results_.empty()) {
     sections.push_back(PickerSearchResults::Section(
-        u"Matching categories", std::move(category_results_)));
+        PickerSectionType::kCategories, std::move(category_results_)));
   }
   if (!emoji_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(u"Matching expressions",
-                                                    std::move(emoji_results_)));
+    sections.push_back(PickerSearchResults::Section(
+        PickerSectionType::kExpressions, std::move(emoji_results_)));
   }
   if (!omnibox_results_.empty()) {
     sections.push_back(PickerSearchResults::Section(
-        u"Matching links", std::move(omnibox_results_)));
+        PickerSectionType::kLinks, std::move(omnibox_results_)));
   }
   if (!local_file_results_.empty()) {
-    sections.emplace_back(u"Matching files", std::move(local_file_results_));
+    sections.emplace_back(PickerSectionType::kFiles,
+                          std::move(local_file_results_));
   }
   if (!gif_results_.empty()) {
-    sections.push_back(PickerSearchResults::Section(u"Other expressions",
+    sections.push_back(PickerSearchResults::Section(PickerSectionType::kGifs,
                                                     std::move(gif_results_)));
   }
   current_callback_.Run(PickerSearchResults(std::move(sections)));
@@ -226,7 +227,7 @@ void PickerSearchController::HandleCrosSearchResults(
 
       if (IsPostBurnIn()) {
         AppendPostBurnInResults(PickerSearchResults::Section(
-            u"Matching links", std::move(omnibox_results_)));
+            PickerSectionType::kLinks, std::move(omnibox_results_)));
       }
       break;
     case AppListSearchResultType::kFileSearch: {
@@ -243,7 +244,7 @@ void PickerSearchController::HandleCrosSearchResults(
 
       if (IsPostBurnIn()) {
         AppendPostBurnInResults(PickerSearchResults::Section(
-            u"Matching files", std::move(local_file_results_)));
+            PickerSectionType::kFiles, std::move(local_file_results_)));
       }
       break;
     }
@@ -272,7 +273,7 @@ void PickerSearchController::HandleGifSearchResults(
 
   if (IsPostBurnIn()) {
     AppendPostBurnInResults(PickerSearchResults::Section(
-        u"Other expressions", std::move(gif_results_)));
+        PickerSectionType::kGifs, std::move(gif_results_)));
   }
 }
 

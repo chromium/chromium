@@ -207,8 +207,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromOmniboxSearch) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching links"),
+              Property("type", &PickerSearchResults::Section::type,
+                       PickerSectionType::kLinks),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   ElementsAre(Property(
@@ -272,8 +272,8 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(
-              AllOf(Property("heading", &PickerSearchResults::Section::heading,
-                             u"Matching links"),
+              AllOf(Property("type", &PickerSearchResults::Section::type,
+                             PickerSectionType::kLinks),
                     Property("results", &PickerSearchResults::Section::results,
                              IsEmpty()))))))
       .Times(0)
@@ -284,12 +284,12 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(
-              AllOf(Property("heading", &PickerSearchResults::Section::heading,
-                             u"Matching links"),
+              AllOf(Property("type", &PickerSearchResults::Section::type,
+                             PickerSectionType::kLinks),
                     Property("results", &PickerSearchResults::Section::results,
                              IsEmpty()))))))
-      // This may be changed to 1 if the initial state has an empty "Matching
-      // links" section.
+      // This may be changed to 1 if the initial state has an empty links
+      // section.
       .Times(0);
 
   controller.StartSearch(
@@ -440,8 +440,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Matching files"),
+              Property("type", &PickerSearchResults::Section::type,
+                       PickerSectionType::kFiles),
               Property("results", &PickerSearchResults::Section::results,
                        ElementsAre(Property(
                            "data", &PickerSearchResult::data,
@@ -614,8 +614,8 @@ TEST_F(PickerSearchControllerTest, ShowsResultsFromGifSearch) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Other expressions"),
+              Property("type", &PickerSearchResults::Section::type,
+                       PickerSectionType::kGifs),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   Contains(Property(
@@ -658,8 +658,8 @@ TEST_F(PickerSearchControllerTest, StopsOldGifSearches) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Other expressions"),
+              Property("type", &PickerSearchResults::Section::type,
+                       PickerSectionType::kGifs),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   Contains(Property(
@@ -703,8 +703,8 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           LastElement(AllOf(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Other expressions"),
+              Property("type", &PickerSearchResults::Section::type,
+                       PickerSectionType::kGifs),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   Contains(Property(
@@ -814,8 +814,8 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           IsSupersetOf({
-              AllOf(Property("heading", &PickerSearchResults::Section::heading,
-                             u"Other expressions"),
+              AllOf(Property("type", &PickerSearchResults::Section::type,
+                             PickerSectionType::kGifs),
                     Property(
                         "results", &PickerSearchResults::Section::results,
                         Contains(Property(
@@ -831,8 +831,8 @@ TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
                                           content_description,
                                       u"cat blink"))))))),
               AllOf(
-                  Property("heading", &PickerSearchResults::Section::heading,
-                           u"Matching links"),
+                  Property("type", &PickerSearchResults::Section::type,
+                           PickerSectionType::kLinks),
                   Property(
                       "results", &PickerSearchResults::Section::results,
                       ElementsAre(Property(
@@ -875,10 +875,10 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property("sections", &PickerSearchResults::sections,
-                    Not(Contains(Property(
-                        "heading", &PickerSearchResults::Section::heading,
-                        u"Matching links"))))))
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Not(Contains(Property("type", &PickerSearchResults::Section::type,
+                                PickerSectionType::kLinks))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -904,10 +904,10 @@ TEST_F(PickerSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(
       search_results_callback,
-      Call(Property("sections", &PickerSearchResults::sections,
-                    Not(Contains(Property(
-                        "heading", &PickerSearchResults::Section::heading,
-                        u"Matching links"))))))
+      Call(Property(
+          "sections", &PickerSearchResults::sections,
+          Not(Contains(Property("type", &PickerSearchResults::Section::type,
+                                PickerSectionType::kLinks))))))
       .Times(AtLeast(1));
 
   controller.StartSearch(
@@ -935,8 +935,8 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsEvenAfterBurnIn) {
       Call(Property(
           "sections", &PickerSearchResults::sections,
           Contains(AllOf(
-              Property("heading", &PickerSearchResults::Section::heading,
-                       u"Other expressions"),
+              Property("type", &PickerSearchResults::Section::type,
+                       PickerSectionType::kGifs),
               Property(
                   "results", &PickerSearchResults::Section::results,
                   Contains(Property(

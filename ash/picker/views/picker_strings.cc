@@ -4,6 +4,9 @@
 
 #include "ash/picker/views/picker_strings.h"
 
+#include <string>
+
+#include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -67,6 +70,27 @@ std::u16string GetSectionTitleForPickerCategoryType(
     case PickerCategoryType::kLinks:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_LINKS_CATEGORY_TYPE_SECTION_TITLE);
+  }
+}
+
+std::u16string GetSectionTitleForPickerSectionType(
+    PickerSectionType section_type) {
+  // TODO: b/325870358 - Finalize strings and use a GRD file.
+  switch (section_type) {
+    case PickerSectionType::kCategories:
+      return u"Matching categories";
+    case PickerSectionType::kSuggestions:
+      return u"Suggested";
+    case PickerSectionType::kExpressions:
+      return u"Matching expressions";
+    case PickerSectionType::kLinks:
+      return u"Matching links";
+    case PickerSectionType::kFiles:
+      return u"Matching files";
+    case PickerSectionType::kGifs:
+      return u"Other expressions";
+    case PickerSectionType::kRecentlyUsed:
+      return u"Recently used";
   }
 }
 

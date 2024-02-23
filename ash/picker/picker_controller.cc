@@ -241,7 +241,8 @@ void PickerController::GetResultsForCategory(PickerCategory category,
       break;
   }
   callback.Run(PickerSearchResults({{
-      PickerSearchResults::Section(u"Recently used", recent_results),
+      PickerSearchResults::Section(PickerSectionType::kRecentlyUsed,
+                                   recent_results),
   }}));
 }
 
