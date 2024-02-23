@@ -50,7 +50,8 @@ void RefreshRateController::OnPowerStatusChanged() {
   RefreshState();
 }
 
-void RefreshRateController::OnSetGameMode(GameMode game_mode) {
+void RefreshRateController::OnSetGameMode(GameMode game_mode,
+                                          ash::WindowState* window_state) {
   game_mode_ = game_mode;
   RefreshState();
 }

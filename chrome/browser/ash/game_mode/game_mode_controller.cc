@@ -84,11 +84,11 @@ GameModeController::WindowTracker::WindowTracker(
     game_mode_enabler_ = std::move(previous_focus->game_mode_enabler_);
   }
 
-  // This possibly turns OFF as well as turns on game mode.
-  UpdateGameModeStatus(window_state);
-
   window_state_observer_.Observe(window_state);
   window_observer_.Observe(window);
+
+  // This possibly turns OFF as well as turns on game mode.
+  UpdateGameModeStatus(window_state);
 }
 
 GameModeController::WindowTracker::~WindowTracker() {}
@@ -119,8 +119,9 @@ void GameModeController::WindowTracker::UpdateGameModeStatus(
 
   // Borealis has no further criteria than the window being fullscreen and
   // focused, already guaranteed by WindowTracker existing.
-  game_mode_enabler_ =
-      std::make_unique<GameModeEnabler>(notify_set_game_mode_callback_);
+  DCHECK_EQ(window_state, window_state_observer_.GetSource());
+  game_mode_enabler_ = std::make_unique<GameModeEnabler>(
+      window_state, notify_set_game_mode_callback_);
 }
 
 void GameModeController::WindowTracker::OnWindowDestroying(
@@ -133,9 +134,11 @@ void GameModeController::WindowTracker::OnWindowDestroying(
 bool GameModeController::GameModeEnabler::should_record_failure;
 
 GameModeController::GameModeEnabler::GameModeEnabler(
+    ash::WindowState* window_state,
     NotifySetGameModeCallback notify_set_game_mode_callback)
-    : notify_set_game_mode_callback_(notify_set_game_mode_callback) {
-  notify_set_game_mode_callback_.Run(GameMode::BOREALIS);
+    : window_state_(window_state),
+      notify_set_game_mode_callback_(notify_set_game_mode_callback) {
+  notify_set_game_mode_callback_.Run(GameMode::BOREALIS, window_state_);
 
   GameModeEnabler::should_record_failure = true;
   base::UmaHistogramEnumeration(kGameModeResultHistogramName,
@@ -154,7 +157,7 @@ GameModeController::GameModeEnabler::~GameModeEnabler() {
   auto time_in_mode = began_.Elapsed();
   base::UmaHistogramLongTimes100(kTimeInGameModeHistogramName, time_in_mode);
 
-  notify_set_game_mode_callback_.Run(GameMode::OFF);
+  notify_set_game_mode_callback_.Run(GameMode::OFF, window_state_);
 
   timer_.Stop();
   VLOG(1) << "Turning off game mode";
@@ -185,7 +188,7 @@ void GameModeController::GameModeEnabler::OnSetGameMode(
     // it means the previous call failed/timed out.
     base::UmaHistogramEnumeration(kGameModeResultHistogramName,
                                   GameModeResult::kFailed);
-    // Only record failures once per entry into gamemode.
+    // Only record failures once per entry into game mode.
     GameModeEnabler::should_record_failure = false;
   }
 }
@@ -198,9 +201,10 @@ void GameModeController::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void GameModeController::NotifySetGameMode(GameMode game_mode) {
+void GameModeController::NotifySetGameMode(GameMode game_mode,
+                                           ash::WindowState* window_state) {
   for (auto& obs : observers_) {
-    obs.OnSetGameMode(game_mode);
+    obs.OnSetGameMode(game_mode, window_state);
   }
 }
 

@@ -238,7 +238,7 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
   }
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
 
   // Expect the new state to still be 60Hz.
   {
@@ -309,7 +309,7 @@ TEST_F(RefreshRateControllerTest, ShouldNotThrottleForBorealis) {
   }
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
 
   // Expect the new state to be 120 Hz.
   {
@@ -397,7 +397,7 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
   }
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
 
   // Expect the new state to have VRR enabled.
   {
@@ -407,7 +407,7 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
   }
 
   // Reset the game mode.
-  game_mode_controller_->NotifySetGameMode(GameMode::OFF);
+  game_mode_controller_->NotifySetGameMode(GameMode::OFF, nullptr);
 
   // Expect the new state to have VRR disabled.
   {
@@ -426,7 +426,7 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
   ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Set the game mode to indicate the user is gaming.
-  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS);
+  game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS, nullptr);
 
   // Expect the initial state to have VRR enabled.
   {

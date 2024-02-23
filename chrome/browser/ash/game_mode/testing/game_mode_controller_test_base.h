@@ -23,7 +23,10 @@ class MockGameModeObserver
   MockGameModeObserver() = default;
   ~MockGameModeObserver() override = default;
 
-  MOCK_METHOD(void, OnSetGameMode, (GameMode mode), (override));
+  MOCK_METHOD(void,
+              OnSetGameMode,
+              (GameMode mode, ash::WindowState* window_state),
+              (override));
 };
 
 // Test base for all game mode types (e.g. Borealis, ARC).

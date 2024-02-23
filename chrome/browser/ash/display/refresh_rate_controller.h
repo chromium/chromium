@@ -41,8 +41,9 @@ class RefreshRateController
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
 
-  // GameModeController::Observer implementation.
-  void OnSetGameMode(GameMode game_mode) override;
+  // GameModeController::Observer implementation:
+  void OnSetGameMode(GameMode game_mode,
+                     ash::WindowState* window_state) override;
 
  private:
   void RefreshState();

@@ -22,7 +22,8 @@ namespace {
 
 using GameMode = ash::ResourcedClient::GameMode;
 
-typedef base::RepeatingCallback<void(GameMode)> NotifySetGameModeCallback;
+typedef base::RepeatingCallback<void(GameMode, ash::WindowState*)>
+    NotifySetGameModeCallback;
 
 }  // namespace
 
@@ -90,13 +91,10 @@ class GameModeController : public aura::client::FocusChangeObserver {
   // Maintains GameMode in an ON state until destroyed.
   class GameModeEnabler {
    public:
-    // `signal_resourced` indicates resourced will be notified of the game mode
-    // state. Metrics on the amount of time spent in game mode are recorded
-    // by the GameModeEnabler regardless of resourced signaling, which allows
-    // A/B testing of the effect of optimizations on time spent playing the
-    // game.
-    explicit GameModeEnabler(
-        NotifySetGameModeCallback notify_set_game_mode_callback);
+    // |window_state| indicates the window which currently meets the criteria to
+    // enable game mode.
+    GameModeEnabler(ash::WindowState* window_state,
+                    NotifySetGameModeCallback notify_set_game_mode_callback);
     ~GameModeEnabler();
 
    private:
@@ -108,6 +106,11 @@ class GameModeController : public aura::client::FocusChangeObserver {
     static bool should_record_failure;
     base::RepeatingTimer timer_;
     base::ElapsedTimer began_;
+
+    // Not owned. |window_state_| is observed by the WindowTracker which owns
+    // this GameModeEnabler, and this enabler will always be destroyed before
+    // the window is destroyed.
+    const raw_ptr<ash::WindowState> window_state_;
 
     const NotifySetGameModeCallback notify_set_game_mode_callback_;
   };
@@ -142,12 +145,13 @@ class GameModeController : public aura::client::FocusChangeObserver {
   // Observer class which subscribes to changes in the GameMode state.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnSetGameMode(GameMode game_mode) = 0;
+    virtual void OnSetGameMode(GameMode game_mode,
+                               ash::WindowState* window_state) = 0;
   };
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
-  void NotifySetGameMode(GameMode game_mode);
+  void NotifySetGameMode(GameMode game_mode, ash::WindowState* window_state);
 
  private:
   std::unique_ptr<WindowTracker> focused_;
