@@ -19,8 +19,6 @@
 #include <optional>
 #include <string>
 
-// TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
-// code size.
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"

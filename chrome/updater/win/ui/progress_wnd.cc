@@ -162,7 +162,6 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
                                   WPARAM w_param,
                                   LPARAM l_param,
                                   BOOL& handled) {
-  // TODO(crbug.com/1010653): remove this when the bug is fixed.
   HideWindowChildren(*this);
 
   InitializeDialog();
@@ -338,13 +337,8 @@ void ProgressWnd::OnWaitingToDownload(const std::string& app_id,
   if (!IsWindow()) {
     return;
   }
-
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
-
-  // TODO(crbug.com/1314812) Waiting to download is not utilized. Adding a
-  // placeholder for IDS_WAITING_TO_DOWNLOAD.
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, L"");
-
   ChangeControlState();
 }
 
@@ -425,7 +419,6 @@ void ProgressWnd::OnWaitingRetryDownload(const std::string& app_id,
   }
 }
 
-// TODO(crbug.com/1290331): handle the install cancellation.
 void ProgressWnd::OnWaitingToInstall(const std::string& app_id,
                                      const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -27,12 +27,11 @@ class CleanupTaskTest : public testing::Test {};
 
 TEST_F(CleanupTaskTest, RunCleanupObsoleteFiles) {
   base::test::TaskEnvironment task_environment;
-// TODO(crbug.com/1428653): Fix this test to work for system scope.
 #if BUILDFLAG(IS_POSIX)
   if (GetTestScope() == UpdaterScope::kSystem) {
     GTEST_SKIP();
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_WIN)
   // Set up a mock `GoogleUpdate.exe`, and the following mock directories:

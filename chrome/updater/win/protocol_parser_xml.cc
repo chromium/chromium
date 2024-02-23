@@ -101,8 +101,8 @@ bool ProtocolParserXML::ParseAction(IXMLDOMNode* node, Results* results) {
                         &results->list.back().manifest.arguments);
     return true;
   } else if (event == "postinstall") {
-    // TODO(crbug.com/1286574): Handle `postinstall` action when `Result` class
-    // implements it.
+    // TODO(crbug.com/326270247): Handle `postinstall` action when `Result`
+    // class implements it.
     return true;
   } else {
     ParseError("Unsupported `event` type in <action>: %s", event.c_str());

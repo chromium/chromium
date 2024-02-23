@@ -76,13 +76,11 @@ void ClearPrefs() {
 class AppServerTestCase : public testing::Test {
  public:
   void SetUp() override {
-// TODO(crbug.com/1428653): Fix these test cases to work for macOS system scope.
 #if BUILDFLAG(IS_MAC)
     if (GetTestScope() == UpdaterScope::kSystem) {
       GTEST_SKIP();
     }
 #endif  // BUILDFLAG(IS_MAC)
-
     ClearPrefs();
   }
 

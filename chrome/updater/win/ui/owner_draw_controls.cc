@@ -197,8 +197,7 @@ HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
 }
 
 MaximizeButton::MaximizeButton() {
-  // TODO(crbug.com/1314812) Maximize button is not utilized. Adding a
-  // placeholder for IDS_MAXIMIZE_BUTTON_BASE.
+  // Maximize button is not used.
   set_tool_tip_text(L"");
 }
 

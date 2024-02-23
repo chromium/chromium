@@ -1022,10 +1022,9 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdElevated(
   return S_OK;
 }
 
-// Launches a process at medium integrity.
-// TODO(crbug.com/1523813): the `server_proc_id`, `proc_handle`, and
-// `stdout_handle` provided by the caller are not populated on return, so the
-// caller will not be able to monitor the progress.
+// Launches a process at medium integrity. The `server_proc_id`, `proc_handle`,
+// and `stdout_handle` provided by the caller are not populated on return, so
+// the caller will not be able to monitor the progress. See crbug.com/1523813.
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
     const WCHAR* cmd_line,
     DWORD* /*server_proc_id*/,

@@ -1259,21 +1259,20 @@ void ExpectCleanProcesses() {
   }
 }
 
+// Standalone installers are supported for Windows only.
 #if !BUILDFLAG(IS_WIN)
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
-  // TODO(crbug.com/1281688).
   NOTREACHED();
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install) {
-  // TODO(crbug.com/1281688).
   NOTREACHED();
 }
-#endif  // IS_WIN
+#endif  // !BUILDFLAG(IS_WIN)
 
 void DMPushEnrollmentToken(const std::string& enrollment_token) {
   scoped_refptr<DMStorage> storage = GetDefaultDMStorage();

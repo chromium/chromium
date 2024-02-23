@@ -57,7 +57,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     // concurrently.
     kUpdateInProgress = 1,
 
-    // Not used. TODO(crbug.com/1290331).
     kUpdateCanceled = 2,
 
     // The function failed because of a throttling policy such as load shedding.
@@ -311,8 +310,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual void CancelInstalls(const std::string& app_id) = 0;
 
   // Install an app by running its installer.
-  // TODO(crbug.com/1286574): perform necessary actions after install, such as
-  // sending install ping and/or run post-install command.
   //
   // Args:
   //   `app_id`: ID of app to install.

@@ -143,12 +143,9 @@ TEST(WinUtil, ShellExecuteAndWait) {
 }
 
 TEST(WinUtil, RunElevated) {
-  // TODO(crbug.com/1314521): Click on UAC prompts in Updater tests that require
-  // elevation
   if (!::IsUserAnAdmin()) {
     return;
   }
-
   const base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope(), test::GetTestName());
   EXPECT_THAT(RunElevated(test_process_cmd_line.GetProgram(),

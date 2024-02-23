@@ -165,7 +165,6 @@ import "mojo/public/mojom/base/file_path.mojom";
     // concurrently.
     kUpdateInProgress,
 
-    // Not used. TODO(crbug.com/1014591).
     kUpdateCanceled,
 
     // The function failed because of a throttling policy such as load shedding.

@@ -224,8 +224,6 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_cmd_line = "some cmd line";
     auto installer_result = MakeInstallerResult(installer_outcome, 0);
 
-    // TODO(crbug.com/1483374): reconcile update_client::InstallError overlaps
-    // with InstallerResult::kExitCode
     EXPECT_EQ(installer_result.error, kErrorApplicationInstallerFailed);
     EXPECT_EQ(installer_result.original_error, 1);
     EXPECT_EQ(installer_result.extended_error, -2);

@@ -970,9 +970,6 @@ void AppInstallControllerImpl::DoCancel() {
     // `COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND` will cause the UI
     // client to run the launch command and exit in the interactive install
     // case.
-    // TODO(crbug.com/1352307): Is there more to be done to populate members
-    // like `completion_code` and `post_install_url`? For now, set the
-    // completion for the basic cases and ignore the post install URL.
     if (app_info.error_code == 0) {
       app_info.completion_code =
           app_info.post_install_launch_command_line.empty()

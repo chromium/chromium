@@ -695,8 +695,6 @@ class IntegrationTest : public ::testing::Test {
 
 #endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 
-// TODO(crbug.com/1492981): re-enable the test once it's not flaky with ASAN
-// build.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
 #else
