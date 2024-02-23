@@ -496,7 +496,7 @@ OSStatus KeychainCallback(SecKeychainEvent keychain_event,
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 void ProcessSingletonNotificationCallbackImpl(
-    const base::CommandLine& command_line,
+    base::CommandLine command_line,
     const base::FilePath& current_directory) {
   // Drop the request if the browser process is already shutting down.
   if (!g_browser_process || g_browser_process->IsShuttingDown() ||
@@ -2002,7 +2002,7 @@ std::unique_ptr<base::RunLoop> ChromeBrowserMainParts::TakeRunLoopForTest() {
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 // static
 bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-    const base::CommandLine& command_line,
+    base::CommandLine command_line,
     const base::FilePath& current_directory) {
   // Drop the request if the browser process is already shutting down.
   // Note that we're going to post an async task below. Even if the browser
@@ -2030,6 +2030,6 @@ bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
   // So, we post a task to asynchronously finish the command line processing.
   return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ProcessSingletonNotificationCallbackImpl,
-                                command_line, current_directory));
+                                std::move(command_line), current_directory));
 }
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)

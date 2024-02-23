@@ -16,13 +16,13 @@
 namespace {
 
 bool ServerCallback(int* callback_count,
-                    const base::CommandLine& command_line,
+                    base::CommandLine command_line,
                     const base::FilePath& current_directory) {
   ++(*callback_count);
   return true;
 }
 
-bool ClientCallback(const base::CommandLine& command_line,
+bool ClientCallback(base::CommandLine command_line,
                     const base::FilePath& current_directory) {
   ADD_FAILURE();
   return false;

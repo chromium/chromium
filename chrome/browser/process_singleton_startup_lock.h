@@ -48,7 +48,7 @@ class ProcessSingletonStartupLock {
   typedef std::pair<base::CommandLine::StringVector, base::FilePath>
       DelayedStartupMessage;
 
-  bool NotificationCallbackImpl(const base::CommandLine& command_line,
+  bool NotificationCallbackImpl(base::CommandLine command_line,
                                 const base::FilePath& current_directory);
 
   bool locked_;

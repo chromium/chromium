@@ -61,7 +61,7 @@ class ChromeProcessSingleton {
   static bool IsSingletonInstance();
 
  private:
-  bool NotificationCallback(const base::CommandLine& command_line,
+  bool NotificationCallback(base::CommandLine command_line,
                             const base::FilePath& current_directory);
 
   // Whether or not this instance is the running single instance.
