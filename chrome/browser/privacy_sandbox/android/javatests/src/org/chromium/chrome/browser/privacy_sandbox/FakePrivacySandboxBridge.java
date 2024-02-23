@@ -40,6 +40,13 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         }
     }
 
+    public void setFirstLevelTopics(String... topics) {
+        mFirstLevelTopics.clear();
+        for (String name : topics) {
+            mFirstLevelTopics.add(getOrCreateTopic(name));
+        }
+    }
+
     public void setCurrentFledgeSites(String... sites) {
         mCurrentFledgeSites.clear();
         mCurrentFledgeSites.addAll(Arrays.asList(sites));
