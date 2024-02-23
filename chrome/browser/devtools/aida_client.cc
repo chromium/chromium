@@ -29,15 +29,14 @@ void AidaClient::OverrideAidaEndpointAndScopeForTesting(
   aida_scope_ = aida_scope;
 }
 
-void AidaClient::DoConversation(
-    bool refetch_auth_token,
-    base::OnceCallback<void(const absl::variant<network::ResourceRequest,
-                                                std::string>&)> callback) {
+void AidaClient::PrepareRequestOrFail(
+    base::OnceCallback<
+        void(absl::variant<network::ResourceRequest, std::string>)> callback) {
   if (aida_scope_.empty()) {
     std::move(callback).Run(R"({"error": "AIDA scope is not configured"})");
     return;
   }
-  if (!access_token_.empty() && !refetch_auth_token) {
+  if (!access_token_.empty() && base::Time::Now() < access_token_expiration_) {
     PrepareAidaRequest(std::move(callback));
     return;
   }
@@ -56,8 +55,8 @@ void AidaClient::DoConversation(
 }
 
 void AidaClient::AccessTokenFetchFinished(
-    base::OnceCallback<void(
-        const absl::variant<network::ResourceRequest, std::string>&)> callback,
+    base::OnceCallback<
+        void(absl::variant<network::ResourceRequest, std::string>)> callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -68,12 +67,13 @@ void AidaClient::AccessTokenFetchFinished(
   }
 
   access_token_ = access_token_info.token;
+  access_token_expiration_ = access_token_info.expiration_time;
   PrepareAidaRequest(std::move(callback));
 }
 
 void AidaClient::PrepareAidaRequest(
-    base::OnceCallback<void(const absl::variant<network::ResourceRequest,
-                                                std::string>&)> callback) {
+    base::OnceCallback<
+        void(absl::variant<network::ResourceRequest, std::string>)> callback) {
   CHECK(!access_token_.empty());
 
   if (aida_endpoint_.empty()) {
@@ -82,7 +82,10 @@ void AidaClient::PrepareAidaRequest(
   }
 
   network::ResourceRequest aida_request;
-  aida_request.url = GURL(aida_endpoint_);
+  // TODO(dsv): remove clearing path once the config is updated
+  GURL::Replacements clear_path;
+  clear_path.ClearPath();
+  aida_request.url = GURL(aida_endpoint_).ReplaceComponents(clear_path);
   aida_request.load_flags = net::LOAD_DISABLE_CACHE;
   aida_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   aida_request.method = "POST";

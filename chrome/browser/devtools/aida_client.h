@@ -22,21 +22,25 @@ class AidaClient {
   explicit AidaClient(Profile* profile);
   ~AidaClient();
 
-  void DoConversation(
-      bool refetch_auth_token,
-      base::OnceCallback<void(const absl::variant<network::ResourceRequest,
-                                                  std::string>&)> callback);
+  void PrepareRequestOrFail(
+      base::OnceCallback<
+          void(absl::variant<network::ResourceRequest, std::string>)> callback);
 
   void OverrideAidaEndpointAndScopeForTesting(const std::string& aida_endpoint,
                                               const std::string& aida_scope);
 
+  static constexpr std::string_view kDoConversationUrlPath =
+      "/v1/aida:doConversation";
+  static constexpr std::string_view kRegisterClientEventUrlPath =
+      "/v1:registerClientEvent";
+
  private:
   void PrepareAidaRequest(
-      base::OnceCallback<void(const absl::variant<network::ResourceRequest,
-                                                  std::string>&)> callback);
+      base::OnceCallback<
+          void(absl::variant<network::ResourceRequest, std::string>)> callback);
   void AccessTokenFetchFinished(
-      base::OnceCallback<void(const absl::variant<network::ResourceRequest,
-                                                  std::string>&)> callback,
+      base::OnceCallback<
+          void(absl::variant<network::ResourceRequest, std::string>)> callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
@@ -45,6 +49,7 @@ class AidaClient {
   std::string aida_endpoint_;
   std::string aida_scope_;
   std::string access_token_;
+  base::Time access_token_expiration_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_AIDA_CLIENT_H_
