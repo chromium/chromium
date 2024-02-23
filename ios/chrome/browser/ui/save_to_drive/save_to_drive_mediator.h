@@ -59,6 +59,9 @@ class DownloadTask;
 // Drive.
 - (void)saveWithSelectedIdentity:(id<SystemIdentity>)identity;
 
+// Called when the user taps "Cancel" in the account picker view.
+- (void)cancelSaveToDrive;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_SAVE_TO_DRIVE_MEDIATOR_H_

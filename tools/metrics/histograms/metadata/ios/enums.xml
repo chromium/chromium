@@ -605,6 +605,17 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Success"/>
 </enum>
 
+<enum name="IOSSaveToDriveOutcomeType">
+  <int value="0" label="Failure - WebState Hidden"/>
+  <int value="1" label="Failure - WebState Destroyed"/>
+  <int value="2" label="Failure - Download Destroyed"/>
+  <int value="3" label="Failure - Canceled (Files Selected)"/>
+  <int value="4" label="Failure - Canceled (Drive Selected)"/>
+  <int value="5" label="Success - Selected Files"/>
+  <int value="6" label="Success - Selected Drive"/>
+  <int value="7" label="Success - Opted to Manage Storage"/>
+</enum>
+
 <enum name="IOSSaveToDriveUploadTaskStateType">
   <int value="0" label="Not Started"/>
   <int value="1" label="In Progress"/>
