@@ -6522,6 +6522,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "policy-on-signin",
+    "owners": [ "mthiesse@chromium.org", "chrome-signin-android-reviews@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "policy-provided-trust-anchors-allowed-at-lock-screen",
     "owners": [ "acostinas@chromium.org", "suprnet@google.com" ],
     "expiry_milestone": 118

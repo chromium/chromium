@@ -10929,6 +10929,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"seed-accounts-revamp", flag_descriptions::kSeedAccountsRevampName,
      flag_descriptions::kSeedAccountsRevampDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kSeedAccountsRevamp)},
+    {"policy-on-signin", flag_descriptions::kEnterprisePolicyOnSigninName,
+     flag_descriptions::kEnterprisePolicyOnSigninDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kEnterprisePolicyOnSignin)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

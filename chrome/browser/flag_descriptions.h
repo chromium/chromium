@@ -1828,6 +1828,9 @@ extern const char kSecurePaymentConfirmationExtensionsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSeedAccountsRevampName[];
 extern const char kSeedAccountsRevampDescription[];
+
+extern const char kEnterprisePolicyOnSigninName[];
+extern const char kEnterprisePolicyOnSigninDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kSidePanelJourneysFlagId[];

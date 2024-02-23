@@ -3161,6 +3161,10 @@ const char kSecurePaymentConfirmationExtensionsDescription[] =
 const char kSeedAccountsRevampName[] = "Seed Accounts Revamp";
 const char kSeedAccountsRevampDescription[] =
     "Refactors how and when accounts are seeded on Android";
+
+const char kEnterprisePolicyOnSigninName[] = "Enterprise Policy On Signin";
+const char kEnterprisePolicyOnSigninDescription[] =
+    "Apply enterprise policies on signin regardless of sync status.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSidePanelJourneysFlagId[] = "side-panel-journeys";
