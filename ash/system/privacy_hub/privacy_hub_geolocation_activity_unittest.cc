@@ -45,13 +45,15 @@ message_center::Notification* FindNotification() {
 }  // namespace
 
 class PrivacyHubGeolocationTestBase : public AshTestBase {
- public:
+public:
   PrivacyHubGeolocationTestBase()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kCrosPrivacyHubV0, features::kCrosPrivacyHub}, {});
+        { features::kCrosPrivacyHub}, {});
   }
+
   ~PrivacyHubGeolocationTestBase() override = default;
+
   // AshTest:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -76,8 +78,8 @@ class PrivacyHubGeolocationTestBase : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class PrivacyHubGeolocationControllerTest
-    : public PrivacyHubGeolocationTestBase {
+class PrivacyHubGeolocationActivityTest : public PrivacyHubGeolocationTestBase,
+      public testing::WithParamInterface<GeolocationAccessLevel> {
  public:
   // TODO(b/323169598): Review all uses of this function and rewrite the tests
   // to check all access levels using GetAccessLevel().
@@ -86,7 +88,8 @@ class PrivacyHubGeolocationControllerTest
     if (allowed) {
       access_level = GeolocationAccessLevel::kAllowed;
     } else {
-      access_level = GeolocationAccessLevel::kDisallowed;
+      access_level = static_cast<GeolocationAccessLevel>(GetParam());
+      ASSERT_NE(access_level, GeolocationAccessLevel::kAllowed);
     }
     SetAccessLevel(access_level);
   }
@@ -94,7 +97,7 @@ class PrivacyHubGeolocationControllerTest
   const base::HistogramTester histogram_tester_;
 };
 
-TEST_F(PrivacyHubGeolocationControllerTest, GetActiveAppsTest) {
+TEST_P(PrivacyHubGeolocationActivityTest, GetActiveAppsTest) {
   EXPECT_TRUE(features::IsCrosPrivacyHubLocationEnabled());
   const std::vector<std::string> app_names{"App1", "App2", "App3"};
   const std::vector<std::u16string> app_names_u16{u"App1", u"App2", u"App3"};
@@ -123,7 +126,7 @@ TEST_F(PrivacyHubGeolocationControllerTest, GetActiveAppsTest) {
   EXPECT_EQ(controller_->GetActiveApps(3), (std::vector<std::u16string>{}));
 }
 
-TEST_F(PrivacyHubGeolocationControllerTest, NotificationOnActivityChangeTest) {
+TEST_P(PrivacyHubGeolocationActivityTest, NotificationOnActivityChangeTest) {
   const std::string app_name = "app";
   SetUserPref(false);
   EXPECT_FALSE(FindNotification());
@@ -133,7 +136,7 @@ TEST_F(PrivacyHubGeolocationControllerTest, NotificationOnActivityChangeTest) {
   EXPECT_FALSE(FindNotification());
 }
 
-TEST_F(PrivacyHubGeolocationControllerTest,
+TEST_P(PrivacyHubGeolocationActivityTest,
        NotificationOnPreferenceChangeTest) {
   const std::string app_name = "app";
   SetUserPref(true);
@@ -145,7 +148,7 @@ TEST_F(PrivacyHubGeolocationControllerTest,
   EXPECT_FALSE(FindNotification());
 }
 
-TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
+TEST_P(PrivacyHubGeolocationActivityTest, ClickOnNotificationTest) {
   const std::string app_name = "app";
   SetUserPref(false);
   EXPECT_TRUE(features::IsCrosPrivacyHubLocationEnabled());
@@ -191,6 +194,10 @@ TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
                        kPrivacyHubGeolocationAccessLevelChangedFromNotification,
                    GeolocationAccessLevel::kOnlyAllowedForSystem));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacyHubGeolocationActivityTest,
+                         testing::Values( GeolocationAccessLevel::kDisallowed, GeolocationAccessLevel::kOnlyAllowedForSystem));
 
 using BooleanSyncTransitionTableRow = std::tuple<GeolocationAccessLevel,
                                                  GeolocationAccessLevel,
