@@ -139,6 +139,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     }
                 };
 
+        // Sets the default value.
+        mItemPerScreen = 1;
+
         // Snap scroll is supported by the recyclerview if it shows a single item per screen. This
         // happens on phones or small windows on tablets.
         if (!isTablet) {
