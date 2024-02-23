@@ -99,7 +99,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.content_settings.CookieControlsStatus;
@@ -154,7 +153,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private OnClickListener mCloseClickListener;
     private CookieControlsBridge mCookieControlsBridge;
-    private boolean mHighConfidenceBreakageReceived;
+    private boolean mShouldHighlightCookieControlsIcon;
     private int mCookieBlockingStatus;
     private int mBlockingStatus3pcd;
 
@@ -1166,9 +1165,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         // CookieControlsObserver interface
         @Override
-        public void onBreakageConfidenceLevelChanged(int level) {
-            if (mHighConfidenceBreakageReceived) return;
-            mHighConfidenceBreakageReceived = level == CookieControlsBreakageConfidenceLevel.HIGH;
+        public void onHighlightCookieControl(boolean shouldHighlight) {
+            if (mShouldHighlightCookieControlsIcon) return;
+            mShouldHighlightCookieControlsIcon = shouldHighlight;
         }
 
         @Override
@@ -1394,11 +1393,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mPageInfoIPHController.showCookieControlsReminderIPH(
                         COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT,
                         R.string.cookie_controls_reminder_iph_message);
-            } else if (mHighConfidenceBreakageReceived) {
+            } else if (mShouldHighlightCookieControlsIcon) {
                 mPageInfoIPHController.showCookieControlsIPH(
                         COOKIE_CONTROLS_ICON_DISPLAY_TIMEOUT, R.string.cookie_controls_iph_message);
                 animateCookieControlsIcon();
-                mHighConfidenceBreakageReceived = false;
+                mShouldHighlightCookieControlsIcon = false;
             }
         }
 

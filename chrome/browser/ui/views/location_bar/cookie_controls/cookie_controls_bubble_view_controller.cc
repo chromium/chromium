@@ -226,11 +226,6 @@ void CookieControlsBubbleViewController::OnStatusChanged(
   }
 }
 
-void CookieControlsBubbleViewController::OnBreakageConfidenceLevelChanged(
-    CookieControlsBreakageConfidenceLevel level) {
-  // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
-}
-
 void CookieControlsBubbleViewController::
     OnFinishedPageReloadWithChangedSettings() {
   // TODO: Log a UserMetricsAction here to count completed page reloads once we

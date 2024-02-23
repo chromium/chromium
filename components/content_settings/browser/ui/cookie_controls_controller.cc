@@ -139,7 +139,6 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   auto status = GetStatus(web_contents);
   int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
   int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
-
   for (auto& observer : observers_) {
     observer.OnStatusChanged(status.status, status.controls_visible,
                              status.protections_on, status.enforcement,
@@ -152,12 +151,6 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
             third_party_allowed_sites + third_party_blocked_sites),
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
-    // TODO(b/317883749): Deprecate this function after removing clank
-    // dependencies.
-    observer.OnBreakageConfidenceLevelChanged(
-        GetConfidenceLevel(status.status, status.enforcement,
-                           SiteDataAccessed(third_party_allowed_sites,
-                                            third_party_blocked_sites)));
   }
 }
 
@@ -245,90 +238,6 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           info.metadata.expiration()};
 }
 
-// TODO(b/317883749): Remove this function.
-CookieControlsBreakageConfidenceLevel
-CookieControlsController::GetConfidenceLevel(
-    CookieControlsStatus status,
-    CookieControlsEnforcement enforcement,
-    bool site_data_accessed) {
-  // If 3PC cookies are not blocked by default:
-  switch (status) {
-    case CookieControlsStatus::kDisabled:
-    case CookieControlsStatus::kUninitialized:
-      return CookieControlsBreakageConfidenceLevel::kUninitialized;
-    case CookieControlsStatus::kDisabledForSite:
-      if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
-        return CookieControlsBreakageConfidenceLevel::kUninitialized;
-      }
-      return CookieControlsBreakageConfidenceLevel::kMedium;
-    case CookieControlsStatus::kEnabled:
-      // Check other conditions to determine the level.
-      break;
-  }
-
-  // 3PCD prevents SameSite=None cookies from being sent when the top-level
-  // document is sandboxed without `allow-origin`. For instance when loaded
-  // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
-  // allow the user to opt into sending SameSite=None cookies again in those
-  // contexts.
-  if (HasOriginSandboxedTopLevelDocument()) {
-    return CookieControlsBreakageConfidenceLevel::kMedium;
-  }
-
-  // If no 3P sites have attempted to access site data, nor were any stateful
-  // bounces recorded, return low confidence. Take into account both allow and
-  // blocked counts, since the breakage might be related to storage
-  // partitioning. Partitioned site will be allowed to access partitioned
-  // storage.
-  if (!site_data_accessed) {
-    return CookieControlsBreakageConfidenceLevel::kLow;
-  }
-
-  // Return `kMedium` confidence for incognito and Guest profile. We don't want
-  // to show high-confidence UI (animation, IPH) in these cases as we can't
-  // persist their usage cross-session. This puts us at high risk of
-  // over-triggering noisy UI and annoying users.
-  auto* web_contents = GetWebContents();
-  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    return CookieControlsBreakageConfidenceLevel::kMedium;
-  }
-
-  // TODO(crbug.com/1446230): Check if FedCM was requested.
-  const GURL& url = web_contents->GetLastCommittedURL();
-  if (cookie_settings_->HasAnyFrameRequestedStorageAccess(url)) {
-    return CookieControlsBreakageConfidenceLevel::kMedium;
-  }
-
-  // If the user is returning to the site after their previous exception has
-  // expired, return high confidence. The order of this check is important,
-  // as the site may now be using SAA / FedCM instead of relying on 3PC. It
-  // should also come before any check for whether the entrypoint was already
-  // animated.
-  if (has_exception_expired_since_last_visit_) {
-    return CookieControlsBreakageConfidenceLevel::kHigh;
-  }
-
-  // Check if the entry point was already animated for the site and return
-  // medium confidence in that case.
-  if (WasEntryPointAlreadyAnimated(GetMetadata(settings_map_, url))) {
-    return CookieControlsBreakageConfidenceLevel::kMedium;
-  }
-
-  if (recent_reloads_count_ >= features::kUserBypassUIReloadCount.Get()) {
-    return CookieControlsBreakageConfidenceLevel::kHigh;
-  }
-
-  if (SiteEngagementService::IsEngagementAtLeast(
-          GetSiteEngagementScore(), blink::mojom::EngagementLevel::HIGH)) {
-    return CookieControlsBreakageConfidenceLevel::kHigh;
-  }
-
-  // Default to a medium confidence level, as by this point the site has
-  // accessed 3P storage, but there is no signal that would give us high
-  // confidence.
-  return CookieControlsBreakageConfidenceLevel::kMedium;
-}
-
 bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
   content::RenderFrameHost* rfh = GetWebContents()->GetPrimaryMainFrame();
 
@@ -395,17 +304,6 @@ void CookieControlsController::SetUserChangedCookieBlockingForSite(
   user_changed_cookie_blocking_ = changed && !user_changed_cookie_blocking_;
 }
 
-// TODO(b/317883749): Update this function to not call `GetConfidenceLevel`.
-CookieControlsBreakageConfidenceLevel
-CookieControlsController::GetBreakageConfidenceLevel() {
-  auto status = GetStatus(GetWebContents());
-  int third_party_allowed_sites = GetAllowedThirdPartyCookiesSitesCount();
-  int third_party_blocked_sites = GetBlockedThirdPartyCookiesSitesCount();
-  return GetConfidenceLevel(
-      status.status, status.enforcement,
-      SiteDataAccessed(third_party_allowed_sites, third_party_blocked_sites));
-}
-
 CookieControlsStatus CookieControlsController::GetCookieControlsStatus() {
   auto status = GetStatus(GetWebContents());
   return status.status;
@@ -468,12 +366,6 @@ void CookieControlsController::PresentBlockedCookieCounter() {
             third_party_allowed_sites + third_party_blocked_sites),
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
-    // TODO(b/317883749): Deprecate this function after removing clank
-    // dependencies.
-    observer.OnBreakageConfidenceLevelChanged(
-        GetConfidenceLevel(status.status, status.enforcement,
-                           SiteDataAccessed(third_party_allowed_sites,
-                                            third_party_blocked_sites)));
   }
 }
 

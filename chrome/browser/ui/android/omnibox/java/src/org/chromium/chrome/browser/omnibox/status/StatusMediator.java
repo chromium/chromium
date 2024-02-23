@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.content_settings.CookieControlsStatus;
@@ -652,8 +651,8 @@ public class StatusMediator
 
     // CookieControlsObserver interface
     @Override
-    public void onBreakageConfidenceLevelChanged(int level) {
-        if (level == CookieControlsBreakageConfidenceLevel.HIGH) {
+    public void onHighlightCookieControl(boolean shouldHighlight) {
+        if (shouldHighlight) {
             animateCookieControlsIcon(
                     () -> {
                         if (mBlockingStatus3pcd == CookieBlocking3pcdStatus.NOT_IN3PCD) {

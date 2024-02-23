@@ -35,7 +35,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -83,9 +82,8 @@ public class CookieControlsBridgeTest {
         }
 
         @Override
-        public void onBreakageConfidenceLevelChanged(
-                @CookieControlsBreakageConfidenceLevel int level) {
-            mLevel = level;
+        public void onHighlightCookieControl(boolean shouldHighlight) {
+            mShouldHighlight = shouldHighlight;
             mHelper.notifyCalled();
         }
     }
@@ -109,7 +107,7 @@ public class CookieControlsBridgeTest {
     private int mBlockedCookies;
     private int mAllowedSites;
     private int mBlockedSites;
-    private int mLevel;
+    private boolean mShouldHighlight;
 
     @Before
     public void setUp() throws Exception {
@@ -121,8 +119,8 @@ public class CookieControlsBridgeTest {
         mBlockedCookies = -1;
         mAllowedSites = -1;
         mBlockedSites = -1;
-        mLevel = CookieControlsBreakageConfidenceLevel.UNINITIALIZED;
         mExpiration = -1;
+        mShouldHighlight = false;
     }
 
     @After

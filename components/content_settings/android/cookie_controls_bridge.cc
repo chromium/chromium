@@ -62,6 +62,8 @@ void CookieControlsBridge::OnStatusChanged(
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
+  // TODO(b/317975095): Utilize `controls_visible` and `protections_on` in place
+  // of CookieControlsStatus.
   // Only invoke the callback when there is a change.
   if (status_ == status && enforcement_ == enforcement &&
       expiration_ == expiration) {
@@ -94,16 +96,18 @@ void CookieControlsBridge::OnSitesCountChanged(
       blocked_third_party_sites_count);
 }
 
-void CookieControlsBridge::OnBreakageConfidenceLevelChanged(
-    CookieControlsBreakageConfidenceLevel level) {
-  if (level_ == level) {
-    return;
-  }
-
-  level_ = level;
+void CookieControlsBridge::OnCookieControlsIconStatusChanged(
+    bool icon_visible,
+    bool protections_on,
+    CookieBlocking3pcdStatus blocking_status,
+    bool should_highlight) {
+  // This function's main use is for web's User Bypass icon, which
+  // does not observe `OnStatusChanged`. Since the Clank icon does
+  // observe `OnStatusChanged`, the only variable we need to pass
+  // on from this function is `should_highlight`.
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CookieControlsBridge_onBreakageConfidenceLevelChanged(
-      env, jobject_, static_cast<int>(level));
+  Java_CookieControlsBridge_onHighlightCookieControl(
+      env, jobject_, static_cast<bool>(should_highlight));
 }
 
 void CookieControlsBridge::SetThirdPartyCookieBlockingEnabledForSite(
@@ -122,10 +126,6 @@ void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
 
 int CookieControlsBridge::GetCookieControlsStatus(JNIEnv* env) {
   return static_cast<int>(controller_->GetCookieControlsStatus());
-}
-
-int CookieControlsBridge::GetBreakageConfidenceLevel(JNIEnv* env) {
-  return static_cast<int>(controller_->GetBreakageConfidenceLevel());
 }
 
 CookieControlsBridge::~CookieControlsBridge() = default;

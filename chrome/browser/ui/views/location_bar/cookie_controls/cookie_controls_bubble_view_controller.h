@@ -41,8 +41,6 @@ class CookieControlsBubbleViewController
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void SetSubjectUrlNameForTesting(const std::u16string& name);

@@ -27,10 +27,6 @@ public interface CookieControlsObserver {
      */
     default void onSitesCountChanged(int allowedSites, int blockedSites) {}
 
-    /**
-     * Called when the breakage confidence level for the current site changes.
-     * @param level An enum indicating the confidence level.
-     */
-    default void onBreakageConfidenceLevelChanged(
-            @CookieControlsBreakageConfidenceLevel int level) {}
+    /** Called when we should surface a visual indicator due to potential site breakage. */
+    default void onHighlightCookieControl(boolean shouldHighlight) {}
 }

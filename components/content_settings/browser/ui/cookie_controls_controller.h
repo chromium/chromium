@@ -16,7 +16,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -67,9 +66,6 @@ class CookieControlsController final
   // changed by the user via user bypass.
   bool HasUserChangedCookieBlockingForSite();
   void SetUserChangedCookieBlockingForSite(bool changed);
-
-  // Returns the current breakage confidence level.
-  CookieControlsBreakageConfidenceLevel GetBreakageConfidenceLevel();
 
   // Returns the current cookie controls status.
   CookieControlsStatus GetCookieControlsStatus();
@@ -141,16 +137,6 @@ class CookieControlsController final
 
   // Determine the CookieControlsStatus based on |web_contents|.
   Status GetStatus(content::WebContents* web_contents);
-
-  // Determine the confidence of site being broken and user needing to use
-  // cookie controls. It affects the prominence of UI entry points. It takes
-  // into account blocked third-party cookie access, enforcement by 3PCD
-  // metadata grant, exceptions lifecycle, site engagement index and recent user
-  // activity (like frequent page reloads).
-  CookieControlsBreakageConfidenceLevel GetConfidenceLevel(
-      CookieControlsStatus status,
-      CookieControlsEnforcement enforcement,
-      bool site_data_accessed);
 
   bool HasOriginSandboxedTopLevelDocument() const;
 

@@ -8,7 +8,6 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 
@@ -45,12 +44,6 @@ class CookieControlsObserver : public base::CheckedObserver {
   // exceptions).
   virtual void OnSitesCountChanged(int allowed_third_party_sites_count,
                                    int blocked_third_party_sites_count) {}
-
-  // Called wherever the site breakage confidence level changes. It takes into
-  // account blocked third-party cookie access, exceptions lifecycle, site
-  // engagement index and recent user activity (like frequent page reloads).
-  virtual void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) {}
 
   // Called to update the user bypass entrypoint in the omnibox. This can impact
   // any property of the entrypoint (i.e. the visibility, label, or icon).

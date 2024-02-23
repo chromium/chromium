@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
-import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsStatus;
@@ -604,12 +603,12 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void iphCookieControls_animateOnBreakageConfidenceLevelChanged() {
+    public void iphCookieControls_animatesonHighlightCookieControl() {
         setupCookieControlsTest();
 
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
-        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mMediator.onHighlightCookieControl(true);
 
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
@@ -621,7 +620,7 @@ public final class StatusMediatorUnitTest {
 
         // CookieControlsIcon should not be set when no HIGH BreakageConfidenceLevel were
         // explicitly reported.
-        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.MEDIUM);
+        mMediator.onHighlightCookieControl(false);
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
     }
 
@@ -635,8 +634,7 @@ public final class StatusMediatorUnitTest {
                 CookieBlocking3pcdStatus.NOT_IN3PCD,
                 /* expiration= */ 0);
 
-        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
-
+        mMediator.onHighlightCookieControl(true);
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
         // Not in 3PCD, IPH is shown.
@@ -648,7 +646,7 @@ public final class StatusMediatorUnitTest {
                 CookieBlocking3pcdStatus.LIMITED,
                 /* expiration= */ 0);
 
-        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mMediator.onHighlightCookieControl(true);
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         // Limited 3PCD, IPH is NOT shown.
         verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
@@ -662,7 +660,7 @@ public final class StatusMediatorUnitTest {
         // No interaction with the Tracking Protection onboarding notice yet.
         doReturn(0).when(mPrefs).getInteger(Pref.TRACKING_PROTECTION_ONBOARDING_ACK_ACTION);
 
-        mMediator.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        mMediator.onHighlightCookieControl(true);
         mMediator.onPageLoadStopped();
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
