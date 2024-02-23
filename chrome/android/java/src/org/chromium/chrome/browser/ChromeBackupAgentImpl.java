@@ -607,7 +607,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
                     Runnable signinRunnable =
                             () -> {
-                                // signinManager.addSignInStateObserver(observer);
                                 signinManager.runAfterOperationInProgress(
                                         () -> {
                                             signinManager.signin(
