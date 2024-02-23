@@ -482,7 +482,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
 
     static String getDomainUrl(GURL url) {
         if (StartSurfaceConfiguration.useMagicStack()) {
-            return UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+            String domainUrl = UrlUtilities.getDomainAndRegistry(url.getSpec(), false);
+            return !TextUtils.isEmpty(domainUrl) ? domainUrl : url.getHost();
         } else {
             return url.getHost();
         }
