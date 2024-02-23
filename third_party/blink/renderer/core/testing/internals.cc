@@ -1198,6 +1198,9 @@ const AtomicString& Internals::shadowPseudoId(Element* element) {
 }
 
 String Internals::visiblePlaceholder(Element* element) {
+  // Placeholder may be created during layout. Force layout to ensure the
+  // placeholder was created.
+  element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   if (auto* text_control_element = ToTextControlOrNull(element)) {
     if (!text_control_element->IsPlaceholderVisible())
       return String();
