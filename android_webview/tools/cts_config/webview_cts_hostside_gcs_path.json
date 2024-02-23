@@ -18,7 +18,13 @@
     "test_runs": [
       {
         "apk": "android-cts/testcases/CtsHostsideWebViewTests.apk",
-        "is_hostside": true
+        "is_hostside": true,
+        "excludes": [
+          {
+            "match": "com.android.cts.webkit.WebViewHostSideMultipleProfileTest#*",
+            "_bug_id": "b/326395159"
+          }
+        ]
       }
     ]
   }
