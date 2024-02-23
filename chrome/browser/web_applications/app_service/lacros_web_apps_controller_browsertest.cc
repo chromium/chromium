@@ -733,6 +733,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
 
   auto id = *menu_items->items[5]->id;
 
+  ui_test_utils::BrowserChangeObserver new_app_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   base::test::TestFuture<::crosapi::mojom::LaunchResultPtr>
       launch_result_future;
   AsAppController(lacros_web_apps_controller)
@@ -740,6 +742,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                                  launch_result_future.GetCallback());
   // TODO: handle return value.
   std::ignore = launch_result_future.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(new_app_browser_observer.Wait());
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()

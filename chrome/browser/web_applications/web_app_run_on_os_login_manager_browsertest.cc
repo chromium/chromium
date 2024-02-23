@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -421,9 +422,12 @@ IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
                      Field(&message_center::NotifierId::id,
                            Eq("run_on_os_login_notifier")))));
 
+  // Clicking on notification should open "chrome://management" on default
+  // browser.
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                       kRunOnOsLoginNotificationId, std::nullopt,
                                       std::nullopt);
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
 
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();

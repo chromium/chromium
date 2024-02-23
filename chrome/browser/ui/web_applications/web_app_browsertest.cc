@@ -724,10 +724,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   NavigateViaLinkClickToURLAndWait(app_browser, app_url);
+  ui_test_utils::WaitForBrowserSetLastActive(app_browser);
   ASSERT_TRUE(app_browser->app_controller());
 
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
   Browser* browser2 = CreateBrowser(app_browser->profile());
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
 
   TabStripModel* model2 = browser2->tab_strip_model();
@@ -735,6 +737,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   EXPECT_EQ(model2->count(), 2);
   model2->SelectPreviousTab();
   EXPECT_EQ(model2->active_index(), 0);
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
 
   NavigateParams param(app_browser, GURL("http://www.google.com/"),
                        ui::PAGE_TRANSITION_LINK);
@@ -742,6 +745,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   param.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   ui_test_utils::NavigateToURL(&param);
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
 
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 3u);
   EXPECT_EQ(model2->count(), 3);
@@ -1833,9 +1837,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(tab_contents->GetLastCommittedURL(), app_url);
 
+  ui_test_utils::BrowserChangeObserver new_app_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kEnabled);
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_IN_PWA_WINDOW));
+  ui_test_utils::WaitForBrowserSetLastActive(new_app_browser_observer.Wait());
 
   Browser* const app_browser = BrowserList::GetInstance()->GetLastActive();
   ASSERT_EQ(app_browser->app_controller()->app_id(), app_id);
