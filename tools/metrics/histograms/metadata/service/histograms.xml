@@ -341,19 +341,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.EmbeddedWorkerInstanceClient.StartWorker"
-    enum="ServiceWorkerRendererStartWorker" expires_after="M81">
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    Records when StartWorker is received on the renderer. This is used to
-    surface discrepancy between StartWorker being sent on the browser side and
-    not getting received by renderer.
-    EmbeddedWorkerInstance.Start.TimeToSendStartWorker should be used as a
-    baseline. TODO(panicker): This should be removed after investigation of
-    crbug/790903, potentially in M68.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.EvaluateTopLevelScript.{ResultStatus}.Time"
     units="ms" expires_after="2024-08-04">
   <owner>chikamune@chromium.org</owner>

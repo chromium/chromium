@@ -237,11 +237,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Read data error"/>
 </enum>
 
-<enum name="ServiceWorkerRendererStartWorker">
-  <int value="0" label="Received on installed service worker."/>
-  <int value="1" label="Received on uninstalled service worker."/>
-</enum>
-
 <enum name="ServiceWorkerRouterEvaluatorErrorEnums">
   <int value="0" label="kNoError"/>
   <int value="1" label="kInvalidType"/>

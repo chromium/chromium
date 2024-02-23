@@ -110,13 +110,6 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       params->script_url_to_skip_throttling, initiator_thread_task_runner_,
       params->service_worker_route_id, cors_exempt_header_list_,
       params->storage_key);
-  // Record UMA to indicate StartWorker is received on renderer.
-  StartWorkerHistogramEnum metric =
-      params->is_installed ? StartWorkerHistogramEnum::RECEIVED_ON_INSTALLED
-                           : StartWorkerHistogramEnum::RECEIVED_ON_UNINSTALLED;
-  UMA_HISTOGRAM_ENUMERATION(
-      "ServiceWorker.EmbeddedWorkerInstanceClient.StartWorker", metric,
-      StartWorkerHistogramEnum::NUM_TYPES);
 
   std::unique_ptr<blink::WebServiceWorkerInstalledScriptsManagerParams>
       installed_scripts_manager_params;
