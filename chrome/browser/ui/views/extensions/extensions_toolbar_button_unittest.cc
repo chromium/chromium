@@ -74,3 +74,50 @@ TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
   ClickExtensionsButton();
   EXPECT_FALSE(extensions_coordinator()->IsShowing());
 }
+
+class ExtensionsToolbarButtonFeatureUnitTest
+    : public ExtensionsToolbarUnitTest {
+ public:
+  ExtensionsToolbarButtonFeatureUnitTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+  ~ExtensionsToolbarButtonFeatureUnitTest() override = default;
+  ExtensionsToolbarButtonFeatureUnitTest(
+      const ExtensionsToolbarButtonFeatureUnitTest&) = delete;
+  ExtensionsToolbarButtonFeatureUnitTest& operator=(
+      const ExtensionsToolbarButtonFeatureUnitTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that updating the button state properly modifies the tooltip and
+// accessible name.
+TEST_F(ExtensionsToolbarButtonFeatureUnitTest, UpdateState) {
+  InstallExtension("Extension");
+
+  extensions_button()->UpdateState(ExtensionsToolbarButton::State::kDefault);
+  EXPECT_EQ(extensions_button()->GetTooltipText({}),
+            l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
+  EXPECT_EQ(extensions_button()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_ACC_NAME_EXTENSIONS_BUTTON));
+
+  extensions_button()->UpdateState(
+      ExtensionsToolbarButton::State::kAllExtensionsBlocked);
+  EXPECT_EQ(extensions_button()->GetTooltipText({}),
+            l10n_util::GetStringUTF16(
+                IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
+  EXPECT_EQ(extensions_button()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
+
+  extensions_button()->UpdateState(
+      ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+  EXPECT_EQ(extensions_button()->GetTooltipText({}),
+            l10n_util::GetStringUTF16(
+                IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS));
+  EXPECT_EQ(extensions_button()->GetAccessibleName(),
+            l10n_util::GetStringUTF16(
+                IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS));
+}

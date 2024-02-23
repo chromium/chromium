@@ -42,6 +42,23 @@ const gfx::VectorIcon& GetIcon(ExtensionsToolbarButton::State state) {
   }
 }
 
+// Returns the accessible text for the button.
+std::u16string GetAccessibleText(ExtensionsToolbarButton::State state) {
+  int message_id;
+  switch (state) {
+    case ExtensionsToolbarButton::State::kDefault:
+      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON;
+      break;
+    case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
+      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
+      break;
+    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+      message_id = IDS_ACC_NAME_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
+      break;
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
 }  // namespace
 
 ExtensionsToolbarButton::ExtensionsToolbarButton(
@@ -64,7 +81,6 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
   SetVectorIcon(GetIcon(state_));
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
@@ -75,6 +91,22 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
 
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey, kExtensionsMenuButtonElementId);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    SetAccessibleName(GetAccessibleText(state_));
+    // By default, the button's accessible description is set to the button's
+    // tooltip text. This is the accepted workaround to ensure only accessible
+    // name is announced by a screenreader rather than tooltip text and
+    // accessible name.
+    GetViewAccessibility().OverrideDescription(
+        std::u16string(),
+        ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  } else {
+    // We need to set the tooltip at construction when it's used by the
+    // accessibility mode.
+    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
+  }
 }
 
 ExtensionsToolbarButton::~ExtensionsToolbarButton() {
@@ -126,6 +158,7 @@ void ExtensionsToolbarButton::UpdateState(State state) {
 
   state_ = state;
   SetVectorIcon(GetIcon(state_));
+  SetAccessibleName(GetAccessibleText(state_));
 }
 
 void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
