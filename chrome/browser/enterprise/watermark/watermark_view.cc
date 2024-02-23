@@ -25,6 +25,11 @@ WatermarkView::WatermarkView(std::string text) : text_(std::move(text)) {
 
 WatermarkView::~WatermarkView() = default;
 
+void WatermarkView::SetString(const std::string& text) {
+  text_ = text;
+  SchedulePaint();
+}
+
 void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   // Trying to render an empty string in Skia will fail. A string is required
   // to create the command buffer for the renderer.

@@ -25,6 +25,8 @@ class WatermarkView : public views::View {
   explicit WatermarkView(std::string text);
   ~WatermarkView() override;
 
+  void SetString(const std::string& text);
+
   // views::View
   void OnPaint(gfx::Canvas* canvas) override;
 

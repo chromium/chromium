@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/buildflags.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/user_education/common/feature_promo_controller.h"
@@ -61,6 +62,10 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/client_view.h"
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/compositor/throughput_tracker.h"
@@ -440,6 +445,12 @@ class BrowserView : public BrowserWindow,
   void UpdateSidePanelHorizontalAlignment();
 
   void UpdateWebAppStatusIconsVisiblity();
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  // Sets the watermark string to the value specified in text if the view is
+  // not null.
+  void SetWatermarkString(const std::string& text);
+#endif
 
   // Getter for the `window.setResizable(bool)` state.
   std::optional<bool> GetCanResizeFromWebAPI() const;
@@ -1170,6 +1181,9 @@ class BrowserView : public BrowserWindow,
   // The view that contains devtools window for the selected WebContents.
   raw_ptr<views::WebView, AcrossTasksDanglingUntriaged> devtools_web_view_ =
       nullptr;
+
+  // The view that overlays a watermark on the contents container.
+  raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;
 
   // The view managing the devtools and contents positions.
   // Handled by ContentsLayoutManager.

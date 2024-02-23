@@ -931,18 +931,15 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
 
-  views::View* watermark_view = nullptr;
-
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
-    watermark_view = contents_container->AddChildView(
-        std::make_unique<enterprise_watermark::WatermarkView>(
-            "Private! Confidential!"));
+    watermark_view_ = contents_container->AddChildView(
+        std::make_unique<enterprise_watermark::WatermarkView>());
   }
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_, watermark_view));
+      devtools_web_view_, contents_web_view_, watermark_view_));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
@@ -1160,6 +1157,14 @@ bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
           base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
           base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) &&
          !GetIsWebAppType();
+}
+#endif
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+void BrowserView::SetWatermarkString(const std::string& text) {
+  if (watermark_view_) {
+    watermark_view_->SetString(text);
+  }
 }
 #endif
 
