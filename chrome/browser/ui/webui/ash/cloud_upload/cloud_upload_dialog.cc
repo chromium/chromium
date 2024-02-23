@@ -768,37 +768,40 @@ void CloudOpenTask::CheckEmailAndOpenURLs(
 }
 
 void CloudOpenTask::StartUpload() {
-  DCHECK_EQ(pending_uploads_, 0UL);
-  pending_uploads_ = file_urls_.size();
+  DCHECK_EQ(file_urls_idx_, 0UL);
   upload_timer_ = base::ElapsedTimer();
   // CloudOpenTask is the only owner of the `CloudOpenMetrics` object and will
   // still be alive after the upload handler completes. Thus, pass a `SafeRef`
   // of `CloudOpenMetrics` to the upload handler.
-  base::SafeRef<CloudOpenMetrics> cloud_open_metrics_safe_ref =
-      cloud_open_metrics_->GetSafeRef();
 
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
-    for (const auto& file_url : file_urls_) {
-      DriveUploadHandler::Upload(
-          profile_, file_url,
-          base::BindOnce(&CloudOpenTask::FinishedDriveUpload, this),
-          cloud_open_metrics_safe_ref);
-    }
+    StartNextGoogleDriveUpload();
   } else if (cloud_provider_ == CloudProvider::kOneDrive) {
-    for (const auto& file_url : file_urls_) {
-      OneDriveUploadHandler::Upload(
-          profile_, file_url,
-          base::BindOnce(&CloudOpenTask::FinishedOneDriveUpload, this,
-                         profile_->GetWeakPtr()),
-          cloud_open_metrics_safe_ref);
-    }
+    StartNextOneDriveUpload();
   }
+}
+
+void CloudOpenTask::StartNextGoogleDriveUpload() {
+  DCHECK_LT(file_urls_idx_, file_urls_.size());
+  DriveUploadHandler::Upload(
+      profile_, file_urls_[file_urls_idx_],
+      base::BindOnce(&CloudOpenTask::FinishedDriveUpload, this),
+      cloud_open_metrics_->GetSafeRef());
+}
+
+void CloudOpenTask::StartNextOneDriveUpload() {
+  DCHECK_LT(file_urls_idx_, file_urls_.size());
+  OneDriveUploadHandler::Upload(
+      profile_, file_urls_[file_urls_idx_],
+      base::BindOnce(&CloudOpenTask::FinishedOneDriveUpload, this,
+                     profile_->GetWeakPtr()),
+      cloud_open_metrics_->GetSafeRef());
 }
 
 void CloudOpenTask::FinishedDriveUpload(OfficeTaskResult task_result,
                                         std::optional<GURL> url,
                                         int64_t size) {
-  DCHECK_GT(pending_uploads_, 0UL);
+  DCHECK_LT(file_urls_idx_, file_urls_.size());
   if (url.has_value()) {
     upload_total_size_ += size;
     fm_tasks::SetOfficeFileMovedToGoogleDrive(profile_, base::Time::Now());
@@ -808,7 +811,9 @@ void CloudOpenTask::FinishedDriveUpload(OfficeTaskResult task_result,
     cloud_open_metrics_->LogTaskResult(task_result);
     has_upload_errors_ = task_result == OfficeTaskResult::kFailedToUpload;
   }
-  if (--pending_uploads_) {
+  file_urls_idx_++;
+  if (file_urls_idx_ < file_urls_.size()) {
+    StartNextGoogleDriveUpload();
     return;
   }
   if (!has_upload_errors_) {
@@ -821,7 +826,7 @@ void CloudOpenTask::FinishedOneDriveUpload(
     OfficeTaskResult task_result,
     std::optional<storage::FileSystemURL> url,
     int64_t size) {
-  DCHECK_GT(pending_uploads_, 0UL);
+  DCHECK_LT(file_urls_idx_, file_urls_.size());
   if (url.has_value()) {
     upload_total_size_ += size;
     Profile* profile = profile_weak_ptr.get();
@@ -838,7 +843,9 @@ void CloudOpenTask::FinishedOneDriveUpload(
     cloud_open_metrics_->LogTaskResult(task_result);
     has_upload_errors_ = task_result == OfficeTaskResult::kFailedToUpload;
   }
-  if (--pending_uploads_) {
+  file_urls_idx_++;
+  if (file_urls_idx_ < file_urls_.size()) {
+    StartNextOneDriveUpload();
     return;
   }
   if (!has_upload_errors_) {

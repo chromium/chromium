@@ -180,6 +180,8 @@ class CloudOpenTask : public BrowserListObserver,
   bool ShouldShowConfirmationDialog();
   void ConfirmMoveOrStartUpload();
   void StartUpload();
+  void StartNextGoogleDriveUpload();
+  void StartNextOneDriveUpload();
 
   // Callbacks from `DriveUploadHandler` and `OneDriveUploadHandler`. URL passed
   // to these callbacks will be `std::nullopt` and size will be 0 if upload
@@ -228,10 +230,11 @@ class CloudOpenTask : public BrowserListObserver,
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
   std::vector<storage::FileSystemURL> file_urls_;
+  // File being currently uploaded.
+  size_t file_urls_idx_ = 0;
   CloudProvider cloud_provider_;
   std::unique_ptr<CloudOpenMetrics> cloud_open_metrics_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
-  size_t pending_uploads_ = 0;
   raw_ptr<CloudUploadDialog> pending_dialog_ = nullptr;
   base::ElapsedTimer upload_timer_;
   int64_t upload_total_size_ = 0;
