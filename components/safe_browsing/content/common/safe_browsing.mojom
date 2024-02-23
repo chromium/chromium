@@ -155,7 +155,8 @@ interface PhishingDetector {
   // |result| enum to indicate failure. If the URL is phishing the request proto
   // will have |is_phishing()| set to true.
   StartPhishingDetection(url.mojom.Url url)
-    => (PhishingDetectorResult result, string request_proto);
+    => (PhishingDetectorResult result,
+        mojo_base.mojom.ByteString request_proto);
 };
 
 [EnableIf=full_safe_browsing]
