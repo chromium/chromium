@@ -63,7 +63,8 @@ struct CONTENT_EXPORT DisplayFeature {
   // this display feature. These segments are in DIPs relative to the widget
   // origin.
   std::vector<gfx::Rect> ComputeWindowSegments(
-      const gfx::Size& visible_viewport_size) const;
+      const gfx::Size& visible_viewport_size,
+      int root_view_offset_from_origin = 0) const;
 
   static std::optional<DisplayFeature> Create(
       Orientation orientation,

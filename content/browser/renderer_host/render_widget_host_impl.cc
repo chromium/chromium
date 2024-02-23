@@ -1078,9 +1078,17 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   if (is_top_most_widget) {
     std::optional<DisplayFeature> display_feature = view_->GetDisplayFeature();
     if (display_feature) {
+      int top_controls_height =
+          visual_properties.browser_controls_params
+                  .browser_controls_shrink_blink_size
+              ? visual_properties.browser_controls_params.top_controls_height
+              : visual_properties.browser_controls_params
+                    .top_controls_min_height;
+      float dip_scale = 1 / GetDeviceScaleFactor();
       visual_properties.root_widget_window_segments =
           display_feature->ComputeWindowSegments(
-              visual_properties.visible_viewport_size);
+              visual_properties.visible_viewport_size,
+              top_controls_height * dip_scale);
     } else {
       visual_properties.root_widget_window_segments = {
           gfx::Rect(visual_properties.visible_viewport_size)};
