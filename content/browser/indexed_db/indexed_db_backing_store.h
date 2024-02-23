@@ -52,6 +52,7 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 class AutoDidCommitTransaction;
+class IndexedDBBackingStoreTest;
 class IndexedDBBucketContext;
 class IndexedDBActiveBlobRegistry;
 class LevelDBWriteBatch;
@@ -62,7 +63,6 @@ class TransactionalLevelDBTransaction;
 struct IndexedDBValue;
 
 namespace indexed_db_backing_store_unittest {
-class IndexedDBBackingStoreTest;
 FORWARD_DECLARE_TEST(IndexedDBBackingStoreTest, ReadCorruptionInfo);
 }  // namespace indexed_db_backing_store_unittest
 

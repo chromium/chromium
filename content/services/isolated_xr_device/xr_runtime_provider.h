@@ -25,11 +25,11 @@
 namespace device {
 class OpenXrDevice;
 }  // namespace device
-#endif
 
 namespace viz {
 class Gpu;
 }  // namespace viz
+#endif
 
 class IsolatedXRRuntimeProvider final
     : public device::mojom::IsolatedXRRuntimeProvider {

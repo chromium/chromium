@@ -24,7 +24,6 @@
 #include "content/public/browser/web_contents_observer.h"
 
 class GURL;
-struct WebAppInstallInfo;
 
 namespace content {
 class NavigationHandle;
@@ -32,6 +31,8 @@ class WebContents;
 }  // namespace content
 
 namespace web_app {
+
+struct WebAppInstallInfo;
 
 // Documentation: docs/webapps/manifest_update_process.md
 //

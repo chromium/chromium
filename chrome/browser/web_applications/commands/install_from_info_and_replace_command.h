@@ -21,12 +21,12 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
-struct WebAppInstallInfo;
 
 namespace web_app {
 
 class InstallFromInfoJob;
 class WebAppUninstallAndReplaceJob;
+struct WebAppInstallInfo;
 struct WebAppInstallParams;
 
 // Starts a web app installation process using prefilled

@@ -38,11 +38,9 @@
 #include "ui/gfx/color_space.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace cc {
-class DisplayResourceProvider;
-}
-
 namespace viz {
+
+class DisplayResourceProvider;
 
 // OverlayProcessor subclass that goes through a list of strategies to determine
 // overlay candidates. This is used by Android and Ozone platforms.
