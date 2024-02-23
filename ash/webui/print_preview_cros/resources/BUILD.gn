@@ -13,7 +13,10 @@ build_webui("build") {
     "index.html",
   ]
 
-  non_web_component_files = [ "js/summary_panel_controller.ts" ]
+  non_web_component_files = [
+    "js/data/print_ticket_manager.ts",
+    "js/summary_panel_controller.ts",
+  ]
 
   web_component_files = [
     "js/print_preview_cros_app.ts",

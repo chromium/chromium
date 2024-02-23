@@ -16,6 +16,7 @@ build_webui_tests("build_webui_tests") {
 
   files = [
     "print_preview_cros_app_test.ts",
+    "print_ticket_manager_test.ts",
     "summary_panel_controller_test.ts",
     "summary_panel_test.ts",
   ]

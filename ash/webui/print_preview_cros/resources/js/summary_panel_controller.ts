@@ -4,6 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import {PrintTicketManager} from './data/print_ticket_manager.js';
+
 /**
  * @fileoverview
  * 'summary-panel-controller' defines events and event handlers to correctly
@@ -18,6 +20,7 @@ export const SHEETS_USED_CHANGED_EVENT =
 // `summary-panel` element.
 export class SummaryPanelController extends EventTarget {
   private sheetsUsed = 0;
+  private printTicketManger = PrintTicketManager.getInstance();
 
   // Returns localized string based on current number of sheets in document and
   // whether document is being saved to a digital destination or printed to a
@@ -37,6 +40,11 @@ export class SummaryPanelController extends EventTarget {
     this.sheetsUsed = sheetsUsed;
     this.dispatchEvent(new CustomEvent<void>(
         SHEETS_USED_CHANGED_EVENT, {bubbles: true, composed: true}));
+  }
+
+  // Handles behavior for when the print button is clicked.
+  handlePrintClicked(): void {
+    this.printTicketManger.sendPrintRequest();
   }
 }
 
