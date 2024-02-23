@@ -225,13 +225,11 @@ ts_library("build_ts") {
     ":web_components",
     "components:html_wrapper_files",
     "components/oobe_vars:css_wrapper_files",
-    "//chrome/browser/resources/gaia_auth_host:copy_definitions",
   ]
 
-  path_mappings =
-      [ "//oobe/gaia_auth_host/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/gaia_auth_host/*",
-                    target_gen_dir) ]
+  path_mappings = [ "//oobe/gaia_auth_host/*|" +
+                    rebase_path("//chrome/browser/resources/gaia_auth_host/*",
+                                target_gen_dir) ]
 
   # These files can be added conditionally in the runtime, so they shouldn't
   # be added to the same grd file as the rest of the sources.

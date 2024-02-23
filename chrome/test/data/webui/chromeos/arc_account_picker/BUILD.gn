@@ -4,14 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-# Copy TS definitions to the generated directory. Generating these
-# files in a target allows them to be properly tracked as dependencies
-# for TS targets that depend on them.
-copy("copy_definitions") {
-  sources = [ "test_util.d.ts" ]
-  outputs = [ "${target_gen_dir}/{{source_file_part}}" ]
-}
-
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [

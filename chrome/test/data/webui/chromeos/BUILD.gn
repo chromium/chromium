@@ -234,9 +234,9 @@ ts_library("build_ts") {
   ]
 
   path_mappings = [
-    "chrome://chrome-signin/arc_account_picker/*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/chromeos/arc_account_picker/*",
-            target_gen_dir),
+    "chrome://chrome-signin/arc_account_picker/*|" +
+        rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
+                    target_gen_dir),
     "chrome://internet-detail-dialog/*|" + rebase_path(
             "${root_gen_dir}/chrome/browser/resources/chromeos/internet_detail_dialog/tsc/*",
             target_gen_dir),
@@ -250,18 +250,15 @@ ts_library("build_ts") {
 
   deps = [
     "//ash/webui/common/resources:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/chromeos/internet_config_dialog:build_ts",
     "//chrome/browser/resources/chromeos/internet_detail_dialog:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-  extra_deps = [
-    "//ash/webui/common/resources:generate_definitions",
-    "//chrome/browser/resources/chromeos/arc_account_picker:copy_definitions",
-  ]
+  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
 }
 
 mojom("web_ui_test_bindings") {

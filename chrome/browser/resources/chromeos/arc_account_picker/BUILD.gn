@@ -54,18 +54,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-# Copy TS definitions to the generated directory. Generating these
-# files in a target allows them to be properly tracked as dependencies
-# for TS targets that depend on them.
-copy("copy_definitions") {
-  sources = [
-    "arc_account_picker_app.d.ts",
-    "arc_account_picker_browser_proxy.d.ts",
-    "arc_util.d.ts",
-  ]
-  outputs = [ "${target_gen_dir}/{{source_file_part}}" ]
-}
-
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
