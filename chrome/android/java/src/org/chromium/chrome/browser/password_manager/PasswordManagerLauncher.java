@@ -35,11 +35,13 @@ public class PasswordManagerLauncher {
             @ManagePasswordsReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys) {
+        assert profile != null;
+        Profile originalProfile = profile.getOriginalProfile();
         PasswordManagerHelper.showPasswordSettings(
                 context,
                 referrer,
                 new SettingsLauncherImpl(),
-                SyncServiceFactory.getForProfile(profile),
+                SyncServiceFactory.getForProfile(originalProfile),
                 modalDialogManagerSupplier,
                 managePasskeys);
     }
