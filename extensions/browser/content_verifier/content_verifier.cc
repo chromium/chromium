@@ -561,7 +561,7 @@ void ContentVerifier::OnExtensionLoadedOnIO(
   if (shutdown_on_io_)
     return;
 
-  io_data_.AddData(extension_id, std::move(data));
+  io_data_.AddData(extension_id, std::move(*data));
   GetContentHash(extension_id, extension_root, extension_version,
                  false /* force_missing_computed_hashes_creation */,
                  // HashHelper will respond directly to OnFetchComplete().
@@ -785,7 +785,11 @@ ContentVerifier::HashHelper* ContentVerifier::GetOrCreateHashHelper() {
 }
 
 void ContentVerifier::ResetIODataForTesting(const Extension* extension) {
-  io_data_.AddData(extension->id(), CreateIOData(extension, delegate_.get()));
+  std::unique_ptr<ContentVerifierIOData::ExtensionData> data =
+      CreateIOData(extension, delegate_.get());
+  // This is only used in testing; `data` must always be successfully created.
+  CHECK(data);
+  io_data_.AddData(extension->id(), std::move(*data));
 }
 
 base::FilePath ContentVerifier::NormalizeRelativePathForTesting(

@@ -42,6 +42,13 @@ class ContentVerifierIOData {
         std::set<CanonicalRelativePath> canonical_indexed_ruleset_paths,
         const base::Version& version,
         ContentVerifierDelegate::VerifierSourceType source_type);
+
+    ExtensionData(ExtensionData&&);
+    ExtensionData& operator=(ExtensionData&&);
+
+    ExtensionData(const ExtensionData&) = delete;
+    ExtensionData& operator=(const ExtensionData&) = delete;
+
     ~ExtensionData();
   };
 
@@ -52,8 +59,7 @@ class ContentVerifierIOData {
 
   ~ContentVerifierIOData();
 
-  void AddData(const ExtensionId& extension_id,
-               std::unique_ptr<ExtensionData> data);
+  void AddData(const ExtensionId& extension_id, ExtensionData data);
   void RemoveData(const ExtensionId& extension_id);
   void Clear();
 
@@ -62,7 +68,7 @@ class ContentVerifierIOData {
   const ExtensionData* GetData(const ExtensionId& extension_id);
 
  private:
-  std::map<ExtensionId, std::unique_ptr<ExtensionData>> data_map_;
+  std::map<ExtensionId, ExtensionData> data_map_;
 };
 
 }  // namespace extensions
