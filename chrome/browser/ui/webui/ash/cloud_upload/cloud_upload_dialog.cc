@@ -661,19 +661,16 @@ void CloudOpenTask::CheckEmailAndOpenAndroidOneDriveURLs(
     return;
   }
 
-  // Open files from ODFS, abort at the first failure.
-  // TODO(b/325514165) Potential metrics inconsistencies for multiple files.
+  // Open files from ODFS.
   for (const auto& android_onedrive_url : file_urls_) {
-    if (!OpenAndroidOneDriveUrl(android_onedrive_url)) {
-      return;
-    }
+    OpenAndroidOneDriveUrl(android_onedrive_url);
   }
 }
 
 // Open office file, originally selected from Android OneDrive, from ODFS. First
 // convert the |android_onedrive_urls| to ODFS file paths, then open them from
 // ODFS in the MS 365 PWA.
-bool CloudOpenTask::OpenAndroidOneDriveUrl(
+void CloudOpenTask::OpenAndroidOneDriveUrl(
     const FileSystemURL& android_onedrive_file_url) {
   // TODO(b/269364287): Handle when Android OneDrive file can't be opened.
   if (!UrlIsOnAndroidOneDrive(profile_, android_onedrive_file_url)) {
@@ -681,7 +678,7 @@ bool CloudOpenTask::OpenAndroidOneDriveUrl(
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
-    return false;
+    return;
   }
 
   // Get the ODFS mount path.
@@ -692,7 +689,7 @@ bool CloudOpenTask::OpenAndroidOneDriveUrl(
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
-    return false;
+    return;
   }
   base::FilePath odfs_path = odfs_file_system_info->mount_path();
 
@@ -706,7 +703,7 @@ bool CloudOpenTask::OpenAndroidOneDriveUrl(
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
-    return false;
+    return;
   }
   // Format for Android OneDrive documents provider `path` is:
   // Files/<rel_path>
@@ -718,7 +715,7 @@ bool CloudOpenTask::OpenAndroidOneDriveUrl(
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
-    return false;
+    return;
   }
   if (components[0] != "Files") {
     LOG(ERROR)
@@ -726,7 +723,7 @@ bool CloudOpenTask::OpenAndroidOneDriveUrl(
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
-    return false;
+    return;
   }
   // Append relative path from Android OneDrive Url.
   for (size_t i = 1; i < components.size(); i++) {
@@ -739,13 +736,13 @@ bool CloudOpenTask::OpenAndroidOneDriveUrl(
     LogOneDriveOpenResultUMA(
         OfficeTaskResult::kOpened,
         OfficeOneDriveOpenErrors::kConversionToODFSUrlError);
-    return false;
+    return;
   }
 
   OpenFileFromODFS(profile_, parser.file_system(), parser.file_path(),
                    base::BindOnce(&CloudOpenTask::LogOneDriveOpenResultUMA,
                                   this, OfficeTaskResult::kOpened));
-  return true;
+  return;
 }
 
 void CloudOpenTask::StartUpload() {

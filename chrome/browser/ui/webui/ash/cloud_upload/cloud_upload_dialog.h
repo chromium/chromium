@@ -179,7 +179,7 @@ class CloudOpenTask : public BrowserListObserver,
   void CheckEmailAndOpenAndroidOneDriveURLs(
       base::expected<cloud_upload::ODFSMetadata, base::File::Error>
           metadata_or_error);
-  bool OpenAndroidOneDriveUrl(
+  void OpenAndroidOneDriveUrl(
       const storage::FileSystemURL& android_onedrive_url);
 
   bool ShouldShowConfirmationDialog();
