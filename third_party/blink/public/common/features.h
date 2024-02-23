@@ -444,9 +444,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableMojoJSProtectedMemory);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEnableDeprecatedRenderURLReplacements);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEventTimingFallbackToModalDialogStart);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
@@ -542,10 +539,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFledgeEnableFilteringDebugReportStartingFrom;
 
-// If enabled, the limit on number of component ads will be taken from
-// `kFledgeCustomMaxAuctionAdComponentsValue`
+// If kFledgeCustomMaxAuctionAdComponents is enabled, the limit on number of
+// component ads will be taken from `kFledgeCustomMaxAuctionAdComponentsValue`
 // (up to kMaxAdAuctionAdComponentsConfigLimit) rather than default.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeCustomMaxAuctionAdComponents);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeCustomMaxAuctionAdComponentsValue;
 

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 namespace blink {
 
@@ -17,6 +18,14 @@ ScriptValue ProtectedAudience::queryFeatureSupport(ScriptState* script_state,
     return ScriptValue(script_state->GetIsolate(),
                        ToV8Traits<IDLUnsignedLongLong>::ToV8(
                            script_state, MaxAdAuctionAdComponents()));
+  }
+
+  if (feature_name == "deprecatedRenderURLReplacements") {
+    bool enabled =
+        RuntimeEnabledFeatures::FledgeDeprecatedRenderURLReplacementsEnabled(
+            ExecutionContext::From(script_state));
+    return ScriptValue(script_state->GetIsolate(),
+                       ToV8Traits<IDLBoolean>::ToV8(script_state, enabled));
   }
 
   return ScriptValue();
