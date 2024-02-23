@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -129,7 +130,9 @@ void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kDateAndTimeSectionPath);
+      ash::features::IsOsSettingsRevampWayfindingEnabled()
+          ? chromeos::settings::mojom::kSystemPreferencesSectionPath
+          : chromeos::settings::mojom::kDateAndTimeSectionPath);
 #else
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
