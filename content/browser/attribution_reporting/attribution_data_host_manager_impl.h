@@ -55,8 +55,6 @@ namespace content {
 class AttributionManager;
 class AttributionSuitableContext;
 
-struct AttributionInputEvent;
-
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the `AttributionManager` that owns `this`. Because attributionsrc
 // requests may continue until after we have detached a frame, all browser
@@ -131,7 +129,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
 
  private:
   class RegistrationContext;
-  class NavigationContextForPendingRegistration;
+  class NavigationForPendingRegistration;
   class OsRegistrationsBuffer;
   enum class OsRegistrationsBufferFlushReason;
 
@@ -241,7 +239,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void SubmitOsRegistrations(
       std::vector<attribution_reporting::OsRegistrationItem>,
       const RegistrationContext&,
-      std::optional<AttributionInputEvent>);
+      attribution_reporting::mojom::RegistrationType);
 
   // In `RegisterNavigationDataHost` which, for a given navigation, will be
   // called before `NotifyNavigationRegistrationStarted`, we receive the number
@@ -335,8 +333,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
                  base::flat_set<BackgroundRegistrationsId>>
       background_registrations_waiting_on_navigation_;
   SequentialTimeoutsTimer background_registrations_waiting_on_navigation_timer_;
-  base::flat_map<blink::AttributionSrcToken,
-                 NavigationContextForPendingRegistration>
+  base::flat_map<blink::AttributionSrcToken, NavigationForPendingRegistration>
       navigations_waiting_on_background_registrations_;
   SequentialTimeoutsTimer
       navigations_waiting_on_background_registrations_timer_;
