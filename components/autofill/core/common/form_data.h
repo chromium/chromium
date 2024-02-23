@@ -157,8 +157,12 @@ struct FormData {
   FormData& operator=(FormData&&);
   ~FormData();
 
-  // An identifier that is unique across all forms in all frames.
-  // Must not be leaked to renderer process. See FieldGlobalId for details.
+  // Uniquely identifies the DOM element that this form represents.
+  //
+  // It does *not* uniquely identify this FormData object (there is no such kind
+  // of identifier because FormData is a value type).
+  //
+  // Must not be leaked to renderer process. See FormGlobalId for details.
   FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
 
   // TODO(crbug/1211834): This function is deprecated. Use FormData::DeepEqual()
@@ -168,6 +172,8 @@ struct FormData {
   bool SameFormAs(const FormData& other) const;
 
   // Returns a pointer to the field if found, otherwise returns nullptr.
+  // Note that FormFieldData::global_id() is not guaranteed to be unique among
+  // FormData::fields.
   const FormFieldData* FindFieldByGlobalId(
       const FieldGlobalId& global_id) const;
 
@@ -224,11 +230,13 @@ struct FormData {
 
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
+  // See LocalFrameToken for details.
   LocalFrameToken host_frame;
-  // An identifier of the form that is unique among the forms from the same
-  // frame. In the browser process, it should only be used in conjunction with
-  // |host_frame| to identify a field; see global_id(). It is not persistent
-  // between page loads and therefore not used in comparison in SameFieldAs().
+
+  // Uniquely identifies the DOM element that this form represents among the
+  // form DOM elements in the same frame.
+  // In the browser process, use global_id() instead.
+  // See global_id() for details.
   FormRendererId unique_renderer_id;
 
   // A monotonically increasing counter that indicates the generation of the
@@ -253,6 +261,22 @@ struct FormData {
       mojom::SubmissionIndicatorEvent::NONE;
 
   // A vector of all the input fields in the form.
+  //
+  // WARNING: `fields` may contain duplicates:
+  //
+  // Usually, FormFieldData::global_id() (in the browser process) and
+  // FormFieldData::renderer_id (in the renderer process) uniquely identify
+  // objects in `fields`. This is reliable enough for practical purposes.
+  //
+  // Collisions are possible in rare cases. Two known scenarios are:
+  // - The renderer is compromised and sends duplicates.
+  // - In the DOM, a field F moves from a form G to a form H and the browser
+  //   still knows an outdated version of G at the time it learns about the
+  //   updated version of H. Then the browser has FormData representations of G
+  //   and H which both include a FormFieldData representation of F. If G and H
+  //   come from subframes, they're flattened into the same FormData, which then
+  //   contains two representations of F; that is, FormData::fields contains two
+  //   fields with the same FormFieldData::global_id().
   std::vector<FormFieldData> fields;
 
   // Contains unique renderer IDs of text elements which are predicted to be
