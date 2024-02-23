@@ -123,6 +123,10 @@ const char kIOSSwipeBackForwardUsed[] = "swiped_back_forward_used";
 const char kIOSTabGridAdjacentTabTapped[] = "tab_grid_adjacent_tab_tapped";
 const char kIOSSwipeToolbarToChangeTabUsed[] =
     "swipe_toolbar_to_change_tab_used";
+const char kIOSOverflowMenuCustomizationUsed[] =
+    "overflow_menu_customization_used";
+const char kIOSOverflowMenuOffscreenItemUsed[] =
+    "overflow_menu_offscreen_item_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

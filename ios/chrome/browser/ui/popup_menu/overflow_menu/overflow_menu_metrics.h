@@ -5,12 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_
 #define IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/containers/enum_set.h"
 
 namespace overflow_menu {
 enum class Destination;
 enum class ActionType;
 }  // namespace overflow_menu
+@class OverflowMenuAction;
+@class OverflowMenuDestination;
 
 // Enum for IOS.OverflowMenu.ActionType histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -162,5 +166,27 @@ using OverflowMenuVisitedEvent =
                   OverflowMenuVisitedEventFields::kMaxValue>;
 
 void RecordOverflowMenuVisitedEvent(OverflowMenuVisitedEvent event);
+
+// Returns whether the given `destination` was initially visible in the list of
+// visible `destinations`, given that `visibleDestinationCount` destinations are
+// visible at a time.
+bool DestinationWasInitiallyVisible(
+    overflow_menu::Destination destination,
+    NSArray<OverflowMenuDestination*>* destinations,
+    int visibleDestinationCount);
+
+// Returns whether the given `action` was initially visible in the list of
+// visible `actions`, given that `visibleActionCount` actions are visible at a
+// time.
+bool ActionWasInitiallyVisible(overflow_menu::ActionType actionType,
+                               NSArray<OverflowMenuAction*>* actions,
+                               int visibleActionCount);
+
+// Returns whether the given `item` was initially visible in the list of visible
+// `items`, given that `visibleItemCount` items are visible at a time.
+// Exposed mostly for testing. The two above methods are more convenient.
+bool ItemWasInitiallyVisible(int item,
+                             NSArray<NSNumber*>* items,
+                             int visibleItemCount);
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_

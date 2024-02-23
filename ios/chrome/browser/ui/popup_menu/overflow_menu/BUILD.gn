@@ -162,6 +162,7 @@ source_set("unit_tests") {
     "destination_customization_model_unittest.mm",
     "overflow_menu_constants_unittest.mm",
     "overflow_menu_mediator_unittest.mm",
+    "overflow_menu_metrics_unittest.mm",
     "overflow_menu_orderer_unittest.mm",
   ]
   deps = [

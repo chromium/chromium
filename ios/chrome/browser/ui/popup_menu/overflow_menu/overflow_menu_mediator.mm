@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -109,6 +110,9 @@ namespace {
 // we've shown the default browser blue dot promo.
 NSString* const kMostRecentTimestampBlueDotPromoShownInOverflowMenu =
     @"MostRecentTimestampBlueDotPromoShownInOverflowMenu";
+
+// Approximate number of visible page actions by default.
+const unsigned int kDefaultVisiblePageActionCount = 3u;
 
 typedef void (^Handler)(void);
 
@@ -1035,6 +1039,8 @@ bool IsBookmarked(const GURL& url,
 
     [weakSelf.menuOrderer recordClickForDestination:destination];
 
+    [weakSelf logFeatureEngagementEventForClickOnDestination:destination];
+
     handler();
   };
 
@@ -1093,13 +1099,9 @@ bool IsBookmarked(const GURL& url,
                      accessibilityID:(NSString*)accessibilityID
                         hideItemText:(NSString*)hideItemText
                              handler:(Handler)handler {
-  __weak __typeof(self) weakSelf = self;
-  Handler newHandler = ^{
-    if (weakSelf.menuHasBeenDismissed) {
-      return;
-    }
-    handler();
-  };
+  Handler newHandler =
+      [self fullOverflowMenuActionHandlerForActionType:actionType
+                                               handler:handler];
 
   OverflowMenuAction* action =
       [[OverflowMenuAction alloc] initWithName:name
@@ -1146,6 +1148,20 @@ bool IsBookmarked(const GURL& url,
                                 accessibilityID:accessibilityID
                                    hideItemText:hideItemText
                                         handler:handler];
+}
+
+// Adds any necessary additions to the handler for any specific action.
+- (Handler)fullOverflowMenuActionHandlerForActionType:
+               (overflow_menu::ActionType)actionType
+                                              handler:(Handler)handler {
+  __weak __typeof(self) weakSelf = self;
+  return ^{
+    if (weakSelf.menuHasBeenDismissed) {
+      return;
+    }
+    [weakSelf logFeatureEngagementEventForClickOnAction:actionType];
+    handler();
+  };
 }
 
 // Returns the LongPress items for the given action and hide item text. Can
@@ -1496,6 +1512,37 @@ bool IsBookmarked(const GURL& url,
   [self.popupMenuHandler dismissPopupMenuAnimated:YES];
 }
 
+// Possibly logs a feature engagement tracker event when the user clicks on a
+// destination.
+- (void)logFeatureEngagementEventForClickOnDestination:
+    (overflow_menu::Destination)destination {
+  if (DestinationWasInitiallyVisible(
+          destination, self.model.destinations,
+          self.menuOrderer.visibleDestinationsCount)) {
+    return;
+  }
+
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed);
+  }
+}
+
+// Possibly logs a feature engagement tracker event when the user clicks on an
+// action.
+- (void)logFeatureEngagementEventForClickOnAction:
+    (overflow_menu::ActionType)action {
+  if (ActionWasInitiallyVisible(action, self.pageActionsGroup.actions,
+                                kDefaultVisiblePageActionCount)) {
+    return;
+  }
+
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed);
+  }
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
@@ -1624,9 +1671,13 @@ bool IsBookmarked(const GURL& url,
     self.followAction.name = l10n_util::GetNSStringF(
         IDS_IOS_TOOLS_MENU_UNFOLLOW, base::SysNSStringToUTF16(domainName));
     self.followAction.symbolName = kXMarkSymbol;
-    self.followAction.handler = ^{
-      [weakSelf unfollowWebPage:webPageURLs];
-    };
+    self.followAction.handler = [self
+        fullOverflowMenuActionHandlerForActionType:overflow_menu::ActionType::
+                                                       Follow
+                                           handler:^{
+                                             [weakSelf
+                                                 unfollowWebPage:webPageURLs];
+                                           }];
     if (IsOverflowMenuCustomizationEnabled()) {
       NSString* hideItemText =
           l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_UNFOLLOW,
@@ -1640,9 +1691,13 @@ bool IsBookmarked(const GURL& url,
     self.followAction.name = l10n_util::GetNSStringF(
         IDS_IOS_TOOLS_MENU_FOLLOW, base::SysNSStringToUTF16(domainName));
     self.followAction.symbolName = kPlusSymbol;
-    self.followAction.handler = ^{
-      [weakSelf followWebPage:webPageURLs];
-    };
+    self.followAction.handler = [self
+        fullOverflowMenuActionHandlerForActionType:overflow_menu::ActionType::
+                                                       Follow
+                                           handler:^{
+                                             [weakSelf
+                                                 followWebPage:webPageURLs];
+                                           }];
     if (IsOverflowMenuCustomizationEnabled()) {
       NSString* hideItemText =
           l10n_util::GetNSStringF(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW,

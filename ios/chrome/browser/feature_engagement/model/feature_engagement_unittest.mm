@@ -1023,3 +1023,64 @@ TEST_F(FeatureEngagementTest, TestPasswordManagerPromoIPHWasClosed) {
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature));
 }
+
+// Verifies that the Overflow Menu Customization promo IPH is only triggered
+// after the user has chosen items that are offscreen by default at least twice.
+TEST_F(FeatureEngagementTest, TestOverflowMenuCustomizationPromoShows) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitWithExistingFeatures(
+      {feature_engagement::kIPHiOSOverflowMenuCustomizationFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSOverflowMenuCustomizationFeature));
+
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed);
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSOverflowMenuCustomizationFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSOverflowMenuCustomizationFeature);
+}
+
+// Verifies that the Overflow Menu Customization promo IPH is not triggered
+// after the user has used the customization screen.
+TEST_F(FeatureEngagementTest,
+       TestOverflowMenuCustomizationPromoDoesntShowIfCustomizationUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitWithExistingFeatures(
+      {feature_engagement::kIPHiOSOverflowMenuCustomizationFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSOverflowMenuCustomizationFeature));
+
+  // Using offscreen items twice should trigger the promo...
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed);
+
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSOverflowMenuCustomizationFeature));
+
+  // Unless the user has also used customization already.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSOverflowMenuCustomizationUsed);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSOverflowMenuCustomizationFeature));
+}

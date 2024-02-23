@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
 IOSOverflowMenuDestination HistogramDestinationFromDestination(
     overflow_menu::Destination destination) {
@@ -88,4 +89,45 @@ void RecordActionsCustomizationEvent(ActionsCustomizationEvent event) {
 void RecordOverflowMenuVisitedEvent(OverflowMenuVisitedEvent event) {
   base::UmaHistogramSparse("IOS.OverflowMenu.OverflowMenuVisited",
                            event.ToEnumBitmask());
+}
+
+bool DestinationWasInitiallyVisible(
+    overflow_menu::Destination destination,
+    NSArray<OverflowMenuDestination*>* destinations,
+    int visibleDestinationCount) {
+  NSMutableArray<NSNumber*>* destinationInts = [[NSMutableArray alloc] init];
+  for (OverflowMenuDestination* menuDestination in destinations) {
+    [destinationInts
+        addObject:[NSNumber numberWithInt:menuDestination.destination]];
+  }
+  return ItemWasInitiallyVisible(static_cast<int>(destination), destinationInts,
+                                 visibleDestinationCount);
+}
+
+bool ActionWasInitiallyVisible(overflow_menu::ActionType actionType,
+                               NSArray<OverflowMenuAction*>* actions,
+                               int visibleActionCount) {
+  NSMutableArray<NSNumber*>* actionTypes = [[NSMutableArray alloc] init];
+  for (OverflowMenuAction* action in actions) {
+    [actionTypes addObject:[NSNumber numberWithInt:action.actionType]];
+  }
+  return ItemWasInitiallyVisible(static_cast<int>(actionType), actionTypes,
+                                 visibleActionCount);
+}
+
+bool ItemWasInitiallyVisible(int item,
+                             NSArray<NSNumber*>* items,
+                             int visibleItemCount) {
+  // Check if the clicked destination was visible by default in the menu.
+  int numItems = static_cast<int>(items.count);
+  int rangeEnd = MAX(0, MIN(visibleItemCount, numItems));
+  NSRange visibleItemRange = NSMakeRange(0, rangeEnd);
+  NSArray<NSNumber*>* visibleItems = [items subarrayWithRange:visibleItemRange];
+  for (NSNumber* arrayItem in visibleItems) {
+    if (item == [arrayItem integerValue]) {
+      // Item was visible by default, so don't log the event.
+      return true;
+    }
+  }
+  return false;
 }

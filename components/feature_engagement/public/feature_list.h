@@ -287,6 +287,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSPostDefaultAbandonmentPromoFeature,
                        "IPH_iOSPostDefaultAbandonmentPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoGenericDefaultBrowserFeature,
                        "IPH_iOSPromoGenericDefaultBrowser");
+DEFINE_VARIATION_PARAM(kIPHiOSOverflowMenuCustomizationFeature,
+                       "IPH_iOSOverflowMenuCustomization");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -617,6 +619,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSSwipeToolbarToChangeTabFeature),
         VARIATION_ENTRY(kIPHiOSPostDefaultAbandonmentPromoFeature),
         VARIATION_ENTRY(kIPHiOSPromoGenericDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSOverflowMenuCustomizationFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

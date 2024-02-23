@@ -2039,6 +2039,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         feature_engagement::events::kIOSSwipeToolbarToChangeTabUsed);
   }
 
+  if (kIPHiOSOverflowMenuCustomizationFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->used = EventConfig(
+        feature_engagement::events::kIOSOverflowMenuCustomizationUsed,
+        Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+    config->trigger =
+        EventConfig("overflow_menu_customization_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSOverflowMenuOffscreenItemUsed,
+        Comparator(GREATER_THAN_OR_EQUAL, 2),
+        feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (std::optional<FeatureConfig> ios_promo_feature_config =
           GetClientSideiOSPromoFeatureConfig(feature)) {

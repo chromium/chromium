@@ -234,6 +234,13 @@ extern const char kIOSTabGridAdjacentTabTapped[];
 // The user has swipped the toolbar to go to an adjacent tab.
 extern const char kIOSSwipeToolbarToChangeTabUsed[];
 
+// The user has opened the Overflow Menu customization screen.
+extern const char kIOSOverflowMenuCustomizationUsed[];
+
+// The user has used ann Overflow Menu item where customizing the menu could
+// have helped.
+extern const char kIOSOverflowMenuOffscreenItemUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

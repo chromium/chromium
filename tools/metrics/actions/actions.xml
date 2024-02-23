@@ -41522,6 +41522,8 @@ should be able to be added at any place in this file.
       label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSOmniboxPositionFeature"
       label="For the iOSOmniboxPositionFeature feature"/>
+  <suffix name="iOSOverflowMenuCustomization"
+      label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="iOSParcelTrackingFeature"
       label="For the iOSParcelTrackingFeature feature"/>
   <suffix name="iOSPasswordPromoDesktop"
