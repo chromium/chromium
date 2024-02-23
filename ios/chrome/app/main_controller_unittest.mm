@@ -10,6 +10,7 @@
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
@@ -40,6 +41,8 @@ class MainControllerTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
+    builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
+                              ios::BookmarkModelFactory::GetDefaultFactory());
 
     browser_state_ = builder.Build();
 

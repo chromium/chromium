@@ -37,6 +37,9 @@ class CoreBookmarkModel : public KeyedService {
 
   CoreBookmarkModel& operator=(const CoreBookmarkModel&) = delete;
 
+  // Returns true if the model finished loading.
+  virtual bool loaded() const = 0;
+
   // Returns true if the specified URL is bookmarked.
   virtual bool IsBookmarked(const GURL& url) const = 0;
 
@@ -56,6 +59,9 @@ class CoreBookmarkModel : public KeyedService {
       const std::u16string& query,
       size_t max_count_hint,
       query_parser::MatchingAlgorithm matching_algorithm) const = 0;
+
+  // Removes all the non-permanent bookmark nodes that are editable by the user.
+  virtual void RemoveAllUserBookmarks() = 0;
 };
 
 }  // namespace bookmarks

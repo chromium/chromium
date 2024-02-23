@@ -11,6 +11,7 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -38,6 +39,9 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   test_cbs_builder.AddTestingFactory(
       ios::AccountBookmarkModelFactory::GetInstance(),
       ios::AccountBookmarkModelFactory::GetDefaultFactory());
+  test_cbs_builder.AddTestingFactory(
+      ios::BookmarkModelFactory::GetInstance(),
+      ios::BookmarkModelFactory::GetDefaultFactory());
   test_cbs_builder.AddTestingFactory(
       ManagedBookmarkServiceFactory::GetInstance(),
       ManagedBookmarkServiceFactory::GetDefaultFactory());

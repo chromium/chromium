@@ -10,9 +10,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_type.h"
-#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -40,53 +39,22 @@ bookmarks::BookmarkModel* GetBookmarkModelForType(
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
 bool AreAllAvailableBookmarkModelsLoaded(ChromeBrowserState* browser_state) {
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state);
-  CHECK(local_or_syncable_bookmark_model);
-  bookmarks::BookmarkModel* account_bookmark_model =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state);
-  if (!account_bookmark_model) {
-    return local_or_syncable_bookmark_model->loaded();
-  }
-  return local_or_syncable_bookmark_model->loaded() &&
-         account_bookmark_model->loaded();
+  bookmarks::CoreBookmarkModel* model =
+      ios::BookmarkModelFactory::GetForBrowserState(browser_state);
+  CHECK(model);
+  return model->loaded();
 }
 
-// Removes all user bookmarks. Requires bookmark model to be loaded.
-// Return true if the bookmarks were successfully removed and false otherwise.
-bool RemoveAllUserBookmarksIOS(BookmarkModel* bookmark_model) {
+bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
+  bookmarks::CoreBookmarkModel* bookmark_model =
+      ios::BookmarkModelFactory::GetForBrowserState(browser_state);
+
   if (!bookmark_model->loaded()) {
     return false;
   }
 
   bookmark_model->RemoveAllUserBookmarks();
 
-  for (const auto& child : bookmark_model->root_node()->children()) {
-    if (bookmark_model->client()->IsNodeManaged(child.get())) {
-      continue;
-    }
-    if (!child->children().empty()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state) {
-  BookmarkModel* local_or_syncable_bookmark_model =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browser_state);
-  BookmarkModel* account_bookmark_model =
-      ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state);
-  if (!RemoveAllUserBookmarksIOS(local_or_syncable_bookmark_model)) {
-    return false;
-  }
-  if (account_bookmark_model) {
-    if (!RemoveAllUserBookmarksIOS(account_bookmark_model)) {
-      return false;
-    }
-  }
   ResetLastUsedBookmarkFolder(browser_state->GetPrefs());
   return true;
 }

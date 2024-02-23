@@ -37,6 +37,10 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
 
   ~MergedBookmarkModel() override = default;
 
+  bool loaded() const override {
+    return model1_->loaded() && model2_->loaded();
+  }
+
   bool IsBookmarked(const GURL& url) const override {
     return model1_->IsBookmarked(url) || model2_->IsBookmarked(url);
   }
@@ -62,6 +66,11 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
     base::Extend(matches, model2_->GetBookmarksMatching(query, max_count_hint,
                                                         matching_algorithm));
     return matches;
+  }
+
+  void RemoveAllUserBookmarks() override {
+    model1_->RemoveAllUserBookmarks();
+    model2_->RemoveAllUserBookmarks();
   }
 
  private:

@@ -101,10 +101,7 @@ class BookmarkModel final : public CoreBookmarkModel,
       const base::FilePath& profile_path);
 
   // Returns true if the model finished loading.
-  bool loaded() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return loaded_;
-  }
+  bool loaded() const override;
 
   // Returns the object responsible for tracking loading.
   scoped_refptr<ModelLoader> model_loader();
@@ -198,7 +195,7 @@ class BookmarkModel final : public CoreBookmarkModel,
   // Removes all the non-permanent bookmark nodes that are editable by the user.
   // Observers are only notified when all nodes have been removed. There is no
   // notification for individual node removals.
-  void RemoveAllUserBookmarks();
+  void RemoveAllUserBookmarks() override;
 
   // Moves `node` to `new_parent` and inserts it at the given `index`.
   //

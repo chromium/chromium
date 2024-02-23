@@ -195,6 +195,11 @@ void BookmarkModel::LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
            /*account_file_path=*/base::FilePath());
 }
 
+bool BookmarkModel::loaded() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return loaded_;
+}
+
 scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_loader_;
