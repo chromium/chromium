@@ -189,6 +189,14 @@ bool ShouldDisableQuic(base::StringPiece quic_trial_group,
       GetVariationParam(quic_trial_params, "enable_quic"), "false");
 }
 
+bool ShouldEnableQuicProxiesForHttpsUrls(
+    const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params,
+                        "enable_quic_proxies_for_https_urls"),
+      "true");
+}
+
 bool ShouldRetryWithoutAltSvcOnQuicErrors(
     const VariationParameters& quic_trial_params) {
   return !base::EqualsCaseInsensitiveASCII(
@@ -571,6 +579,8 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
       ShouldRetryWithoutAltSvcOnQuicErrors(quic_trial_params);
 
   if (params->enable_quic) {
+    params->enable_quic_proxies_for_https_urls =
+        ShouldEnableQuicProxiesForHttpsUrls(quic_trial_params);
     quic_params->connection_options =
         GetQuicConnectionOptions(quic_trial_params);
     quic_params->client_connection_options =
