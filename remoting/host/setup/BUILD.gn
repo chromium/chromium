@@ -102,7 +102,7 @@ source_set("start_host_main") {
     "start_host_main.cc",
   ]
 
-  if (!is_win) {
+  if (is_linux) {
     sources += [
       "start_host_as_root.cc",
       "start_host_as_root.h",
