@@ -216,6 +216,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool ShouldTriggerStateChange(PlatformWindowState state,
                                 int64_t target_display_id) const;
 
+  // Takes ownership of the xdg-activation token if it can be used and a token
+  // was found.
+  std::optional<std::string> TakeActivationToken() const;
+
   WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
 
   // Creates a surface window, which is visible as a main window.

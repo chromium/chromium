@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_ACTIVATION_H_
 
 #include "base/containers/queue.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -16,6 +17,7 @@ namespace ui {
 class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
  public:
   static constexpr char kInterfaceName[] = "xdg_activation_v1";
+  using RequestNewTokenCallback = base::OnceCallback<void(std::string token)>;
 
   static void Instantiate(WaylandConnection* connection,
                           wl_registry* registry,
@@ -29,26 +31,32 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   XdgActivation& operator=(const XdgActivation&) = delete;
   ~XdgActivation();
 
-  // Requests activation of the `surface`.
-  // The actual activation happens asynchronously, after a round trip to the
-  // server.
-  // If there is another unfinished activation request, the method chains the
-  // new request in the `activation_queue_` and handles it after the current
-  // request is completed.
-  // Does nothing if no other window is currently active.
-  void Activate(wl_surface* surface) const;
+  // Requests activation of the `surface` using the `token` received from the
+  // app that launched us.
+  void Activate(wl_surface* surface, const std::string& token) const;
+
+  // Request a new activation token from the compositor for launching an
+  // external app.
+  // The token is received asynchronously, after a round trip to the server, at
+  // which point the provided `callback` is called.
+  // If there is another unfinished request, the method chains the new request
+  // in the `request_token_queue_` and handles it after the current request is
+  // completed.
+  // TODO(https://crbug.com/40747285): Make use of this new API when launching
+  // external apps.
+  void RequestNewToken(RequestNewTokenCallback callback) const;
 
  private:
   class Token;
 
-  void OnActivateDone(wl_surface* surface, std::string token);
+  void OnTokenReceived(RequestNewTokenCallback callback, std::string token);
 
   // Wayland object wrapped by this class.
   wl::Object<xdg_activation_v1> xdg_activation_v1_;
   // The actual activation token.
   mutable std::unique_ptr<Token> token_;
-  // Surfaces to activate next.
-  mutable base::queue<raw_ptr<wl_surface>> activation_queue_;
+  // Pending token requests.
+  mutable base::queue<RequestNewTokenCallback> request_token_queue_;
 
   const raw_ptr<WaylandConnection> connection_;
 

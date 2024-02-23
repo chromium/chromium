@@ -254,6 +254,10 @@
 #include "components/crash/core/app/crashpad.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
 
@@ -512,6 +516,13 @@ void ProcessSingletonNotificationCallbackImpl(
   if (command_line.HasSwitch(switches::kUninstall)) {
     return;
   }
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Set the global activation token sent as a command line switch by another
+  // browser process. This also removes the switch after use to prevent any side
+  // effects of leaving it in the command line after this point.
+  base::nix::ExtractXdgActivationTokenFromCmdLine(command_line);
 #endif
 
   StartupProfilePathInfo startup_profile_path_info =

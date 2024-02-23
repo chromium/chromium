@@ -7,6 +7,7 @@
 #include <aura-shell-client-protocol.h>
 #include <string>
 
+#include "base/nix/xdg_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -292,6 +293,17 @@ PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {
   return state_;
 }
 
+std::optional<std::string> WaylandToplevelWindow::TakeActivationToken() const {
+  if (!connection()->xdg_activation() ||
+      // xdg-activation implementation in some compositors is still buggy and
+      // Mutter crashes were observed when windows are activated during window
+      // dragging sessions. See https://crbug.com/1366504.
+      connection()->IsDragInProgress()) {
+    return std::nullopt;
+  }
+  return base::nix::TakeXdgActivationToken();
+}
+
 void WaylandToplevelWindow::Activate() {
   // Activation is supported through optional protocol extensions and hence may
   // or may not work depending on the compositor.  The details depend on the
@@ -305,12 +317,8 @@ void WaylandToplevelWindow::Activate() {
     shell_toplevel_->Activate();
   } else if (zaura_surface && zaura_surface->SupportsActivate()) {
     zaura_surface->Activate();
-  } else if (connection()->xdg_activation()) {
-    // xdg-activation implementation in some compositors is still buggy and
-    // Mutter crashes were observed when windows are activated during window
-    // dragging sessions. See https://crbug.com/1366504.
-    if (!connection()->IsDragInProgress())
-      connection()->xdg_activation()->Activate(root_surface()->surface());
+  } else if (auto token = TakeActivationToken()) {
+    connection()->xdg_activation()->Activate(root_surface()->surface(), *token);
   } else if (gtk_surface1_) {
     gtk_surface1_->RequestFocus();
   }

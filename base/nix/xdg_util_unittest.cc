@@ -5,8 +5,10 @@
 #include "base/nix/xdg_util.h"
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/nix/scoped_xdg_activation_token_injector.h"
 #include "base/test/scoped_path_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +62,8 @@ const char* const kSessionX11 = "x11";
 const char* const kSessionWayland = "wayland";
 const char* const kSessionWaylandCapital = "Wayland";
 const char* const kSessionWaylandWhitespace = "wayland ";
+const char* const kXdgActivationTokenFromEnv = "test token from env";
+const char* const kXdgActivationTokenFromCmdLine = "test token from cmd line";
 
 // This helps EXPECT_THAT(..., ElementsAre(...)) print out more meaningful
 // failure messages.
@@ -405,6 +409,79 @@ TEST(XDGUtilTest, GetXdgSessionTypeWaylandWhitespace) {
           DoAll(SetArgPointee<1>(kSessionWaylandWhitespace), Return(true)));
 
   EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, ExtractXdgActivationTokenFromEnvNotSet) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_EQ(std::nullopt, ExtractXdgActivationTokenFromEnv(getter));
+  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
+}
+
+TEST(XDGUtilTest, ExtractXdgActivationTokenFromEnv) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN"), _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(kXdgActivationTokenFromEnv), Return(true)));
+  EXPECT_CALL(getter, UnSetVar(Eq("XDG_ACTIVATION_TOKEN")));
+  EXPECT_EQ(kXdgActivationTokenFromEnv,
+            ExtractXdgActivationTokenFromEnv(getter));
+  EXPECT_EQ(kXdgActivationTokenFromEnv, TakeXdgActivationToken());
+  // Should be cleared after the token is taken once.
+  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
+}
+
+TEST(XDGUtilTest, ExtractXdgActivationTokenFromCmdLineNotSet) {
+  CommandLine command_line(CommandLine::NO_PROGRAM);
+  ExtractXdgActivationTokenFromCmdLine(command_line);
+  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
+}
+
+TEST(XDGUtilTest, ExtractXdgActivationTokenFromCmdLine) {
+  CommandLine command_line(CommandLine::NO_PROGRAM);
+  MockEnvironment getter;
+  // Extract activation token initially from env.
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN"), _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(kXdgActivationTokenFromEnv), Return(true)));
+  EXPECT_CALL(getter, UnSetVar(Eq("XDG_ACTIVATION_TOKEN")));
+  EXPECT_EQ(kXdgActivationTokenFromEnv,
+            ExtractXdgActivationTokenFromEnv(getter));
+  // Now extract token from command line.
+  command_line.AppendSwitchASCII(kXdgActivationTokenSwitch,
+                                 kXdgActivationTokenFromCmdLine);
+  ExtractXdgActivationTokenFromCmdLine(command_line);
+  // It should match the one from command line, not env.
+  EXPECT_EQ(kXdgActivationTokenFromCmdLine, TakeXdgActivationToken());
+  // Should be cleared after the token is taken once.
+  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
+}
+
+TEST(XDGUtilTest, ScopedXdgActivationTokenInjector) {
+  CommandLine cmd_line(CommandLine::NO_PROGRAM);
+  MockEnvironment getter;
+  cmd_line.AppendSwitch("x");
+  cmd_line.AppendSwitch("y");
+  cmd_line.AppendSwitch("z");
+  CommandLine::SwitchMap initial_switches = cmd_line.GetSwitches();
+  // Set token value in env
+  EXPECT_CALL(getter, GetVar(Eq("XDG_ACTIVATION_TOKEN"), _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(kXdgActivationTokenFromEnv), Return(true)));
+  EXPECT_CALL(getter, UnSetVar(Eq("XDG_ACTIVATION_TOKEN")));
+  {
+    ScopedXdgActivationTokenInjector scoped_injector(cmd_line, getter);
+    for (const auto& pair : initial_switches) {
+      EXPECT_TRUE(cmd_line.HasSwitch(pair.first));
+    }
+    EXPECT_TRUE(cmd_line.HasSwitch(kXdgActivationTokenSwitch));
+    EXPECT_EQ(kXdgActivationTokenFromEnv,
+              cmd_line.GetSwitchValueASCII(kXdgActivationTokenSwitch));
+  }
+  for (const auto& pair : initial_switches) {
+    EXPECT_TRUE(cmd_line.HasSwitch(pair.first));
+  }
+  EXPECT_FALSE(cmd_line.HasSwitch(nix::kXdgActivationTokenSwitch));
 }
 
 }  // namespace nix

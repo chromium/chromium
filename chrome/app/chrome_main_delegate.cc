@@ -192,6 +192,10 @@
 #include "base/environment.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/scoped_xdg_activation_token_injector.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "base/message_loop/message_pump_libevent.h"
 #endif
@@ -563,6 +567,17 @@ std::optional<int> AcquireProcessSingleton(
   // process can be exited.
   ChromeProcessSingleton::CreateInstance(user_data_dir);
 
+#if BUILDFLAG(IS_LINUX)
+  // Read the xdg-activation token and set it in the command line for the
+  // duration of the notification in order to ensure this is propagated to an
+  // already running browser process if it exists.
+  // If this is the only browser process the global token will be available for
+  // use after this as well.
+  // The activation token received from the launching app is used later when
+  // activating an existing browser window.
+  base::nix::ScopedXdgActivationTokenInjector activation_token_injector(
+      *base::CommandLine::ForCurrentProcess(), *base::Environment::Create());
+#endif
   ProcessSingleton::NotifyResult notify_result =
       ChromeProcessSingleton::GetInstance()->NotifyOtherProcessOrCreate();
   UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",

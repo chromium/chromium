@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,6 +24,16 @@ namespace {
 // The KDE session version environment variable introduced in KDE 4.
 const char kKDESessionEnvVar[] = "KDE_SESSION_VERSION";
 
+std::string* g_xdg_activation_token = nullptr;
+
+void SetXdgActivationToken(std::string token) {
+  if (g_xdg_activation_token) {
+    *g_xdg_activation_token = std::move(token);
+  } else {
+    g_xdg_activation_token = new std::string(std::move(token));
+  }
+}
+
 }  // namespace
 
 namespace base {
@@ -32,6 +43,8 @@ const char kDotConfigDir[] = ".config";
 const char kXdgConfigHomeEnvVar[] = "XDG_CONFIG_HOME";
 const char kXdgCurrentDesktopEnvVar[] = "XDG_CURRENT_DESKTOP";
 const char kXdgSessionTypeEnvVar[] = "XDG_SESSION_TYPE";
+const char kXdgActivationTokenEnvVar[] = "XDG_ACTIVATION_TOKEN";
+const char kXdgActivationTokenSwitch[] = "xdg-activation-token";
 
 FilePath GetXDGDirectory(Environment* env, const char* env_name,
                          const char* fallback_dir) {
@@ -226,6 +239,34 @@ SessionType GetSessionType(Environment& env) {
 
   LOG(ERROR) << "Unknown XDG_SESSION_TYPE: " << xdg_session_type;
   return SessionType::kOther;
+}
+
+std::optional<std::string> ExtractXdgActivationTokenFromEnv(Environment& env) {
+  std::string token;
+  if (env.GetVar(kXdgActivationTokenEnvVar, &token) && !token.empty()) {
+    SetXdgActivationToken(token);
+    env.UnSetVar(kXdgActivationTokenEnvVar);
+    return token;
+  }
+  return std::nullopt;
+}
+
+void ExtractXdgActivationTokenFromCmdLine(base::CommandLine& cmd_line) {
+  std::string token = cmd_line.GetSwitchValueASCII(kXdgActivationTokenSwitch);
+  if (!token.empty()) {
+    SetXdgActivationToken(token);
+    cmd_line.RemoveSwitch(kXdgActivationTokenSwitch);
+  }
+}
+
+std::optional<std::string> TakeXdgActivationToken() {
+  if (g_xdg_activation_token) {
+    std::string token = std::move(*g_xdg_activation_token);
+    delete g_xdg_activation_token;
+    g_xdg_activation_token = nullptr;
+    return token;
+  }
+  return std::nullopt;
 }
 
 }  // namespace nix

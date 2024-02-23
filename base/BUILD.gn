@@ -2224,6 +2224,8 @@ component("base") {
       sources += [
         "nix/mime_util_xdg.cc",
         "nix/mime_util_xdg.h",
+        "nix/scoped_xdg_activation_token_injector.cc",
+        "nix/scoped_xdg_activation_token_injector.h",
         "nix/xdg_util.cc",
         "nix/xdg_util.h",
       ]
