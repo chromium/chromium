@@ -43,6 +43,18 @@ found in the LICENSE file.
                 android:name="androidx.startup.InitializationProvider"
                 android:exported="false"
                 tools:node="remove" />
+
+        <!--
+          Run the real telemetry code in test/sample code to improve
+          coverage
+        -->
+        <service
+          android:name="android.net.http.MetaDataHolder"
+          android:enabled="false" android:exported="false">
+            <meta-data
+              android:name="android.net.http.EnableTelemetry"
+              android:value="true" />
+        </service>
     </application>
     <!-- Does not use BaseChromiumAndroidJUnitRunner so that it's easy to run
          tests when dropped into non-chromium repositories. -->

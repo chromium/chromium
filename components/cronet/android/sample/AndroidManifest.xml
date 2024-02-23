@@ -33,5 +33,17 @@ found in the LICENSE file.
             tools:replace="android:authorities"
             tools:node="remove">
         </provider>
+
+        <!--
+          Run the real telemetry code in test/sample code to improve
+          coverage
+        -->
+        <service
+          android:name="android.net.http.MetaDataHolder"
+          android:enabled="false" android:exported="false">
+            <meta-data
+              android:name="android.net.http.EnableTelemetry"
+              android:value="true" />
+        </service>
     </application>
 </manifest>
