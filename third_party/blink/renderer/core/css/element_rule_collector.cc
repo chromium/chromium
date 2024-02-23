@@ -738,12 +738,11 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     }
   }
   if (element.IsStyledElement() && element.HasClass()) {
-    for (wtf_size_t i = 0; i < element.ClassNames().size(); ++i) {
+    for (const AtomicString& class_name : element.ClassNames()) {
       for (const auto bundle : match_request.AllRuleSets()) {
         if (CollectMatchingRulesForList<stop_at_first_match>(
-                bundle.rule_set->ClassRules(element.ClassNames()[i]),
-                match_request, bundle.rule_set, bundle.style_sheet_index,
-                checker) &&
+                bundle.rule_set->ClassRules(class_name), match_request,
+                bundle.rule_set, bundle.style_sheet_index, checker) &&
             stop_at_first_match) {
           return true;
         }
