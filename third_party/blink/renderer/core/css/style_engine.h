@@ -490,6 +490,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       SelectorFilter&,
       StyleScopeFrame&,
       const HeapHashSet<Member<RuleSet>>&,
+      unsigned changed_rule_flags,
       InvalidationScope = kInvalidateCurrentScope);
   void ApplyRuleSetInvalidationForSubtree(
       TreeScope&,
@@ -497,6 +498,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       SelectorFilter&,
       StyleScopeFrame& parent_style_scope_frame,
       const HeapHashSet<Member<RuleSet>>&,
+      unsigned changed_rule_flags,
       InvalidationScope,
       bool invalidate_slotted,
       bool invalidate_part);
@@ -774,6 +776,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       SelectorFilter& selector_filter,
       StyleScopeFrame& style_scope_frame,
       const HeapHashSet<Member<RuleSet>>& rule_sets,
+      unsigned changed_rule_flags,
       bool is_shadow_host);
   void InvalidateSlottedElements(HTMLSlotElement&);
   void InvalidateForRuleSetChanges(

@@ -153,6 +153,7 @@ void ScopedStyleResolver::ResetStyle() {
   keyframes_rule_map_.clear();
   position_fallback_rule_map_.clear();
   font_feature_values_storage_map_.clear();
+  function_rule_map_.clear();
   if (counter_style_map_) {
     counter_style_map_->Dispose();
   }

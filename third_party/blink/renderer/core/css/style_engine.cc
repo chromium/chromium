@@ -141,7 +141,8 @@ enum RuleSetFlags {
   kFontPaletteValuesRules = 1 << 5,
   kPositionFallbackRules = 1 << 6,
   kFontFeatureValuesRules = 1 << 7,
-  kViewTransitionRules = 1 << 8
+  kViewTransitionRules = 1 << 8,
+  kFunctionRules = 1 << 9,
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -175,6 +176,9 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
     }
     if (!rule_set->ViewTransitionRules().empty()) {
       flags |= kViewTransitionRules;
+    }
+    if (!rule_set->FunctionRules().empty()) {
+      flags |= kFunctionRules;
     }
   }
   return flags;
@@ -1909,7 +1913,19 @@ void StyleEngine::ApplyRuleSetInvalidationForElement(
     SelectorFilter& selector_filter,
     StyleScopeFrame& style_scope_frame,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
+    unsigned changed_rule_flags,
     bool is_shadow_host) {
+  if ((changed_rule_flags & kFunctionRules) && element.GetComputedStyle() &&
+      element.GetComputedStyle()->AffectedByCSSFunction()) {
+    // If @function rules have changed, and the style is (was) using a function,
+    // we invalidate it unconditionally. We currently do not attempt
+    // finer-grained invalidation, since it would also require tracking which
+    // functions call other functions on some level.
+    element.SetNeedsStyleRecalc(kLocalStyleChange,
+                                StyleChangeReasonForTracing::Create(
+                                    style_change_reason::kStyleInvalidator));
+    return;
+  }
   ElementResolveContext element_resolve_context(element);
   MatchResult match_result;
   EInsideLink inside_link =
@@ -2173,6 +2189,7 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     SelectorFilter& selector_filter,
     StyleScopeFrame& style_scope_frame,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
+    unsigned changed_rule_flags,
     InvalidationScope invalidation_scope) {
   TRACE_EVENT0("blink,blink_style",
                "StyleEngine::scheduleInvalidationsForRuleSets");
@@ -2187,6 +2204,7 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     selector_filter.PopParent(host);
     ApplyRuleSetInvalidationForElement(tree_scope, host, selector_filter,
                                        style_scope_frame, rule_sets,
+                                       changed_rule_flags,
                                        /*is_shadow_host=*/true);
     selector_filter.PushParent(host);
     if (host.GetStyleChangeType() == kSubtreeStyleChange) {
@@ -2226,7 +2244,8 @@ void StyleEngine::ApplyRuleSetInvalidationForTreeScope(
     ApplyRuleSetInvalidationForSubtree(
         tree_scope, child, selector_filter,
         /* parent_style_scope_frame */ style_scope_frame, rule_sets,
-        invalidation_scope, invalidate_slotted, invalidate_part);
+        changed_rule_flags, invalidation_scope, invalidate_slotted,
+        invalidate_part);
   }
 }
 
@@ -2236,6 +2255,7 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
     SelectorFilter& selector_filter,
     StyleScopeFrame& parent_style_scope_frame,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
+    unsigned changed_rule_flags,
     InvalidationScope invalidation_scope,
     bool invalidate_slotted,
     bool invalidate_part) {
@@ -2251,6 +2271,7 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
   } else {
     ApplyRuleSetInvalidationForElement(tree_scope, element, selector_filter,
                                        style_scope_frame, rule_sets,
+                                       changed_rule_flags,
                                        /*is_shadow_host=*/false);
   }
 
@@ -2282,7 +2303,8 @@ void StyleEngine::ApplyRuleSetInvalidationForSubtree(
       ApplyRuleSetInvalidationForSubtree(
           tree_scope, child, selector_filter,
           /* parent_style_scope_frame */ style_scope_frame, rule_sets,
-          invalidation_scope, invalidate_slotted, invalidate_part);
+          changed_rule_flags, invalidation_scope, invalidate_slotted,
+          invalidate_part);
     }
 
     selector_filter.PopParent(element);
@@ -2467,9 +2489,9 @@ void StyleEngine::InvalidateForRuleSetChanges(
           ? To<ShadowRoot>(tree_scope).host()
           : *tree_scope.GetDocument().documentElement());
 
-  ApplyRuleSetInvalidationForTreeScope(tree_scope, tree_scope.RootNode(),
-                                       selector_filter, style_scope_frame,
-                                       changed_rule_sets, invalidation_scope);
+  ApplyRuleSetInvalidationForTreeScope(
+      tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
+      changed_rule_sets, changed_rule_flags, invalidation_scope);
 }
 
 void StyleEngine::InvalidateInitialData() {
@@ -2794,6 +2816,14 @@ void StyleEngine::ApplyRuleSetChanges(
     // doesn't apply within one.
     if (tree_scope.RootNode().IsDocumentNode()) {
       AddViewTransitionRules(new_style_sheets);
+    }
+  }
+
+  if (changed_rule_flags & kFunctionRules) {
+    // Changes in function can affect function-using declarations
+    // in arbitrary ways.
+    if (resolver_) {
+      resolver_->InvalidateMatchedPropertiesCache();
     }
   }
 

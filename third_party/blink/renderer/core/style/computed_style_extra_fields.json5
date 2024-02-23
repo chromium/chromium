@@ -1191,5 +1191,13 @@
       field_group: "*",
       default_value: "false",
     },
+    // Whether this style contains at least one reference to a (custom)
+    // CSS function.
+    {
+      name: "AffectedByCSSFunction",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+    },
   ],
 }

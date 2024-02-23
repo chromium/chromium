@@ -1316,6 +1316,8 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
                                        const CSSParserContext& context,
                                        const FunctionContext& function_context,
                                        TokenSequence& out) {
+  state_.StyleBuilder().SetAffectedByCSSFunction();
+
   // TODO(sesse): Deal with tree-scoped references.
   StyleRuleFunction* function =
       GetDocument().GetScopedStyleResolver()->FunctionForName(function_name);

@@ -174,7 +174,7 @@ void StyleEngineTest::ApplyRuleSetInvalidation(TreeScope& tree_scope,
           : *tree_scope.GetDocument().documentElement());
   GetStyleEngine().ApplyRuleSetInvalidationForTreeScope(
       tree_scope, tree_scope.RootNode(), selector_filter, style_scope_frame,
-      rule_sets);
+      rule_sets, /*changed_rule_flags=*/0);
 }
 
 TEST_F(StyleEngineTest, DocumentDirtyAfterInject) {

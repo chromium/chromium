@@ -4109,4 +4109,27 @@ TEST_F(StyleCascadeTest, CSSFunctionImplicitCalc) {
   EXPECT_EQ("18", cascade.ComputedValue("--result"));
 }
 
+TEST_F(StyleCascadeTest, AffectedByCSSFunction) {
+  AppendSheet(R"HTML(
+     @function --red(): color {
+       @return red;
+     }
+    )HTML");
+
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("color", "--red()");
+    cascade.Apply();
+    EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("color"));
+    EXPECT_TRUE(cascade.TakeStyle()->AffectedByCSSFunction());
+  }
+  {
+    TestCascade cascade(GetDocument());
+    cascade.Add("color", "red");
+    cascade.Apply();
+    EXPECT_EQ("rgb(255, 0, 0)", cascade.ComputedValue("color"));
+    EXPECT_FALSE(cascade.TakeStyle()->AffectedByCSSFunction());
+  }
+}
+
 }  // namespace blink
