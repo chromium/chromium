@@ -1351,7 +1351,7 @@ bool ContentSecurityPolicy::ShouldBypassMainWorldDeprecated(
   if (!context)
     return false;
 
-  return ShouldBypassMainWorldDeprecated(context->GetCurrentWorld().get());
+  return ShouldBypassMainWorldDeprecated(context->GetCurrentWorld());
 }
 
 // static

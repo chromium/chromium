@@ -478,7 +478,7 @@ BaseFetchContext::CheckCSPForRequestInternal(
   }
 
   ContentSecurityPolicy* csp =
-      GetContentSecurityPolicyForWorld(options.world_for_csp.get());
+      GetContentSecurityPolicyForWorld(options.world_for_csp.Get());
   if (csp &&
       !csp->AllowRequest(request_context, request_destination, url,
                          options.content_security_policy_nonce,

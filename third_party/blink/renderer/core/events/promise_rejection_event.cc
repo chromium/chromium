@@ -58,6 +58,7 @@ bool PromiseRejectionEvent::CanBeDispatchedInWorld(
 void PromiseRejectionEvent::Trace(Visitor* visitor) const {
   visitor->Trace(promise_);
   visitor->Trace(reason_);
+  visitor->Trace(world_);
   Event::Trace(visitor);
 }
 

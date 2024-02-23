@@ -45,8 +45,8 @@ namespace blink {
 
 RemoteWindowProxy::RemoteWindowProxy(v8::Isolate* isolate,
                                      RemoteFrame& frame,
-                                     scoped_refptr<DOMWrapperWorld> world)
-    : WindowProxy(isolate, frame, std::move(world)) {}
+                                     DOMWrapperWorld* world)
+    : WindowProxy(isolate, frame, world) {}
 
 void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
                                        FrameReuseStatus) {
@@ -77,7 +77,7 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
     world_->DomDataStore().ClearIfEqualTo(GetFrame()->DomWindow(), global);
 #if DCHECK_IS_ON()
-    Vector<scoped_refptr<DOMWrapperWorld>> all_worlds;
+    HeapVector<Member<DOMWrapperWorld>> all_worlds;
     DOMWrapperWorld::AllWorldsInIsolate(GetIsolate(), all_worlds);
     for (auto& world : all_worlds) {
       DCHECK(!world->DomDataStore().EqualTo(GetFrame()->DomWindow(), global));

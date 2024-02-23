@@ -354,7 +354,7 @@ ExecutionContext::GetContentSecurityPolicyDelegate() {
   return *csp_delegate_;
 }
 
-scoped_refptr<const DOMWrapperWorld> ExecutionContext::GetCurrentWorld() const {
+const DOMWrapperWorld* ExecutionContext::GetCurrentWorld() const {
   v8::Isolate* isolate = GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
@@ -368,7 +368,7 @@ scoped_refptr<const DOMWrapperWorld> ExecutionContext::GetCurrentWorld() const {
 
 ContentSecurityPolicy*
 ExecutionContext::GetContentSecurityPolicyForCurrentWorld() {
-  return GetContentSecurityPolicyForWorld(GetCurrentWorld().get());
+  return GetContentSecurityPolicyForWorld(GetCurrentWorld());
 }
 
 ContentSecurityPolicy* ExecutionContext::GetContentSecurityPolicyForWorld(
@@ -658,7 +658,7 @@ ContextType GetContextType(const ExecutionContext& execution_context) {
 
 using WorldType = ExecutionContext::Proto::WorldType;
 WorldType GetWorldType(const ExecutionContext& execution_context) {
-  auto current_world = execution_context.GetCurrentWorld();
+  auto* current_world = execution_context.GetCurrentWorld();
   if (current_world == nullptr) {
     return WorldType::WORLD_UNKNOWN;
   }

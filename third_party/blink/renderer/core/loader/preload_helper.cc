@@ -75,6 +75,7 @@ class LoadDictionaryWhenIdleTask final : public IdleTask {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(resource_fetcher_);
     visitor->Trace(pending_preload_);
+    visitor->Trace(fetch_params_);
     IdleTask::Trace(visitor);
   }
 

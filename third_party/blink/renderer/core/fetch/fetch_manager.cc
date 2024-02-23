@@ -301,6 +301,7 @@ class FetchLoaderBase : public GarbageCollectedMixin {
     visitor->Trace(script_state_);
     visitor->Trace(signal_);
     visitor->Trace(abort_handle_);
+    visitor->Trace(world_);
   }
 
  protected:
@@ -332,14 +333,14 @@ class FetchLoaderBase : public GarbageCollectedMixin {
     return fetch_request_data_.Get();
   }
   ScriptState* GetScriptState() { return script_state_.Get(); }
-  scoped_refptr<const DOMWrapperWorld> World() { return world_; }
+  const DOMWrapperWorld* World() { return world_; }
   AbortSignal* Signal() { return signal_.Get(); }
 
  private:
   Member<ExecutionContext> execution_context_;
   Member<FetchRequestData> fetch_request_data_;
   Member<ScriptState> script_state_;
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Member<const DOMWrapperWorld> world_;
   Member<AbortSignal> signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
@@ -794,7 +795,7 @@ void FetchLoaderBase::Start(ExceptionState& exception_state) {
 
   // "- should fetching |request| be blocked as content security returns
   //    blocked"
-  if (!execution_context_->GetContentSecurityPolicyForWorld(world_.get())
+  if (!execution_context_->GetContentSecurityPolicyForWorld(world_.Get())
            ->AllowConnectToSource(fetch_request_data_->Url(),
                                   fetch_request_data_->Url(),
                                   RedirectStatus::kNoRedirect)) {

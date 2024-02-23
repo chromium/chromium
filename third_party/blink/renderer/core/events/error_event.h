@@ -104,7 +104,7 @@ class CORE_EXPORT ErrorEvent final : public Event {
   bool CanBeDispatchedInWorld(const DOMWrapperWorld&) const override;
   bool IsErrorEvent() const override;
 
-  DOMWrapperWorld* World() const { return world_.get(); }
+  DOMWrapperWorld* World() const { return world_.Get(); }
 
   void SetUnsanitizedMessage(const String&);
 
@@ -115,7 +115,7 @@ class CORE_EXPORT ErrorEvent final : public Event {
   String sanitized_message_;
   std::unique_ptr<SourceLocation> location_;
   WorldSafeV8Reference<v8::Value> error_;
-  scoped_refptr<DOMWrapperWorld> world_;
+  const Member<DOMWrapperWorld> world_;
 };
 
 template <>

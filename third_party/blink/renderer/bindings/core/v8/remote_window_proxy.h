@@ -42,7 +42,7 @@ namespace blink {
 // Subclass of WindowProxy that only handles RemoteFrame.
 class RemoteWindowProxy final : public WindowProxy {
  public:
-  RemoteWindowProxy(v8::Isolate*, RemoteFrame&, scoped_refptr<DOMWrapperWorld>);
+  RemoteWindowProxy(v8::Isolate*, RemoteFrame&, DOMWrapperWorld*);
 
  private:
   // WindowProxy overrides:

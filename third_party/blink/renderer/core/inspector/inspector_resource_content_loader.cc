@@ -124,7 +124,7 @@ void InspectorResourceContentLoader::Start() {
 
     ResourceFetcher* fetcher = document->Fetcher();
 
-    scoped_refptr<const DOMWrapperWorld> world =
+    const DOMWrapperWorld* world =
         document->GetExecutionContext()->GetCurrentWorld();
     if (!ShouldSkipFetchingUrl(resource_request.Url())) {
       urls_to_fetch.insert(resource_request.Url().GetString());

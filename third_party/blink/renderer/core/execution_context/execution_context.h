@@ -201,7 +201,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   // Returns a reference to the current world we are in. If the current v8
   // context is empty, returns null.
-  scoped_refptr<const DOMWrapperWorld> GetCurrentWorld() const;
+  const DOMWrapperWorld* GetCurrentWorld() const;
 
   // Returns the content security policy to be used based on the current
   // JavaScript world we are in.

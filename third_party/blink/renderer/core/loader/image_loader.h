@@ -165,7 +165,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   // Called from the task or from updateFromElement to initiate the load.
   // force_blocking ensures that the image will block the load event.
-  void DoUpdateFromElement(scoped_refptr<const DOMWrapperWorld> world,
+  void DoUpdateFromElement(const DOMWrapperWorld* world,
                            UpdateFromElementBehavior,
                            UpdateType = UpdateType::kAsync,
                            bool force_blocking = false);

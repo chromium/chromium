@@ -125,7 +125,7 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
     script_state_->World().DomDataStore().ClearIfEqualTo(
         GetFrame()->DomWindow(), global);
 #if DCHECK_IS_ON()
-    Vector<scoped_refptr<DOMWrapperWorld>> all_worlds;
+    HeapVector<Member<DOMWrapperWorld>> all_worlds;
     DOMWrapperWorld::AllWorldsInIsolate(script_state_->GetIsolate(),
                                         all_worlds);
     for (auto& world : all_worlds) {
@@ -592,7 +592,7 @@ void LocalWindowProxy::SetAbortScriptExecution(
 
 LocalWindowProxy::LocalWindowProxy(v8::Isolate* isolate,
                                    LocalFrame& frame,
-                                   scoped_refptr<DOMWrapperWorld> world)
-    : WindowProxy(isolate, frame, std::move(world)) {}
+                                   DOMWrapperWorld* world)
+    : WindowProxy(isolate, frame, world) {}
 
 }  // namespace blink

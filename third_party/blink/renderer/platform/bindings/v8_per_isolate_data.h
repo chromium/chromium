@@ -291,7 +291,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   v8::Isolate::GCCallback epilogue_callback_;
   size_t gc_callback_depth_ = 0;
 
-  scoped_refptr<DOMWrapperWorld> main_world_;
+  Persistent<DOMWrapperWorld> main_world_;
 };
 
 // Creates a histogram for V8. The returned value is a base::Histogram, but

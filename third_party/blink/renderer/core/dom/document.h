@@ -1818,8 +1818,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void IncrementNumberOfCanvases();
   unsigned GetNumberOfCanvases() const { return num_canvases_; }
 
-  void ProcessJavaScriptUrl(const KURL&,
-                            scoped_refptr<const DOMWrapperWorld> world);
+  void ProcessJavaScriptUrl(const KURL&, const DOMWrapperWorld* world);
 
   DisplayLockDocumentState& GetDisplayLockDocumentState() const;
 
@@ -2408,18 +2407,19 @@ class CORE_EXPORT Document : public ContainerNode,
 
   TaskHandle execute_scripts_waiting_for_resources_task_handle_;
   TaskHandle javascript_url_task_handle_;
-  struct PendingJavascriptUrl {
+  class PendingJavascriptUrl final
+      : public GarbageCollected<PendingJavascriptUrl> {
    public:
-    PendingJavascriptUrl(const KURL& input_url,
-                         scoped_refptr<const DOMWrapperWorld> world);
+    PendingJavascriptUrl(const KURL& input_url, const DOMWrapperWorld* world);
     ~PendingJavascriptUrl();
 
-    KURL url;
+    void Trace(Visitor* visitor) const;
 
+    KURL url;
     // The world in which the navigation to |url| initiated. Non-null.
-    scoped_refptr<const DOMWrapperWorld> world;
+    Member<const DOMWrapperWorld> world;
   };
-  Vector<PendingJavascriptUrl> pending_javascript_urls_;
+  HeapVector<Member<PendingJavascriptUrl>> pending_javascript_urls_;
 
   // https://html.spec.whatwg.org/C/#autofocus-processed-flag
   bool autofocus_processed_flag_ = false;

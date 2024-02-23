@@ -48,7 +48,7 @@ static void AccumulateArrayBuffersForAllWorlds(
     v8::Isolate* isolate,
     DOMArrayBuffer* object,
     v8::LocalVector<v8::ArrayBuffer>& buffers) {
-  Vector<scoped_refptr<DOMWrapperWorld>> worlds;
+  HeapVector<Member<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
   for (const auto& world : worlds) {
     v8::Local<v8::Object> wrapper;

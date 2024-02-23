@@ -32,9 +32,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_WRAPPER_WORLD_H_
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -63,10 +65,11 @@ enum IsolatedWorldId {
 // This class represent a collection of DOM wrappers for a specific world. This
 // is identified by a world id that is a per-thread global identifier (see
 // WorldId enum).
-class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
-  USING_FAST_MALLOC(DOMWrapperWorld);
-
+class PLATFORM_EXPORT DOMWrapperWorld final
+    : public GarbageCollected<DOMWrapperWorld> {
  public:
+  using PassKey = base::PassKey<DOMWrapperWorld>;
+
   // Per-thread global identifiers for DOMWrapperWorld.
   enum WorldId : int32_t {
     kInvalidWorldId = -1,
@@ -109,20 +112,32 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     kShadowRealm,
   };
 
-  static bool IsIsolatedWorldId(int32_t world_id) {
+  static constexpr bool IsIsolatedWorldId(int32_t world_id) {
     return DOMWrapperWorld::kMainWorldId < world_id &&
            world_id < DOMWrapperWorld::kDOMWrapperWorldIsolatedWorldIdLimit;
   }
 
   // Creates a world other than IsolatedWorld. Note this can return nullptr if
-  // GenerateWorldIdForType fails to allocate a valid id.
-  static scoped_refptr<DOMWrapperWorld>
-  Create(v8::Isolate*, WorldType, bool is_default_world_of_isolate = false);
+  // `GenerateWorldIdForType()` internally fails to allocate a valid id.
+  static DOMWrapperWorld* Create(v8::Isolate*,
+                                 WorldType,
+                                 bool is_default_world_of_isolate = false);
 
   // Ensures an IsolatedWorld for |worldId|.
-  static scoped_refptr<DOMWrapperWorld> EnsureIsolatedWorld(v8::Isolate*,
-                                                            int32_t world_id);
+  static DOMWrapperWorld* EnsureIsolatedWorld(v8::Isolate*, int32_t world_id);
+
+  DOMWrapperWorld(PassKey,
+                  v8::Isolate*,
+                  WorldType,
+                  int32_t world_id,
+                  bool is_default_world_of_isolate);
   ~DOMWrapperWorld();
+
+  // Explicitly dispose a world. The object will still stick around and is still
+  // visible.
+  //
+  // Note that calling `EnsureIsolatedWorld()` with the same world id will
+  // result in creation of a new world object!
   void Dispose();
 
   // Called from performance-sensitive functions, so we should keep this simple
@@ -131,9 +146,8 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     return number_of_non_main_worlds_in_main_thread_;
   }
 
-  static void AllWorldsInIsolate(
-      v8::Isolate* isolate,
-      Vector<scoped_refptr<DOMWrapperWorld>>& worlds);
+  static void AllWorldsInIsolate(v8::Isolate* isolate,
+                                 HeapVector<Member<DOMWrapperWorld>>& worlds);
 
   static DOMWrapperWorld& World(v8::Local<v8::Context> context) {
     return ScriptState::From(context)->World();
@@ -186,6 +200,8 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
     return *v8_object_data_store_;
   }
 
+  void Trace(Visitor*) const;
+
   // Methods iterate all worlds and invokes the clearing methods on
   // DOMDataStore. The WorldMap is only known to the DOMWrapperWorld and as such
   // the iteration cannot be folded into DOMDataStore.
@@ -197,22 +213,17 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
       const v8::TracedReference<v8::Object>& handle);
 
  private:
-  DOMWrapperWorld(v8::Isolate*,
-                  WorldType,
-                  int32_t world_id,
-                  bool is_default_world_of_isolate);
-
-  static unsigned number_of_non_main_worlds_in_main_thread_;
-
   // Returns an identifier for a given world type. This must not be called for
   // WorldType::IsolatedWorld because an identifier for the world is given from
   // out of DOMWrapperWorld.
-  static int GenerateWorldIdForType(WorldType);
+  static std::optional<int> GenerateWorldIdForType(WorldType);
+
+  static unsigned number_of_non_main_worlds_in_main_thread_;
 
   const WorldType world_type_;
   const int32_t world_id_;
-  Persistent<DOMDataStore> dom_data_store_;
-  Persistent<V8ObjectDataStore> v8_object_data_store_;
+  Member<DOMDataStore> dom_data_store_;
+  Member<V8ObjectDataStore> v8_object_data_store_;
 };
 
 }  // namespace blink

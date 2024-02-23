@@ -274,12 +274,12 @@ XMLHttpRequest* XMLHttpRequest::Create(ExecutionContext* context) {
 }
 
 XMLHttpRequest::XMLHttpRequest(ExecutionContext* context,
-                               scoped_refptr<const DOMWrapperWorld> world)
+                               const DOMWrapperWorld* world)
     : ActiveScriptWrappable<XMLHttpRequest>({}),
       ExecutionContextLifecycleObserver(context),
       progress_event_throttle_(
           MakeGarbageCollected<XMLHttpRequestProgressEventThrottle>(this)),
-      world_(std::move(world)),
+      world_(world),
       isolated_world_security_origin_(world_ && world_->IsIsolatedWorld()
                                           ? world_->IsolatedWorldSecurityOrigin(
                                                 context->GetAgentClusterID())
@@ -2113,6 +2113,7 @@ void XMLHttpRequest::Trace(Visitor* visitor) const {
   visitor->Trace(response_document_parser_);
   visitor->Trace(response_array_buffer_);
   visitor->Trace(progress_event_throttle_);
+  visitor->Trace(world_);
   visitor->Trace(upload_);
   visitor->Trace(blob_loader_);
   visitor->Trace(parent_task_);

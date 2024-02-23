@@ -144,11 +144,11 @@ CSSParserContext::CSSParserContext(
     const Referrer& referrer,
     bool is_html_document,
     SecureContextMode secure_context_mode,
-    scoped_refptr<const DOMWrapperWorld> world,
+    const DOMWrapperWorld* world,
     const Document* use_counter_document,
     enum ResourceFetchRestriction resource_fetch_restriction)
     : base_url_(base_url),
-      world_(std::move(world)),
+      world_(world),
       origin_clean_(origin_clean),
       mode_(mode),
       referrer_(referrer),
@@ -274,6 +274,7 @@ bool CSSParserContext::IsForMarkupSanitization() const {
 
 void CSSParserContext::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
+  visitor->Trace(world_);
 }
 
 }  // namespace blink

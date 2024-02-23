@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_STATE_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
@@ -125,7 +123,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   };
 
   static ScriptState* Create(v8::Local<v8::Context>,
-                             scoped_refptr<DOMWrapperWorld>,
+                             DOMWrapperWorld*,
                              ExecutionContext*);
 
   ScriptState(const ScriptState&) = delete;
@@ -215,9 +213,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   void DissociateContext();
 
  protected:
-  ScriptState(v8::Local<v8::Context>,
-              scoped_refptr<DOMWrapperWorld>,
-              ExecutionContext*);
+  ScriptState(v8::Local<v8::Context>, DOMWrapperWorld*, ExecutionContext*);
 
  private:
   static void OnV8ContextCollectedCallback(
@@ -229,7 +225,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
 
   // This refptr doesn't cause a cycle because all persistent handles that
   // DOMWrapperWorld holds are weak.
-  scoped_refptr<DOMWrapperWorld> world_;
+  Member<DOMWrapperWorld> world_;
 
   Member<V8PerContextData> per_context_data_;
 
@@ -245,7 +241,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   V8ContextToken token_;
 
   using CreateCallback = ScriptState* (*)(v8::Local<v8::Context>,
-                                          scoped_refptr<DOMWrapperWorld>,
+                                          DOMWrapperWorld*,
                                           ExecutionContext*);
   static CreateCallback s_create_callback_;
   static void SetCreateCallback(CreateCallback);

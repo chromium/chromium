@@ -384,6 +384,7 @@ void WorkerOrWorkletScriptController::SetWasmEvalErrorMessage(
 void WorkerOrWorkletScriptController::Trace(Visitor* visitor) const {
   visitor->Trace(global_scope_);
   visitor->Trace(script_state_);
+  visitor->Trace(world_);
 }
 
 }  // namespace blink

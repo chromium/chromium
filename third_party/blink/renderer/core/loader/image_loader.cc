@@ -135,7 +135,7 @@ class ImageLoader::Task {
       return;
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
     probe::AsyncTask async_task(context, &async_task_context_);
-    loader_->DoUpdateFromElement(world_, update_behavior_);
+    loader_->DoUpdateFromElement(world_.Get(), update_behavior_);
   }
 
   void ClearLoader() {
@@ -148,7 +148,7 @@ class ImageLoader::Task {
  private:
   WeakPersistent<ImageLoader> loader_;
   UpdateFromElementBehavior update_behavior_;
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Persistent<const DOMWrapperWorld> world_;
 
   probe::AsyncTaskContext async_task_context_;
   base::WeakPtrFactory<Task> weak_factory_{this};
@@ -420,11 +420,10 @@ void ImageLoader::UpdateImageState(ImageResourceContent* new_image_content) {
   delay_until_image_notify_finished_ = nullptr;
 }
 
-void ImageLoader::DoUpdateFromElement(
-    scoped_refptr<const DOMWrapperWorld> world,
-    UpdateFromElementBehavior update_behavior,
-    UpdateType update_type,
-    bool force_blocking) {
+void ImageLoader::DoUpdateFromElement(const DOMWrapperWorld* world,
+                                      UpdateFromElementBehavior update_behavior,
+                                      UpdateType update_type,
+                                      bool force_blocking) {
   // FIXME: According to
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#the-img-element:the-img-element-55
   // When "update image" is called due to environment changes and the load

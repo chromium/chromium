@@ -2691,7 +2691,7 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
 
   // Resource timing entries that correspond to resources fetched by extensions
   // are precluded.
-  if (resource->Options().world_for_csp.get() &&
+  if (resource->Options().world_for_csp &&
       resource->Options().world_for_csp->IsIsolatedWorld()) {
     return;
   }

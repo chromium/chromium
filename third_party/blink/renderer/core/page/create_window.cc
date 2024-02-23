@@ -296,7 +296,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   const KURL& url = request.GetResourceRequest().Url();
   if (url.ProtocolIsJavaScript()) {
     if (opener_window
-            .CheckAndGetJavascriptUrl(request.JavascriptWorld().get(), url,
+            .CheckAndGetJavascriptUrl(request.JavascriptWorld(), url,
                                       nullptr /* element */)
             .empty()) {
       return nullptr;

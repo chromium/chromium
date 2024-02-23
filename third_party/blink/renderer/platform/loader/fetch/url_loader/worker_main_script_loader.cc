@@ -200,6 +200,7 @@ void WorkerMainScriptLoader::Trace(Visitor* visitor) const {
   visitor->Trace(fetch_context_);
   visitor->Trace(resource_load_observer_);
   visitor->Trace(client_);
+  visitor->Trace(resource_loader_options_);
 }
 
 void WorkerMainScriptLoader::StartLoadingBody() {

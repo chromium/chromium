@@ -86,8 +86,7 @@ class CORE_EXPORT ScriptController final
 
   // Creates a new isolated world for DevTools with the given human readable
   // |world_name| and returns it id or nullptr on failure.
-  scoped_refptr<DOMWrapperWorld> CreateNewInspectorIsolatedWorld(
-      const String& world_name);
+  DOMWrapperWorld* CreateNewInspectorIsolatedWorld(const String& world_name);
 
   // Disables eval for the main world.
   void DisableEval(const String& error_message);

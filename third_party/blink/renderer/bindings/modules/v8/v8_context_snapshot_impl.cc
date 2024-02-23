@@ -72,10 +72,8 @@ namespace {
 
 constexpr const size_t kNumOfWorlds = 2;
 
-inline scoped_refptr<DOMWrapperWorld> IndexToWorld(v8::Isolate* isolate,
-                                                   size_t index) {
-  return index == 0 ? scoped_refptr<DOMWrapperWorld>(
-                          &DOMWrapperWorld::MainWorld(isolate))
+inline DOMWrapperWorld* IndexToWorld(v8::Isolate* isolate, size_t index) {
+  return index == 0 ? &DOMWrapperWorld::MainWorld(isolate)
                     : DOMWrapperWorld::EnsureIsolatedWorld(
                           isolate, DOMWrapperWorld::WorldId::kMainWorldId + 1);
 }
@@ -403,7 +401,7 @@ void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
   v8::HandleScope handle_scope(isolate);
 
   for (size_t world_index = 0; world_index < kNumOfWorlds; ++world_index) {
-    scoped_refptr<DOMWrapperWorld> world = IndexToWorld(isolate, world_index);
+    DOMWrapperWorld* world = IndexToWorld(isolate, world_index);
     for (size_t i = 0; i < std::size(type_info_table); ++i) {
       const auto& type_info = type_info_table[i];
       v8::Local<v8::FunctionTemplate> interface_template =
@@ -441,7 +439,7 @@ v8::StartupData V8ContextSnapshotImpl::TakeSnapshot(v8::Isolate* isolate) {
     v8::HandleScope handle_scope(isolate);
     snapshot_creator->SetDefaultContext(v8::Context::New(isolate));
     for (size_t i = 0; i < kNumOfWorlds; ++i) {
-      scoped_refptr<DOMWrapperWorld> world = IndexToWorld(isolate, i);
+      DOMWrapperWorld* world = IndexToWorld(isolate, i);
       TakeSnapshotForWorld(snapshot_creator, *world);
     }
   }

@@ -1158,7 +1158,7 @@ int32_t WebLocalFrameImpl::GetScriptContextWorldId(
 v8::Local<v8::Context> WebLocalFrameImpl::GetScriptContextFromWorldId(
     v8::Isolate* isolate,
     int world_id) const {
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       DOMWrapperWorld::EnsureIsolatedWorld(isolate, world_id);
   return ToScriptState(GetFrame(), *world)->GetContext();
 }

@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -943,19 +944,19 @@ void InspectorPageAgent::DidNavigateWithinDocument(LocalFrame* frame) {
   }
 }
 
-scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
+DOMWrapperWorld* InspectorPageAgent::EnsureDOMWrapperWorld(
     LocalFrame* frame,
     const String& world_name,
     bool grant_universal_access) {
   if (!isolated_worlds_.Contains(frame))
-    isolated_worlds_.Set(frame, FrameIsolatedWorlds());
-  FrameIsolatedWorlds& frame_worlds = isolated_worlds_.find(frame)->value;
+    isolated_worlds_.Set(frame, MakeGarbageCollected<FrameIsolatedWorlds>());
+  FrameIsolatedWorlds& frame_worlds = *isolated_worlds_.find(frame)->value;
 
   auto world_it = frame_worlds.find(world_name);
   if (world_it != frame_worlds.end())
     return world_it->value;
   LocalDOMWindow* window = frame->DomWindow();
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       window->GetScriptController().CreateNewInspectorIsolatedWorld(world_name);
   if (!world)
     return nullptr;
@@ -1011,7 +1012,7 @@ void InspectorPageAgent::EvaluateScriptOnNewDocument(
   const String world_name = worlds_to_evaluate_on_load_.Get(script_identifier);
   if (world_name.empty()) {
     script_state = ToScriptStateForMainWorld(window->GetFrame());
-  } else if (scoped_refptr<DOMWrapperWorld> world = EnsureDOMWrapperWorld(
+  } else if (DOMWrapperWorld* world = EnsureDOMWrapperWorld(
                  &frame, world_name, true /* grant_universal_access */)) {
     script_state =
         ToScriptState(window->GetFrame(),
@@ -1685,7 +1686,7 @@ void InspectorPageAgent::CreateIsolatedWorldImpl(
     bool grant_universal_access,
     std::unique_ptr<CreateIsolatedWorldCallback> callback) {
   DCHECK(!frame.IsProvisional());
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       EnsureDOMWrapperWorld(&frame, world_name, grant_universal_access);
   if (!world) {
     callback->sendFailure(

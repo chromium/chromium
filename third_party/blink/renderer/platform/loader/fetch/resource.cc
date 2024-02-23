@@ -179,6 +179,7 @@ void Resource::Trace(Visitor* visitor) const {
   visitor->Trace(clients_awaiting_callback_);
   visitor->Trace(finished_clients_);
   visitor->Trace(finish_observers_);
+  visitor->Trace(options_);
   MemoryPressureListener::Trace(visitor);
 }
 

@@ -234,10 +234,9 @@ bool ImageResource::CanUseCacheValidator() const {
   return Resource::CanUseCacheValidator();
 }
 
-ImageResource* ImageResource::Create(
-    const ResourceRequest& request,
-    scoped_refptr<const DOMWrapperWorld> world) {
-  ResourceLoaderOptions options(std::move(world));
+ImageResource* ImageResource::Create(const ResourceRequest& request,
+                                     const DOMWrapperWorld* world) {
+  ResourceLoaderOptions options(world);
   return MakeGarbageCollected<ImageResource>(
       request, options, ImageResourceContent::CreateNotStarted());
 }

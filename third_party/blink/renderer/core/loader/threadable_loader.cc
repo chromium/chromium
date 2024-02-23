@@ -407,6 +407,7 @@ void ThreadableLoader::Trace(Visitor* visitor) const {
   visitor->Trace(client_);
   visitor->Trace(resource_fetcher_);
   visitor->Trace(timeout_timer_);
+  visitor->Trace(resource_loader_options_);
   RawResourceClient::Trace(visitor);
 }
 

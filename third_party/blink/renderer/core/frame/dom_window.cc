@@ -102,7 +102,7 @@ v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
 
 v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
     v8::Isolate* isolate,
-    scoped_refptr<DOMWrapperWorld> world,
+    DOMWrapperWorld* world,
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::Object> wrapper) {
   // Using the world directly avoids fetching it from a potentially

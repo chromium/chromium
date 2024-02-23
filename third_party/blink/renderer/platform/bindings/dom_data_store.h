@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -138,7 +139,19 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   DOMDataStore(const DOMDataStore&) = delete;
   DOMDataStore& operator=(const DOMDataStore&) = delete;
 
-  // Clears all references.
+  // Destruction does not need any special logic: The wrapper map is reclaimed
+  // without weak callbacks. Internally, the references of type
+  // `TraceWrapperV8Reference` are reclaimed by a full GC. A non-tracing V8 GC
+  // considers the references here still as roots but it may drop those roots
+  // (see BlinkGCRootsHandler) which still works because the
+  // WorldMap->DOMWrapperWorld->DomDataStore chain is valid.
+  ~DOMDataStore() = default;
+
+  // Clears all references explicitly. This is a performance optimization to
+  // clear out TraceWrapperV8Reference eagerly.
+  //
+  // In practice, workers and worklets dispose their worlds before tear down.
+  // Temporary isolated worlds just rely on destruction behavior.
   void Dispose();
 
   // Same as `GetWrapper()` but for a single world.

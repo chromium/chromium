@@ -140,7 +140,7 @@ void ScriptController::DisableEvalForIsolatedWorld(
     int32_t world_id,
     const String& error_message) {
   DCHECK(DOMWrapperWorld::IsIsolatedWorldId(world_id));
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
   SetEvalForWorld(*world, false /* allow_eval */, error_message);
 }
@@ -149,7 +149,7 @@ void ScriptController::SetWasmEvalErrorMessageForIsolatedWorld(
     int32_t world_id,
     const String& error_message) {
   DCHECK(DOMWrapperWorld::IsIsolatedWorldId(world_id));
-  scoped_refptr<DOMWrapperWorld> world =
+  DOMWrapperWorld* world =
       DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), world_id);
   SetWasmEvalErrorMessageForWorld(*world, /*allow_eval=*/false, error_message);
 }
@@ -364,9 +364,9 @@ v8::Isolate* ScriptController::GetIsolate() const {
   return window_proxy_manager_->GetIsolate();
 }
 
-scoped_refptr<DOMWrapperWorld>
-ScriptController::CreateNewInspectorIsolatedWorld(const String& world_name) {
-  scoped_refptr<DOMWrapperWorld> world = DOMWrapperWorld::Create(
+DOMWrapperWorld* ScriptController::CreateNewInspectorIsolatedWorld(
+    const String& world_name) {
+  DOMWrapperWorld* world = DOMWrapperWorld::Create(
       GetIsolate(), DOMWrapperWorld::WorldType::kInspectorIsolated);
   // Bail out if we could not create an isolated world.
   if (!world)

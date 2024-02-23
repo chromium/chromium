@@ -206,6 +206,7 @@ bool CSSFontFaceSrcValue::Equals(const CSSFontFaceSrcValue& other) const {
 void CSSFontFaceSrcValue::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(src_value_);
   visitor->Trace(fetched_);
+  visitor->Trace(world_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 

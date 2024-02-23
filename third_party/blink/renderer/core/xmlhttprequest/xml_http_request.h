@@ -89,7 +89,7 @@ class CORE_EXPORT XMLHttpRequest final
   static XMLHttpRequest* Create(ScriptState*);
   static XMLHttpRequest* Create(ExecutionContext*);
 
-  XMLHttpRequest(ExecutionContext*, scoped_refptr<const DOMWrapperWorld> world);
+  XMLHttpRequest(ExecutionContext*, const DOMWrapperWorld* world);
   ~XMLHttpRequest() override;
 
   // These exact numeric values are important because JS expects them.
@@ -353,7 +353,7 @@ class CORE_EXPORT XMLHttpRequest final
   ResponseTypeCode response_type_code_ = kResponseTypeDefault;
 
   // The DOMWrapperWorld in which the request initiated. Can be null.
-  scoped_refptr<const DOMWrapperWorld> world_;
+  Member<const DOMWrapperWorld> world_;
   // Stores the SecurityOrigin associated with the |world_| if it's an isolated
   // world.
   scoped_refptr<const SecurityOrigin> isolated_world_security_origin_;

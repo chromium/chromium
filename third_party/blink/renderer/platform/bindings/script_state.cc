@@ -22,17 +22,17 @@ void ScriptState::SetCreateCallback(CreateCallback create_callback) {
 
 // static
 ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
-                                 scoped_refptr<DOMWrapperWorld> world,
+                                 DOMWrapperWorld* world,
                                  ExecutionContext* execution_context) {
-  return s_create_callback_(context, std::move(world), execution_context);
+  return s_create_callback_(context, world, execution_context);
 }
 
 ScriptState::ScriptState(v8::Local<v8::Context> context,
-                         scoped_refptr<DOMWrapperWorld> world,
+                         DOMWrapperWorld* world,
                          ExecutionContext* execution_context)
     : isolate_(context->GetIsolate()),
       context_(isolate_, context),
-      world_(std::move(world)),
+      world_(world),
       per_context_data_(MakeGarbageCollected<V8PerContextData>(context)) {
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
@@ -51,6 +51,7 @@ ScriptState::~ScriptState() {
 
 void ScriptState::Trace(Visitor* visitor) const {
   visitor->Trace(per_context_data_);
+  visitor->Trace(world_);
 }
 
 void ScriptState::DetachGlobalObject() {

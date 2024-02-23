@@ -47,10 +47,14 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   // generation garbage collections.
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
-    bool success = DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(
+    const bool success = DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(
         ToScriptWrappable(traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
-    // remove it.
+    // remove it. Note that this is even true for the case where a
+    // DOMWrapperWorld and DOMDataStore are already unreachable as the internal
+    // worldmap contains a weak ref that remains valid until the next full GC
+    // call. The weak ref is guaranteed to still be valid because it is only
+    // cleared on full GCs and the `BlinkRootsHandler` is used on minor V8 GCs.
     CHECK(success);
   }
 

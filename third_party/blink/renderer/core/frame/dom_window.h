@@ -81,7 +81,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
       v8::Local<v8::Object> wrapper) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
-      scoped_refptr<DOMWrapperWorld> world,
+      DOMWrapperWorld* world,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Object> wrapper);
 

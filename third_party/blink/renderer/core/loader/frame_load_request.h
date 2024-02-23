@@ -134,9 +134,7 @@ struct CORE_EXPORT FrameLoadRequest {
   }
 
   // The javascript world in which this request initiated.
-  const scoped_refptr<const DOMWrapperWorld>& JavascriptWorld() const {
-    return world_;
-  }
+  const DOMWrapperWorld* JavascriptWorld() const { return world_; }
 
   // The BlobURLToken that should be used when fetching the resource. This
   // is needed for blob URLs, because the blob URL might be revoked before the
@@ -234,7 +232,7 @@ struct CORE_EXPORT FrameLoadRequest {
       mojom::blink::TriggeringEventInfo::kNotFromEvent;
   Element* source_element_ = nullptr;
   ShouldSendReferrer should_send_referrer_;
-  scoped_refptr<const DOMWrapperWorld> world_;
+  const DOMWrapperWorld* world_ = nullptr;
   scoped_refptr<base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>
       blob_url_token_;
   base::TimeTicks input_start_time_;

@@ -62,7 +62,7 @@ class CORE_EXPORT ImageResource final
 
   // TODO(hiroshige): Make Create() test-only by refactoring ImageDocument.
   static ImageResource* Create(const ResourceRequest&,
-                               scoped_refptr<const DOMWrapperWorld> world);
+                               const DOMWrapperWorld* world);
   static ImageResource* CreateForTest(const KURL&);
 
   ImageResource(const ResourceRequest&,

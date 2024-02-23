@@ -268,10 +268,9 @@ class CORE_EXPORT InspectorPageAgent final
       bool case_sensitive,
       bool is_regex,
       std::unique_ptr<SearchInResourceCallback>);
-  scoped_refptr<DOMWrapperWorld> EnsureDOMWrapperWorld(
-      LocalFrame* frame,
-      const String& world_name,
-      bool grant_universal_access);
+  DOMWrapperWorld* EnsureDOMWrapperWorld(LocalFrame* frame,
+                                         const String& world_name,
+                                         bool grant_universal_access);
 
   static KURL UrlWithoutFragment(const KURL&);
 
@@ -301,8 +300,9 @@ class CORE_EXPORT InspectorPageAgent final
 
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
-  using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
-  HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
+  using FrameIsolatedWorlds = HeapHashMap<String, Member<DOMWrapperWorld>>;
+  HeapHashMap<WeakMember<LocalFrame>, Member<FrameIsolatedWorlds>>
+      isolated_worlds_;
   HashMap<String, std::unique_ptr<blink::AdScriptIdentifier>>
       ad_script_identifiers_;
   v8_inspector::V8InspectorSession* v8_session_;
