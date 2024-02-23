@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {assert} from '//resources/js/assert.js';
+import {PromiseResolver} from '//resources/js/promise_resolver.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
