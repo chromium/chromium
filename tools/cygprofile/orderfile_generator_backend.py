@@ -239,8 +239,8 @@ class ClankCompiler:
   """Handles compilation of clank."""
 
   def __init__(self, out_dir, step_recorder, arch, use_goma, goma_dir,
-               use_remoteexec, ninja_command, system_health_profiling,
-               monochrome, public, orderfile_location):
+               use_remoteexec, ninja_command, system_health_profiling, public,
+               orderfile_location):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._arch = arch
@@ -252,21 +252,15 @@ class ClankCompiler:
     self._system_health_profiling = system_health_profiling
     self._public = public
     self._orderfile_location = orderfile_location
-    if monochrome:
-      self._apk = 'Monochrome.apk'
-      self._apk_target = 'monochrome_apk'
-      if '64' in self._arch:
-        # Monochrome has a _64 suffix for arm64 and x64 builds.
-        self._libname = 'libmonochrome_64'
-        self._libchrome_target = 'libmonochrome_64'
-      else:
-        self._libname = 'libmonochrome'
-        self._libchrome_target = 'libmonochrome'
+    self._apk = 'Monochrome.apk'
+    self._apk_target = 'monochrome_apk'
+    if '64' in self._arch:
+      # Monochrome has a _64 suffix for arm64 and x64 builds.
+      self._libname = 'libmonochrome_64'
+      self._libchrome_target = 'libmonochrome_64'
     else:
-      self._apk = 'Chrome.apk'
-      self._apk_target = 'chrome_apk'
-      self._libname = 'libchrome'
-      self._libchrome_target = 'libchrome'
+      self._libname = 'libmonochrome'
+      self._libchrome_target = 'libmonochrome'
     if public:
       self._apk = self._apk.replace('.apk', 'Public.apk')
       self._apk_target = self._apk_target.replace('_apk', '_public_apk')
@@ -323,7 +317,7 @@ class ClankCompiler:
         self._ninja_command + [os.path.join(self._out_dir, 'Release'), target])
 
   def ForceRelink(self):
-    """Forces libchrome.so or libmonochrome.so to be re-linked.
+    """Forces libmonochrome.so to be re-linked.
 
     With partitioned libraries enabled, deleting these library files does not
     guarantee they'll be recreated by the linker (they may simply be
@@ -348,12 +342,12 @@ class ClankCompiler:
     self.Build(instrumented, use_call_graph, self._apk_target)
 
   def CompileLibchrome(self, instrumented, use_call_graph, force_relink=False):
-    """Builds a libchrome.so either with or without order_profiling on.
+    """Builds a libmonochrome.so either with or without order_profiling on.
 
     Args:
       instrumented: (bool) Whether to build an instrumented apk.
       use_call_graph: (bool) Whether to use the call graph instrumentation.
-      force_relink: (bool) Whether libchrome.so should be re-created.
+      force_relink: (bool) Whether libmonochrome.so should be re-created.
     """
     if force_relink:
       self.ForceRelink()
@@ -515,28 +509,18 @@ class OrderfileGenerator:
 
     Returns:
       (Device with given serial ID) : if the --device flag is set.
-      (Device running Android N+) : Otherwise.
+      (Some connected device) : Otherwise.
 
     Raises Error:
       If no device meeting the requirements has been found.
     """
-    devices = None
     if self._options.device:
-      devices = [device_utils.DeviceUtils(self._options.device)]
-    else:
-      devices = device_utils.DeviceUtils.HealthyDevices()
+      return device_utils.DeviceUtils(self._options.device)
 
+    devices = device_utils.DeviceUtils.HealthyDevices()
     assert devices, 'Expected at least one connected device'
 
-    preferred_device = None
-    for device in devices:
-      if device.build_version_sdk >= version_codes.NOUGAT:
-        preferred_device = device
-        break
-
-    self._monochrome = preferred_device is not None
-
-    return preferred_device if preferred_device else devices[0]
+    return devices[0]
 
 
   def __init__(self, options, orderfile_updater_class):
@@ -586,7 +570,6 @@ class OrderfileGenerator:
           '--pregenerated-profiles cannot be used with --skip-profile')
       assert not options.profile_save_dir, (
           '--profile-save-dir cannot be used with --skip-profile')
-      self._monochrome = True
 
     # Outlined function handling enabled by default for all architectures.
     self._order_outlined_functions = not options.noorder_outlined_functions
@@ -911,14 +894,12 @@ class OrderfileGenerator:
     benchmark_results = {}
     try:
       _UnstashOutputDirectory(out_directory)
-      self._compiler = ClankCompiler(out_directory, self._step_recorder,
-                                     self._options.arch, self._options.use_goma,
-                                     self._options.goma_dir,
-                                     self._options.use_remoteexec,
-                                     self._ninja_command,
-                                     self._options.system_health_orderfile,
-                                     self._monochrome, self._options.public,
-                                     self._GetPathToOrderfile())
+      self._compiler = ClankCompiler(
+          out_directory, self._step_recorder, self._options.arch,
+          self._options.use_goma, self._options.goma_dir,
+          self._options.use_remoteexec, self._ninja_command,
+          self._options.system_health_orderfile, self._options.public,
+          self._GetPathToOrderfile())
 
       if no_orderfile:
         orderfile_path = self._GetPathToOrderfile()
@@ -964,8 +945,8 @@ class OrderfileGenerator:
             self._instrumented_out_dir, self._step_recorder, self._options.arch,
             self._options.use_goma, self._options.goma_dir,
             self._options.use_remoteexec, self._ninja_command,
-            self._options.system_health_orderfile, self._monochrome,
-            self._options.public, self._GetPathToOrderfile())
+            self._options.system_health_orderfile, self._options.public,
+            self._GetPathToOrderfile())
         if not self._options.pregenerated_profiles:
           # If there are pregenerated profiles, the instrumented build should
           # not be changed to avoid invalidating the pregenerated profile
@@ -1003,8 +984,8 @@ class OrderfileGenerator:
             self._uninstrumented_out_dir, self._step_recorder,
             self._options.arch, self._options.use_goma, self._options.goma_dir,
             self._options.use_remoteexec, self._ninja_command,
-            self._options.system_health_orderfile, self._monochrome,
-            self._options.public, self._GetPathToOrderfile())
+            self._options.system_health_orderfile, self._options.public,
+            self._GetPathToOrderfile())
 
         self._compiler.CompileLibchrome(instrumented=False,
                                         use_call_graph=False)
