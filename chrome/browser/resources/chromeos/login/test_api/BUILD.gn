@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 # Copy existing files to output directory.
-copy("copy_js") {
+copy("copy_ts") {
   sources = [
-    "no_test_api.js",
-    "test_api.js",
+    "no_test_api.ts",
+    "test_api.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
