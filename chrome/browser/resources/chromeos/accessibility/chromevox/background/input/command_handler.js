@@ -35,7 +35,6 @@ import {BrailleTranslatorManager} from '../braille/braille_translator_manager.js
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
-import {ClipboardHandler} from '../clipboard_handler.js';
 import {Color} from '../color.js';
 import {TypingEcho, TypingEchoState} from '../editing/typing_echo.js';
 import {DesktopAutomationInterface} from '../event/desktop_automation_interface.js';
@@ -48,6 +47,7 @@ import {ChromeVoxPrefs} from '../prefs.js';
 import {TtsBackground} from '../tts_background.js';
 
 import {BackgroundKeyboardHandler} from './background_keyboard_handler.js';
+import {ClipboardHandler} from './clipboard_handler.js';
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {GestureInterface} from './gesture_interface.js';
 import {SmartStickyMode} from './smart_sticky_mode.js';

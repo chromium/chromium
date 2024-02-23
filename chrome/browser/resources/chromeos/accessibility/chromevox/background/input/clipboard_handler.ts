@@ -5,21 +5,19 @@
 /**
  * @fileoverview Class to handle access to the clipboard data.
  */
-import {Msgs} from '../common/msgs.js';
-import {QueueMode} from '../common/tts_types.js';
+import {Msgs} from '../../common/msgs.js';
+import {QueueMode} from '../../common/tts_types.js';
 
-import {ChromeVox} from './chromevox.js';
-import {ChromeVoxRange} from './chromevox_range.js';
+import {ChromeVox} from '../chromevox.js';
+import {ChromeVoxRange} from '../chromevox_range.js';
 
 
 /** Handles accessing and tracking access to the clipboard. */
 export class ClipboardHandler {
-  constructor() {
-    /** @private {string|undefined} */
-    this.lastClipboardEvent_;
-  }
+  private lastClipboardEvent_?: string;
+  static instance: ClipboardHandler;
 
-  static init() {
+  static init(): void {
     ClipboardHandler.instance = new ClipboardHandler();
 
     chrome.clipboard.onClipboardDataChanged.addListener(
@@ -30,19 +28,14 @@ export class ClipboardHandler {
         event => ClipboardHandler.instance.onClipboardCopyEvent_(event));
   }
 
-  /**
-   * Processes the copy clipboard event.
-   * @param {!Event} evt
-   * @private
-   */
-  onClipboardCopyEvent_(evt) {
+  /** Processes the copy clipboard event. */
+  private onClipboardCopyEvent_(evt: ClipboardEvent): void {
     // This should always be 'copy', but is still important to set for the below
     // extension event.
     this.lastClipboardEvent_ = evt.type;
   }
 
-  /** @private */
-  onClipboardDataChanged_() {
+  private onClipboardDataChanged_(): void {
     // A DOM-based clipboard event always comes before this Chrome extension
     // clipboard event. We only care about 'copy' events, which gets set above.
     if (!this.lastClipboardEvent_) {
@@ -63,10 +56,7 @@ export class ClipboardHandler {
     ChromeVoxRange.clearSelection();
   }
 
-  readNextClipboardDataChange() {
+  readNextClipboardDataChange(): void {
     this.lastClipboardEvent_ = 'copy';
   }
 }
-
-/** @public {ClipboardHandler} */
-ClipboardHandler.instance;
