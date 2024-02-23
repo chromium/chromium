@@ -5705,6 +5705,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Picker.Search.{Provider}Provider.QueryTime" units="ms"
+    expires_after="2025-01-31">
+  <owner>shend@chromium.org</owner>
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    The delay from when a search request was sent to the {Provider} provider,
+    commonly when &quot;start search&quot; is called on the provider, to when
+    the search results are received from the provider, commonly when the
+    provider calls our provided callback for search results. If a request is
+    cancelled before a search result is returned, this histogram is not
+    recorded.
+  </summary>
+  <token key="Provider">
+    <variant name="Category"/>
+    <variant name="Date"/>
+    <variant name="Emoji"/>
+    <variant name="Gif"/>
+    <variant name="Omnibox"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Picker.Session.InputReadyLatency" units="ms"
     expires_after="2024-12-31">
   <owner>shend@chromium.org</owner>

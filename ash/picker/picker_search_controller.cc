@@ -25,6 +25,7 @@
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "base/time/time.h"
@@ -82,6 +83,7 @@ void PickerSearchController::StartSearch(
   if (!category.has_value() || (category == PickerCategory::kBrowsingHistory ||
                                 category == PickerCategory::kBookmarks ||
                                 category == PickerCategory::kOpenTabs)) {
+    cros_search_start_ = base::TimeTicks::Now();
     client_->StartCrosSearch(
         query,
         base::BindRepeating(&PickerSearchController::HandleCrosSearchResults,
@@ -94,12 +96,15 @@ void PickerSearchController::StartSearch(
         base::BindOnce(&PickerSearchController::StartGifSearch,
                        weak_ptr_factory_.GetWeakPtr(), utf8_query));
 
+    emoji_search_start_ = base::TimeTicks::Now();
     // Emoji search is currently synchronous.
     HandleEmojiSearchResults(emoji_search_.SearchEmoji(utf8_query));
 
+    date_search_start_ = base::TimeTicks::Now();
     // Date results is currently synchronous.
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
 
+    category_search_start_ = base::TimeTicks::Now();
     // Category results are currently synchronous.
     HandleCategorySearchResults(
         PickerCategorySearch(available_categories_, query));
@@ -108,6 +113,11 @@ void PickerSearchController::StartSearch(
 
 void PickerSearchController::StopSearch() {
   current_callback_.Reset();
+  date_search_start_.reset();
+  cros_search_start_.reset();
+  gif_search_start_.reset();
+  emoji_search_start_.reset();
+  category_search_start_.reset();
   client_->StopCrosQuery();
   client_->StopGifSearch();
   ResetResults();
@@ -127,6 +137,8 @@ void PickerSearchController::StartGifSearch(const std::string& query) {
                 << " does not match debounced query " << query;
     return;
   }
+
+  gif_search_start_ = base::TimeTicks::Now();
   client_->FetchGifSearch(
       query, base::BindOnce(&PickerSearchController::HandleGifSearchResults,
                             weak_ptr_factory_.GetWeakPtr(), query));
@@ -182,6 +194,12 @@ void PickerSearchController::AppendPostBurnInResults(
 
 void PickerSearchController::HandleCategorySearchResults(
     std::vector<PickerSearchResult> results) {
+  if (category_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *category_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.CategoryProvider.QueryTime",
+                            elapsed);
+  }
+
   category_results_ = std::move(results);
 }
 
@@ -191,6 +209,13 @@ void PickerSearchController::HandleCrosSearchResults(
   if (IsSearchStopped()) {
     return;
   }
+
+  if (cros_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.OmniboxProvider.QueryTime",
+                            elapsed);
+  }
+
   omnibox_results_ = std::move(results);
 
   if (IsPostBurnIn()) {
@@ -208,6 +233,11 @@ void PickerSearchController::HandleGifSearchResults(
     return;
   }
 
+  if (gif_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *gif_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.GifProvider.QueryTime", elapsed);
+  }
+
   gif_results_ = std::move(results);
 
   if (IsPostBurnIn()) {
@@ -218,6 +248,12 @@ void PickerSearchController::HandleGifSearchResults(
 
 void PickerSearchController::HandleEmojiSearchResults(
     emoji::EmojiSearchResult results) {
+  if (emoji_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *emoji_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.EmojiProvider.QueryTime",
+                            elapsed);
+  }
+
   emoji_results_.clear();
   emoji_results_.reserve(kMaxEmojiResults + kMaxSymbolResults +
                          kMaxEmoticonResults);
@@ -241,6 +277,12 @@ void PickerSearchController::HandleEmojiSearchResults(
 
 void PickerSearchController::HandleDateSearchResults(
     std::optional<PickerSearchResult> result) {
+  if (date_search_start_.has_value()) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - *date_search_start_;
+    base::UmaHistogramTimes("Ash.Picker.Search.DateProvider.QueryTime",
+                            elapsed);
+  }
+
   if (result.has_value()) {
     suggested_results_.push_back(*result);
   }

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 
@@ -80,6 +81,12 @@ class ASH_EXPORT PickerSearchController {
 
   std::string current_query_;
   PickerViewDelegate::SearchResultsCallback current_callback_;
+
+  std::optional<base::TimeTicks> date_search_start_;
+  std::optional<base::TimeTicks> cros_search_start_;
+  std::optional<base::TimeTicks> gif_search_start_;
+  std::optional<base::TimeTicks> emoji_search_start_;
+  std::optional<base::TimeTicks> category_search_start_;
 
   std::vector<PickerSearchResult> category_results_;
   std::vector<PickerSearchResult> suggested_results_;

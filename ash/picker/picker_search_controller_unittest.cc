@@ -18,6 +18,7 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,6 +48,14 @@ using testing::SaveArg;
 using testing::VariantWith;
 
 constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(400);
+
+// Before burn-in, after GIF debouncing.
+constexpr base::TimeDelta kBeforeBurnIn = base::Milliseconds(300);
+static_assert(PickerSearchController::kGifDebouncingDelay < kBeforeBurnIn);
+static_assert(kBeforeBurnIn < kBurnInPeriod);
+
+constexpr base::TimeDelta kAfterBurnIn = base::Milliseconds(700);
+static_assert(kBurnInPeriod < kAfterBurnIn);
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kEmojis,
@@ -299,6 +308,87 @@ TEST_F(PickerSearchControllerTest, DoesNotFlashEmptyResultsFromCrosSearch) {
                           base::Unretained(&second_search_results_callback)));
 }
 
+TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+
+  histogram.ExpectUniqueTimeSample(
+      "Ash.Picker.Search.OmniboxProvider.QueryTime", kBeforeBurnIn, 1);
+}
+
+TEST_F(PickerSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kAfterBurnIn);
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+
+  histogram.ExpectUniqueTimeSample(
+      "Ash.Picker.Search.OmniboxProvider.QueryTime", kAfterBurnIn, 1);
+}
+
+TEST_F(PickerSearchControllerTest,
+       DoesNotRecordOmniboxMetricsIfNoCrosSearchResponse) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+  bool search_started = false;
+  EXPECT_CALL(client, StopCrosQuery)
+      .Times(AtLeast(2))
+      .WillRepeatedly([&search_started, &client]() {
+        if (search_started) {
+          client.cros_search_callback()->Run(AppListSearchResultType::kOmnibox,
+                                             {});
+        }
+        search_started = false;
+      });
+  EXPECT_CALL(client, StartCrosSearch)
+      .Times(2)
+      .WillRepeatedly([&search_started, &client](
+                          const std::u16string& query,
+                          PickerClient::CrosSearchResultsCallback callback) {
+        client.StopCrosQuery();
+        search_started = true;
+        *client.cros_search_callback() = std::move(callback);
+      });
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  controller.StartSearch(
+      u"dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
+}
+
 TEST_F(PickerSearchControllerTest, DoesNotSendQueryToGifSearchImmediately) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
@@ -459,6 +549,69 @@ TEST_F(PickerSearchControllerTest, ShowGifResultsLast) {
           gfx::Size(480, 480), u"cat blink")});
   task_environment().FastForwardBy(kBurnInPeriod -
                                    PickerSearchController::kGifDebouncingDelay);
+}
+
+TEST_F(PickerSearchControllerTest, RecordsGifMetricsBeforeBurnIn) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
+          gfx::Size(480, 480), u"cat blink")});
+
+  histogram.ExpectUniqueTimeSample(
+      "Ash.Picker.Search.GifProvider.QueryTime",
+      kBeforeBurnIn - PickerSearchController::kGifDebouncingDelay, 1);
+}
+
+TEST_F(PickerSearchControllerTest, RecordsGifMetricsAfterBurnIn) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kAfterBurnIn);
+  std::move(*client.gif_search_callback())
+      .Run({ash::PickerSearchResult::Gif(
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAd/plink-cat-plink.gif"),
+          GURL("https://media.tenor.com/GOabrbLMl4AAAAAe/plink-cat-plink.png"),
+          gfx::Size(480, 480), u"cat blink")});
+
+  histogram.ExpectUniqueTimeSample(
+      "Ash.Picker.Search.GifProvider.QueryTime",
+      kAfterBurnIn - PickerSearchController::kGifDebouncingDelay, 1);
+}
+
+TEST_F(PickerSearchControllerTest, DoesNotRecordGifMetricsIfNoResponse) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  MockSearchResultsCallback search_results_callback;
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+  task_environment().FastForwardBy(kBeforeBurnIn);
+  controller.StartSearch(
+      u"dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.GifProvider.QueryTime", 0);
 }
 
 TEST_F(PickerSearchControllerTest, CombinesSearchResults) {
