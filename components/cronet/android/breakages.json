@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "Ia4f2af3242c6d2acfbc0a93538cf1896892c1745",
+      "good_change_id": "I4f5e3d17ee700e69020d3b0854ffa5d9ed5d51f8",
+      "bug": "b/326426454",
+      "comment": "Crashes on missing StatsEvent.Builder method on Android <T"
+    },
+    {
       "bad_change_id": "Ibd48557709ccf80d380eb2ae21cfac97d237ddb4",
       "good_change_id": "Ie310ca912bab58eb196ef3c6e751fba685fcada9",
       "bug": "crbug/1456762",
