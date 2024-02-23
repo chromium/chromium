@@ -5,6 +5,7 @@
 #include "android_webview/common/aw_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "services/network/public/cpp/features.h"
 
 namespace android_webview {
 namespace features {
@@ -56,6 +57,16 @@ BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
 BASE_FEATURE(kWebViewHitTestInBlinkOnTouchStart,
              "WebViewHitTestInBlinkOnTouchStart",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature parameter for `network::features::kMaskedDomainList` that sets the
+// exclusion criteria for defining which domains are excluded from the
+// Masked Domain List for WebView.
+//
+// Exclusion criteria can assume values from `WebviewExclusionPolicy`.
+const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
+    &network::features::kMaskedDomainList,
+    "WebViewIpProtectionExclusionCriteria",
+    /*WebviewExclusionPolicy::kNone*/ 0};
 
 // Enable display cutout support for Android P and above.
 BASE_FEATURE(kWebViewDisplayCutout,

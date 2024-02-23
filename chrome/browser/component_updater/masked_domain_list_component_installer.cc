@@ -25,7 +25,8 @@ void RegisterMaskedDomainListComponent(ComponentUpdateService* cus) {
             if (raw_mdl.has_value()) {
               VLOG(1) << "Received Masked Domain List";
               content::GetNetworkService()->UpdateMaskedDomainList(
-                  raw_mdl.value());
+                  raw_mdl.value(),
+                  /*exclusion_list=*/std::vector<std::string>());
             } else {
               LOG(ERROR) << "Could not read Masked Domain List file";
             }

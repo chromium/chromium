@@ -219,7 +219,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void UpdateKeyPinsList(mojom::PinListPtr pin_list,
                          base::Time update_time) override;
 
-  void UpdateMaskedDomainList(const std::string& raw_mdl) override;
+  void UpdateMaskedDomainList(
+      const std::string& raw_mdl,
+      const std::vector<std::string>& exclusion_list) override;
 
 #if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;

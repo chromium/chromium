@@ -47,9 +47,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   bool Matches(const GURL& request_url,
                const net::NetworkAnonymizationKey& network_anonymization_key);
 
-  // Use the Masked Domain List to generate the allow list and the 1P bypass
-  // rules.
-  void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl);
+  // Use the Masked Domain List and exclusion list to generate the allow list
+  // and the 1P bypass rules.
+  void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl,
+                           const std::vector<std::string> exclusion_list);
 
  private:
   // Policy that determines which domains are bypassed from IP Protection.
@@ -57,6 +58,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
 
   // Contains match rules from the Masked Domain List.
   UrlMatcherWithBypass url_matcher_with_bypass_;
+
+  // Removes domains from the MDL which are either part of the exclusion list
+  // themselves or are subdomains of an entry in the exclusion list.
+  // Returns MDL after removing such domains.
+  std::set<std::string> ExcludeDomainsFromMDL(
+      const std::set<std::string>& mdl_domains,
+      const std::set<std::string>& excluded_domains);
+
+  FRIEND_TEST_ALL_PREFIXES(NetworkServiceProxyAllowListTest,
+                           ExclusionSetDomainsRemovedFromMDL);
 };
 
 }  // namespace network

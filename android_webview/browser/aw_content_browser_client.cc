@@ -1301,7 +1301,9 @@ bool AwContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
 
 network::mojom::IpProtectionProxyBypassPolicy
 AwContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
-  return network::mojom::IpProtectionProxyBypassPolicy::kNone;
+  // The exact WebView-specific exclusion policy that is used will depend
+  // on android_webview::features::kWebViewIpProtectionExclusionCriteria
+  return network::mojom::IpProtectionProxyBypassPolicy::kExclusionList;
 }
 
 bool AwContentBrowserClient::WillProvidePublicFirstPartySets() {
