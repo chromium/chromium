@@ -248,6 +248,8 @@ public abstract class ChromeFeatureList {
             "ContextualSearchThinWebViewImplementation";
     public static final String CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES =
             "ContextMenuPopupForAllScreenSizes";
+    public static final String CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY =
+            "ContextMenuSysUiMatchesActivity";
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
             "ContextMenuTranslateWithGoogleLens";
     public static final String CORMORANT = "Cormorant";

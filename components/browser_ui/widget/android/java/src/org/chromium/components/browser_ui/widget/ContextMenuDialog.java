@@ -48,6 +48,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final View mContentView;
     private final boolean mIsPopup;
     private final boolean mShouldRemoveScrim;
+    private final boolean mShouldSysUiMatchActivity;
 
     private float mContextMenuSourceXPx;
     private float mContextMenuSourceYPx;
@@ -72,25 +73,28 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
 
     /**
      * Creates an instance of the ContextMenuDialog.
+     *
      * @param ownerActivity The activity in which the dialog should run
      * @param theme A style resource describing the theme to use for the window, or {@code 0} to use
-     *              the default dialog theme
-     * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
-     *                    defined in XML.
-     * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
-     *                       defined in XML.
+     *     the default dialog theme
+     * @param topMarginPx An explicit top margin for the dialog, or -1 to use default defined in
+     *     XML.
+     * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default defined
+     *     in XML.
      * @param layout The context menu layout that will house the menu.
      * @param contentView The context menu view to display on the dialog.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
      * @param shouldRemoveScrim Whether the context menu should removes the scrim behind the dialog
-     *         visually.
+     *     visually.
+     * @param shouldSysUiMatchActivity Whether the status bar and navigation bar for the dialog
+     *     window should be styled to match the {@code ownerActivity}.
      * @param popupMargin The margin for the context menu.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param touchEventDelegateView View View that is showing behind the context menu. If menu is
-     *         shown as a popup without scrim, and this view is provided, the context menu will
-     *         dispatch touch events other than ACTION_DOWN.
+     *     shown as a popup without scrim, and this view is provided, the context menu will dispatch
+     *     touch events other than ACTION_DOWN.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
-     *         coordinates are expected to be screen coordinates.
+     *     coordinates are expected to be screen coordinates.
      */
     public ContextMenuDialog(
             Activity ownerActivity,
@@ -101,6 +105,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             View contentView,
             boolean isPopup,
             boolean shouldRemoveScrim,
+            boolean shouldSysUiMatchActivity,
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
@@ -113,6 +118,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mLayout = layout;
         mIsPopup = isPopup;
         mShouldRemoveScrim = shouldRemoveScrim;
+        mShouldSysUiMatchActivity = shouldSysUiMatchActivity;
         mPopupMargin = popupMargin;
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
@@ -128,8 +134,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         if (mShouldRemoveScrim) {
             dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        }
+        if (mShouldRemoveScrim || mShouldSysUiMatchActivity) {
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
             // Set the navigation bar when API level >= 27 to match android:navigationBarColor
             // reference in styles.xml.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {

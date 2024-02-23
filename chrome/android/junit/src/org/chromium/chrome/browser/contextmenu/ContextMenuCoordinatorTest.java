@@ -70,6 +70,7 @@ import java.util.List;
     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
     ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
 })
+@EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY})
 public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
 

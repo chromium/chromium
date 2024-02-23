@@ -201,6 +201,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCommandLineOnNonRooted,
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuPopupForAllScreenSizes,
+    &kContextMenuSysUiMatchesActivity,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
@@ -560,6 +561,10 @@ BASE_FEATURE(kCommandLineOnNonRooted,
 BASE_FEATURE(kContextMenuPopupForAllScreenSizes,
              "ContextMenuPopupForAllScreenSizes",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kContextMenuSysUiMatchesActivity,
+             "ContextMenuSysUiMatchesActivity",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextMenuTranslateWithGoogleLens,
              "ContextMenuTranslateWithGoogleLens",

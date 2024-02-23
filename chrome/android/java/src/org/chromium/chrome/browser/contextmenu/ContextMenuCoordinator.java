@@ -23,6 +23,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -374,6 +375,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         menuView,
                         isPopup,
                         shouldRemoveScrim,
+                        ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY),
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
