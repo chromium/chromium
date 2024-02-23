@@ -1395,14 +1395,6 @@ const char kPipTiltDescription[] =
 const char kPipTuckName[] = "Enable tuck for PiP windows";
 const char kPipTuckDescription[] = "Enables window tucking for PiP windows. ";
 
-const char kPrivateNetworkAccessSendPreflightsName[] =
-    "Send Private Network Access preflights";
-const char kPrivateNetworkAccessSendPreflightsDescription[] =
-    "Enables sending Private Network Access preflights ahead of requests to "
-    "more-private IP addresses. Failed preflights display warnings in DevTools "
-    "without failing entire request. See also: "
-    "https://developer.chrome.com/blog/private-network-access-preflight/";
-
 const char kPrivateNetworkAccessRespectPreflightResultsName[] =
     "Respect the result of Private Network Access preflights";
 const char kPrivateNetworkAccessRespectPreflightResultsDescription[] =
