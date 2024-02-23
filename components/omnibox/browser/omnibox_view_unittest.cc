@@ -179,15 +179,7 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Tests GetIcon returns the default search icon when the match is a search
 // query.
-// TODO(https://issues.chromium.org/u/1/issues/325502737): Test consistently
-// fails on linux-chromeos-chrome, linux-lacros-rel, and
-// linux-lacros-asan-lsan-rel builders.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetIcon_Default DISABLED_GetIcon_Default
-#else
-#define MAYBE_GetIcon_Default GetIcon_Default
-#endif
-TEST_F(OmniboxViewTest, MAYBE_GetIcon_Default) {
+TEST_F(OmniboxViewTest, DISABLED_GetIcon_Default) {
   ui::ImageModel expected_icon =
       ui::ImageModel::FromVectorIcon(vector_icons::kSearchChromeRefreshIcon,
                                      gfx::kPlaceholderColor, gfx::kFaviconSize);
@@ -200,15 +192,7 @@ TEST_F(OmniboxViewTest, MAYBE_GetIcon_Default) {
 }
 
 // Tests GetIcon returns the bookmark icon when the match is bookmarked.
-// TODO(https://issues.chromium.org/u/1/issues/325502737): Test consistently
-// fails on linux-chromeos-chrome, linux-lacros-rel, and
-// linux-lacros-asan-lsan-rel builders.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetIcon_BookmarkIcon DISABLED_GetIcon_BookmarkIcon
-#else
-#define MAYBE_GetIcon_BookmarkIcon GetIcon_BookmarkIcon
-#endif
-TEST_F(OmniboxViewTest, MAYBE_GetIcon_BookmarkIcon) {
+TEST_F(OmniboxViewTest, DISABLED_GetIcon_BookmarkIcon) {
   const GURL kUrl("https://bookmarks.com");
 
   AutocompleteMatch match;
