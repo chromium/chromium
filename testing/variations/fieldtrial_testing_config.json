@@ -3111,6 +3111,108 @@
             ]
         }
     ],
+    "CatanCombinedHoldback23H2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
+                        "InhibitLoadingStateUpdate",
+                        "MainThreadCompositingPriority",
+                        "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
+                        "UseCompositorJob"
+                    ],
+                    "disable_features": [
+                        "RecordSequenceManagerCrashKeys",
+                        "ThreadControllerSetsProfilerMetadata"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
+                        "InhibitLoadingStateUpdate",
+                        "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
+                        "RunTasksByBatches",
+                        "UseCompositorJob"
+                    ],
+                    "disable_features": [
+                        "RecordSequenceManagerCrashKeys",
+                        "ThreadControllerSetsProfilerMetadata"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheMacSandboxProfiles",
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
+                        "InhibitLoadingStateUpdate",
+                        "MacSetDefaultTaskRole",
+                        "MainThreadCompositingPriority",
+                        "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
+                        "RunTasksByBatches",
+                        "SkipConditionVariableWakeupHack",
+                        "UseCompositorJob"
+                    ],
+                    "disable_features": [
+                        "RecordSequenceManagerCrashKeys",
+                        "ThreadControllerSetsProfilerMetadata"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AboveNormalCompositingBrowserWin",
+                        "DelayFirstPeriodicPAPurgeOrReclaim",
+                        "DelayFirstWorkerWake",
+                        "ExplicitHighResolutionTimerWin",
+                        "InhibitLoadingStateUpdate",
+                        "MainThreadCompositingPriority",
+                        "QuickIntensiveWakeUpThrottlingAfterLoading",
+                        "ReduceCookieIPCs",
+                        "UseCompositorJob",
+                        "UseEcoQoSForBackgroundProcess"
+                    ],
+                    "disable_features": [
+                        "RecordSequenceManagerCrashKeys",
+                        "ThreadControllerSetsProfilerMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
     "CctClientDataHeader": [
         {
             "platforms": [
@@ -4059,108 +4161,6 @@
                         "OptimizationGuidePushNotifications",
                         "ReadLater",
                         "ShoppingList"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CombinedPowerExperimentV2_1": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
-                        "InhibitLoadingStateUpdate",
-                        "MainThreadCompositingPriority",
-                        "QuickIntensiveWakeUpThrottlingAfterLoading",
-                        "ReduceCookieIPCs",
-                        "UseCompositorJob"
-                    ],
-                    "disable_features": [
-                        "RecordSequenceManagerCrashKeys",
-                        "ThreadControllerSetsProfilerMetadata"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AboveNormalCompositingBrowserWin",
-                        "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
-                        "ExplicitHighResolutionTimerWin",
-                        "InhibitLoadingStateUpdate",
-                        "MainThreadCompositingPriority",
-                        "QuickIntensiveWakeUpThrottlingAfterLoading",
-                        "ReduceCookieIPCs",
-                        "UseCompositorJob",
-                        "UseEcoQoSForBackgroundProcess"
-                    ],
-                    "disable_features": [
-                        "RecordSequenceManagerCrashKeys",
-                        "ThreadControllerSetsProfilerMetadata"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheMacSandboxProfiles",
-                        "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
-                        "InhibitLoadingStateUpdate",
-                        "MacSetDefaultTaskRole",
-                        "MainThreadCompositingPriority",
-                        "QuickIntensiveWakeUpThrottlingAfterLoading",
-                        "ReduceCookieIPCs",
-                        "RunTasksByBatches",
-                        "SkipConditionVariableWakeupHack",
-                        "UseCompositorJob"
-                    ],
-                    "disable_features": [
-                        "RecordSequenceManagerCrashKeys",
-                        "ThreadControllerSetsProfilerMetadata"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
-                        "InhibitLoadingStateUpdate",
-                        "QuickIntensiveWakeUpThrottlingAfterLoading",
-                        "ReduceCookieIPCs",
-                        "RunTasksByBatches",
-                        "UseCompositorJob"
-                    ],
-                    "disable_features": [
-                        "RecordSequenceManagerCrashKeys",
-                        "ThreadControllerSetsProfilerMetadata"
                     ]
                 }
             ]
