@@ -3298,6 +3298,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="FontCaches" label="Only counting memory used by font caches."/>
   <suffix name="Gpu.GrShaderCache"
       label="Only counting memory used by Shader Cache."/>
+  <suffix name="GpuMappedMemory"
+      label="Memory shared between the GPU process and its client for
+             transfers."/>
   <suffix name="HibernatedCanvas.OriginalSize"
       label="Total size of all hibernated canvas snapshots in a given
              renderer, prio to compression. 0 when the renderer is visible."/>

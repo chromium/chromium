@@ -234,6 +234,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetCommandBuffer},
     {"gpu/gr_shader_cache", "Gpu.GrShaderCache", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/mapped_memory", "GpuMappedMemory", MetricSize::kSmall, kEffectiveSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
     // Not effective size, to account for the total footprint, a large fraction
     // of it being claimed by renderers.
     {"gpu/shared_images", "SharedImages", MetricSize::kLarge, kSize,
@@ -1296,6 +1298,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
   uint64_t tiles_total_memory = 0;
   uint64_t hibernated_canvas_total_memory = 0;
   uint64_t hibernated_canvas_total_original_memory = 0;
+  uint64_t gpu_mapped_memory_total = 0;
   bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
 
   TabFootprintAggregator per_tab_metrics;
@@ -1446,6 +1449,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       // they are shared with the GPU process (under a different name), and we
       // don't want to count these partially if priority is not set right.
       tiles_total_memory += pmd.GetMetric("cc/tile_memory", kSize).value_or(0);
+      gpu_mapped_memory_total +=
+          pmd.GetMetric("gpu/mapped_memory", kSize).value_or(0);
     }
   }
 
@@ -1501,6 +1506,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
                                   shared_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_MEDIUM_MB("Memory.Total.TileMemory",
                                    tiles_total_memory / kMiB);
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB("Memory.Total.GpuMappedMemory",
+                                   gpu_mapped_memory_total / kMiB);
 #if BUILDFLAG(IS_ANDROID)
     UMA_HISTOGRAM_MEMORY_LARGE_MB(
         "Memory.Total.PrivateMemoryFootprintExcludingWaivedRenderers",

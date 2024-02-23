@@ -546,8 +546,13 @@ bool ContextProviderCommandBuffer::OnMemoryDump(
   helper_->OnMemoryDump(args, pmd);
 
   if (gr_context_) {
-    gpu::raster::DumpGrMemoryStatistics(gr_context_->get(), pmd,
-                                        gles2_impl_->ShareGroupTracingGUID());
+    if (args.level_of_detail ==
+        base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
+      gpu::raster::DumpBackgroundGrMemoryStatistics(gr_context_->get(), pmd);
+    } else {
+      gpu::raster::DumpGrMemoryStatistics(gr_context_->get(), pmd,
+                                          gles2_impl_->ShareGroupTracingGUID());
+    }
   }
   return true;
 }
