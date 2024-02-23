@@ -452,7 +452,8 @@ class BookmarkManagerMediator
                     new LegacyBookmarkQueryHandler(
                             mBookmarkModel,
                             bookmarkUiPrefs,
-                            SyncServiceFactory.getForProfile(mProfile.getOriginalProfile()));
+                            SyncServiceFactory.getForProfile(mProfile.getOriginalProfile()),
+                            mShoppingService);
         }
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {

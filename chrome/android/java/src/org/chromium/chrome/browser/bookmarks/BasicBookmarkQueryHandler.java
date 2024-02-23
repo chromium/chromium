@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
@@ -24,14 +25,19 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private final BookmarkModel mBookmarkModel;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
+    private final ShoppingService mShoppingService;
 
     /**
      * @param bookmarkModel The underlying source of bookmark data.
      * @param bookmarkUiPrefs Stores display preferences for bookmarks.
      */
-    public BasicBookmarkQueryHandler(BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
+    public BasicBookmarkQueryHandler(
+            BookmarkModel bookmarkModel,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            ShoppingService shoppingService) {
         mBookmarkModel = bookmarkModel;
         mBookmarkUiPrefs = bookmarkUiPrefs;
+        mShoppingService = shoppingService;
     }
 
     @Override
@@ -104,13 +110,9 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : bookmarkIds) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
-            if (BookmarkId.SHOPPING_FOLDER.equals(parentId)) {
-                // TODO(https://crbug.com/1435518): Stop using deprecated #getIsPriceTracked().
-                if (powerBookmarkMeta == null
-                        || !powerBookmarkMeta.hasShoppingSpecifics()
-                        || !powerBookmarkMeta.getShoppingSpecifics().getIsPriceTracked()) {
-                    continue;
-                }
+            if (BookmarkId.SHOPPING_FOLDER.equals(parentId)
+                    && !isBookmarkMetaSubscribed(powerBookmarkMeta)) {
+                continue;
             }
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
             BookmarkListEntry bookmarkListEntry =
@@ -129,5 +131,21 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         } else {
             return PowerBookmarkType.UNKNOWN;
         }
+    }
+
+    private boolean isBookmarkMetaSubscribed(PowerBookmarkMeta powerBookmarkMeta) {
+        if (mShoppingService == null
+                || powerBookmarkMeta == null
+                || !powerBookmarkMeta.hasShoppingSpecifics()
+                || !powerBookmarkMeta.getShoppingSpecifics().hasProductClusterId()) {
+            return false;
+        }
+
+        // TODO(b:326440332): Ideally this uses PriceTrackingUtils.IsBookmarkPriceTracked,
+        //                    but the UI does not currently support async updates which is
+        //                    required by that api.
+        return mShoppingService.isSubscribedFromCache(
+                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(
+                        powerBookmarkMeta));
     }
 }

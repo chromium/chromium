@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 
@@ -12,7 +14,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -22,6 +27,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.url.GURL;
@@ -35,15 +41,19 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BasicBookmarkQueryHandlerTest {
     @Rule public final Features.JUnitProcessor mFeaturesRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private FakeBookmarkModel mBookmarkModel;
     private BasicBookmarkQueryHandler mHandler;
+
+    @Mock ShoppingService mShoppingService;
 
     @Before
     public void setup() {
         mBookmarkModel = FakeBookmarkModel.createModel();
         mHandler =
-                new BasicBookmarkQueryHandler(mBookmarkModel, Mockito.mock(BookmarkUiPrefs.class));
+                new BasicBookmarkQueryHandler(
+                        mBookmarkModel, Mockito.mock(BookmarkUiPrefs.class), mShoppingService);
     }
 
     @Test
@@ -104,8 +114,9 @@ public class BasicBookmarkQueryHandlerTest {
                         "test",
                         new GURL("https://test.com"));
 
+        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
         ShoppingSpecifics shoppingSpecifics =
-                ShoppingSpecifics.newBuilder().setIsPriceTracked(true).build();
+                ShoppingSpecifics.newBuilder().setProductClusterId(12345L).build();
         PowerBookmarkMeta powerBookmarkMeta =
                 PowerBookmarkMeta.newBuilder().setShoppingSpecifics(shoppingSpecifics).build();
         mBookmarkModel.setPowerBookmarkMeta(id, powerBookmarkMeta);
@@ -115,6 +126,28 @@ public class BasicBookmarkQueryHandlerTest {
 
         assertEquals(1, result.size());
         assertEquals(id, result.get(0).getBookmarkItem().getId());
+    }
+
+    @Test
+    public void testBuildBookmarkListForParent_shoppingNotSubscribed() {
+        BookmarkId id =
+                mBookmarkModel.addBookmark(
+                        mBookmarkModel.getMobileFolderId(),
+                        0,
+                        "test",
+                        new GURL("https://test.com"));
+
+        doReturn(false).when(mShoppingService).isSubscribedFromCache(any());
+        ShoppingSpecifics shoppingSpecifics =
+                ShoppingSpecifics.newBuilder().setProductClusterId(12345L).build();
+        PowerBookmarkMeta powerBookmarkMeta =
+                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(shoppingSpecifics).build();
+        mBookmarkModel.setPowerBookmarkMeta(id, powerBookmarkMeta);
+
+        List<BookmarkListEntry> result =
+                mHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
+
+        assertEquals(0, result.size());
     }
 
     @Test

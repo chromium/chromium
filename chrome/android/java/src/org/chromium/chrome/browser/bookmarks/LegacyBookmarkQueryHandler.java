@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.sync.SyncService;
@@ -30,12 +31,16 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
      * @param bookmarkUiPrefs Stores display preferences for bookmarks.
      */
     public LegacyBookmarkQueryHandler(
-            BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs, SyncService syncService) {
+            BookmarkModel bookmarkModel,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            SyncService syncService,
+            ShoppingService shoppingService) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
         mSyncService = syncService;
         mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs);
+        mBasicBookmarkQueryHandler =
+                new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs, shoppingService);
         mBookmarkUiPrefs = bookmarkUiPrefs;
     }
 

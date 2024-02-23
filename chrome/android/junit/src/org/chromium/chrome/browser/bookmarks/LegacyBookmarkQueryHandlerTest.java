@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
@@ -67,6 +68,7 @@ public class LegacyBookmarkQueryHandlerTest {
     @Mock private Tracker mTracker;
     @Mock private Profile mProfile;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private ShoppingService mShoppingService;
 
     @Captor private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
@@ -80,7 +82,9 @@ public class LegacyBookmarkQueryHandlerTest {
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
 
-        mHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs, mSyncService);
+        mHandler =
+                new LegacyBookmarkQueryHandler(
+                        mBookmarkModel, mBookmarkUiPrefs, mSyncService, mShoppingService);
     }
 
     @Test
