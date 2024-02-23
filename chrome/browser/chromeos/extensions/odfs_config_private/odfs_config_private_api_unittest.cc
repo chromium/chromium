@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +64,7 @@ class OfdsConfigPrivateApiUnittest : public ExtensionApiUnittest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(OfdsConfigPrivateApiUnittest, GetMountSuccessful) {
@@ -140,5 +142,33 @@ TEST_F(OfdsConfigPrivateApiUnittest,
       notification->message());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(OfdsConfigPrivateApiUnittest, IsCloudFileSystemEnabled_Enabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      chromeos::features::kFileSystemProviderCloudFileSystem);
+  auto function = base::MakeRefCounted<
+      extensions::OdfsConfigPrivateIsCloudFileSystemEnabledFunction>();
+  auto returned_is_file_system_provider_cloud_file_system_enabled_value =
+      RunFunctionAndReturnValue(function.get(), /*args=*/"[]");
+  ASSERT_TRUE(returned_is_file_system_provider_cloud_file_system_enabled_value
+                  .has_value());
+
+  ASSERT_TRUE(returned_is_file_system_provider_cloud_file_system_enabled_value
+                  ->GetBool());
+}
+
+TEST_F(OfdsConfigPrivateApiUnittest, IsCloudFileSystemEnabled_Disabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      chromeos::features::kFileSystemProviderCloudFileSystem);
+  auto function = base::MakeRefCounted<
+      extensions::OdfsConfigPrivateIsCloudFileSystemEnabledFunction>();
+  auto returned_is_file_system_provider_cloud_file_system_enabled_value =
+      RunFunctionAndReturnValue(function.get(), /*args=*/"[]");
+  ASSERT_TRUE(returned_is_file_system_provider_cloud_file_system_enabled_value
+                  .has_value());
+
+  ASSERT_FALSE(returned_is_file_system_provider_cloud_file_system_enabled_value
+                   ->GetBool());
+}
 
 }  // namespace extensions

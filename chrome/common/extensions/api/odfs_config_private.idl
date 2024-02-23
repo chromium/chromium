@@ -26,6 +26,8 @@ namespace odfsConfigPrivate {
   callback GetAccountRestrictionsCallback = void(
       AccountRestrictionsInfo restrictions);
   callback ShowAutomatedMountErrorCallback = void();
+  callback IsCloudFileSystemEnabled = void(
+      boolean isCloudFileSystemEnabled);
 
   interface Functions {
     // Returns the OneDrive mount mode from the admin policy.
@@ -41,6 +43,10 @@ namespace odfsConfigPrivate {
     // Shows a notification that the automated mount failed.
     static void showAutomatedMountError(
         ShowAutomatedMountErrorCallback callback);
+
+    // Returns whether the FileSystemProviderCloudFileSystem feature flag is
+    // enabled.
+    static void isCloudFileSystemEnabled(IsCloudFileSystemEnabled callback);
   };
 
   interface Events {

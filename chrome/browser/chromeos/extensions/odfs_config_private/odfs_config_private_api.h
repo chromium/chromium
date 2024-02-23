@@ -69,6 +69,27 @@ class OdfsConfigPrivateShowAutomatedMountErrorFunction
   ResponseAction Run() override;
 };
 
+class OdfsConfigPrivateIsCloudFileSystemEnabledFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "odfsConfigPrivate.isCloudFileSystemEnabled",
+      ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCLOUDFILESYSTEMENABLED)
+
+  OdfsConfigPrivateIsCloudFileSystemEnabledFunction();
+
+  OdfsConfigPrivateIsCloudFileSystemEnabledFunction(
+      const OdfsConfigPrivateIsCloudFileSystemEnabledFunction&) = delete;
+  OdfsConfigPrivateIsCloudFileSystemEnabledFunction& operator=(
+      const OdfsConfigPrivateIsCloudFileSystemEnabledFunction&) = delete;
+
+ private:
+  ~OdfsConfigPrivateIsCloudFileSystemEnabledFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_ODFS_CONFIG_PRIVATE_ODFS_CONFIG_PRIVATE_API_H_

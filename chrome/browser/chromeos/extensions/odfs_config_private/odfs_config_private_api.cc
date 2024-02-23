@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chromeos/constants/chromeos_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/ash/cloud_upload/automated_mount_error_notification.h"
@@ -92,6 +93,19 @@ OdfsConfigPrivateShowAutomatedMountErrorFunction::Run() {
 #error Unsupported platform.
 #endif
   return RespondNow(NoArguments());
+}
+
+OdfsConfigPrivateIsCloudFileSystemEnabledFunction::
+    OdfsConfigPrivateIsCloudFileSystemEnabledFunction() = default;
+
+OdfsConfigPrivateIsCloudFileSystemEnabledFunction::
+    ~OdfsConfigPrivateIsCloudFileSystemEnabledFunction() = default;
+
+ExtensionFunction::ResponseAction
+OdfsConfigPrivateIsCloudFileSystemEnabledFunction::Run() {
+  return RespondNow(ArgumentList(
+      api::odfs_config_private::IsCloudFileSystemEnabled::Results::Create(
+          chromeos::features::IsFileSystemProviderCloudFileSystemEnabled())));
 }
 
 }  // namespace extensions
