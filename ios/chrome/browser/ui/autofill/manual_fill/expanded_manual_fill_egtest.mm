@@ -20,6 +20,9 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ManualFallbackCreditCardTableViewMatcher;
+using chrome_test_util::ManualFallbackPasswordTableViewMatcher;
+using chrome_test_util::ManualFallbackProfilesTableViewMatcher;
 using manual_fill::ManualFillDataType;
 using net::test_server::EmbeddedTestServer;
 
@@ -31,6 +34,24 @@ constexpr char kPasswordFormURL[] = "/simple_login_form.html";
 const char kCardNameFieldID[] = "CCName";
 const char kPasswordFieldID[] = "pw";
 const char kNameFieldID[] = "name";
+
+// Matcher for the segmented control's password tab.
+id<GREYMatcher> SegmentedControlPasswordTab() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL));
+}
+
+// Matcher for the segmented control's payment method tab.
+id<GREYMatcher> SegmentedControlPaymentMethodTab() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL));
+}
+
+// Matcher for the segmented control's address tab.
+id<GREYMatcher> SegmentedControlAddressTab() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL));
+}
 
 // Checks that the header view is as expected according to whether or not the
 // device is in landscape mode.
@@ -74,19 +95,11 @@ void CheckHeader(bool is_landscape) {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check data type tabs.
-  id<GREYMatcher> password_tab = grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL));
-  [[EarlGrey selectElementWithMatcher:password_tab]
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  id<GREYMatcher> payment_tab = grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL));
-  [[EarlGrey selectElementWithMatcher:payment_tab]
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  id<GREYMatcher> address_tab = grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL));
-  [[EarlGrey selectElementWithMatcher:address_tab]
+  [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -268,8 +281,7 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
                                   fieldToFill:kPasswordFieldID];
 
   // The password view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ManualFallbackPasswordTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -287,8 +299,8 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
                                   fieldToFill:kCardNameFieldID];
 
   // The payment method view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ManualFallbackCreditCardTableViewMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -306,8 +318,41 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
                                   fieldToFill:kNameFieldID];
 
   // The address view controller should be visible.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ManualFallbackProfilesTableViewMatcher()]
+  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the right manual filling options are visible when switching from
+// one data type to the other.
+- (void)testSwitchingDataTypes {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
+                                  fieldToFill:kPasswordFieldID];
+
+  // Select the address tab and confirm that the address view controller is
+  // visible.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlAddressTab()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select the payment method tab and confirm that the payment method view
+  // controller is visible.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPaymentMethodTab()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Select the password tab and confirm that the password view controller is
+  // visible.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

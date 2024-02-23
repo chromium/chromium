@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using manual_fill::ManualFillDataType;
 
@@ -16,6 +18,9 @@ class ExpandedManualFillViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    delegate_ =
+        OCMProtocolMock(@protocol(ExpandedManualFillViewControllerDelegate));
+
     InitViewControllerForDataType(ManualFillDataType::kPassword);
   }
 
@@ -23,18 +28,22 @@ class ExpandedManualFillViewControllerTest : public PlatformTest {
   // if needed.
   void InitViewControllerForDataType(ManualFillDataType data_type) {
     view_controller_ =
-        [[ExpandedManualFillViewController alloc] initForDataType:data_type];
+        [[ExpandedManualFillViewController alloc] initWithDelegate:delegate()
+                                                       forDataType:data_type];
     [view_controller_ loadViewIfNeeded];
   }
 
   // Resets the view controller.
   void ResetViewController() { view_controller_ = nil; }
 
+  id delegate() { return delegate_; }
+
   ExpandedManualFillViewController* view_controller() {
     return view_controller_;
   }
 
  private:
+  id delegate_;
   ExpandedManualFillViewController* view_controller_;
 };
 
@@ -53,4 +62,34 @@ TEST_F(ExpandedManualFillViewControllerTest,
 
   InitViewControllerForDataType(ManualFillDataType::kAddress);
   EXPECT_EQ(view_controller().segmentedControl.selectedSegmentIndex, 2);
+}
+
+// Tests that the delegate is correctly notified when a data type is selected
+// from the segmented control.
+TEST_F(ExpandedManualFillViewControllerTest, TestDataTypeSelection) {
+  UISegmentedControl* segmented_control = view_controller().segmentedControl;
+
+  // Select the address segment and verify the delegate call.
+  OCMExpect([delegate()
+      expandedManualFillViewController:view_controller()
+                didSelectSegmentOfType:ManualFillDataType::kAddress]);
+  segmented_control.selectedSegmentIndex = 2;
+  [segmented_control sendActionsForControlEvents:UIControlEventValueChanged];
+  EXPECT_OCMOCK_VERIFY(delegate());
+
+  // Select the payment method segment and verify the delegate call.
+  OCMExpect([delegate()
+      expandedManualFillViewController:view_controller()
+                didSelectSegmentOfType:ManualFillDataType::kPaymentMethod]);
+  segmented_control.selectedSegmentIndex = 1;
+  [segmented_control sendActionsForControlEvents:UIControlEventValueChanged];
+  EXPECT_OCMOCK_VERIFY(delegate());
+
+  // Select the password segment and verify the delegate call.
+  OCMExpect([delegate()
+      expandedManualFillViewController:view_controller()
+                didSelectSegmentOfType:ManualFillDataType::kPassword]);
+  segmented_control.selectedSegmentIndex = 0;
+  [segmented_control sendActionsForControlEvents:UIControlEventValueChanged];
+  EXPECT_OCMOCK_VERIFY(delegate());
 }

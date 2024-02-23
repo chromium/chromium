@@ -17,9 +17,11 @@
 
 using manual_fill::ManualFillDataType;
 
-@interface ExpandedManualFillCoordinator () <AddressCoordinatorDelegate,
-                                             CardCoordinatorDelegate,
-                                             PasswordCoordinatorDelegate>
+@interface ExpandedManualFillCoordinator () <
+    ExpandedManualFillViewControllerDelegate,
+    AddressCoordinatorDelegate,
+    CardCoordinatorDelegate,
+    PasswordCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -45,20 +47,10 @@ using manual_fill::ManualFillDataType;
 - (void)start {
   self.expandedManualFillViewController =
       [[ExpandedManualFillViewController alloc]
-          initForDataType:_initialDataType];
+          initWithDelegate:self
+               forDataType:_initialDataType];
 
-  // Show the relevant manual filling options.
-  switch (_initialDataType) {
-    case ManualFillDataType::kPassword:
-      [self showPasswordManualFillingOptions];
-      break;
-    case ManualFillDataType::kPaymentMethod:
-      [self showPaymentMethodManualFillingOptions];
-      break;
-    case ManualFillDataType::kAddress:
-      [self showAddressManualFillingOptions];
-      break;
-  }
+  [self showManualFillingOptionsForDataType:_initialDataType];
 }
 
 - (void)stop {
@@ -68,6 +60,14 @@ using manual_fill::ManualFillDataType;
 
 - (UIViewController*)viewController {
   return self.expandedManualFillViewController;
+}
+
+#pragma mark - ExpandedManualFillViewControllerDelegate
+
+- (void)expandedManualFillViewController:
+            (ExpandedManualFillViewController*)expandedManualFillViewController
+                  didSelectSegmentOfType:(ManualFillDataType)dataType {
+  [self showManualFillingOptionsForDataType:dataType];
 }
 
 #pragma mark - FallbackCoordinatorDelegate
@@ -120,6 +120,21 @@ using manual_fill::ManualFillDataType;
     [coordinator stop];
   }
   [self.childCoordinators removeAllObjects];
+}
+
+// Shows the right manual filling options depending on `dataType`.
+- (void)showManualFillingOptionsForDataType:(ManualFillDataType)dataType {
+  switch (dataType) {
+    case ManualFillDataType::kPassword:
+      [self showPasswordManualFillingOptions];
+      break;
+    case ManualFillDataType::kPaymentMethod:
+      [self showPaymentMethodManualFillingOptions];
+      break;
+    case ManualFillDataType::kAddress:
+      [self showAddressManualFillingOptions];
+      break;
+  }
 }
 
 // Shows the password manual filling options.

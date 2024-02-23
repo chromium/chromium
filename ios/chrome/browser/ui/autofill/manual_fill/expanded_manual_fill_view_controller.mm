@@ -66,6 +66,10 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
 @interface ExpandedManualFillViewController ()
 
+// Delegate to handle user interactions.
+@property(nonatomic, weak) id<ExpandedManualFillViewControllerDelegate>
+    delegate;
+
 // Control allowing switching between the different data types. Not an ivar so
 // that it can be used in tests.
 @property(nonatomic, strong) UISegmentedControl* segmentedControl;
@@ -100,9 +104,12 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   ManualFillDataType _initialDataType;
 }
 
-- (instancetype)initForDataType:(ManualFillDataType)dataType {
+- (instancetype)initWithDelegate:
+                    (id<ExpandedManualFillViewControllerDelegate>)delegate
+                     forDataType:(ManualFillDataType)dataType {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
+    _delegate = delegate;
     _initialDataType = dataType;
   }
   return self;
@@ -429,9 +436,12 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   //  TODO(b/40942168): Implement logic.
 }
 
-// Handles the selection of a data type from the segmented control.
+// Handles the selection of a different data type from the segmented control.
 - (void)onSegmentSelected:(UISegmentedControl*)segmentedControl {
-  //  TODO(b/40942168): Implement logic.
+  ManualFillDataType selectedType =
+      static_cast<ManualFillDataType>(segmentedControl.selectedSegmentIndex);
+  [self.delegate expandedManualFillViewController:self
+                           didSelectSegmentOfType:selectedType];
 }
 
 @end
