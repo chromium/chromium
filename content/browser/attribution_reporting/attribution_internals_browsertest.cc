@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 5 &&
             table.children[0].children[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
@@ -694,16 +694,23 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             !table.children[3].classList.contains('send-error') &&
             table.children[4].children[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED' &&
             table.children[4].classList.contains('send-error')) {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-      });
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+          attributes: true,
+        });
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -716,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 5 &&
             table.children[4].children[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
@@ -731,11 +738,18 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[2].children[1]?.innerText === 'Sent: HTTP 200' &&
             table.children[1].children[1]?.innerText === 'Prohibited by browser policy' &&
             table.children[0].children[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle2)));
 
@@ -752,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char kScript[] = R"(
       const table = document.querySelector('#event-level-report-panel attribution-internals-table')
           .shadowRoot.querySelector('tbody');
-      const obs = new MutationObserver((_, obs) => {
+      const setTitleIfDone = (_, obs) => {
         if (table.children.length === 5 &&
             table.children[0].children[2]?.innerText ===
               'https://report.test/.well-known/attribution-reporting/report-event-attribution' &&
@@ -767,11 +781,18 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[2].children[1]?.innerText === 'Sent: HTTP 200' &&
             table.children[3].children[1]?.innerText === 'Prohibited by browser policy' &&
             table.children[4].children[1]?.innerText === 'Network error: ERR_METHOD_NOT_SUPPORTED') {
-          obs.disconnect();
+          if (obs) {
+            obs.disconnect();
+          }
           document.title = $1;
+          return true;
         }
-      });
-      obs.observe(table, {childList: true, subtree: true, characterData: true});
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(table, {childList: true, subtree: true, characterData: true});
+      }
     )";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle3)));
 
@@ -899,17 +920,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     const regTable = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tbody');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
           regTable.children.length === 1 &&
           table.children[0].children[0]?.innerText === '5' &&
           regTable.children[0].children[6]?.innerText === 'Rejected: internal error') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
-    obs.observe(regTable, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+      obs.observe(regTable, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -926,15 +954,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tfoot');
     const regTable = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tfoot');
-    const obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.querySelector('td')?.innerText === 'Rows: 0' &&
           regTable.querySelector('td')?.innerText === 'Rows: 0') {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {childList: true, subtree: true, characterData: true});
-    obs.observe(regTable, {childList: true, subtree: true, characterData: true});
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      const obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+      obs.observe(regTable, {childList: true, subtree: true, characterData: true});
+    }
   )";
   ASSERT_TRUE(
       ExecJsInWebUI(JsReplace(kObserveEmptySourcesTableScript, kDeleteTitle)));
@@ -1256,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     };
     if (!setTitleIfDone()) {
       const obs = new MutationObserver(setTitleIfDone);
-      obs.observe(table, {childList: true});
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
     }
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
