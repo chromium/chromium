@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
+#include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -55,7 +56,7 @@ class WebAppIconHealthChecksBrowserTest : public WebAppControllerBrowserTest {
   }
 
   void RunIconChecksWithMetricExpectations(
-      WebAppIconDiagnostic::Result expected_result) {
+      WebAppIconDiagnosticResult expected_result) {
     base::HistogramTester histogram_tester;
 
     base::RunLoop run_loop;

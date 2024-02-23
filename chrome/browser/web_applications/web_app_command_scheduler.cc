@@ -43,6 +43,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
+#include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
@@ -577,6 +578,16 @@ void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
                      app_id, set_to_preferred),
       std::move(done), location);
 #endif
+}
+
+void WebAppCommandScheduler::RunIconDiagnosticsForApp(
+    const webapps::AppId& app_id,
+    WebAppIconDiagnosticResultCallback result_callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebAppIconDiagnosticCommand>(&profile_.get(), app_id,
+                                                    std::move(result_callback)),
+      location);
 }
 
 base::WeakPtr<WebAppCommandScheduler> WebAppCommandScheduler::GetWeakPtr() {

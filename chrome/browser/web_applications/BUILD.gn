@@ -61,6 +61,8 @@ source_set("web_applications") {
     "commands/update_protocol_handler_approval_command.cc",
     "commands/update_protocol_handler_approval_command.h",
     "commands/web_app_command.h",
+    "commands/web_app_icon_diagnostic_command.cc",
+    "commands/web_app_icon_diagnostic_command.h",
     "commands/web_app_uninstall_command.cc",
     "commands/web_app_uninstall_command.h",
     "daily_metrics_helper.cc",

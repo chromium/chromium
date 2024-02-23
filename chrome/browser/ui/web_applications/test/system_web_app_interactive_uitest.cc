@@ -53,6 +53,8 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -594,6 +596,13 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     return swa_browser;
   }
 
+  void AwaitWebAppCommandsCompleteForTesting(Profile* profile) {
+    ash::SystemWebAppManager::Get(profile)
+        ->GetWebAppProvider(profile)
+        ->command_manager()
+        .AwaitAllCommandsCompleteForTesting();
+  }
+
  protected:
   std::unique_ptr<ash::TestSystemWebAppInstallation> installation_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
@@ -672,9 +681,11 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   base::RunLoop().RunUntilIdle();
+  AwaitWebAppCommandsCompleteForTesting(profile1);
   Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2_));
   WaitForSystemWebAppInstall(profile2);
+  AwaitWebAppCommandsCompleteForTesting(profile2);
   const webapps::AppId& app_id1 = GetAppId(profile1);
   const webapps::AppId& app_id2 = GetAppId(profile2);
 
