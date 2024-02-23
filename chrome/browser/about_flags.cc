@@ -8819,13 +8819,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableStickyManualFallbackForCards)},
 
-    {"autofill-show-autocomplete-delete-button",
-     flag_descriptions::kAutofillShowAutocompleteDeleteButtonName,
-     flag_descriptions::kAutofillShowAutocompleteDeleteButtonDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillShowAutocompleteDeleteButton)},
-
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

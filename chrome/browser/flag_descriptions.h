@@ -354,9 +354,6 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 
-extern const char kAutofillShowAutocompleteDeleteButtonName[];
-extern const char kAutofillShowAutocompleteDeleteButtonDescription[];
-
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardName[];
 extern const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[];
 

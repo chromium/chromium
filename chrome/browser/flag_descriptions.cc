@@ -622,12 +622,6 @@ const char kAutofillSharedStorageServerCardDataDescription[] =
     "When enabled, the cached server credit card data from autofill will be "
     "pushed into the shared storage database for the payments origin.";
 
-const char kAutofillShowAutocompleteDeleteButtonName[] =
-    "Show a delete button for Autocomplete entries";
-const char kAutofillShowAutocompleteDeleteButtonDescription[] =
-    "When enabled, Autocomplete entries in filling popups will contain a "
-    "delete button";
-
 const char kAutofillSuggestServerCardInsteadOfLocalCardName[] =
     "Suggest Server card instead of Local card for deduped cards";
 const char kAutofillSuggestServerCardInsteadOfLocalCardDescription[] =
