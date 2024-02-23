@@ -40,7 +40,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
         policy_service_proxy_configuration) {
   if (policy_service_proxy_configuration) {
     return base::MakeRefCounted<winhttp::ProxyConfiguration>(winhttp::ProxyInfo{
-        policy_service_proxy_configuration->proxy_auto_detect.value_or(false),
+        policy_service_proxy_configuration->proxy_auto_detect.value_or(true),
         base::SysUTF8ToWide(
             policy_service_proxy_configuration->proxy_pac_url.value_or("")),
         base::SysUTF8ToWide(
@@ -50,7 +50,8 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
 
   VLOG(1) << "Using the system configuration for proxy.";
 
-  return base::MakeRefCounted<winhttp::ProxyConfiguration>();
+  return base::MakeRefCounted<winhttp::ProxyConfiguration>(
+      winhttp::ProxyInfo{/* auto_detect=*/true, {}, {}, {}});
 }
 
 class NetworkFetcher : public update_client::NetworkFetcher {
