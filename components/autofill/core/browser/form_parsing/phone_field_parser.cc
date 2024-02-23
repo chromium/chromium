@@ -69,6 +69,14 @@ PhoneFieldParser::~PhoneFieldParser() = default;
 const std::vector<PhoneFieldParser::PhoneGrammar>&
 PhoneFieldParser::GetPhoneGrammars() {
   static const base::NoDestructor<std::vector<PhoneGrammar>> grammars({
+      // TODO(crbug.com/40233246): Check whether this first rule generates any
+      // traffic. If not, we may want to drop it and rewrite the
+      // FormFillerTest.FillPhoneNumber unittest.
+      // Country code: <cc> Area Code: <ac> Prefix: <phone> Suffix: <suffix>
+      {{REGEX_COUNTRY, FIELD_COUNTRY_CODE},
+       {REGEX_AREA, FIELD_AREA_CODE},
+       {REGEX_PREFIX, FIELD_PHONE},
+       {REGEX_SUFFIX, FIELD_SUFFIX}},
       // Country code: <cc> Area Code: <ac> Phone: <phone>
       {{REGEX_COUNTRY, FIELD_COUNTRY_CODE},
        {REGEX_AREA, FIELD_AREA_CODE},
@@ -91,6 +99,14 @@ PhoneFieldParser::GetPhoneGrammars() {
        {REGEX_PHONE, FIELD_AREA_CODE, 3},
        {REGEX_PHONE, FIELD_PHONE, 3},
        {REGEX_PHONE, FIELD_SUFFIX, 4}},
+      // Area Code: <ac> Phone: <phone> - <suffix>
+      {{REGEX_AREA, FIELD_AREA_CODE},
+       {REGEX_PHONE, FIELD_PHONE},
+       {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX}},
+      // Area Code: <ac> Phone: <phone> Suffix <suffix>
+      {{REGEX_AREA, FIELD_AREA_CODE},
+       {REGEX_PHONE, FIELD_PHONE},
+       {REGEX_SUFFIX, FIELD_SUFFIX}},
       // Area Code: <ac> Phone: <phone>
       {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
       // Phone: <ac> <phone>:3 <suffix>:4
@@ -132,6 +148,8 @@ PhoneFieldParser::GetPhoneGrammars() {
        {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
       // Phone: <cc>:3 - <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
+      // Phone: <ac> - <phone>
+      {{REGEX_PHONE, FIELD_AREA_CODE}, {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
       // Phone: <phone>
       {{REGEX_PHONE, FIELD_PHONE}},
   });
@@ -247,18 +265,6 @@ std::unique_ptr<FormFieldParser> PhoneFieldParser::Parse(
     return nullptr;
   // No grammar without FIELD_PHONE should be defined.
   DCHECK(parsed_fields[FIELD_PHONE] != nullptr);
-
-  // Look for a suffix field using two different regex.
-  // TODO(crbug.com/1348137): Revise or remove.
-  if (!parsed_fields[FIELD_SUFFIX]) {
-    ParsePhoneField(context, scanner, kPhoneSuffixRe,
-                    &parsed_fields[FIELD_SUFFIX], "kPhoneSuffixRe",
-                    /*is_country_code_field=*/false, "PHONE_SUFFIX") ||
-        ParsePhoneField(context, scanner, kPhoneSuffixSeparatorRe,
-                        &parsed_fields[FIELD_SUFFIX], "kPhoneSuffixSeparatorRe",
-                        /*is_country_code_field=*/false,
-                        "PHONE_SUFFIX_SEPARATOR");
-  }
 
   // Now look for an extension.
   // The extension is unused, but it is parsed to prevent other parsers from
