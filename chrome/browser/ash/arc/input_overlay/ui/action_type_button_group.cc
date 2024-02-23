@@ -14,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -95,8 +96,9 @@ void ActionTypeButtonGroup::OnButtonSelected(ash::OptionButtonBase* button) {
     if (b != button) {
       b->SetSelected(false);
     }
-    auto* action_type_button = static_cast<ActionTypeButton*>(b);
-    action_type_button->RefreshColors();
+    if (auto* action_type_button = views::AsViewClass<ActionTypeButton>(b)) {
+      action_type_button->RefreshColors();
+    }
   }
 }
 

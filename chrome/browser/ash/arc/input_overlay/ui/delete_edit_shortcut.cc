@@ -130,8 +130,10 @@ DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
 
   auto frame =
       views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
-  static_cast<views::BubbleFrameView*>(frame.get())
-      ->SetBubbleBorder(std::move(bubble_border));
+  if (auto* frame_view =
+          views::AsViewClass<views::BubbleFrameView>(frame.get())) {
+    frame_view->SetBubbleBorder(std::move(bubble_border));
+  }
   return frame;
 }
 

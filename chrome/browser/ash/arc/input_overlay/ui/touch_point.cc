@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -413,7 +414,9 @@ void TouchPoint::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 bool TouchPoint::OnMousePressed(const ui::MouseEvent& event) {
-  static_cast<ActionView*>(parent())->ApplyMousePressed(event);
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    parent_view->ApplyMousePressed(event);
+  }
   return true;
 }
 
@@ -423,7 +426,7 @@ bool TouchPoint::OnMouseDragged(const ui::MouseEvent& event) {
     widget->SetCursor(ui::mojom::CursorType::kGrabbing);
   }
   SetToDrag();
-  static_cast<ActionView*>(parent())->ApplyMouseDragged(event);
+  views::AsViewClass<ActionView>(parent())->ApplyMouseDragged(event);
   return true;
 }
 
@@ -433,7 +436,9 @@ void TouchPoint::OnMouseReleased(const ui::MouseEvent& event) {
     widget->SetCursor(ui::mojom::CursorType::kGrab);
   }
   SetToHover();
-  static_cast<ActionView*>(parent())->ApplyMouseReleased(event);
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    parent_view->ApplyMouseReleased(event);
+  }
 }
 
 void TouchPoint::OnGestureEvent(ui::GestureEvent* event) {
@@ -451,26 +456,38 @@ void TouchPoint::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
 
-  static_cast<ActionView*>(parent())->ApplyGestureEvent(event);
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    parent_view->ApplyGestureEvent(event);
+  }
 }
 
 bool TouchPoint::OnKeyPressed(const ui::KeyEvent& event) {
-  return static_cast<ActionView*>(parent())->ApplyKeyPressed(event);
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    return parent_view->ApplyKeyPressed(event);
+  }
+  return false;
 }
 
 bool TouchPoint::OnKeyReleased(const ui::KeyEvent& event) {
-  return static_cast<ActionView*>(parent())->ApplyKeyReleased(event);
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    return parent_view->ApplyKeyReleased(event);
+  }
+  return false;
 }
 
 void TouchPoint::OnFocus() {
-  static_cast<ActionView*>(parent())->ShowFocusInfoMsg(
-      l10n_util::GetStringUTF8(
-          IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS),
-      this);
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    parent_view->ShowFocusInfoMsg(
+        l10n_util::GetStringUTF8(
+            IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS),
+        this);
+  }
 }
 
 void TouchPoint::OnBlur() {
-  static_cast<ActionView*>(parent())->RemoveMessage();
+  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
+    parent_view->RemoveMessage();
+  }
 }
 
 void TouchPoint::PaintBackground(gfx::Canvas* canvas, ActionType action_type) {

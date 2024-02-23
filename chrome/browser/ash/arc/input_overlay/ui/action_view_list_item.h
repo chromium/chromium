@@ -16,7 +16,7 @@ namespace arc::input_overlay {
 // | |Name tag|        |keys| |
 // ----------------------------
 class ActionViewListItem : public ActionEditView {
-  METADATA_HEADER(ActionViewListItem, views::View)
+  METADATA_HEADER(ActionViewListItem, ActionEditView)
 
  public:
   ActionViewListItem(DisplayOverlayController* controller, Action* action);

@@ -585,7 +585,7 @@ void EditingList::OnActionAdded(Action& action) {
 void EditingList::OnActionRemoved(const Action& action) {
   DCHECK(scroll_content_);
   for (views::View* child : scroll_content_->children()) {
-    auto* list_item = static_cast<ActionViewListItem*>(child);
+    auto* list_item = views::AsViewClass<ActionViewListItem>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {
       scroll_content_->RemoveChildViewT(list_item);
@@ -604,10 +604,9 @@ void EditingList::OnActionRemoved(const Action& action) {
 void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
   DCHECK(!is_zero_state_);
   for (size_t i = 0; i < scroll_content_->children().size(); i++) {
-    auto* list_item =
-        static_cast<ActionViewListItem*>(scroll_content_->children()[i]);
-    DCHECK(list_item);
-    if (list_item->action() == action) {
+    if (auto* list_item = views::AsViewClass<ActionViewListItem>(
+            scroll_content_->children()[i]);
+        list_item && list_item->action() == action) {
       scroll_content_->RemoveChildViewT(list_item);
       scroll_content_->AddChildViewAt(
           std::make_unique<ActionViewListItem>(controller_, new_action), i);
@@ -620,7 +619,7 @@ void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
 void EditingList::OnActionInputBindingUpdated(const Action& action) {
   DCHECK(scroll_content_);
   for (views::View* child : scroll_content_->children()) {
-    auto* list_item = static_cast<ActionViewListItem*>(child);
+    auto* list_item = views::AsViewClass<ActionViewListItem>(child);
     DCHECK(list_item);
     if (list_item->action() == &action) {
       list_item->OnActionInputBindingUpdated();
@@ -632,9 +631,8 @@ void EditingList::OnActionInputBindingUpdated(const Action& action) {
 void EditingList::OnActionNewStateRemoved(const Action& action) {
   DCHECK(scroll_content_);
   for (views::View* child : scroll_content_->children()) {
-    auto* list_item = static_cast<ActionViewListItem*>(child);
-    DCHECK(list_item);
-    if (list_item->action() == &action) {
+    if (auto* list_item = views::AsViewClass<ActionViewListItem>(child);
+        list_item && list_item->action() == &action) {
       list_item->RemoveNewState();
       break;
     }

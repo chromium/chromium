@@ -185,9 +185,9 @@ void OverlayViewTestBase::SetUp() {
   DCHECK(editing_list_->scroll_content_);
   const auto& items = editing_list_->scroll_content_->children();
   DCHECK_EQ(items.size(), 3u);
-  tap_action_list_item_ = static_cast<ActionViewListItem*>(items[0]);
-  tap_action_list_item_two_ = static_cast<ActionViewListItem*>(items[1]);
-  move_action_list_item_ = static_cast<ActionViewListItem*>(items[2]);
+  tap_action_list_item_ = views::AsViewClass<ActionViewListItem>(items[0]);
+  tap_action_list_item_two_ = views::AsViewClass<ActionViewListItem>(items[1]);
+  move_action_list_item_ = views::AsViewClass<ActionViewListItem>(items[2]);
   DCHECK(tap_action_list_item_);
   DCHECK(move_action_list_item_);
 }

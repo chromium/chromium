@@ -176,7 +176,7 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
 void EditLabel::SetNameTagState(bool is_error,
                                 const std::u16string& error_tooltip) {
   DCHECK(parent());
-  auto* parent_view = static_cast<EditLabels*>(parent());
+  auto* parent_view = views::AsViewClass<EditLabels>(parent());
   parent_view->SetNameTagState(is_error, error_tooltip);
 }
 

@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -46,7 +47,7 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     DCHECK(scroll_content);
     for (size_t i = 0; i < scroll_content->children().size(); i++) {
       const auto* list_item =
-          static_cast<ActionViewListItem*>(scroll_content->children()[i]);
+          views::AsViewClass<ActionViewListItem>(scroll_content->children()[i]);
       if (list_item->action() == action) {
         return i;
       }
@@ -105,7 +106,7 @@ class ButtonOptionsMenuTest : public OverlayViewTestBase {
     views::View* scroll_content = editing_list_->scroll_content_;
     DCHECK(scroll_content);
     for (views::View* child : scroll_content->children()) {
-      auto* list_item = static_cast<ActionViewListItem*>(child);
+      auto* list_item = views::AsViewClass<ActionViewListItem>(child);
       DCHECK(list_item);
       if (list_item->action() == action) {
         return true;

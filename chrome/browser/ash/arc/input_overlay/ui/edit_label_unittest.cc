@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 
@@ -110,7 +111,7 @@ class EditLabelTest : public OverlayViewTestBase {
       return nullptr;
     }
     for (views::View* child : scroll_content->children()) {
-      if (auto* list_item = static_cast<ActionViewListItem*>(child);
+      if (auto* list_item = views::AsViewClass<ActionViewListItem>(child);
           list_item->action() == action) {
         return list_item;
       }
