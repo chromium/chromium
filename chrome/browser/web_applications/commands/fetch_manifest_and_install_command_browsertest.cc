@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -394,5 +395,49 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "SVGIconIntrinsicSize"
                                              : "SVGIconNoIntrinsicSize";
                          });
+
+class FetchManifestAndInstallCommandUniversalInstallTest
+    : public FetchManifestAndInstallCommandTest {
+ public:
+  FetchManifestAndInstallCommandUniversalInstallTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebAppUniversalInstall);
+  }
+  ~FetchManifestAndInstallCommandUniversalInstallTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(https://crbug.com/291778116): Enable this test.
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandUniversalInstallTest,
+                       DISABLED_NoManifest) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "no_manifest_test_page.html");
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(), install_future.GetCallback(),
+      /*use_fallback=*/false);
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+
+  EXPECT_EQ("Web app banner test page",
+            provider().registrar_unsafe().GetAppShortName(app_id));
+  auto os_integration =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(os_integration);
+  EXPECT_TRUE(os_integration->has_shortcut());
+  // TODO(crbug.com/291778116): Add more checks once DIY apps are supported.
+  // EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(app_id));
+}
 
 }  // namespace web_app
