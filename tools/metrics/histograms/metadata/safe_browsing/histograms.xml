@@ -1048,6 +1048,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime"
+    units="microseconds" expires_after="2024-07-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The microseconds between sending the SafeBrowsing API real time call and
+    receiving the SUCCESS_WITH_REAL_TIME response. The end time is fixed in java
+    code and does not include any thread hops or extra work. Note that this does
+    include task queue time to respond to the IPC (and that queue time is often
+    non-trivial). This is logged each time a SUCCESS_WITH_REAL_TIME response is
+    received from SafeBrowsing API.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.CheckDelta{Protocol}"
     units="microseconds" expires_after="2024-07-07">
   <owner>xinghuilu@chromium.org</owner>

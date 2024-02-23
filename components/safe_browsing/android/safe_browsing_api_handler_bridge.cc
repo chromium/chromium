@@ -124,6 +124,13 @@ void ReportSafeBrowsingJavaResponse(
   ReportUmaHistogramSparseWithAndWithoutSuffix(
       "SafeBrowsing.GmsSafeBrowsingApi.ResponseStatus", suffix,
       static_cast<int>(response_status));
+
+  if (response_status ==
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME) {
+    base::UmaHistogramMicrosecondsTimes(
+        "SafeBrowsing.GmsSafeBrowsingApi.CheckDelta.SuccessWithRealTime",
+        base::Microseconds(check_delta_microseconds));
+  }
 }
 
 SafeBrowsingJavaValidationResult GetJavaValidationResult(
