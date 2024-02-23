@@ -668,7 +668,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   EXPECT_THAT(url_handler().intercepted_url(), Eq(std::nullopt));
   ASSERT_THAT(ResponseInfo(), NotNull());
   EXPECT_THAT(ResponseInfo()->headers->response_code(), Eq(200));
-  EXPECT_THAT(ResponseBody(), HasSubstr("/manifest.webmanifest"));
+  EXPECT_THAT(ResponseBody(), HasSubstr("/.well-known/manifest.webmanifest"));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,

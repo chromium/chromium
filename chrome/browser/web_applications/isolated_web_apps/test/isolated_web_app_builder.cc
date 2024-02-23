@@ -52,7 +52,7 @@ namespace web_app {
 namespace {
 
 constexpr char kInstallPagePath[] = "/.well-known/_generated_install_page.html";
-constexpr char kManifestPath[] = "/manifest.webmanifest";
+constexpr char kManifestPath[] = "/.well-known/manifest.webmanifest";
 
 using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                      InstallIsolatedWebAppCommandError>;

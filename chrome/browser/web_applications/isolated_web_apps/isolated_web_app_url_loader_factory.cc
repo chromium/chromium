@@ -40,6 +40,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -73,9 +74,33 @@ const char kInstallPageContent[] = R"(
       <head>
         <meta charset="utf-8" />
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-        <link rel="manifest" href="/manifest.webmanifest" />
+        <!--<link rel="manifest" href="/.well-known/manifest.webmanifest" />-->
+        <script src="/.well-known/_generated_install_page.js"></script>
       </head>
     </html>
+)";
+
+// TODO(crbug.com/325132780): Remove when manifest fallback logic is gone.
+const char kInstallPageJsPath[] = "/.well-known/_generated_install_page.js";
+const char kInstallPageJsContent[] = R"(
+    function get(url) {
+      const request = new XMLHttpRequest();
+      request.open('GET', url, /*async=*/false);
+      request.send(null);
+      return request.status == 200;
+    }
+
+    const has_new_manifest = get('/.well-known/manifest.webmanifest');
+    const has_old_manifest = get('/manifest.webmanifest');
+
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'manifest');
+    if (!has_new_manifest && has_old_manifest) {
+      link.setAttribute('href', '/manifest.webmanifest');
+    } else {
+      link.setAttribute('href', '/.well-known/manifest.webmanifest');
+    }
+    document.head.appendChild(link);
 )";
 
 bool IsSupportedHttpMethod(const std::string& method) {
@@ -83,17 +108,18 @@ bool IsSupportedHttpMethod(const std::string& method) {
          method == net::HttpRequestHeaders::kHeadMethod;
 }
 
-void CompleteWithGeneratedHtmlResponse(
+void CompleteWithGeneratedResponse(
     mojo::Remote<network::mojom::URLLoaderClient> loader_client,
     net::HttpStatusCode http_status_code,
-    std::optional<std::string> body) {
+    std::optional<std::string> body = std::nullopt,
+    std::string_view content_type = "text/html") {
   size_t content_length = body.has_value() ? body->size() : 0;
   std::string headers = base::StringPrintf(
       "HTTP/1.1 %d %s\n"
-      "Content-Type: text/html;charset=utf-8\n"
+      "Content-Type: %s;charset=utf-8\n"
       "Content-Length: %s\n\n",
       static_cast<int>(http_status_code),
-      net::GetHttpReasonPhrase(http_status_code),
+      net::GetHttpReasonPhrase(http_status_code), content_type.data(),
       base::NumberToString(content_length).c_str());
   auto response_head = network::mojom::URLResponseHead::New();
   response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
@@ -233,9 +259,8 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
         case IsolatedWebAppReaderRegistry::ReadResponseError::Type::
             kResponseNotFound:
           // Return a synthetic 404 response.
-          CompleteWithGeneratedHtmlResponse(std::move(loader_client_),
-                                            net::HTTP_NOT_FOUND,
-                                            /*body=*/std::nullopt);
+          CompleteWithGeneratedResponse(std::move(loader_client_),
+                                        net::HTTP_NOT_FOUND);
           return;
       }
     }
@@ -452,16 +477,23 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
   }
 
   if (!IsSupportedHttpMethod(resource_request.method)) {
-    CompleteWithGeneratedHtmlResponse(
+    CompleteWithGeneratedResponse(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
-        net::HTTP_METHOD_NOT_ALLOWED, /*body=*/std::nullopt);
+        net::HTTP_METHOD_NOT_ALLOWED);
     return;
   }
 
   if (is_pending_install && resource_request.url.path() == kInstallPagePath) {
-    CompleteWithGeneratedHtmlResponse(
+    CompleteWithGeneratedResponse(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
         net::HTTP_OK, kInstallPageContent);
+    return;
+  }
+
+  if (is_pending_install && resource_request.url.path() == kInstallPageJsPath) {
+    CompleteWithGeneratedResponse(
+        mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
+        net::HTTP_OK, kInstallPageJsContent, "text/javascript");
     return;
   }
 

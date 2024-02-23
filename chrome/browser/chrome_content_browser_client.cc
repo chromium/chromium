@@ -182,6 +182,7 @@
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
@@ -2239,6 +2240,22 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
   // default frame permissions policy.
   if (app_origin.scheme() == extensions::kExtensionScheme) {
     return std::nullopt;
+  }
+  CHECK(web_contents);
+  if (web_app::IsolatedWebAppPendingInstallInfo::HasPendingInstallLocation(
+          *web_contents)) {
+    // We allow sync-xhr for apps that are being installed or updated to
+    // allow synchronous requests from the generated install page, which is
+    // used to implement manifest fallback logic while we migrate the
+    // expected manifest path from /manifest.webmanifest to
+    // /.well-known/manifest.webmanifest.
+    //
+    // TODO(crbug.com/325132780): Remove when manifest fallback logic is gone.
+    return blink::ParsedPermissionsPolicy(
+        {blink::ParsedPermissionsPolicyDeclaration(
+            blink::mojom::PermissionsPolicyFeature::kSyncXHR,
+            /*allowed_origins=*/{}, /*self_if_matches=*/app_origin,
+            /*matches_all_origins=*/false, /*matches_opaque_src=*/false)});
   }
 
   Profile* profile =

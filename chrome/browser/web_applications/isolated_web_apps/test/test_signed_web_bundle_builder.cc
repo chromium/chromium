@@ -33,7 +33,7 @@ constexpr base::StringPiece kTestManifest = R"({
       "display": "standalone",
       "icons": [
         {
-          "src": "256x256-green.png",
+          "src": "/256x256-green.png",
           "sizes": "256x256",
           "type": "image/png"
         }

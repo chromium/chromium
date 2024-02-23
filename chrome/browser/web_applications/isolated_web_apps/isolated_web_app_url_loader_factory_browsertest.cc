@@ -85,7 +85,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
   CreateBuilderWithManifestAndIcon() {
     auto builder = std::make_unique<web_package::WebBundleBuilder>();
     builder->AddExchange(
-        "/manifest.webmanifest",
+        "/.well-known/manifest.webmanifest",
         {{":status", "200"}, {"content-type", "application/manifest+json"}},
         R"({
           "name": "Test IWA",
@@ -96,7 +96,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
           "display": "standalone",
           "icons": [
             {
-              "src": "256x256-green.png",
+              "src": "/256x256-green.png",
               "sizes": "256x256",
               "type": "image/png"
             }

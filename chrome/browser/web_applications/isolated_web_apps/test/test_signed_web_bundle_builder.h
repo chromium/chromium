@@ -60,7 +60,8 @@ class TestSignedWebBundleBuilder {
           web_package::WebBundleSigner::KeyPair::CreateRandom(),
       web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
 
-  static constexpr base::StringPiece kTestManifestUrl = "/manifest.webmanifest";
+  static constexpr base::StringPiece kTestManifestUrl =
+      "/.well-known/manifest.webmanifest";
   static constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
   static constexpr base::StringPiece kTestHtmlUrl = "/index.html";
 

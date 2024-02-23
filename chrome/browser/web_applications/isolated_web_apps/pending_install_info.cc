@@ -38,7 +38,8 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(PendingInstallInfoHolder);
 
 }  // namespace
 
-/*static*/ IsolatedWebAppPendingInstallInfo&
+// static
+IsolatedWebAppPendingInstallInfo&
 IsolatedWebAppPendingInstallInfo::FromWebContents(
     content::WebContents& web_contents) {
   auto* holder = PendingInstallInfoHolder::FromWebContents(&web_contents);
@@ -51,6 +52,13 @@ IsolatedWebAppPendingInstallInfo::FromWebContents(
   }
   DCHECK(holder != nullptr);
   return holder->pending_install_info();
+}
+
+// static
+bool IsolatedWebAppPendingInstallInfo::HasPendingInstallLocation(
+    content::WebContents& web_contents) {
+  auto* holder = PendingInstallInfoHolder::FromWebContents(&web_contents);
+  return holder && holder->pending_install_info().location().has_value();
 }
 
 IsolatedWebAppPendingInstallInfo::IsolatedWebAppPendingInstallInfo() = default;
