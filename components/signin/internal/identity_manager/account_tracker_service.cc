@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -381,14 +380,11 @@ void AccountTrackerService::SetAccountCapabilities(
 
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
   // Set the child account status based on the account capabilities.
-  if (supervised_user::IsChildAccountSupervisionEnabled()) {
-    modified =
-        UpdateAccountInfoChildStatus(
-            account_info,
-            account_info.capabilities.is_subject_to_parental_controls() ==
-                signin::Tribool::kTrue) ||
-        modified;
-  }
+  modified = UpdateAccountInfoChildStatus(
+                 account_info,
+                 account_info.capabilities.is_subject_to_parental_controls() ==
+                     signin::Tribool::kTrue) ||
+             modified;
 #endif
 
   if (!modified) {

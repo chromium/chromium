@@ -67,8 +67,7 @@ class ExtensionEnableFlowTestSupervised
     feature_list_.InitWithFeatures(
         // Enable extensions for supervised users in Desktop platforms.
         /*enabled_features=*/
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-         supervised_user::
+        {supervised_user::
              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop},
         /*disabled_features=*/{});
   }

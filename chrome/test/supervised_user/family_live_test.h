@@ -10,7 +10,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
@@ -18,7 +17,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "chrome/test/supervised_user/test_state_seeded_observer.h"
-#include "components/supervised_user/core/common/features.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/state_observer.h"
@@ -71,9 +69,6 @@ class FamilyLiveTest : public signin::test::LiveTest {
   }
 
  private:
-  base::test::ScopedFeatureList features{
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
-
   // Extracts requested account, which must exist.
   signin::test::TestAccount GetTestAccount(std::string_view account_name) const;
   // Checks if the requested account exists.

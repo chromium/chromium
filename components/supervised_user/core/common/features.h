@@ -19,7 +19,6 @@ extern const base::FeatureParam<std::string> kKidFriendlyContentFeedEndpoint;
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
 // Flags related to supervision features on Desktop and iOS platforms.
-BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 
@@ -41,10 +40,6 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 // `kEnableExtensionsPermissionsForSupervisedUsersOnDesktop` is also enabled.
 bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-// Returns whether banner can be displayed to the user after website filtering
-// is enabled
-bool CanDisplayFirstTimeInterstitialBanner();
 
 // Request priority experiment for ClassifyUrl (for critical path of rendering).
 BASE_DECLARE_FEATURE(kHighestRequestPriorityForClassifyUrl);
@@ -77,13 +72,6 @@ BASE_DECLARE_FEATURE(kMigrateAccountManagementSettingsToCapabilities);
 // Local web approvals are only available when refreshed version of web
 // filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
-
-// Returns true if child account supervision features should be enabled for this
-// client.
-//
-// This method does not take into account whether the user is actually a child;
-// that must be handled by calling code.
-bool IsChildAccountSupervisionEnabled();
 
 // Returns whether the experiment to display a kid-friendly content stream on
 // the New Tab page has been enabled.

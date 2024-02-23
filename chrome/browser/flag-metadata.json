@@ -2810,22 +2810,12 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-family-link-controls",
-    "owners": ["fernandex@chromium.org", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 123
-  },
-  {
     "name": "enable-family-link-extensions-permissions",
     "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 126
   },
   {
     "name": "enable-family-link-managed-ui",
-    "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
-    "expiry_milestone": 123
-  },
-  {
-    "name": "enable-family-link-website-filtering",
     "owners": ["ljjlee@google.com", "chrome-kids-eng@google.com"],
     "expiry_milestone": 123
   },

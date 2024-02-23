@@ -40,6 +40,9 @@ bool IsSafeSitesEnabled(const PrefService& pref_service);
 bool IsSubjectToParentalControls(const PrefService& pref_service);
 
 // Returns true if the URL filtering parental control is enabled.
+//
+// TODO(crbug.com/326552693): remove duplication between this method and others
+// in this file.
 bool IsUrlFilteringEnabled(const PrefService& pref_service);
 
 // Returns true if the extensions permissions parental control is enabled

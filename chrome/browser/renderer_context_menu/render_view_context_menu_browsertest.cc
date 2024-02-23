@@ -153,7 +153,6 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
@@ -704,152 +703,8 @@ class ContextMenuForSupervisedUsersBrowserTest
       }};
 };
 
-class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
-    : public ContextMenuForSupervisedUsersBrowserTest {
- public:
-  ContextMenuWithoutFilteringForSupervisedUsersBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
+IN_PROC_BROWSER_TEST_F(ContextMenuForSupervisedUsersBrowserTest,
                        SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChild) {
-  // Block access to http://www.google.com/ in the URL filter.
-  std::map<std::string, bool> hosts;
-  hosts["www.google.com"] = false;
-  GetSupervisedUserService()->GetURLFilter()->SetManualHosts(std::move(hosts));
-
-  base::RunLoop().RunUntilIdle();
-
-  std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
-                                     GURL("http://www.google.com/"));
-
-  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SAVELINKAS));
-
-  // The entry is only disabled for platforms on which URL filtering is enabled.
-  if (supervised_user::IsUrlFilteringEnabled(
-          *browser()->profile()->GetPrefs())) {
-    EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
-  } else {
-    EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
-    SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
-  ContextMenuWaiter menu_observer;
-
-  base::RunLoop().RunUntilIdle();
-
-  if (supervised_user::IsUrlFilteringEnabled(
-          *browser()->profile()->GetPrefs())) {
-    kids_management_api_mock().RestrictSubsequentClassifyUrl();
-    EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
-        .Times(1);
-  }
-
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Open a context menu.
-  blink::WebMouseEvent mouse_event(
-      blink::WebInputEvent::Type::kMouseDown,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  mouse_event.button = blink::WebMouseEvent::Button::kRight;
-  mouse_event.SetPositionInWidget(15, 15);
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  tab->GetPrimaryMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->ForwardMouseEvent(mouse_event);
-  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetPrimaryMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->ForwardMouseEvent(mouse_event);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  std::u16string suggested_filename = menu_observer.params().suggested_filename;
-  // The save link as action is only blocked for platforms on which URL
-  // filtering is enabled.
-  if (supervised_user::IsUrlFilteringEnabled(
-          *browser()->profile()->GetPrefs())) {
-    const std::string kSuggestedFilename("");
-    ASSERT_EQ(kSuggestedFilename,
-              base::UTF16ToUTF8(suggested_filename).c_str());
-  } else {
-    const std::string kSuggestedFilename("test_filename.png");
-    ASSERT_EQ(kSuggestedFilename,
-              base::UTF16ToUTF8(suggested_filename).c_str());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
-    SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
-  ContextMenuWaiter menu_observer;
-
-  if (supervised_user::IsUrlFilteringEnabled(
-          *browser()->profile()->GetPrefs())) {
-    kids_management_api_mock().AllowSubsequentClassifyUrl();
-    EXPECT_CALL(kids_management_api_mock().classify_url_mock(), ClassifyUrl)
-        .Times(1);
-  }
-
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_TRUE(embedded_test_server()->Started());
-  GURL url(embedded_test_server()->GetURL("/download-anchor-same-origin.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Open a context menu.
-  blink::WebMouseEvent mouse_event(
-      blink::WebInputEvent::Type::kMouseDown,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  mouse_event.button = blink::WebMouseEvent::Button::kRight;
-  mouse_event.SetPositionInWidget(15, 15);
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  tab->GetPrimaryMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->ForwardMouseEvent(mouse_event);
-  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-  tab->GetPrimaryMainFrame()
-      ->GetRenderViewHost()
-      ->GetWidget()
-      ->ForwardMouseEvent(mouse_event);
-
-  // Wait for context menu to be visible.
-  menu_observer.WaitForMenuOpenAndClose();
-
-  const std::string kSuggestedFilename("test_filename.png");
-  std::u16string suggested_filename = menu_observer.params().suggested_filename;
-  ASSERT_EQ(kSuggestedFilename, base::UTF16ToUTF8(suggested_filename).c_str());
-}
-
-class ContextMenuWithFilteringForSupervisedUsersBrowserTest
-    : public ContextMenuForSupervisedUsersBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithFilteringForSupervisedUsersBrowserTest,
-    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWithFiltering) {
   // Set up child user profile.
   Profile* profile = browser()->profile();
 
@@ -873,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithFilteringForSupervisedUsersBrowserTest,
+    ContextMenuForSupervisedUsersBrowserTest,
     SaveLinkAsEntryIsDisabledForUrlsBlockedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 
@@ -914,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithFilteringForSupervisedUsersBrowserTest,
+    ContextMenuForSupervisedUsersBrowserTest,
     SaveLinkAsEntryIsEnabledForUrlsAllowedByAsyncCheckerForChild) {
   ContextMenuWaiter menu_observer;
 

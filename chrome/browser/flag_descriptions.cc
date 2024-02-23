@@ -328,13 +328,6 @@ const char kTextBasedAudioDescriptionDescription[] =
     "will speak the audio descriptions aloud as the video plays.";
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-const char kFilterWebsitesForSupervisedUsersOnDesktopName[] =
-    "Enable website filtering for supervised users";
-const char kFilterWebsitesForSupervisedUsersOnDesktopDescription[] =
-    "Enable filtering of web content for Family Link supervised users. "
-    "The enable-family-link-supervision flag must also be enabled.";
-
 const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[] =
     "Require parent permissions for extensions";
 const char

@@ -234,39 +234,15 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
 TEST_F(SupervisedUserServiceTest, InterstitialBannerState) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_IOS)
-  {
-    // If disabled kFilterWebsitesForSupervisedUsersOnDesktopAndIOS
-    // the state remains unchanged.
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kUnknown) ==
-                FirstTimeInterstitialBannerState::kUnknown);
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kNeedToShow) ==
-                FirstTimeInterstitialBannerState::kNeedToShow);
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kSetupComplete) ==
-                FirstTimeInterstitialBannerState::kSetupComplete);
-  }
-  {
-    // If enabled kFilterWebsitesForSupervisedUsersOnDesktopAndIOS
-    // the state may be updated.
-    base::test::ScopedFeatureList features{
-        kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
-
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kUnknown) ==
-                FirstTimeInterstitialBannerState::kNeedToShow);
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kNeedToShow) ==
-                FirstTimeInterstitialBannerState::kNeedToShow);
-    EXPECT_TRUE(service_->GetUpdatedBannerState(
-                    FirstTimeInterstitialBannerState::kSetupComplete) ==
-                FirstTimeInterstitialBannerState::kSetupComplete);
-  }
+  EXPECT_TRUE(service_->GetUpdatedBannerState(
+                  FirstTimeInterstitialBannerState::kUnknown) ==
+              FirstTimeInterstitialBannerState::kNeedToShow);
+  EXPECT_TRUE(service_->GetUpdatedBannerState(
+                  FirstTimeInterstitialBannerState::kNeedToShow) ==
+              FirstTimeInterstitialBannerState::kNeedToShow);
+  EXPECT_TRUE(service_->GetUpdatedBannerState(
+                  FirstTimeInterstitialBannerState::kSetupComplete) ==
+              FirstTimeInterstitialBannerState::kSetupComplete);
 #else
   {
     // On other platforms, the state is marked complete.

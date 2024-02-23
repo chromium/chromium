@@ -189,11 +189,6 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
   base::Value::List section_list;
-
-  base::Value::List* section_general = AddSection(&section_list, "General");
-  AddSectionEntry(section_general, "Child detection enabled",
-                  supervised_user::IsChildAccountSupervisionEnabled());
-
   Profile* profile = Profile::FromWebUI(web_ui());
 
   base::Value::List* section_profile = AddSection(&section_list, "Profile");

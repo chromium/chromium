@@ -171,13 +171,11 @@ FirstTimeInterstitialBannerState SupervisedUserService::GetUpdatedBannerState(
   FirstTimeInterstitialBannerState target_state = original_state;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_IOS)
-  if (supervised_user::CanDisplayFirstTimeInterstitialBanner()) {
-    if (original_state != FirstTimeInterstitialBannerState::kSetupComplete &&
-        can_show_first_time_interstitial_banner_) {
-      target_state = FirstTimeInterstitialBannerState::kNeedToShow;
-    } else {
-      target_state = FirstTimeInterstitialBannerState::kSetupComplete;
-    }
+  if (original_state != FirstTimeInterstitialBannerState::kSetupComplete &&
+      can_show_first_time_interstitial_banner_) {
+    target_state = FirstTimeInterstitialBannerState::kNeedToShow;
+  } else {
+    target_state = FirstTimeInterstitialBannerState::kSetupComplete;
   }
 #else
   target_state = FirstTimeInterstitialBannerState::kSetupComplete;

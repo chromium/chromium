@@ -257,10 +257,6 @@ class SupervisedUserNavigationThrottleTestBase
   }
 
  private:
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list_{
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
-#endif
   supervised_user::SupervisionMixin supervision_mixin_;
   content::test::PrerenderTestHelper prerender_helper_;
 };

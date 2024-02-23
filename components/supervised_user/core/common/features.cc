@@ -59,19 +59,6 @@ bool IsLocalWebApprovalsEnabled() {
 #endif
 }
 
-// The following flags control whether supervision features are enabled on
-// desktop and iOS. There are granular sub-feature flags, which control
-// particular aspects. If one or more of these sub-feature flags are enabled,
-// then child account detection logic is implicitly enabled.
-BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
-             "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Whether to display a "Managed by your parent" or similar text for supervised
 // users in various UI surfaces.
 BASE_FEATURE(kEnableManagedByParentUi,
@@ -120,11 +107,6 @@ BASE_FEATURE(kShadowKidsApiWithSafeSites,
              "ShadowKidsApiWithSafeSites",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool CanDisplayFirstTimeInterstitialBanner() {
-  return base::FeatureList::IsEnabled(
-      kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-}
-
 BASE_FEATURE(kForceGoogleSafeSearchForSupervisedUsers,
              "ForceGoogleSafeSearchForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -148,24 +130,6 @@ BASE_FEATURE(kMigrateAccountManagementSettingsToCapabilities,
              "MigrateAccountManagementSettingsToCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-bool IsChildAccountSupervisionEnabled() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  // Supervision features are fully supported on Android and ChromeOS.
-  return true;
-#else
-  return base::FeatureList::IsEnabled(
-             supervised_user::
-                 kFilterWebsitesForSupervisedUsersOnDesktopAndIOS) ||
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-         base::FeatureList::IsEnabled(
-             supervised_user::
-                 kEnableExtensionsPermissionsForSupervisedUsersOnDesktop) ||
-#endif
-         base::FeatureList::IsEnabled(
-             supervised_user::kEnableManagedByParentUi);
-#endif
-}
 
 bool IsKidFriendlyContentFeedAvailable() {
   return base::FeatureList::IsEnabled(kKidFriendlyContentFeed);

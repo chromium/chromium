@@ -12,7 +12,6 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -45,15 +44,6 @@ class MockSupervisedUserURLFilter
 class SupervisedUserNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  SupervisedUserNavigationThrottleTest() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS},
-        /*disabled_features=*/{});
-#endif
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     profile()->SetIsSupervisedProfile();
@@ -78,7 +68,6 @@ class SupervisedUserNavigationThrottleTest
 
  private:
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_;
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

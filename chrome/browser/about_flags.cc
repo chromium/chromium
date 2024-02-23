@@ -7754,13 +7754,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-    {"enable-family-link-website-filtering",
-     flag_descriptions::kFilterWebsitesForSupervisedUsersOnDesktopName,
-     flag_descriptions::kFilterWebsitesForSupervisedUsersOnDesktopDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(
-         supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)},
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     {"enable-family-link-extensions-permissions",
      flag_descriptions::

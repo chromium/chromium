@@ -221,10 +221,6 @@ extern const char kUseClientGmbInterfaceName[];
 extern const char kUseClientGmbInterfaceDescription[];
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-extern const char kFilterWebsitesForSupervisedUsersOnDesktopName[];
-extern const char kFilterWebsitesForSupervisedUsersOnDesktopDescription[];
-
 extern const char kEnableExtensionsPermissionsForSupervisedUsersOnDesktopName[];
 extern const char
     kEnableExtensionsPermissionsForSupervisedUsersOnDesktopDescription[];

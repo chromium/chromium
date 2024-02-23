@@ -36,12 +36,10 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/features.h"
 #endif
 
 namespace search {
@@ -362,39 +360,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-TEST_F(SearchTest,
-       UseLocalNTPIfNTPURLIsBlockedForSupervisedUserWithoutFiltering) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-
-  // Mark the profile as supervised, otherwise the URL filter won't be checked.
-  profile()->SetIsSupervisedProfile();
-  // Block access to foo.com in the URL filter.
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
-  supervised_user::SupervisedUserURLFilter* url_filter =
-      supervised_user_service->GetURLFilter();
-  std::map<std::string, bool> hosts;
-  hosts["foo.com"] = false;
-  url_filter->SetManualHosts(std::move(hosts));
-
-  if (supervised_user::IsUrlFilteringEnabled(*profile()->GetPrefs())) {
-    EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
-              GetNewTabPageURL(profile()));
-    GURL new_tab_url(chrome::kChromeUINewTabURL);
-    EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
-    EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
-  } else {
-    EXPECT_EQ("https://foo.com/newtab", GetNewTabPageURL(profile()));
-  }
-}
-
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUserWithFiltering) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-
+TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
   profile()->SetIsSupervisedProfile();
   // Block access to foo.com in the URL filter.

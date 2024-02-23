@@ -190,11 +190,6 @@ void ChildAccountService::OnExtendedAccountInfoUpdated(
   // We deliberately don't check for that, as we are only interested in the
   // child account status.
 
-  if (!supervised_user::IsChildAccountSupervisionEnabled()) {
-    SetSupervisionStatusAndNotifyObservers(false);
-    return;
-  }
-
   // This class doesn't care about browser sync consent.
   CoreAccountId auth_account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);

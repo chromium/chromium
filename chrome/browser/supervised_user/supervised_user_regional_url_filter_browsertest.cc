@@ -58,27 +58,17 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
-// Declare strong types for flags.
-using FilterWebsites = base::StrongAlias<class FilterWebsitesTag, bool>;
-using ParamsTuple = std::tuple<SupervisionMixin::SignInMode, FilterWebsites>;
-
-// Wrapper class for ParamsTuple; introducing fluent aliases for test
-// parameters.
+// Wrapper class; introducing fluent aliases for test parameters.
 class TestCase {
  public:
-  explicit TestCase(const ParamsTuple test_case_base)
+  explicit TestCase(const SupervisionMixin::SignInMode test_case_base)
       : test_case_base_(test_case_base) {}
 
   // Named accessors to TestCase's objects.
-  SupervisionMixin::SignInMode GetSignInMode() const {
-    return std::get<0>(test_case_base_);
-  }
-  bool FilterWebsitesEnabled() const {
-    return std::get<1>(test_case_base_).value();
-  }
+  SupervisionMixin::SignInMode GetSignInMode() const { return test_case_base_; }
 
  private:
-  std::tuple<SupervisionMixin::SignInMode, FilterWebsites> test_case_base_;
+  SupervisionMixin::SignInMode test_case_base_;
 };
 
 // The region code for variations service (any should work).
@@ -87,12 +77,14 @@ constexpr base::StringPiece kRegionCode = "jp";
 // Tests custom filtering logic based on regions, for supervised users.
 class SupervisedUserRegionalURLFilterTest
     : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<ParamsTuple> {
+      public ::testing::WithParamInterface<SupervisionMixin::SignInMode> {
  public:
   SupervisedUserRegionalURLFilterTest() {
     // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
     // disable this feature.
-    feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kHttpsUpgrades});
   }
   ~SupervisedUserRegionalURLFilterTest() override { feature_list_.Reset(); }
 
@@ -102,26 +94,6 @@ class SupervisedUserRegionalURLFilterTest
               (base::StringPiece, base::StringPiece));
 
   static const TestCase GetTestCase() { return TestCase(GetParam()); }
-
-  std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
-    std::vector<base::test::FeatureRef> features;
-    if (GetTestCase().FilterWebsitesEnabled()) {
-      features.push_back(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-    }
-
-    return features;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
-    std::vector<base::test::FeatureRef> features;
-
-    features.push_back(features::kHttpsUpgrades);
-    if (!GetTestCase().FilterWebsitesEnabled()) {
-      features.push_back(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-    }
-
-    return features;
-  }
 
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -198,27 +170,22 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserRegionalURLFilterTest, RegionIsAdded) {
 // Instead of /0, /1... print human-readable description of the test: type of
 // the user signed in and the list of conditionally enabled features.
 std::string PrettyPrintTestCaseName(
-    const ::testing::TestParamInfo<ParamsTuple>& info) {
+    const ::testing::TestParamInfo<SupervisionMixin::SignInMode>& info) {
   std::stringstream ss;
   ss << TestCase(info.param).GetSignInMode() << "Account";
-  ss << (TestCase(info.param).FilterWebsitesEnabled()
-             ? "WithFilterWebsites"
-             : "WithoutFilterWebsites");
   return ss.str();
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserRegionalURLFilterTest,
-    testing::Combine(
-        testing::Values(
+    testing::Values(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-            // Only for platforms that support signed-out browser.
-            SupervisionMixin::SignInMode::kSignedOut,
+        // Only for platforms that support signed-out browser.
+        SupervisionMixin::SignInMode::kSignedOut,
 #endif
-            SupervisionMixin::SignInMode::kRegular,
-            SupervisionMixin::SignInMode::kSupervised),
-        testing::Values(FilterWebsites(true), FilterWebsites(false))),
+        SupervisionMixin::SignInMode::kRegular,
+        SupervisionMixin::SignInMode::kSupervised),
     &PrettyPrintTestCaseName);
 }  // namespace
 }  // namespace supervised_user
