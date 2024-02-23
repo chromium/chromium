@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 
 namespace jingle_xmpp {
 class XmlElement;
@@ -89,6 +89,10 @@ class Authenticator {
     // The remote user is not authorized to access this machine. This is a
     // generic authz error and is not related to third-party auth.
     UNAUTHORIZED_ACCOUNT,
+
+    // Reauthorization failed because of a policy defined by the third party
+    // auth service no longer permits the connection.
+    REAUTHZ_POLICY_CHECK_FAILED,
   };
 
   // Callback used for layered Authenticator implementations, particularly
@@ -111,8 +115,8 @@ class Authenticator {
   static const jingle_xmpp::XmlElement* FindAuthenticatorMessage(
       const jingle_xmpp::XmlElement* message);
 
-  Authenticator() {}
-  virtual ~Authenticator() {}
+  Authenticator();
+  virtual ~Authenticator();
 
   // Returns current state of the authenticator.
   virtual State state() const = 0;
@@ -144,6 +148,27 @@ class Authenticator {
   // the ACCEPTED state.
   virtual std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const = 0;
+
+  // Sets a callback that will be called if `state()` has changed from
+  // `ACCEPTED` from something else, likely because the authenticator has some
+  // reauthn/reauthz mechanism that needs extra inputs, or rejects after the
+  // connection is established.
+  void set_state_change_after_accepted_callback(
+      const base::RepeatingClosure& on_state_change_after_accepted) {
+    on_state_change_after_accepted_ = on_state_change_after_accepted;
+  }
+
+ protected:
+  void NotifyStateChangeAfterAccepted();
+
+  // Chain the state change notification such that, whenever
+  // underlying->NotifyStateChangeAfterAccepted() is called,
+  // this->NotifyStateChangeAfterAccepted() will also be called.
+  // |this| must outlive |underlying|.
+  void ChainStateChangeAfterAcceptedWithUnderlying(Authenticator& underlying);
+
+ private:
+  base::RepeatingClosure on_state_change_after_accepted_;
 };
 
 // Factory for Authenticator instances.

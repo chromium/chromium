@@ -53,7 +53,9 @@ class PamAuthorizer : public protocol::Authenticator {
 
 PamAuthorizer::PamAuthorizer(
     std::unique_ptr<protocol::Authenticator> underlying)
-    : underlying_(std::move(underlying)), local_login_status_(NOT_CHECKED) {}
+    : underlying_(std::move(underlying)), local_login_status_(NOT_CHECKED) {
+  ChainStateChangeAfterAcceptedWithUnderlying(*underlying_);
+}
 
 PamAuthorizer::~PamAuthorizer() {}
 

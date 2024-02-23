@@ -46,6 +46,7 @@ struct VerifySessionTokenResponseStruct {
 struct ReauthorizeHostRequestStruct {
   ReauthorizeHostRequestStruct();
   ~ReauthorizeHostRequestStruct();
+  bool operator==(const ReauthorizeHostRequestStruct&) const;
 
   std::string session_reauth_token;
   std::string session_id;

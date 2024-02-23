@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -24,6 +25,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/connection_tester.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/fake_authenticator.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/network_settings.h"
@@ -638,6 +640,27 @@ TEST_F(JingleSessionTest, ImmediatelyCloseSessionAfterConnect) {
   // We should only send a SESSION_TERMINATE message if the session has been
   // closed before SESSION_INITIATE message.
   ASSERT_EQ(1U, host_signal_strategy_->received_messages().size());
+}
+
+TEST_F(JingleSessionTest, AuthenticatorRejectedAfterAccepted) {
+  constexpr int kAuthRoundtrips = 3;
+  base::RepeatingClosureList reject_after_accepted;
+  FakeAuthenticator::Config auth_config(kAuthRoundtrips,
+                                        FakeAuthenticator::ACCEPT, true);
+  auth_config.reject_after_accepted = &reject_after_accepted;
+
+  CreateSessionManagers(auth_config);
+  InitiateConnection(auth_config, false);
+  ASSERT_EQ(host_session_->error(), ErrorCode::OK);
+  ASSERT_EQ(client_session_->error(), ErrorCode::OK);
+
+  EXPECT_CALL(host_session_event_handler_,
+              OnSessionStateChange(Session::FAILED));
+  EXPECT_CALL(client_session_event_handler_,
+              OnSessionStateChange(Session::FAILED));
+  reject_after_accepted.Notify();
+  ASSERT_NE(host_session_->error(), ErrorCode::OK);
+  ASSERT_NE(client_session_->error(), ErrorCode::OK);
 }
 
 }  // namespace remoting::protocol

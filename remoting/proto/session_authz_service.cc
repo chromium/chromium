@@ -20,6 +20,8 @@ VerifySessionTokenResponseStruct::~VerifySessionTokenResponseStruct() = default;
 
 ReauthorizeHostRequestStruct::ReauthorizeHostRequestStruct() = default;
 ReauthorizeHostRequestStruct::~ReauthorizeHostRequestStruct() = default;
+bool ReauthorizeHostRequestStruct::operator==(
+    const ReauthorizeHostRequestStruct&) const = default;
 
 ReauthorizeHostResponseStruct::ReauthorizeHostResponseStruct() = default;
 ReauthorizeHostResponseStruct::~ReauthorizeHostResponseStruct() = default;

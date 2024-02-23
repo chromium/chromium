@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
@@ -75,6 +76,8 @@ ErrorCode AuthRejectionReasonToErrorCode(
     case Authenticator::RejectionReason::REJECTED_BY_USER:
       return SESSION_REJECTED;
     case Authenticator::RejectionReason::AUTHZ_POLICY_CHECK_FAILED:
+    // TODO: b/323068262 - Add error code for REAUTHZ_POLICY_CHECK_FAILED.
+    case Authenticator::RejectionReason::REAUTHZ_POLICY_CHECK_FAILED:
       return AUTHZ_POLICY_CHECK_FAILED;
     case Authenticator::RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
       return LOCATION_AUTHZ_POLICY_CHECK_FAILED;
@@ -225,6 +228,9 @@ void JingleSession::StartConnection(
 
   peer_address_ = peer_address;
   authenticator_ = std::move(authenticator);
+  authenticator_->set_state_change_after_accepted_callback(base::BindRepeating(
+      &JingleSession::OnAuthenticatorStateChangeAfterAccepted,
+      base::Unretained(this)));
 
   // Generate random session ID. There are usually not more than 1
   // concurrent session per host, so a random 64-bit integer provides
@@ -253,6 +259,9 @@ void JingleSession::InitializeIncomingConnection(
 
   peer_address_ = initiate_message.from;
   authenticator_ = std::move(authenticator);
+  authenticator_->set_state_change_after_accepted_callback(base::BindRepeating(
+      &JingleSession::OnAuthenticatorStateChangeAfterAccepted,
+      base::Unretained(this)));
   session_id_ = initiate_message.sid;
   message_queue_->SetInitialId(message_id);
 
@@ -698,6 +707,15 @@ void JingleSession::OnTerminate(std::unique_ptr<JingleMessage> message,
     SetState(FAILED);
   } else {
     SetState(CLOSED);
+  }
+}
+
+void JingleSession::OnAuthenticatorStateChangeAfterAccepted() {
+  if (authenticator_->state() == Authenticator::REJECTED) {
+    Close(AuthRejectionReasonToErrorCode(authenticator_->rejection_reason()));
+  } else {
+    NOTREACHED() << "Unexpected authenticator state: "
+                 << authenticator_->state();
   }
 }
 
