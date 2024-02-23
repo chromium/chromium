@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -13,9 +20,17 @@
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
+using manual_fill::ManualFillDataType;
+using net::test_server::EmbeddedTestServer;
 
-constexpr char kFormPassword[] = "pw";
+namespace {
+constexpr char kAddressFormURL[] = "/profile_form.html";
+constexpr char kPaymentMethodFormURL[] = "/credit_card.html";
+constexpr char kPasswordFormURL[] = "/simple_login_form.html";
+
+const char kCardNameFieldID[] = "CCName";
+const char kPasswordFieldID[] = "pw";
+const char kNameFieldID[] = "name";
 
 // Checks that the header view is as expected according to whether or not the
 // device is in landscape mode.
@@ -75,6 +90,62 @@ void CheckHeader(bool is_landscape) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Loads a form depending on the desired `data_type`.
+void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
+  base::StringPiece form_url;
+  std::string form_text;
+  switch (data_type) {
+    case ManualFillDataType::kPassword:
+      form_url = kPasswordFormURL;
+      form_text = "Login form.";
+      break;
+    case ManualFillDataType::kPaymentMethod:
+      form_url = kPaymentMethodFormURL;
+      form_text = "Autofill Test";
+      break;
+    case ManualFillDataType::kAddress:
+      form_url = kAddressFormURL;
+      form_text = "Profile form";
+      break;
+  }
+
+  [ChromeEarlGrey loadURL:test_server->GetURL(form_url)];
+  [ChromeEarlGrey waitForWebStateContainingText:form_text];
+}
+
+// Saves a password for the login form.
+void SavePasswordForLoginForm(EmbeddedTestServer* test_server) {
+  [AutofillAppInterface
+      savePasswordFormForURLSpec:base::SysUTF8ToNSString(
+                                     test_server->GetURL(kPasswordFormURL)
+                                         .spec())];
+}
+
+// Dismisses the payment bottom sheet by tapping the "Use Keyboard" button.
+void DismissPaymentBottomSheet() {
+  id<GREYMatcher> useKeyboardButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
+  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
+      performAction:grey_tap()];
+}
+
+// Makes sure that the payment suggestions are appearing in the keyboard
+// accessory.
+void MakeSurePaymentMethodSuggestionsAreVisisble() {
+  // Needed in order to see the payment method suggestions.
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
+
+  DismissPaymentBottomSheet();
+
+  // Wait for the payment suggestions to appear after dismissing the payment
+  // bottom sheet.
+  autofill::CreditCard card = autofill::test::GetCreditCard();
+  id<GREYMatcher> cc_chip = grey_text(base::SysUTF16ToNSString(card.GetInfo(
+      autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride())));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cc_chip];
+}
+
 }  // namespace
 
 // Test case for the expanded manual fill view.
@@ -89,6 +160,10 @@ void CheckHeader(bool is_landscape) {
 
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+
+  // Enable the Password Suggestion Bottom Sheet.
+  config.features_enabled.push_back(
+      password_manager::features::kIOSPasswordBottomSheet);
 
   return config;
 }
@@ -105,18 +180,40 @@ void CheckHeader(bool is_landscape) {
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  [self openExpandedManualFillView];
+  // Save a password, credit card and address.
+  SavePasswordForLoginForm(self.testServer);
+  [AutofillAppInterface saveLocalCreditCard];
+  [AutofillAppInterface saveExampleAccountProfile];
+
+  // Set password bottom sheet dismiss count so that the sheet won't be
+  // presented.
+  [PasswordSuggestionBottomSheetAppInterface setDismissCount:3];
 }
 
-// Opens the expanded manual fill view.
-- (void)openExpandedManualFillView {
-  // Load simple login form.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
-  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
+- (void)tearDown {
+  [super tearDown];
 
-  // Tap on the password field.
+  // Clear the stores.
+  [AutofillAppInterface clearProfilePasswordStore];
+  [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearProfilesStore];
+}
+
+// Opens the expanded manual fill view for a given `dataType`. `fieldToFill` is
+// the ID of the form field that should be focused prior to opening the expanded
+// manual fill view.
+- (void)openExpandedManualFillViewForDataType:(ManualFillDataType)dataType
+                                  fieldToFill:(std::string)fieldToFill {
+  // Load form.
+  LoadForm(self.testServer, dataType);
+
+  // Tap on the provided field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+      performAction:chrome_test_util::TapWebElementWithId(fieldToFill)];
+
+  if (dataType == ManualFillDataType::kPaymentMethod) {
+    MakeSurePaymentMethodSuggestionsAreVisisble();
+  }
 
   // Open the expanded manual fill view.
   id<GREYMatcher> manualFillButton = grey_accessibilityLabel(
@@ -142,6 +239,9 @@ void CheckHeader(bool is_landscape) {
         @"Expanded manual fill view is only available on iPhone.");
   }
 
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
+                                  fieldToFill:kPasswordFieldID];
+
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
                                 error:nil];
   CheckHeader(/*is_landscape=*/true);
@@ -152,6 +252,63 @@ void CheckHeader(bool is_landscape) {
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   CheckHeader(/*is_landscape=*/false);
+}
+
+// Tests that password manual filling options are visible when the expanded
+// manual fill view is opened from a field for which there are password
+// suggestions.
+- (void)testOpeningExpandedManualFillViewForPassword {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for a password field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPassword
+                                  fieldToFill:kPasswordFieldID];
+
+  // The password view controller should be visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ManualFallbackPasswordTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that payment method manual filling options are visible when the
+// expanded manual fill view is opened from a field for which there are payment
+// method suggestions.
+- (void)testOpeningExpandedManualFillViewForPaymentMethod {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for a payment method field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kPaymentMethod
+                                  fieldToFill:kCardNameFieldID];
+
+  // The payment method view controller should be visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ManualFallbackCreditCardTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that address manual filling options are visible when the expanded
+// manual fill view is opened from a field for which there are address
+// suggestions.
+- (void)testOpeningExpandedManualFillViewForAddress {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  // Open the expanded manual fill view for an address field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  // The address view controller should be visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ManualFallbackProfilesTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

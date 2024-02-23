@@ -11,10 +11,16 @@ namespace manual_fill {
 enum class ManualFillDataType;
 }
 
+@class FallbackViewController;
+
 // View that presents manual filling options for a specific autofill data type
 // (i.e., password, payment or address) and allows switching between the
 // different types.
 @interface ExpandedManualFillViewController : UIViewController
+
+// FallbackViewController embedded inside the ExpandedManualFillViewController
+// and providing the manual filling options.
+@property(strong, nonatomic) FallbackViewController* childViewController;
 
 // Designated initializer. `dataType` represents the type of manual filling
 // options to show.

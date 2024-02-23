@@ -4,12 +4,22 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/expanded_manual_fill_coordinator.h"
 
+#import "components/autofill/core/common/unique_ids.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/expanded_manual_fill_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/web/public/web_state.h"
+#import "url/gurl.h"
 
 using manual_fill::ManualFillDataType;
 
-@interface ExpandedManualFillCoordinator ()
+@interface ExpandedManualFillCoordinator () <AddressCoordinatorDelegate,
+                                             CardCoordinatorDelegate,
+                                             PasswordCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -37,15 +47,136 @@ using manual_fill::ManualFillDataType;
       [[ExpandedManualFillViewController alloc]
           initForDataType:_initialDataType];
 
-  //  TODO(b/40942168): Show manual filling options.
+  // Show the relevant manual filling options.
+  switch (_initialDataType) {
+    case ManualFillDataType::kPassword:
+      [self showPasswordManualFillingOptions];
+      break;
+    case ManualFillDataType::kPaymentMethod:
+      [self showPaymentMethodManualFillingOptions];
+      break;
+    case ManualFillDataType::kAddress:
+      [self showAddressManualFillingOptions];
+      break;
+  }
 }
 
 - (void)stop {
+  [self stopChildCoordinators];
   self.expandedManualFillViewController = nil;
 }
 
 - (UIViewController*)viewController {
   return self.expandedManualFillViewController;
+}
+
+#pragma mark - FallbackCoordinatorDelegate
+
+- (void)fallbackCoordinatorDidDismissPopover:
+    (FallbackCoordinator*)fallbackCoordinator {
+  // No-op as the expanded manual fill view is never presented as a popover for
+  // now.
+}
+
+#pragma mark - PasswordCoordinatorDelegate
+
+- (void)openPasswordManager {
+  //  TODO(b/40942168): Implement logic.
+}
+
+- (void)openPasswordSettings {
+  //  TODO(b/40942168): Implement logic.
+}
+
+- (void)openAllPasswordsPicker {
+  //  TODO(b/40942168): Implement logic.
+}
+
+- (void)openPasswordSuggestion {
+  //  TODO(b/40942168): Implement logic.
+}
+
+#pragma mark - CardCoordinatorDelegate
+
+- (void)openCardSettings {
+  //  TODO(b/40942168): Implement logic.
+}
+
+- (void)openAddCreditCard {
+  //  TODO(b/40942168): Implement logic.
+}
+
+#pragma mark - AddressCoordinatorDelegate
+
+- (void)openAddressSettings {
+  //  TODO(b/40942168): Implement logic.
+}
+
+#pragma mark - Private
+
+// Stops and deletes all active child coordinators.
+- (void)stopChildCoordinators {
+  for (ChromeCoordinator* coordinator in self.childCoordinators) {
+    [coordinator stop];
+  }
+  [self.childCoordinators removeAllObjects];
+}
+
+// Shows the password manual filling options.
+- (void)showPasswordManualFillingOptions {
+  [self stopChildCoordinators];
+
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  CHECK(webStateList->GetActiveWebState());
+  const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+
+  ManualFillPasswordCoordinator* passwordCoordinator =
+      [[ManualFillPasswordCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser
+                                 URL:URL
+                    injectionHandler:self.injectionHandler
+            invokedOnObfuscatedField:self.invokedOnObfuscatedField
+                              formID:self.formID
+                             frameID:self.frameID];
+  passwordCoordinator.delegate = self;
+
+  self.expandedManualFillViewController.childViewController =
+      passwordCoordinator.viewController;
+
+  [self.childCoordinators addObject:passwordCoordinator];
+}
+
+// Shows the payment method manual filling options.
+- (void)showPaymentMethodManualFillingOptions {
+  [self stopChildCoordinators];
+
+  CardCoordinator* cardCoordinator = [[CardCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                injectionHandler:self.injectionHandler];
+  cardCoordinator.delegate = self;
+
+  self.expandedManualFillViewController.childViewController =
+      cardCoordinator.viewController;
+
+  [self.childCoordinators addObject:cardCoordinator];
+}
+
+// Shows the address manual filling options.
+- (void)showAddressManualFillingOptions {
+  [self stopChildCoordinators];
+
+  AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                injectionHandler:self.injectionHandler];
+  addressCoordinator.delegate = self;
+
+  self.expandedManualFillViewController.childViewController =
+      addressCoordinator.viewController;
+
+  [self.childCoordinators addObject:addressCoordinator];
 }
 
 @end

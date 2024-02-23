@@ -81,7 +81,7 @@ BOOL AreCredentialsAtIndexesConnected(
 // YES if passwords were fetched at least once.
 @property(nonatomic, assign) BOOL passwordsWereFetched;
 
-// YES if the active field is of type 'password'.
+// YES if the active field is obfuscated.
 @property(nonatomic, assign) BOOL activeFieldIsObfuscated;
 
 // The relevant active web state.

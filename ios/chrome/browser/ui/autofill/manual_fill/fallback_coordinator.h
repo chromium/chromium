@@ -9,12 +9,13 @@
 
 @class LegacyChromeTableViewController;
 @class FallbackCoordinator;
+@class FallbackViewController;
 @class ManualFillInjectionHandler;
 
 // Delegate for the coordinator actions.
 @protocol FallbackCoordinatorDelegate<NSObject>
 
-// Called when the when the user has taken action to dismiss a popover.
+// Called when the user has taken action to dismiss a popover.
 - (void)fallbackCoordinatorDidDismissPopover:
     (FallbackCoordinator*)fallbackCoordinator;
 
@@ -26,7 +27,7 @@
 @interface FallbackCoordinator : ChromeCoordinator
 
 // The view controller of this coordinator.
-@property(nonatomic, readonly) UIViewController* viewController;
+@property(nonatomic, readonly) FallbackViewController* viewController;
 
 // The delegate for this coordinator.
 @property(nonatomic, weak) id<FallbackCoordinatorDelegate> delegate;

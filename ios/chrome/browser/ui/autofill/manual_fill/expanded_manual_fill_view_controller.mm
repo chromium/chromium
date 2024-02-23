@@ -7,8 +7,10 @@
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -24,6 +26,8 @@ constexpr CGFloat kCloseButtonSize = 30;
 // Size of the data type icons representing the different segments
 // of the segmented control.
 constexpr CGFloat kDataTypeIconSize = 18;
+// Bottom padding for the header view.
+constexpr CGFloat kHeaderViewBottomPadding = 12;
 // Leading and trailing padding for the header view.
 constexpr CGFloat kHeaderViewHorizontalPadding = 20;
 // Top padding for the header view.
@@ -166,6 +170,35 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                   segmentedControl:_segmentedControl
                      headerTopView:_headerTopView];
   }
+}
+
+#pragma mark - Setters
+
+- (void)setChildViewController:(FallbackViewController*)childViewController {
+  if (_childViewController == childViewController) {
+    return;
+  }
+
+  // Remove the previous child view controller.
+  [_childViewController willMoveToParentViewController:nil];
+  [_childViewController.view removeFromSuperview];
+  [_childViewController removeFromParentViewController];
+
+  _childViewController = childViewController;
+  _childViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [_childViewController willMoveToParentViewController:self];
+  [self addChildViewController:_childViewController];
+  [self.view addSubview:self.childViewController.view];
+  [_childViewController didMoveToParentViewController:self];
+
+  // `_childViewController.view` constraints.
+  [_childViewController.view.topAnchor
+      constraintEqualToAnchor:_headerView.bottomAnchor
+                     constant:kHeaderViewBottomPadding]
+      .active = YES;
+  AddSameConstraintsToSides(
+      _childViewController.view, self.view,
+      LayoutSides::kBottom | LayoutSides::kTrailing | LayoutSides::kLeading);
 }
 
 #pragma mark - Private

@@ -322,12 +322,22 @@ const CGFloat kIPHVerticalOffset = -5;
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
-- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType {
+- (void)startManualFillForDataType:(manual_fill::ManualFillDataType)dataType
+          invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
+  autofill::FormActivityParams lastSeenParams =
+      self.formInputAccessoryMediator.lastSeenParams;
+
   ExpandedManualFillCoordinator* expandedManualFillCoordinator =
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                          forDataType:dataType];
+
+  expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
+  expandedManualFillCoordinator.invokedOnObfuscatedField =
+      invokedOnObfuscatedField;
+  expandedManualFillCoordinator.formID = lastSeenParams.unique_form_id;
+  expandedManualFillCoordinator.frameID = lastSeenParams.frame_id;
   [expandedManualFillCoordinator start];
 
   self.formInputViewController = expandedManualFillCoordinator.viewController;
@@ -410,7 +420,10 @@ const CGFloat kIPHVerticalOffset = -5;
   CHECK(IsKeyboardAccessoryUpgradeEnabled());
 
   [self stopChildren];
-  [self startManualFillForDataType:dataType];
+  BOOL invokedOnObfuscatedField =
+      [self.formInputAccessoryMediator lastFocusedFieldWasObfuscated];
+  [self startManualFillForDataType:dataType
+          invokedOnObfuscatedField:invokedOnObfuscatedField];
   [self updateKeyboardAccessoryForManualFilling];
 }
 
