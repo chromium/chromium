@@ -955,7 +955,7 @@ BASE_FEATURE(kWebApkAllowIconUpdate,
 
 BASE_FEATURE(kWebApkIconUpdateThreshold,
              "WebApkIconUpdateThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace android
 }  // namespace chrome
