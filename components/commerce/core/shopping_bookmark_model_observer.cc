@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/buildflag.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -25,6 +26,16 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 
 namespace commerce {
+
+namespace {
+bool IsTrackByDefaultEnabled() {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(kTrackByDefaultOnMobile);
+#else
+  return true;
+#endif
+}
+}  // namespace
 
 ShoppingBookmarkModelObserver::ShoppingBookmarkModelObserver(
     bookmarks::BookmarkModel* model,
@@ -112,7 +123,7 @@ void ShoppingBookmarkModelObserver::BookmarkNodeAdded(
   //                    instead. Presumably, shopping data is primarily being
   //                    added to new bookmarks, so we could potentially use the
   //                    node change event.
-  if (added_by_user) {
+  if (added_by_user && IsTrackByDefaultEnabled()) {
     SetPriceTrackingStateForBookmark(shopping_service_, model, node, true,
                                      base::DoNothing());
   }

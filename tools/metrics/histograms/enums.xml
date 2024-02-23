@@ -21008,6 +21008,7 @@ from previous Chrome versions.
   <int value="114657517" label="SecurePaymentConfirmationDebug:disabled"/>
   <int value="114748684" label="AlmanacGameMigration:disabled"/>
   <int value="114948617" label="SurfacePolish:enabled"/>
+  <int value="115834091" label="TrackByDefaultOnMobile:enabled"/>
   <int value="115852043"
       label="PageInfoAboutThisSiteKeepSidePanelOnSameTabNavs:enabled"/>
   <int value="115915570"
@@ -25368,6 +25369,7 @@ from previous Chrome versions.
   <int value="2098907258" label="UseSurfaceLayerForVideo:disabled"/>
   <int value="2099583779" label="DefaultLinkCapturingInBrowser:enabled"/>
   <int value="2099676690" label="CastStreamingPerformanceOverlay:disabled"/>
+  <int value="2099866799" label="TrackByDefaultOnMobile:disabled"/>
   <int value="2099945365" label="OmniboxAssistantVoiceSearch:enabled"/>
   <int value="2100128918" label="LibAssistantV2:enabled"/>
   <int value="2100547979" label="AdaptiveCharging:enabled"/>

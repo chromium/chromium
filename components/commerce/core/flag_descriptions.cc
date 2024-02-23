@@ -50,4 +50,9 @@ const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =
     "Enable shopping page types experiment.";
 
+const char kTrackByDefaultOnMobileName[] =
+    "Product Tracking by Default on Mobile";
+const char kTrackByDefaultOnMobileDescription[] =
+    "Enable tracking a product by default when bookmarking on mobile devices.";
+
 }  // namespace commerce::flag_descriptions

@@ -6439,6 +6439,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"price-change-module", flag_descriptions::kPriceChangeModuleName,
      flag_descriptions::kPriceChangeModuleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPriceChangeModule)},
+
+    {"track-by-default-mobile",
+     commerce::flag_descriptions::kTrackByDefaultOnMobileName,
+     commerce::flag_descriptions::kTrackByDefaultOnMobileDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(commerce::kTrackByDefaultOnMobile)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

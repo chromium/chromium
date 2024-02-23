@@ -40,6 +40,9 @@ extern const char kPriceInsightsDescription[];
 extern const char kShoppingPageTypesName[];
 extern const char kShoppingPageTypesDescription[];
 
+extern const char kTrackByDefaultOnMobileName[];
+extern const char kTrackByDefaultOnMobileDescription[];
+
 }  // namespace commerce::flag_descriptions
 
 #endif  // COMPONENTS_COMMERCE_CORE_FLAG_DESCRIPTIONS_H_

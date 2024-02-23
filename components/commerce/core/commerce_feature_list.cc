@@ -262,6 +262,10 @@ BASE_FEATURE(kShoppingPDPMetricsRegionLaunched,
              "ShoppingPDPMetricsRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTrackByDefaultOnMobile,
+             "TrackByDefaultOnMobile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingPageTypes,
              "ShoppingPageTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
