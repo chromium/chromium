@@ -6258,12 +6258,6 @@ const char kEnableInputEventLoggingDescription[] =
     "will be included in feedback reports and system logs, so DO NOT ENTER "
     "SENSITIVE INFORMATION with this flag enabled.";
 
-const char kDiagnosticsAppJellyName[] =
-    "Enable jelly colors for the Diagnostics App";
-const char kDiagnosticsAppJellyDescription[] =
-    "Enable jelly colors for the Diagnostics App. Requires "
-    "jelly-colors flag to be enabled.";
-
 const char kEnableKeyboardBacklightToggleName[] =
     "Enable Keyboard Backlight Toggle.";
 const char kEnableKeyboardBacklightToggleDescription[] =

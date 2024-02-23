@@ -246,8 +246,6 @@ BASE_DECLARE_FEATURE(kEnableExternalKeyboardsInDiagnostics);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableFilesAppCopyImage);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableHostnameSetting);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kDiagnosticsAppJelly);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableFastInkForSoftwareCursor);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableKeyboardBacklightToggle);
@@ -1091,7 +1089,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInternalServerSideSpeechRecognitionControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIppClientInfoEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForDiagnosticsApp();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyEnabledForShortcutCustomization();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKerberosRememberPasswordByDefaultEnabled();

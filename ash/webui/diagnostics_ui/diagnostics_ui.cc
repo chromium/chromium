@@ -385,8 +385,6 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      features::IsTouchpadInDiagnosticsAppEnabled());
   source->AddBoolean("isTouchscreenEnabled",
                      features::IsTouchscreenInDiagnosticsAppEnabled());
-  source->AddBoolean("isJellyEnabledForDiagnosticsApp",
-                     ash::features::IsJellyEnabledForDiagnosticsApp());
 }
 
 void SetUpPluralStringHandler(content::WebUI* web_ui) {

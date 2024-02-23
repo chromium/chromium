@@ -6,9 +6,10 @@
   <head>
     <meta charset="utf-8">
     <title></title>
-    <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
   </head>
   <style>
     /* The :not(body) selector allows the variable definitions below to 'win'
@@ -34,7 +35,7 @@
       margin: 0;
     }
   </style>
-  <body>
+  <body class="jelly-enabled">
     <diagnostics-app></diagnostics-app>
 
     <script type="module" src="diagnostics_app.js"></script>
