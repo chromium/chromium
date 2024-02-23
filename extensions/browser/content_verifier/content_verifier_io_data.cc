@@ -11,19 +11,7 @@
 
 namespace extensions {
 
-ContentVerifierIOData::ExtensionData::ExtensionData(
-    std::set<CanonicalRelativePath> canonical_browser_image_paths,
-    std::set<CanonicalRelativePath> canonical_background_or_content_paths,
-    std::set<CanonicalRelativePath> canonical_indexed_ruleset_paths,
-    const base::Version& version,
-    ContentVerifierDelegate::VerifierSourceType source_type)
-    : canonical_browser_image_paths(std::move(canonical_browser_image_paths)),
-      canonical_background_or_content_paths(
-          std::move(canonical_background_or_content_paths)),
-      canonical_indexed_ruleset_paths(
-          std::move(canonical_indexed_ruleset_paths)),
-      version(version),
-      source_type(source_type) {}
+ContentVerifierIOData::ExtensionData::ExtensionData() = default;
 
 ContentVerifierIOData::ExtensionData::ExtensionData(ExtensionData&& other) =
     default;
@@ -37,7 +25,7 @@ ContentVerifierIOData::~ContentVerifierIOData() = default;
 void ContentVerifierIOData::AddData(const ExtensionId& extension_id,
                                     ExtensionData data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  data_map_.insert_or_assign(extension_id, std::move(data));
+  data_map_[extension_id] = std::move(data);
 }
 
 void ContentVerifierIOData::RemoveData(const ExtensionId& extension_id) {

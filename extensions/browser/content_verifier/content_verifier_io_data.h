@@ -24,24 +24,36 @@ using CanonicalRelativePath = content_verifier_utils::CanonicalRelativePath;
 class ContentVerifierIOData {
  public:
   struct ExtensionData {
-    // Set of canonical file paths used as images within the browser process.
+    // The following are all canonical paths within an extension to different
+    // types of resources.
+
+    // Images used in the browser process (such as icons in the toolbar).
     std::set<CanonicalRelativePath> canonical_browser_image_paths;
-    // Set of canonical file paths used as background scripts, pages or
-    // content scripts.
-    std::set<CanonicalRelativePath> canonical_background_or_content_paths;
+
+    // The extension background page, if any.
+    std::optional<CanonicalRelativePath> canonical_background_page_path;
+
+    // The extension background scripts, if any.
+    std::set<CanonicalRelativePath> canonical_background_scripts_paths;
+
+    // The extension service worker script, if any.
+    std::optional<CanonicalRelativePath> canonical_service_worker_script_path;
+
+    // Content scripts.
+    std::set<CanonicalRelativePath> canonical_content_scripts_paths;
 
     // Set of indexed ruleset paths used by the Declarative Net Request API.
     std::set<CanonicalRelativePath> canonical_indexed_ruleset_paths;
 
+    // The version of the extension.
     base::Version version;
+
+    // The manifest version of the extension.
+    int manifest_version = 0;
+
     ContentVerifierDelegate::VerifierSourceType source_type;
 
-    ExtensionData(
-        std::set<CanonicalRelativePath> canonical_browser_image_paths,
-        std::set<CanonicalRelativePath> canonical_background_or_content_paths,
-        std::set<CanonicalRelativePath> canonical_indexed_ruleset_paths,
-        const base::Version& version,
-        ContentVerifierDelegate::VerifierSourceType source_type);
+    ExtensionData();
 
     ExtensionData(ExtensionData&&);
     ExtensionData& operator=(ExtensionData&&);

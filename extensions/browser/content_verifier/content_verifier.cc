@@ -15,16 +15,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/content_hash_fetcher.h"
 #include "extensions/browser/content_hash_reader.h"
-#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier/content_verifier_delegate.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"
@@ -100,42 +103,52 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
         NormalizeRelativePath(relative_path));
   };
 
-  std::set<CanonicalRelativePath> image_paths;
+  auto result = std::make_unique<ContentVerifierIOData::ExtensionData>();
+
   for (const auto& path : original_image_paths) {
-    image_paths.insert(canonicalize_path(path));
+    result->canonical_browser_image_paths.insert(canonicalize_path(path));
   }
 
-  std::set<CanonicalRelativePath> background_or_content_paths;
   for (const std::string& script :
        BackgroundInfo::GetBackgroundScripts(extension)) {
-    background_or_content_paths.insert(
+    result->canonical_background_scripts_paths.insert(
         canonicalize_path(extension->GetResource(script).relative_path()));
   }
+
   if (BackgroundInfo::HasBackgroundPage(extension)) {
-    background_or_content_paths.insert(
+    result->canonical_background_page_path =
         canonicalize_path(extensions::file_util::ExtensionURLToRelativeFilePath(
-            BackgroundInfo::GetBackgroundURL(extension))));
+            BackgroundInfo::GetBackgroundURL(extension)));
   }
+
+  if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+    const std::string& script_path =
+        BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
+    result->canonical_service_worker_script_path =
+        canonicalize_path(extension->GetResource(script_path).relative_path());
+  }
+
   for (const std::unique_ptr<UserScript>& script :
        ContentScriptsInfo::GetContentScripts(extension)) {
     for (const std::unique_ptr<UserScript::Content>& js_file :
          script->js_scripts()) {
-      background_or_content_paths.insert(
+      result->canonical_content_scripts_paths.insert(
           canonicalize_path(js_file->relative_path()));
     }
   }
 
-  std::set<CanonicalRelativePath> indexed_ruleset_paths;
   using DNRManifestData = declarative_net_request::DNRManifestData;
   for (const DNRManifestData::RulesetInfo& info :
        DNRManifestData::GetRulesets(*extension)) {
-    indexed_ruleset_paths.insert(canonicalize_path(
+    result->canonical_indexed_ruleset_paths.insert(canonicalize_path(
         file_util::GetIndexedRulesetRelativePath(info.id.value())));
   }
 
-  return std::make_unique<ContentVerifierIOData::ExtensionData>(
-      std::move(image_paths), std::move(background_or_content_paths),
-      std::move(indexed_ruleset_paths), extension->version(), source_type);
+  result->version = extension->version();
+  result->manifest_version = extension->manifest_version();
+  result->source_type = source_type;
+
+  return result;
 }
 
 }  // namespace
@@ -402,6 +415,110 @@ class ContentVerifier::HashHelper {
   base::WeakPtrFactory<HashHelper> weak_factory_{this};
 };
 
+class ContentVerifier::VerifiedFileTypeHelper {
+ public:
+  explicit VerifiedFileTypeHelper(
+      const ContentVerifierIOData::ExtensionData& extension_data)
+      : data_(extension_data) {}
+  ~VerifiedFileTypeHelper() = default;
+
+  // Returns the verified file type, if any, for the relative path.
+  // Returning VerifiedFileType::kNone indicates the file should not be
+  // verified (some files get transcoded during the install
+  // process, so we don't want to verify their contents because they are
+  // expected not to match).
+  ContentVerifier::VerifiedFileType GetVerifiedFileType(
+      const base::FilePath& relative_path) {
+    if (relative_path.empty()) {
+      return ContentVerifier::VerifiedFileType::kNone;
+    }
+
+    CanonicalRelativePath canonical_path_value =
+        content_verifier_utils::CanonicalizeRelativePath(relative_path);
+
+    // The manifest file can be modified by the browser and by the webstore, so
+    // can't be verified.
+    if (canonical_path_value == manifest_file_) {
+      return ContentVerifier::VerifiedFileType::kNone;
+    }
+
+    if (canonical_path_value == data_->canonical_background_page_path) {
+      return ContentVerifier::VerifiedFileType::kBackgroundPage;
+    }
+    if (canonical_path_value == data_->canonical_service_worker_script_path) {
+      return ContentVerifier::VerifiedFileType::kServiceWorkerScript;
+    }
+    if (base::Contains(data_->canonical_background_scripts_paths,
+                       canonical_path_value)) {
+      return ContentVerifier::VerifiedFileType::kBackgroundScript;
+    }
+    if (base::Contains(data_->canonical_content_scripts_paths,
+                       canonical_path_value)) {
+      return ContentVerifier::VerifiedFileType::kContentScript;
+    }
+
+    // JavaScript and HTML files should always be verified.
+    if (HasScriptFileExt(relative_path)) {
+      return ContentVerifier::VerifiedFileType::kMiscJsFile;
+    }
+
+    if (HasPageFileExt(relative_path)) {
+      return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
+    }
+
+    // The browser re-writes image files during extension load, so they can't
+    // be verified.
+    if (base::Contains(data_->canonical_browser_image_paths,
+                       canonical_path_value)) {
+      return ContentVerifier::VerifiedFileType::kNone;
+    }
+
+    // Skip indexed rulesets since these are generated.
+    if (base::Contains(data_->canonical_indexed_ruleset_paths,
+                       canonical_path_value)) {
+      return ContentVerifier::VerifiedFileType::kNone;
+    }
+
+    const base::FilePath canonical_path(canonical_path_value.value());
+    if (locales_relative_dir_.IsParent(canonical_path)) {
+      // TODO(asargent) - see if we can cache this list longer to avoid
+      // having to fetch it more than once for a given run of the
+      // browser. Maybe it can never change at runtime? (Or if it can, maybe
+      // there is an event we can listen for to know to drop our cache).
+      if (all_locale_candidates_.empty()) {
+        extension_l10n_util::GetAllLocales(&all_locale_candidates_);
+        DCHECK(!all_locale_candidates_.empty());
+      }
+
+      // Since message catalogs get transcoded during installation, we want
+      // to skip those paths. See if this path looks like
+      // _locales/<some locale>/messages.json - if so then skip it.
+      if (canonical_path.BaseName() == messages_file_ &&
+          canonical_path.DirName().DirName() == locales_relative_dir_ &&
+          ContainsStringIgnoreCaseASCII(
+              all_locale_candidates_,
+              canonical_path.DirName().BaseName().MaybeAsASCII())) {
+        return ContentVerifier::VerifiedFileType::kNone;
+      }
+    }
+
+    return ContentVerifier::VerifiedFileType::kMiscFile;
+  }
+
+ private:
+  const CanonicalRelativePath manifest_file_{
+      content_verifier_utils::CanonicalizeRelativePath(
+          base::FilePath(kManifestFilename))};
+  const base::FilePath messages_file_{kMessagesFilename};
+  const base::FilePath locales_relative_dir_{kLocaleFolder};
+
+  // The set of all possible locales. Lazily populated if and only if we need
+  // to check it.
+  std::set<std::string> all_locale_candidates_;
+
+  raw_ref<const ContentVerifierIOData::ExtensionData> data_;
+};
+
 // static
 void ContentVerifier::SetObserverForTests(TestObserver* observer) {
   g_content_verifier_test_observer = observer;
@@ -457,16 +574,22 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
 
   base::FilePath normalized_unix_path = NormalizeRelativePath(relative_path);
 
-  if (!ShouldVerifyAnyPaths(extension_id, extension_root,
-                            {normalized_unix_path})) {
-    return nullptr;
+  VerifiedFileType verified_file_type =
+      VerifiedFileTypeHelper(*data).GetVerifiedFileType(normalized_unix_path);
+  if (verified_file_type == VerifiedFileType::kNone) {
+    return nullptr;  // Not a file to be verified.
   }
+
+  std::vector<VerifiedFileType> file_types({verified_file_type});
+  auto callback =
+      base::BindOnce(&ContentVerifier::VerifyFailed, this, extension_id,
+                     file_types, data->manifest_version);
 
   // TODO(asargent) - we can probably get some good performance wins by having
   // a cache of ContentHashReader's that we hold onto past the end of each job.
   scoped_refptr<ContentVerifyJob> job = base::MakeRefCounted<ContentVerifyJob>(
       extension_id, data->version, extension_root, normalized_unix_path,
-      base::BindOnce(&ContentVerifier::VerifyFailed, this, extension_id));
+      std::move(callback));
   job->Start(this);
   return job;
 }
@@ -520,12 +643,16 @@ bool ContentVerifier::ShouldComputeHashesOnInstall(const Extension& extension) {
          ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES;
 }
 
-void ContentVerifier::VerifyFailed(const ExtensionId& extension_id,
-                                   ContentVerifyJob::FailureReason reason) {
+void ContentVerifier::VerifyFailed(
+    const ExtensionId& extension_id,
+    const std::vector<VerifiedFileType>& failed_file_types,
+    int manifest_version,
+    ContentVerifyJob::FailureReason reason) {
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&ContentVerifier::VerifyFailed, this,
-                                  extension_id, reason));
+        FROM_HERE,
+        base::BindOnce(&ContentVerifier::VerifyFailed, this, extension_id,
+                       failed_file_types, manifest_version, reason));
     return;
   }
   if (shutdown_on_ui_)
@@ -533,6 +660,55 @@ void ContentVerifier::VerifyFailed(const ExtensionId& extension_id,
 
   VLOG(1) << "VerifyFailed " << extension_id << " reason:" << reason;
   DCHECK_NE(ContentVerifyJob::NONE, reason);
+
+  for (VerifiedFileType file_type : failed_file_types) {
+    const char* histogram_suffix = nullptr;
+    switch (file_type) {
+      case VerifiedFileType::kNone:
+        // We should only consider a file type that should be verified.
+        NOTREACHED_NORETURN();
+      case VerifiedFileType::kBackgroundPage:
+        histogram_suffix = "BackgroundPage";
+        break;
+      case VerifiedFileType::kBackgroundScript:
+        histogram_suffix = "BackgroundScript";
+        break;
+      case VerifiedFileType::kServiceWorkerScript:
+        histogram_suffix = "ServiceWorkerScript";
+        break;
+      case VerifiedFileType::kContentScript:
+        histogram_suffix = "ContentScript";
+        break;
+      case VerifiedFileType::kMiscHtmlFile:
+        histogram_suffix = "MiscHtmlFile";
+        break;
+      case VerifiedFileType::kMiscJsFile:
+        histogram_suffix = "MiscJsFile";
+        break;
+      case VerifiedFileType::kMiscFile:
+        histogram_suffix = "MiscFile";
+        break;
+    }
+    if (manifest_version == 2) {
+      base::UmaHistogramEnumeration(
+          base::StringPrintf(
+              "Extensions.ContentVerification.VerifyFailedOnFileMV2.%s",
+              histogram_suffix),
+          reason, ContentVerifyJob::FAILURE_REASON_MAX);
+      base::UmaHistogramEnumeration(
+          "Extensions.ContentVerification.VerifyFailedOnFileTypeMV2",
+          file_type);
+    } else if (manifest_version == 3) {
+      base::UmaHistogramEnumeration(
+          base::StringPrintf(
+              "Extensions.ContentVerification.VerifyFailedOnFileMV3.%s",
+              histogram_suffix),
+          reason, ContentVerifyJob::FAILURE_REASON_MAX);
+      base::UmaHistogramEnumeration(
+          "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
+          file_type);
+    }
+  }
 
   delegate_->VerifyFailed(extension_id, reason);
 }
@@ -593,7 +769,7 @@ GURL ContentVerifier::GetSignatureFetchUrlForTest(
 void ContentVerifier::VerifyFailedForTest(
     const ExtensionId& extension_id,
     ContentVerifyJob::FailureReason reason) {
-  VerifyFailed(extension_id, reason);
+  VerifyFailed(extension_id, {VerifiedFileType::kMiscFile}, 3, reason);
 }
 
 void ContentVerifier::ClearCacheForTesting() {
@@ -624,9 +800,22 @@ void ContentVerifier::OnFetchComplete(
   VLOG(1) << "OnFetchComplete " << extension_id
           << " success:" << content_hash->succeeded();
 
-  const bool did_hash_mismatch =
-      ShouldVerifyAnyPaths(extension_id, content_hash->extension_root(),
-                           content_hash->hash_mismatch_unix_paths());
+  std::vector<VerifiedFileType> file_hash_mismatches;
+  const ContentVerifierIOData::ExtensionData* data =
+      io_data_.GetData(extension_id);
+  if (data) {
+    VerifiedFileTypeHelper verified_file_type_helper(*data);
+    for (const base::FilePath& path :
+         content_hash->hash_mismatch_unix_paths()) {
+      VerifiedFileType verified_file_type =
+          verified_file_type_helper.GetVerifiedFileType(path);
+      if (verified_file_type != VerifiedFileType::kNone) {
+        file_hash_mismatches.push_back(verified_file_type);
+      }
+    }
+  }
+
+  const bool did_hash_mismatch = !file_hash_mismatches.empty();
   if (g_content_verifier_test_observer) {
     g_content_verifier_test_observer->OnFetchComplete(content_hash,
                                                       did_hash_mismatch);
@@ -635,7 +824,10 @@ void ContentVerifier::OnFetchComplete(
   if (!did_hash_mismatch)
     return;
 
-  VerifyFailed(extension_id, ContentVerifyJob::HASH_MISMATCH);
+  // Note: `data` must be non-null here, since we'd only populate
+  // `file_hash_mismatches` if it's available.
+  VerifyFailed(extension_id, file_hash_mismatches, data->manifest_version,
+               ContentVerifyJob::HASH_MISMATCH);
 }
 
 ContentHash::FetchKey ContentVerifier::GetFetchKey(
@@ -690,84 +882,6 @@ void ContentVerifier::BindURLLoaderFactoryReceiverOnUIThread(
       ->Clone(std::move(url_loader_factory_receiver));
 }
 
-bool ContentVerifier::ShouldVerifyAnyPaths(
-    const ExtensionId& extension_id,
-    const base::FilePath& extension_root,
-    const std::set<base::FilePath>& relative_unix_paths) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  const ContentVerifierIOData::ExtensionData* data =
-      io_data_.GetData(extension_id);
-  if (!data)
-    return false;
-
-  std::set<std::string> all_locale_candidates;
-
-  const CanonicalRelativePath manifest_file =
-      content_verifier_utils::CanonicalizeRelativePath(
-          base::FilePath(kManifestFilename));
-  const base::FilePath messages_file(kMessagesFilename);
-  const base::FilePath locales_relative_dir(kLocaleFolder);
-  for (const base::FilePath& relative_unix_path : relative_unix_paths) {
-    if (relative_unix_path.empty())
-      continue;
-
-    CanonicalRelativePath canonical_path_value =
-        content_verifier_utils::CanonicalizeRelativePath(relative_unix_path);
-
-    if (canonical_path_value == manifest_file)
-      continue;
-
-    // JavaScript and HTML files should always be verified.
-    if (HasScriptFileExt(relative_unix_path) ||
-        HasPageFileExt(relative_unix_path)) {
-      return true;
-    }
-
-    // Background pages, scripts and content scripts should always be verified
-    // regardless of their file type.
-    if (base::Contains(data->canonical_background_or_content_paths,
-                       canonical_path_value)) {
-      return true;
-    }
-
-    if (base::Contains(data->canonical_browser_image_paths,
-                       canonical_path_value)) {
-      continue;
-    }
-
-    // Skip indexed rulesets since these are generated.
-    if (base::Contains(data->canonical_indexed_ruleset_paths,
-                       canonical_path_value)) {
-      continue;
-    }
-
-    const base::FilePath canonical_path(canonical_path_value.value());
-    if (locales_relative_dir.IsParent(canonical_path)) {
-      // TODO(asargent) - see if we can cache this list longer to avoid
-      // having to fetch it more than once for a given run of the
-      // browser. Maybe it can never change at runtime? (Or if it can, maybe
-      // there is an event we can listen for to know to drop our cache).
-      if (all_locale_candidates.empty()) {
-        extension_l10n_util::GetAllLocales(&all_locale_candidates);
-        DCHECK(!all_locale_candidates.empty());
-      }
-
-      // Since message catalogs get transcoded during installation, we want
-      // to skip those paths. See if this path looks like
-      // _locales/<some locale>/messages.json - if so then skip it.
-      if (canonical_path.BaseName() == messages_file &&
-          canonical_path.DirName().DirName() == locales_relative_dir &&
-          ContainsStringIgnoreCaseASCII(
-              all_locale_candidates,
-              canonical_path.DirName().BaseName().MaybeAsASCII())) {
-        continue;
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
 ContentVerifier::HashHelper* ContentVerifier::GetOrCreateHashHelper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!shutdown_on_io_) << "Creating HashHelper after IO shutdown";
@@ -801,8 +915,17 @@ bool ContentVerifier::ShouldVerifyAnyPathsForTesting(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
     const std::set<base::FilePath>& relative_unix_paths) {
-  return ShouldVerifyAnyPaths(extension_id, extension_root,
-                              relative_unix_paths);
+  const ContentVerifierIOData::ExtensionData* data =
+      io_data_.GetData(extension_id);
+  if (!data) {
+    return false;
+  }
+  VerifiedFileTypeHelper helper(*data);
+
+  return base::ranges::any_of(
+      relative_unix_paths, [&helper](const base::FilePath& path) {
+        return helper.GetVerifiedFileType(path) != VerifiedFileType::kNone;
+      });
 }
 
 void ContentVerifier::OverrideDelegateForTesting(

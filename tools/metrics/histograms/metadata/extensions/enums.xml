@@ -3348,6 +3348,21 @@ Called by update_extension_permission.py.-->
   <int value="18" label="kErrorWriteFlatbuffer"/>
 </enum>
 
+<enum name="VerifiedFileType">
+  <summary>
+    The type of file that was verified in content verification. Keep in sync
+    with ContentVerifier::VerifiedFileType.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Background Page"/>
+  <int value="2" label="Background Script"/>
+  <int value="3" label="Service Worker Script"/>
+  <int value="4" label="Content Script"/>
+  <int value="5" label="Misc Html File"/>
+  <int value="6" label="Misc Js File"/>
+  <int value="7" label="Misc File"/>
+</enum>
+
 <enum name="WebRequest.RequestHeader">
   <int value="0" label="kNone"/>
   <int value="1" label="kOther"/>

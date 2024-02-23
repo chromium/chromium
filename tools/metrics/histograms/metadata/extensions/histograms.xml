@@ -100,6 +100,19 @@ of interesting buckets, such as "internal + external".
                kCommandLine and kUnpacked)"/>
 </variants>
 
+<variants name="VerifiedFileType">
+  <variant name=".BackgroundPage" summary="Extension background page"/>
+  <variant name=".BackgroundScript" summary="Extension background script"/>
+  <variant name=".ContentScript" summary="Content script"/>
+  <variant name=".MiscFile" summary="Any other verified file"/>
+  <variant name=".MiscHtmlFile"
+      summary="Miscellaneous html file (e.g. loaded in a tab)"/>
+  <variant name=".MiscJsFile"
+      summary="Miscellaneous js file (e.g. loaded in a tab)"/>
+  <variant name=".ServiceWorkerScript"
+      summary="Extension service worker script"/>
+</variants>
+
 <histogram name="ExtensionBlacklist.BlacklistInstalled"
     enum="ExtensionLocation" expires_after="2024-10-23">
   <owner>anunoy@chromium.org</owner>
@@ -464,6 +477,56 @@ of interesting buckets, such as "internal + external".
 
     Warning: this histogram was expired from 2022-02-01 to 2022-09-22; data may
     be missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ContentVerification.VerifyFailedOnFileMV2.{VerifiedFileType}"
+    enum="CorruptExtensionDisabledReason" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The content verification failure reason for why a {VerifiedFileType} failed.
+    Emmitted when content verification fails for a {VerifiedFileType} in a
+    manifest V2 extension.
+  </summary>
+  <token key="VerifiedFileType" variants="VerifiedFileType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Extensions.ContentVerification.VerifyFailedOnFileMV3.{VerifiedFileType}"
+    enum="CorruptExtensionDisabledReason" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The content verification failure reason for why a {VerifiedFileType} failed.
+    Emmitted when content verification fails for a {VerifiedFileType} in a
+    manifest V3 extension.
+  </summary>
+  <token key="VerifiedFileType" variants="VerifiedFileType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV2"
+    enum="VerifiedFileType" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The type of file content verification failed to verify in an MV2 extension.
+    Emmitted at the time content verification fails, once per file that failed.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV3"
+    enum="VerifiedFileType" expires_after="2024-12-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The type of file content verification failed to verify in an MV3 extension.
+    Emmitted at the time content verification fails, once per file that failed.
   </summary>
 </histogram>
 

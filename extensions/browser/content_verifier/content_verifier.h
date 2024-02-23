@@ -157,10 +157,24 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   friend class HashHelper;
   ~ContentVerifier() override;
 
+  enum class VerifiedFileType {
+    kNone,                 // Not a file to be verified.
+    kBackgroundPage,       // The background page.
+    kBackgroundScript,     // A script in a generated background page.
+    kServiceWorkerScript,  // The extension service worker script.
+    kContentScript,        // A JS script in a content script.
+    kMiscHtmlFile,  // A general HTML file (e.g. that might be loaded in a tab).
+    kMiscJsFile,    // A general JS file (e.g. that might be loaded in a tab).
+    kMiscFile,      // Any other file that should be verified.
+
+    kMaxValue = kMiscFile,
+  };
+
   void ShutdownOnIO();
 
   struct CacheKey;
   class HashHelper;
+  class VerifiedFileTypeHelper;
 
   void OnFetchComplete(const scoped_refptr<const ContentHash>& content_hash);
   ContentHash::FetchKey GetFetchKey(const ExtensionId& extension_id,
@@ -186,18 +200,13 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   void OnExtensionUnloadedOnIO(const ExtensionId& extension_id,
                                const base::Version& extension_version);
 
-  // Returns true if any of the paths in |relative_unix_paths| *should* have
-  // their contents verified. (Some files get transcoded during the install
-  // process, so we don't want to verify their contents because they are
-  // expected not to match).
-  bool ShouldVerifyAnyPaths(
-      const ExtensionId& extension_id,
-      const base::FilePath& extension_root,
-      const std::set<base::FilePath>& relative_unix_paths);
-
   // Called (typically by a verification job) to indicate that verification
-  // failed while reading some file in |extension_id|.
+  // failed while reading some file in `extension_id`. `failed_file_types` and
+  // `manifest_version` indicate additional data about which file was detected
+  // as corrupted.
   void VerifyFailed(const ExtensionId& extension_id,
+                    const std::vector<VerifiedFileType>& failed_file_types,
+                    int manifest_version,
                     ContentVerifyJob::FailureReason reason);
 
   // Returns the HashHelper instance, making sure we create it at most once.
