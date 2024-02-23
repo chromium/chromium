@@ -1724,9 +1724,12 @@ bool RenderProcessHostImpl::Init() {
     AppendRendererCommandLine(cmd_line.get());
 
 #if BUILDFLAG(IS_WIN)
+    // TODO(https://crbug.com/325992828): Pass IsJitDisabled() instead of
+    // IsPdf() for the last argument. This is a temporary hack to fix the
+    // linked bug in M122.
     std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
         std::make_unique<RendererSandboxedProcessLauncherDelegateWin>(
-            *cmd_line, IsPdf(), IsJitDisabled());
+            *cmd_line, IsPdf(), /*is_jit_disabled=*/IsPdf());
 #else
     std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
         std::make_unique<RendererSandboxedProcessLauncherDelegate>();
@@ -3339,9 +3342,15 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
     command_line->AppendSwitch(switches::kNoZygote);
   }
 
-  if (IsJitDisabled())
-    command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
-                                    "--jitless");
+  if (IsJitDisabled()) {
+    if (IsPdf()) {
+      command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                      "--jitless");
+    } else {
+      command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
+                                      "--no-maglev,--no-turbofan");
+    }
+  }
 
   if (features::IsTouchTextEditingRedesignEnabled()) {
     command_line->AppendSwitchASCII(
