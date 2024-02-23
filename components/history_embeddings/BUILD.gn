@@ -8,6 +8,8 @@ static_library("history_embeddings") {
     "history_embeddings_features.h",
     "history_embeddings_service.cc",
     "history_embeddings_service.h",
+    "sql_database.cc",
+    "sql_database.h",
     "vector_database.cc",
     "vector_database.h",
   ]

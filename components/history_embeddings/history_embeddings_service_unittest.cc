@@ -6,13 +6,24 @@
 
 #include <memory>
 
-#include "testing/gmock/include/gmock/gmock.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_embeddings {
 
-TEST(HistoryEmbeddingsTest, Constructs) {
-  std::make_unique<HistoryEmbeddingsService>();
+class HistoryEmbeddingsTest : public testing::Test {
+ public:
+  void SetUp() override { CHECK(history_dir_.CreateUniqueTempDir()); }
+
+  void TearDown() override {}
+
+ protected:
+  base::ScopedTempDir history_dir_;
+};
+
+TEST_F(HistoryEmbeddingsTest, Constructs) {
+  std::make_unique<HistoryEmbeddingsService>(history_dir_.GetPath());
 }
 
 }  // namespace history_embeddings
