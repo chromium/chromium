@@ -30,12 +30,12 @@ void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   // The driver is only created for the outermost main frame as the PIX code is
-  // only expected to be present there.
-  if (render_frame_host != render_frame_host->GetOutermostMainFrame()) {
+  // only expected to be present there. Only active frames allowed.
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame() ||
+      !render_frame_host->IsActive()) {
     return;
   }
   auto& driver = GetOrCreateForFrame(render_frame_host);
-  CHECK(render_frame_host->IsActive());
   // Initialize PIX code detection.
   driver.DidFinishLoad(validated_url);
 }
