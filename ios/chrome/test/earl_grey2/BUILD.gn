@@ -98,6 +98,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/ssl/model:eg2_tests",
     "//ios/chrome/browser/supervised_user/model:eg2_tests",
     "//ios/chrome/browser/sync/model/prefs:eg2_tests",
+    "//ios/chrome/browser/tips_notifications/eg_test:eg2_tests",
     "//ios/chrome/browser/ui/autofill:eg2_tests",
     "//ios/chrome/browser/ui/autofill/branding:eg2_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:eg2_tests",
