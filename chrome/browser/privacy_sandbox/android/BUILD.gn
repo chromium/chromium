@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicSwitchPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsBlockedFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsHeaderPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsLearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsUtils.java",
