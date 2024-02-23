@@ -296,19 +296,18 @@ MetricsStateManager::MetricsStateManager(
                             base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
 
-  // The `initial_client_id_` should only be set if UMA is enabled. The
-  // exceptions are if there's a provisional client id (due to this being a
-  // first run), or if there is an externally provided client ID (e.g., in
-  // Lacros, provided by Ash).
+  // `initial_client_id_` will only be set in the following cases:
+  // 1. UMA is enabled
+  // 2. there is a provisional client id (due to this being a first run)
+  // 3. there is an externally provided client ID (e.g. in Lacros, from Ash)
   if (!client_id_.empty()) {
     initial_client_id_ = client_id_;
   } else if (!external_client_id_.empty()) {
-    // Typically, `client_id_` should have been set to the external client ID
-    // in the call to ForceClientIdCreation() above. However, this may not
-    // always happen, for example if this is a first run and the consent state
-    // is unknown. For consistency reasons, use the external client ID for field
-    // trial assignment purposes for now. The consent state should be known
-    // shortly after this.
+    // Typically, `client_id_` should have been set to the external client ID in
+    // the call to ForceClientIdCreation() above. However, that call is gated,
+    // and may not always happen, for example if this is a first run and the
+    // consent state is not yet known (although we know it is soon going to be
+    // set to true, since an external client ID was provided).
     initial_client_id_ = external_client_id_;
   } else {
     // Note that there is possibly no provisional client ID.

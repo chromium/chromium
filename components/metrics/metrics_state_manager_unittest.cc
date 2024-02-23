@@ -193,9 +193,8 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_Low) {
   prefs_.SetInt64(prefs::kInstallDate, base::Time::Now().ToTimeT());
 
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+  // |enable_limited_entropy_mode| is irrelevant but is set for test coverage.
   state_manager->CreateEntropyProviders(
-      // |enable_limited_entropy_mode| is irrelevant but is set to true for test
-      // coverage.
       /*enable_limited_entropy_mode=*/true);
   EXPECT_EQ(state_manager->entropy_source_returned(),
             MetricsStateManager::ENTROPY_SOURCE_LOW);
@@ -205,8 +204,7 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_Low) {
 TEST_F(MetricsStateManagerTest, EntropySourceUsed_High) {
   EnableMetricsReporting();
   std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  // |enable_limited_entropy_mode| is irrelevant but is set to true for test
-  // coverage.
+  // |enable_limited_entropy_mode| is irrelevant but is set for test coverage.
   state_manager->CreateEntropyProviders(
       /*enable_limited_entropy_mode=*/true);
   EXPECT_EQ(state_manager->entropy_source_returned(),
@@ -220,8 +218,7 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_High_ExternalClientId) {
   const std::string kExternalClientId = "abc";
   std::unique_ptr<MetricsStateManager> state_manager(
       CreateStateManager(kExternalClientId));
-  // |enable_limited_entropy_mode| is irrelevant but is set to true for test
-  // coverage.
+  // |enable_limited_entropy_mode| is irrelevant but is set for test coverage.
   state_manager->CreateEntropyProviders(
       /*enable_limited_entropy_mode=*/true);
   EXPECT_EQ(state_manager->entropy_source_returned(),
@@ -235,8 +232,7 @@ TEST_F(MetricsStateManagerTest,
   const std::string kExternalClientId = "abc";
   std::unique_ptr<MetricsStateManager> state_manager(
       CreateStateManager(kExternalClientId));
-  // |enable_limited_entropy_mode| is irrelevant but is set to true for test
-  // coverage.
+  // |enable_limited_entropy_mode| is irrelevant but is set for test coverage.
   state_manager->CreateEntropyProviders(
       /*enable_limited_entropy_mode=*/true);
   EXPECT_TRUE(state_manager->client_id().empty());
