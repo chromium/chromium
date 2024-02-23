@@ -202,6 +202,55 @@ bool GenerateLegacySession(const base::FilePath& root,
   return ios::sessions::WriteSessionWindow(filename, session);
 }
 
+// Creates a legacy session named `name` following `session_info` with
+// invalid "unique identifiers" and writes it to the expected location
+// relative to `root`. It returns whether the creation was a success.
+bool GenerateLegacySessionInvalidUniqueIdentifiers(const base::FilePath& root,
+                                                   const std::string& name,
+                                                   SessionInfo session_info) {
+  const base::FilePath web_sessions = root.Append(kLegacyWebSessionsDirname);
+
+  // Create all the tabs for the session. Note that the WebStateList metadata
+  // is stored with the tab in the legacy format.
+  NSMutableArray<CRWSessionStorage*>* sessions = [[NSMutableArray alloc] init];
+  for (size_t index = 0; index < session_info.tabs.size(); ++index) {
+    // Create a fake tab with a single navigation item.
+    const bool is_pinned =
+        static_cast<int>(index) < session_info.pinned_tab_count;
+    CRWSessionStorage* session =
+        CreateSessionStorage(session_info.tabs[index], is_pinned);
+
+    // Create fake web session data for the tab. As the file contains
+    // opaque data from WebKit, the migration code does not care about
+    // the format.
+    if (session_info.tabs[index].create_web_session) {
+      const base::FilePath filename =
+          GetLegacyWebSessionsFile(web_sessions, session.uniqueIdentifier);
+      NSData* data = [[NSString stringWithFormat:@"data %zu", index]
+          dataUsingEncoding:NSUTF8StringEncoding];
+      if (!ios::sessions::WriteFile(filename, data)) {
+        return false;
+      }
+    } else {
+      session.uniqueIdentifier = web::WebStateID();  // Clear unique identifier!
+    }
+
+    [sessions addObject:session];
+  }
+
+  const NSUInteger selected_index =
+      SelectedIndexFromActiveIndex(session_info.active_index);
+
+  SessionWindowIOS* session =
+      [[SessionWindowIOS alloc] initWithSessions:sessions
+                                   selectedIndex:selected_index];
+
+  // Write the session file.
+  const base::FilePath filename =
+      GetLegacySessionDir(root, name).Append(kLegacySessionFilename);
+  return ios::sessions::WriteSessionWindow(filename, session);
+}
+
 // Creates a WebStateMetadataStorage.
 web::proto::WebStateMetadataStorage CreateWebStateMetadataStorage() {
   web::proto::WebStateMetadataStorage storage;
@@ -493,8 +542,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized) {
   EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(identifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the directories containing legacy sessions and WKWebView
   // native session data have been deleted in all paths.
@@ -522,8 +573,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized_NoSession) {
   const std::vector<base::FilePath> paths{root, otr};
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(identifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the optimized session directories have not been created.
   for (const base::FilePath& path : paths) {
@@ -551,8 +604,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized_NoSessionEmptyDirs) {
   }
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(identifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the directories containing legacy sessions and WKWebView
   // native session data have been deleted in all paths.
@@ -587,8 +642,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized_SessionAreOptimized) {
   EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(identifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the sessions have been left untouched.
   CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
@@ -620,8 +677,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized_UnrelatedFilesUnaffected) {
   }
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(identifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the directories containing legacy sessions and WKWebView
   // native session data have been deleted in all paths.
@@ -630,6 +689,51 @@ TEST_F(SessionMigrationTest, BatchToOptimized_UnrelatedFilesUnaffected) {
     const base::FilePath filename = legacy_dir.Append(kUnrelatedFilename);
     EXPECT_TRUE(ios::sessions::DirectoryExists(legacy_dir));
     EXPECT_NSEQ(ios::sessions::ReadFile(filename), data);
+
+    const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
+  }
+
+  // Check that the sessions have been correctly converted.
+  CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
+  CheckOptimizedSession(root, kSessionName2, kSessionInfo2);
+  CheckOptimizedSession(otr, kSessionName1, SessionInfo());
+}
+
+// Tests batch migrating sessions from legacy to optimized works correctly
+// when unique identifiers are invalid and assign new unique identifier.
+TEST_F(SessionMigrationTest, BatchToOptimized_InvalidUniqueIdentifiers) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+  const base::FilePath otr = root.Append(kOTRDirectory);
+  const std::vector<base::FilePath> paths{root, otr};
+
+  // Generate a few legacy sessions for the main and OTR BrowserStates.
+  EXPECT_TRUE(GenerateLegacySessionInvalidUniqueIdentifiers(root, kSessionName1,
+                                                            kSessionInfo1));
+  EXPECT_TRUE(GenerateLegacySession(root, kSessionName2, kSessionInfo2));
+  EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
+
+  // Check that the migration is a success and that the tabs from both
+  // sessions without identifiers have been assigned new identifiers.
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  const int32_t expected_idenfifier =
+      identifier +
+      static_cast<int>(std::count_if(
+          kSessionInfo1.tabs.begin(), kSessionInfo1.tabs.end(),
+          [](const TabInfo& tab) { return !tab.create_web_session; }));
+
+  ASSERT_NE(identifier, expected_idenfifier);
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Success(expected_idenfifier),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
+
+  // Check that the directories containing legacy sessions and WKWebView
+  // native session data have been deleted in all paths.
+  for (const base::FilePath& path : paths) {
+    const base::FilePath legacy_dir = path.Append(kLegacySessionsDirname);
+    EXPECT_FALSE(ios::sessions::DirectoryExists(legacy_dir));
 
     const base::FilePath native_dir = path.Append(kLegacyWebSessionsDirname);
     EXPECT_FALSE(ios::sessions::DirectoryExists(native_dir));
@@ -661,8 +765,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized_FailureInvalidSessions) {
   EXPECT_TRUE(ios::sessions::WriteFile(session_path, data));
 
   // Check that the migration is a failure.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kFailure);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Failure(),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the legacy sessions have been left untouched, including the
   // invalid session.
@@ -699,8 +805,10 @@ TEST_F(SessionMigrationTest, BatchToOptimized_FailureMigration) {
   EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
 
   // Check that the migration is a failure.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToOptimized(paths),
-            ios::sessions::MigrationStatus::kFailure);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(
+      ios::sessions::MigrationResult::Failure(),
+      ios::sessions::MigrateSessionsInPathsToOptimized(paths, identifier));
 
   // Check that the legacy sessions have been left untouched.
   CheckLegacySession(root, kSessionName1, kSessionInfo1);
@@ -730,8 +838,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy) {
   EXPECT_TRUE(GenerateOptimizedSession(otr, kSessionName1, SessionInfo()));
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the directories containing optimized sessions have been
   // deleted in all paths.
@@ -766,8 +875,9 @@ TEST_F(SessionMigrationTest, BatchToLegacyPreM122) {
       GenerateOptimizedSessionPreM122(otr, kSessionName1, SessionInfo()));
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the directories containing optimized sessions have been
   // deleted in all paths.
@@ -793,8 +903,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy_NoSession) {
   const std::vector<base::FilePath> paths{root, otr};
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the legacy session and WKWebView native session data
   // directories have not been created.
@@ -824,8 +935,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy_NoSessionEmptyDirs) {
   }
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the directories containing optimized sessions have been
   // deleted in all paths.
@@ -861,8 +973,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy_SessionAreLegacy) {
   EXPECT_TRUE(GenerateLegacySession(otr, kSessionName1, SessionInfo()));
 
   // Check that the migration is a success.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kSuccess);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Success(identifier),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the sessions have been left untouched.
   CheckLegacySession(root, kSessionName1, kSessionInfo1);
@@ -891,8 +1004,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureInvalidSessions) {
   EXPECT_TRUE(ios::sessions::WriteFile(session_path, data));
 
   // Check that the migration is a failure.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kFailure);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Failure(),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the optimized sessions have been left untouched, including the
   // invalid session.
@@ -932,8 +1046,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureMigration) {
   EXPECT_TRUE(ios::sessions::WriteFile(dest_dir, data));
 
   // Check that the migration is a failure.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kFailure);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Failure(),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the optimized sessions have been left untouched.
   CheckOptimizedSession(root, kSessionName1, kSessionInfo1);
@@ -987,8 +1102,9 @@ TEST_F(SessionMigrationTest, BatchToLegacy_FailureUnrelatedFilesUnaffected) {
   EXPECT_TRUE(ios::sessions::WriteFile(session_path, data));
 
   // Check that the migration is a failure.
-  ASSERT_EQ(ios::sessions::MigrateSessionsInPathsToLegacy(paths),
-            ios::sessions::MigrationStatus::kFailure);
+  const int32_t identifier = web::WebStateID::NewUnique().identifier();
+  ASSERT_EQ(ios::sessions::MigrationResult::Failure(),
+            ios::sessions::MigrateSessionsInPathsToLegacy(paths, identifier));
 
   // Check that the optimized sessions have been left untouched, including
   // the invalid session.

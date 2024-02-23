@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -82,14 +83,14 @@ bool IsSessionStorageInRequestedFormat(
 // status of the migration operation.
 SessionStorageFormat SessionStorageFormatFromRequestedFormat(
     RequestedStorageFormat requested_format,
-    ios::sessions::MigrationStatus status) {
+    ios::sessions::MigrationResult::Status status) {
   switch (status) {
-    case ios::sessions::MigrationStatus::kSuccess:
+    case ios::sessions::MigrationResult::Status::kSuccess:
       return requested_format == RequestedStorageFormat::kLegacy
                  ? SessionStorageFormat::kLegacy
                  : SessionStorageFormat::kOptimized;
 
-    case ios::sessions::MigrationStatus::kFailure:
+    case ios::sessions::MigrationResult::Status::kFailure:
       return requested_format != RequestedStorageFormat::kLegacy
                  ? SessionStorageFormat::kLegacy
                  : SessionStorageFormat::kOptimized;
@@ -161,7 +162,7 @@ SessionStorageFormat DetectStorageFormat(
   }
 
   return SessionStorageFormatFromRequestedFormat(
-      requested_format, ios::sessions::MigrationStatus::kSuccess);
+      requested_format, ios::sessions::MigrationResult::Status::kSuccess);
 }
 
 // Invoked when the session storage format has been detected.
@@ -188,20 +189,32 @@ void OnSessionMigrationDone(
     base::WeakPtr<ChromeBrowserState> weak_browser_state,
     RequestedStorageFormat requested_format,
     base::TimeTicks migration_start,
+    int32_t next_session_identifier,
     base::OnceClosure closure,
-    ios::sessions::MigrationStatus status) {
+    ios::sessions::MigrationResult result) {
   ChromeBrowserState* browser_state = weak_browser_state.get();
   if (!browser_state) {
     return;
   }
 
   const SessionStorageMigrationStatus migration_status =
-      status == ios::sessions::MigrationStatus::kSuccess
+      result.status == ios::sessions::MigrationResult::Status::kSuccess
           ? SessionStorageMigrationStatus::kSuccess
           : SessionStorageMigrationStatus::kFailure;
 
+  if (result.status == ios::sessions::MigrationResult::Status::kSuccess) {
+    DCHECK_GE(result.next_session_identifier, next_session_identifier);
+    if (result.next_session_identifier != next_session_identifier) {
+      const int count =
+          result.next_session_identifier - next_session_identifier;
+      for (int i = 0; i < count; ++i) {
+        std::ignore = web::WebStateID::NewUnique();
+      }
+    }
+  }
+
   const SessionStorageFormat storage_format =
-      SessionStorageFormatFromRequestedFormat(requested_format, status);
+      SessionStorageFormatFromRequestedFormat(requested_format, result.status);
 
   RecordSessionStorageFormatAndMigrationStatus(
       browser_state->GetPrefs(), storage_format, migration_status);
@@ -320,15 +333,16 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
       browser_state->GetOffTheRecordStatePath(),
   };
 
+  const web::WebStateID identifier = web::WebStateID::NewUnique();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock{}},
       base::BindOnce(requested_format == StorageFormat::kLegacy
                          ? &ios::sessions::MigrateSessionsInPathsToLegacy
                          : &ios::sessions::MigrateSessionsInPathsToOptimized,
-                     std::move(paths)),
+                     std::move(paths), identifier.identifier()),
       base::BindOnce(&OnSessionMigrationDone, browser_state->AsWeakPtr(),
                      requested_format, base::TimeTicks::Now(),
-                     std::move(closure)));
+                     identifier.identifier(), std::move(closure)));
 }
 
 SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;

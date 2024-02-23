@@ -81,6 +81,7 @@ source_set("session_service") {
     ":session_internal_util",
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
     "//ios/web/public/session",
   ]
 }

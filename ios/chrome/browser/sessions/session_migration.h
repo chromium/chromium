@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SESSIONS_SESSION_MIGRATION_H_
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_MIGRATION_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -14,10 +15,30 @@ class FilePath;
 
 namespace ios::sessions {
 
-// Status of the storage migration.
-enum class MigrationStatus {
-  kSuccess,
-  kFailure,
+// Result of the storage migration.
+struct MigrationResult {
+  // Represents the possible migration values.
+  enum class Status {
+    kSuccess,
+    kFailure,
+  };
+
+  Status status;
+  int32_t next_session_identifier;
+
+  static MigrationResult Success(int32_t next_session_identifier) {
+    return {
+        .status = Status::kSuccess,
+        .next_session_identifier = next_session_identifier,
+    };
+  }
+
+  static MigrationResult Failure() {
+    return {
+        .status = Status::kFailure,
+        .next_session_identifier = 0,
+    };
+  }
 };
 
 // Migrates all sessions found in `paths` from legacy to optimized format
@@ -26,8 +47,9 @@ enum class MigrationStatus {
 // If the migration was a success, all storage is in optimized format and
 // all legacy data has been deleted. Otherwise, the original data is left
 // untouched and the partially migrated data deleted.
-MigrationStatus MigrateSessionsInPathsToOptimized(
-    const std::vector<base::FilePath>& paths);
+MigrationResult MigrateSessionsInPathsToOptimized(
+    const std::vector<base::FilePath>& paths,
+    int32_t next_session_identifier);
 
 // Migrates all sessions found in `paths` from optimized to legacy format
 // and returns the status of the migration.
@@ -35,8 +57,16 @@ MigrationStatus MigrateSessionsInPathsToOptimized(
 // If the migration was a success, all storage is in optimized format and
 // all optimized data has been deleted. Otherwise, the original data is
 // left untouched and the partially migrated data deleted.
-MigrationStatus MigrateSessionsInPathsToLegacy(
-    const std::vector<base::FilePath>& paths);
+MigrationResult MigrateSessionsInPathsToLegacy(
+    const std::vector<base::FilePath>& paths,
+    int32_t next_session_identifier);
+
+// Comparison operators for testing.
+bool operator==(const MigrationResult& lhs, const MigrationResult& rhs);
+bool operator!=(const MigrationResult& lhs, const MigrationResult& rhs);
+
+// Insertion operator for testing.
+std::ostream& operator<<(std::ostream& stream, const MigrationResult& result);
 
 }  // namespace ios::sessions
 
