@@ -356,18 +356,19 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // Performs layout on the OOFs stored in |pending_descendants| and
   // |fragmented_descendants|, adding them as children in the fragmentainer
   // found at the provided |index|. If a fragmentainer does not already exist at
-  // the given |index|, one will be created (unless we are in a nested
-  // fragmentation context). The OOFs stored in |fragmented_descendants| are
-  // those that are continuing layout from a previous fragmentainer.
-  // |fragmented_descendants| is also an output variable in that any OOF that
-  // has not finished layout in the current pass will be added back to
-  // |fragmented_descendants| to continue layout in the next fragmentainer.
-  // |has_actual_break_inside| will be set to true if any of the OOFs laid out
-  // broke (this does not include repeated fixed-positioned elements).
+  // the given |index|, one will be created. The OOFs stored in
+  // |fragmented_descendants| are those that are continuing layout from a
+  // previous fragmentainer.  |fragmented_descendants| is also an output
+  // variable in that any OOF that has not finished layout in the current pass
+  // will be added back to |fragmented_descendants| to continue layout in the
+  // next fragmentainer.  |has_actual_break_inside| will be set to true if any
+  // of the OOFs laid out broke (this does not include repeated fixed-positioned
+  // elements).
   void LayoutOOFsInFragmentainer(
       HeapVector<NodeToLayout>& pending_descendants,
       wtf_size_t index,
       LogicalOffset fragmentainer_progression,
+      bool has_oofs_in_later_fragmentainer,
       LayoutUnit* monolithic_overflow,
       bool* has_actual_break_inside,
       HeapVector<NodeToLayout>* fragmented_descendants);

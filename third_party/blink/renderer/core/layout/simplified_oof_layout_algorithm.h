@@ -35,6 +35,13 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
     return MinMaxSizesResult();
   }
 
+  void SetHasSubsequentChildren() {
+    // There will be more fragmentainers after this one. Make sure that an
+    // outgoing break token is created, regardless of whether any OOFs in this
+    // fragmentainer break or not.
+    container_builder_.SetHasSubsequentChildren();
+  }
+
   void AppendOutOfFlowResult(const LayoutResult*);
 };
 

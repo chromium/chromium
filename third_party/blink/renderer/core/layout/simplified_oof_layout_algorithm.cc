@@ -54,16 +54,6 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
 const LayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
   FinishFragmentationForFragmentainer(GetConstraintSpace(),
                                       &container_builder_);
-
-  if (container_builder_.Children().empty()) {
-    // No OOFs were added to this fragmentainer, but there will be some in later
-    // fragmentainers (or we wouldn't be here at all). In order to create a sane
-    // and consistent break token structure (we want an outgoing break token for
-    // this fragmentainer, since we're going to add more), report this to the
-    // builder.
-    container_builder_.SetHasSubsequentChildren();
-  }
-
   return container_builder_.ToBoxFragment();
 }
 

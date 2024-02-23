@@ -1464,11 +1464,13 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
             repeated_fixedpos_descendants.clear();
           }
 
+          bool has_oofs_in_later_fragmentainer =
+              index + 1 < descendants_to_layout.size();
           last_fragmentainer_has_break_inside = false;
           LayoutOOFsInFragmentainer(
               pending_descendants, index, fragmentainer_progression,
-              &monolithic_overflow, &last_fragmentainer_has_break_inside,
-              &fragmented_descendants);
+              has_oofs_in_later_fragmentainer, &monolithic_overflow,
+              &last_fragmentainer_has_break_inside, &fragmented_descendants);
 
           // Retrieve the updated or newly added fragmentainer, and add its
           // block contribution to the consumed block size. Skip this if we are
@@ -2318,6 +2320,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     HeapVector<NodeToLayout>& pending_descendants,
     wtf_size_t index,
     LogicalOffset fragmentainer_progression,
+    bool has_oofs_in_later_fragmentainer,
     LayoutUnit* monolithic_overflow,
     bool* has_actual_break_inside,
     HeapVector<NodeToLayout>* fragmented_descendants) {
@@ -2381,6 +2384,11 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   // This algorithm will be used to add new OOFs. The existing fragment passed
   // is the last fragmentainer created so far.
   SimplifiedOofLayoutAlgorithm algorithm(params, *fragment);
+
+  if (has_oofs_in_later_fragmentainer) {
+    algorithm.SetHasSubsequentChildren();
+  }
+
   // Layout any OOF elements that are a continuation of layout first.
   for (auto& descendant : descendants_continued) {
     AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,

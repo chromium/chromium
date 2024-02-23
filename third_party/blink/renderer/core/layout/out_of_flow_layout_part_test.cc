@@ -1835,5 +1835,39 @@ TEST_F(OutOfFlowLayoutPartTest, EmptyFragmentainersBeforeOOF) {
   EXPECT_FALSE(break_token);
 }
 
+TEST_F(OutOfFlowLayoutPartTest, MultipleUnfragmentedOOFs) {
+  // There's an OOF in every column, but none of them fragments. All columns but
+  // the last should have break tokens nevertheless.
+  SetBodyInnerHTML(
+      R"HTML(
+      <div id="multicol" style="columns:3; column-fill:auto; height:100px;">
+        <div style="position:relative;">
+          <div style="position:absolute; top:0; width:50px; height:10px;"></div>
+          <div style="position:absolute; top:100px; width:50px; height:10px;"></div>
+          <div style="position:absolute; top:200px; width:50px; height:10px;"></div>
+        </div>
+      </div>
+      )HTML");
+
+  const LayoutBox* multicol = GetLayoutBoxByElementId("multicol");
+  ASSERT_TRUE(multicol);
+  const auto columns = multicol->GetPhysicalFragment(0)->Children();
+  ASSERT_EQ(columns.size(), 3u);
+
+  const auto* fragmentainer = To<PhysicalBoxFragment>(columns[0].get());
+  const BlockBreakToken* break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[1].get());
+  break_token = fragmentainer->GetBreakToken();
+  ASSERT_TRUE(break_token);
+  EXPECT_TRUE(break_token->ChildBreakTokens().empty());
+
+  fragmentainer = To<PhysicalBoxFragment>(columns[2].get());
+  break_token = fragmentainer->GetBreakToken();
+  EXPECT_FALSE(break_token);
+}
+
 }  // namespace
 }  // namespace blink
