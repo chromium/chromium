@@ -27,6 +27,11 @@ import {getTemplate} from './printer_setup_info_cros.html.js';
 
 const PrintPreviewPrinterSetupInfoCrosElementBase = I18nMixin(PolymerElement);
 
+// Minimum values used to hide the illustration when the preview area is reduced
+// to a small size.
+const MIN_SHOW_ILLUSTRATION_HEIGHT = 400;
+const MIN_SHOW_ILLUSTRATION_WIDTH = 250;
+
 export enum PrinterSetupInfoInitiator {
   PREVIEW_AREA,
   DESTINATION_DIALOG_CROS,
@@ -80,6 +85,8 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
       initiator: Number,
 
       showManagePrintersButton: Boolean,
+
+      showIllustration: Boolean,
     };
   }
 
@@ -88,6 +95,8 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
   private nativeLayer: NativeLayer;
   private metricsContext: MetricsContext;
   private showManagePrintersButton: boolean = false;
+  private showIllustration: boolean = true;
+  private resizeObserver: ResizeObserver;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -98,6 +107,20 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
         (show: boolean) => {
           this.showManagePrintersButton = show;
         });
+
+    // If this is Print Preview, observe the window resizing to know when to
+    // hide the illustration.
+    if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
+      this.startResizeObserver();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
+      this.resizeObserver.disconnect();
+    }
   }
 
   private getMessageDetail(): string {
@@ -132,8 +155,47 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
     }
   }
 
-  setInitiatorForTesting(initiator: PrinterSetupInfoInitiator): void {
+  private setShowIllustration(): void {
+    assert(this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA);
+
+    // Only show the illustration if the parent element's width and height are
+    // wide enough.
+    const parentDiv = this.getPreviewAreaParentDiv();
+    this.showIllustration =
+        parentDiv.offsetHeight >= MIN_SHOW_ILLUSTRATION_HEIGHT &&
+        parentDiv.offsetWidth >= MIN_SHOW_ILLUSTRATION_WIDTH;
+  }
+
+  private getPreviewAreaParentDiv(): HTMLElement {
+    assert(this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA);
+
+    const parentShadowRoot = this.shadowRoot!.host.getRootNode() as ShadowRoot;
+    assert(parentShadowRoot);
+    const previewContainer =
+        parentShadowRoot!.querySelector<HTMLElement>('.preview-area-message');
+    assert(previewContainer);
+    return previewContainer;
+  }
+
+  private startResizeObserver(): void {
+    // Set timeout to 0 to delay the callback action to the next event cycle.
+    this.resizeObserver = new ResizeObserver(
+        () => setTimeout(() => this.setShowIllustration(), 0));
+    this.resizeObserver.observe(this.getPreviewAreaParentDiv());
+  }
+
+  setInitiatorForTesting(
+      initiator: PrinterSetupInfoInitiator,
+      startResizeObserver: boolean): void {
     this.initiator = initiator;
+    if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
+      if (startResizeObserver) {
+        this.startResizeObserver();
+      } else {
+        // Most tests don't need an resize observer with an active callback.
+        this.resizeObserver = new ResizeObserver(() => {});
+      }
+    }
   }
 }
 

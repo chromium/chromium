@@ -664,6 +664,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
   RunTestCase("DoNotShowManagePrinters");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewPrinterSetupInfoCrosTest,
+                       HideIllustrationForSmallWindow) {
+  RunTestCase("HideIllustrationForSmallWindow");
+}
+
 class PrintPreviewPrintServerStoreTest : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
