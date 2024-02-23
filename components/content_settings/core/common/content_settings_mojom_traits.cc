@@ -83,44 +83,6 @@ bool EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::
 }
 
 // static
-content_settings::mojom::SessionModel EnumTraits<
-    content_settings::mojom::SessionModel,
-    content_settings::SessionModel>::ToMojom(content_settings::SessionModel
-                                                 model) {
-  switch (model) {
-    case content_settings::SessionModel::Durable:
-      return content_settings::mojom::SessionModel::DURABLE;
-    case content_settings::SessionModel::UserSession:
-      return content_settings::mojom::SessionModel::USER_SESSION;
-    case content_settings::SessionModel::NonRestorableUserSession:
-      return content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
-    case content_settings::SessionModel::OneTime:
-      return content_settings::mojom::SessionModel::ONE_TIME;
-  }
-}
-
-// static
-bool EnumTraits<content_settings::mojom::SessionModel,
-                content_settings::SessionModel>::
-    FromMojom(content_settings::mojom::SessionModel model,
-              content_settings::SessionModel* out) {
-  switch (model) {
-    case content_settings::mojom::SessionModel::DURABLE:
-      *out = content_settings::SessionModel::Durable;
-      return true;
-    case content_settings::mojom::SessionModel::USER_SESSION:
-      *out = content_settings::SessionModel::UserSession;
-      return true;
-    case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      *out = content_settings::SessionModel::NonRestorableUserSession;
-      return true;
-    case content_settings::mojom::SessionModel::ONE_TIME:
-      *out = content_settings::SessionModel::OneTime;
-      return true;
-  }
-}
-
-// static
 bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
                   content_settings::RuleMetaData>::
     Read(content_settings::mojom::RuleMetaDataDataView data,

@@ -143,10 +143,6 @@ mojom("mojo_bindings") {
           cpp = "::RendererContentSettingRules"
         },
         {
-          mojom = "content_settings.mojom.SessionModel"
-          cpp = "::content_settings::SessionModel"
-        },
-        {
           mojom = "content_settings.mojom.RuleMetaData"
           cpp = "::content_settings::RuleMetaData"
         },

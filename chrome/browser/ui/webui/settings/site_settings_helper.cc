@@ -1107,7 +1107,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
 
   if (info.metadata.session_model() ==
-      content_settings::SessionModel::OneTime) {
+      content_settings::mojom::SessionModel::ONE_TIME) {
     DCHECK(
         permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type));
     DCHECK_EQ(result.status, PermissionStatus::GRANTED);

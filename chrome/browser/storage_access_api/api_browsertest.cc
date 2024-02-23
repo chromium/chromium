@@ -1198,7 +1198,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPromptsBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   content_settings::ContentSettingConstraints constraints(creation_time);
   constraints.set_lifetime(lifetime);
-  constraints.set_session_model(content_settings::SessionModel::UserSession);
+  constraints.set_session_model(
+      content_settings::mojom::SessionModel::USER_SESSION);
   settings_map->SetContentSettingDefaultScope(
       GetURL(kHostB), GetURL(kHostA), ContentSettingsType::STORAGE_ACCESS,
       CONTENT_SETTING_ALLOW, constraints);
@@ -1956,7 +1957,7 @@ IN_PROC_BROWSER_TEST_P(
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Days(30));
   constraints.set_session_model(
-      content_settings::SessionModel::NonRestorableUserSession);
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
       ->SetContentSettingDefaultScope(GetURL(kHostD), GetURL(kHostA),
                                       ContentSettingsType::STORAGE_ACCESS,

@@ -190,7 +190,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // This may be called on any thread.
   ContentSettingsForOneType GetSettingsForOneType(
       ContentSettingsType content_type,
-      std::optional<content_settings::SessionModel> session_model =
+      std::optional<content_settings::mojom::SessionModel> session_model =
           std::nullopt) const;
 
   // Returns the correct patterns for the scoping of the particular content
@@ -436,7 +436,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       ContentSettingsForOneType* settings,
       bool incognito,
-      std::optional<content_settings::SessionModel> session_model) const;
+      std::optional<content_settings::mojom::SessionModel> session_model) const;
 
   // Call UsedContentSettingsProviders() whenever you access
   // content_settings_providers_ (apart from initialization and

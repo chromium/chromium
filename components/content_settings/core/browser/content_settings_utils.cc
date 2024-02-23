@@ -167,11 +167,11 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
   return true;
 }
 
-// Currently only SessionModel::Durable constraints need to be persistent
+// Currently only mojom::SessionModel::DURABLE constraints need to be persistent
 // as they are only bounded by time and can persist through multiple browser
 // sessions.
 bool IsConstraintPersistent(const ContentSettingConstraints& constraints) {
-  return constraints.session_model() == SessionModel::Durable;
+  return constraints.session_model() == mojom::SessionModel::DURABLE;
 }
 
 bool CanTrackLastVisit(ContentSettingsType type) {
@@ -255,7 +255,8 @@ bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return metadata.session_model() == SessionModel::NonRestorableUserSession;
+      return metadata.session_model() ==
+             mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
     default:
       return false;
   }

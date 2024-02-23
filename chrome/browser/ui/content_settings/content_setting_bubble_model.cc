@@ -98,11 +98,11 @@
 using base::UserMetricsAction;
 using content::WebContents;
 using content_settings::PageSpecificContentSettings;
-using content_settings::SessionModel;
 using content_settings::SETTING_SOURCE_NONE;
 using content_settings::SETTING_SOURCE_USER;
 using content_settings::SettingInfo;
 using content_settings::SettingSource;
+using content_settings::mojom::SessionModel;
 using device::LocationSystemPermissionStatus;
 
 namespace {
@@ -1382,7 +1382,7 @@ void ContentSettingGeolocationBubbleModel::SetCustomLink() {
   const GURL url =
       GetPage().GetMainDocument().GetLastCommittedOrigin().GetURL();
   map->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
-  if (info.metadata.session_model() == SessionModel::OneTime) {
+  if (info.metadata.session_model() == SessionModel::ONE_TIME) {
     set_custom_link(l10n_util::GetStringUTF16(IDS_GEOLOCATION_WILL_ASK_AGAIN));
   }
 }

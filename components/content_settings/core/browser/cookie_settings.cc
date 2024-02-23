@@ -205,7 +205,7 @@ void CookieSettings::SetCookieSettingForUserBypass(
         content_settings::features::kUserBypassUIExceptionExpiration.Get());
   }
 
-  constraints.set_session_model(SessionModel::Durable);
+  constraints.set_session_model(mojom::SessionModel::DURABLE);
 
   host_content_settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),

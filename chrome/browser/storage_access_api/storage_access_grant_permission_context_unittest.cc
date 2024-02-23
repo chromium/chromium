@@ -391,7 +391,7 @@ TEST_P(StorageAccessGrantPermissionContextTest, FpsGrantReused) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   content_settings::ContentSettingConstraints constraint;
   constraint.set_session_model(
-      content_settings::SessionModel::NonRestorableUserSession);
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
   map->SetContentSettingDefaultScope(GetRequesterURL(), GetTopLevelURL(),
                                      ContentSettingsType::STORAGE_ACCESS,
                                      CONTENT_SETTING_ALLOW, constraint);
@@ -712,11 +712,11 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
       HostContentSettingsMapFactory::GetForProfile(profile());
   DCHECK(settings_map);
 
-  // Check no `SessionModel::NonRestorableUserSession` setting exists yet.
+  // Check no `SessionModel::NON_RESTORABLE_USER_SESSION` setting exists yet.
   ContentSettingsForOneType non_restorable_grants =
       settings_map->GetSettingsForOneType(
           ContentSettingsType::STORAGE_ACCESS,
-          content_settings::SessionModel::NonRestorableUserSession);
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
   EXPECT_EQ(0u, non_restorable_grants.size());
 
   EXPECT_EQ(DecidePermissionSync(/*user_gesture=*/true), CONTENT_SETTING_ALLOW);
@@ -727,10 +727,11 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
                                         /*sample=*/true, 1);
 
   DCHECK(settings_map);
-  // Check the `SessionModel::NonRestorableUserSession` settings granted by FPS.
+  // Check the `SessionModel::NON_RESTORABLE_USER_SESSION` settings granted by
+  // FPS.
   non_restorable_grants = settings_map->GetSettingsForOneType(
       ContentSettingsType::STORAGE_ACCESS,
-      content_settings::SessionModel::NonRestorableUserSession);
+      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
   EXPECT_EQ(1u, non_restorable_grants.size());
 
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(

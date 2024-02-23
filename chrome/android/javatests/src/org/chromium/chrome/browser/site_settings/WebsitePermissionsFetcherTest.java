@@ -1044,7 +1044,8 @@ public class WebsitePermissionsFetcherTest {
                                 ContentSettingsType.SENSORS,
                                 ContentSettingsType.VR));
 
-        @SessionModel int sessionModel = isOneTime ? SessionModel.ONE_TIME : SessionModel.DURABLE;
+        @SessionModel.EnumType
+        int sessionModel = isOneTime ? SessionModel.ONE_TIME : SessionModel.DURABLE;
         for (@ContentSettingsType.EnumType int type : permissionInfoTypes) {
             PermissionInfo fakePermissionInfo =
                     new PermissionInfo(type, ORIGIN, SITE_WILDCARD, isEmbargoed, sessionModel);

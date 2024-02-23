@@ -259,7 +259,8 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
       base::Time::Now() - base::Minutes(5) - lifetime;
   content_settings::ContentSettingConstraints constraints(creation_time);
   constraints.set_lifetime(lifetime);
-  constraints.set_session_model(content_settings::SessionModel::UserSession);
+  constraints.set_session_model(
+      content_settings::mojom::SessionModel::USER_SESSION);
 
   // Manually create a pre-expired grant and ensure it doesn't grant access.
   // This needs to be done manually because normally this expired value would be

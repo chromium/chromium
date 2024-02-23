@@ -88,16 +88,6 @@ struct EnumTraits<content_settings::mojom::ContentSetting, ContentSetting> {
 };
 
 template <>
-struct EnumTraits<content_settings::mojom::SessionModel,
-                  content_settings::SessionModel> {
-  static content_settings::mojom::SessionModel ToMojom(
-      content_settings::SessionModel model);
-
-  static bool FromMojom(content_settings::mojom::SessionModel model,
-                        content_settings::SessionModel* out);
-};
-
-template <>
 struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
                     content_settings::RuleMetaData> {
   static const base::Time& last_modified(
@@ -118,7 +108,7 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.expiration_;
   }
 
-  static const content_settings::SessionModel& session_model(
+  static const content_settings::mojom::SessionModel& session_model(
       const content_settings::RuleMetaData& r) {
     return r.session_model_;
   }

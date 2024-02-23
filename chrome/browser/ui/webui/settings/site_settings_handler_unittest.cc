@@ -534,7 +534,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     constraints.set_lifetime(lifetime);
     if (is_auto_granted) {
       constraints.set_session_model(
-          content_settings::SessionModel::NonRestorableUserSession);
+          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
     }
 
     map->SetContentSettingCustomScope(
@@ -2941,7 +2941,7 @@ TEST_P(SiteSettingsHandlerTest, TemporaryCookieExceptions) {
 
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Days(kExpirationDurationInDays));
-  constraints.set_session_model(content_settings::SessionModel::Durable);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());

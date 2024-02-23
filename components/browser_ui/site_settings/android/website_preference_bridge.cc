@@ -446,7 +446,8 @@ static void JNI_WebsitePreferenceBridge_SetEphemeralGrantForTesting(  // IN-TEST
     const JavaParamRef<jobject>& jsecondary_url) {
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_session_model(content_settings::SessionModel::OneTime);
+  constraints.set_session_model(
+      content_settings::mojom::SessionModel::ONE_TIME);
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(
           *url::GURLAndroid::ToNativeGURL(env, jprimary_url),

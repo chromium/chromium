@@ -53,7 +53,8 @@ class OneTimePermissionProviderTest : public testing::Test {
  protected:
   content_settings::ContentSettingConstraints one_time_constraints() {
     content_settings::ContentSettingConstraints constraints;
-    constraints.set_session_model(content_settings::SessionModel::OneTime);
+    constraints.set_session_model(
+        content_settings::mojom::SessionModel::ONE_TIME);
     return constraints;
   }
 

@@ -119,7 +119,8 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     return false;
   }
 
-  if (constraints.session_model() != content_settings::SessionModel::OneTime) {
+  if (constraints.session_model() !=
+      content_settings::mojom::SessionModel::ONE_TIME) {
     if (content_setting == CONTENT_SETTING_ALLOW) {
       // Transition from Allow once to Allow. Delete setting and let the pref
       // provider handle it.
@@ -136,7 +137,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
 
   base::Time now = clock_->Now();
   content_settings::RuleMetaData metadata;
-  metadata.set_session_model(content_settings::SessionModel::OneTime);
+  metadata.set_session_model(content_settings::mojom::SessionModel::ONE_TIME);
   metadata.set_last_modified(now);
   if (base::FeatureList::IsEnabled(
           content_settings::features::kActiveContentSettingExpiry)) {

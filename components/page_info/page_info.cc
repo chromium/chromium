@@ -641,7 +641,8 @@ void PageInfo::OnSitePermissionChanged(
   using Constraints = content_settings::ContentSettingConstraints;
   Constraints constraints;
   if (is_one_time) {
-    constraints.set_session_model(content_settings::SessionModel::OneTime);
+    constraints.set_session_model(
+        content_settings::mojom::SessionModel::ONE_TIME);
     if (base::FeatureList::IsEnabled(
             content_settings::features::kActiveContentSettingExpiry)) {
       constraints.set_lifetime(permissions::kOneTimePermissionMaximumLifetime);
@@ -1154,8 +1155,9 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
   permission_info.setting = setting;
 
   permission_info.source = info.source;
-  permission_info.is_one_time = (info.metadata.session_model() ==
-                                 content_settings::SessionModel::OneTime);
+  permission_info.is_one_time =
+      (info.metadata.session_model() ==
+       content_settings::mojom::SessionModel::ONE_TIME);
 
   auto* page_specific_content_settings = GetPageSpecificContentSettings();
   if (page_specific_content_settings && setting == CONTENT_SETTING_ALLOW) {

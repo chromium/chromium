@@ -4,9 +4,9 @@
 
 module content_settings.mojom;
 
+import "components/content_settings/core/common/content_settings_enums.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "components/content_settings/core/common/content_settings_enums.mojom";
 
 // This mirrors the C++ type in content_settings_pattern.h.
 struct PatternParts {
@@ -56,15 +56,7 @@ enum ContentSetting {
   BLOCK,
   ASK,
   SESSION_ONLY,
-  DETECT_IMPORTANT_CONTENT
-};
-
-// This mirrors the C++ type in content_settings_constraints.h.
-enum SessionModel {
-  DURABLE = 0,
-  USER_SESSION,
-  NON_RESTORABLE_USER_SESSION,
-  ONE_TIME,
+  DETECT_IMPORTANT_CONTENT,
 };
 
 // This mirrors the C++ type in content_settings_metadata.h.

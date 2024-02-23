@@ -16,4 +16,26 @@ enum TpcdMetadataRuleSource {
   SOURCE_CRITICAL_SECTOR,
   SOURCE_CUJ,
   SOURCE_GOV_EDU_TLD,
- };
+};
+
+// Options to restrict the scope of a content setting. These specify the
+// lifetime model of a given setting and how it may become invalidated or
+// expired.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SessionModel
+enum SessionModel {
+  // Settings persist forever and are bounded only by an expiry date, if set.
+  DURABLE = 0,
+  // Settings will persist no longer than the user session regardless of expiry
+  // date, if set.
+  USER_SESSION,
+  // Same as UserSession, except this session-based setting will be reset when
+  // the user session ends regardless the restore setting. These settings will
+  // not be restored e.g. when the user selected "continue where you left off"
+  // or after a crash or update related restart.
+  NON_RESTORABLE_USER_SESSION,
+  // Settings will persist for the current "tab session", meaning until the last
+  // tab from the origin is closed.
+  ONE_TIME,
+};

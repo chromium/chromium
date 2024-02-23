@@ -167,7 +167,7 @@ TEST_P(OriginValueMapTest, SetValueReturnsChanges) {
 
   // A change in metadata returns true.
   content_settings::RuleMetaData metadata;
-  metadata.set_session_model(content_settings::SessionModel::OneTime);
+  metadata.set_session_model(content_settings::mojom::SessionModel::ONE_TIME);
   EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsType::COOKIES, base::Value(2),
@@ -334,12 +334,13 @@ TEST_P(OriginValueMapTest, UpdateLastModified) {
   base::Time t1 = base::Time::Now();
   content_settings::RuleMetaData metadata;
   metadata.set_last_modified(t1);
-  metadata.set_session_model(content_settings::SessionModel::Durable);
+  metadata.set_session_model(content_settings::mojom::SessionModel::DURABLE);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, base::Value(1), metadata);
   metadata.SetExpirationAndLifetime(base::Time::Now() + base::Seconds(100),
                                     base::Seconds(100));
-  metadata.set_session_model(content_settings::SessionModel::UserSession);
+  metadata.set_session_model(
+      content_settings::mojom::SessionModel::USER_SESSION);
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, base::Value(2), metadata);
   map.GetLock().Release();
@@ -355,7 +356,7 @@ TEST_P(OriginValueMapTest, UpdateLastModified) {
     ASSERT_FALSE(rule->metadata.expiration().is_null());
     EXPECT_GT(rule->metadata.expiration(), base::Time::Now());
     EXPECT_EQ(rule->metadata.session_model(),
-              content_settings::SessionModel::UserSession);
+              content_settings::mojom::SessionModel::USER_SESSION);
 
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
@@ -363,7 +364,7 @@ TEST_P(OriginValueMapTest, UpdateLastModified) {
     EXPECT_EQ(t1, rule->metadata.last_modified());
     ASSERT_TRUE(rule->metadata.expiration().is_null());
     EXPECT_EQ(rule->metadata.session_model(),
-              content_settings::SessionModel::Durable);
+              content_settings::mojom::SessionModel::DURABLE);
     ASSERT_FALSE(rule_iterator->HasNext());
   }
   map.GetLock().Acquire();

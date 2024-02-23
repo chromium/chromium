@@ -43,8 +43,8 @@ class RuleMetaData {
 
   base::Time expiration() const { return expiration_; }
 
-  SessionModel session_model() const { return session_model_; }
-  void set_session_model(SessionModel session_model) {
+  mojom::SessionModel session_model() const { return session_model_; }
+  void set_session_model(mojom::SessionModel session_model) {
     session_model_ = session_model;
   }
 
@@ -96,7 +96,7 @@ class RuleMetaData {
   // zero.
   base::Time expiration_;
   // SessionModel as defined through a ContentSettingsConstraint.
-  SessionModel session_model_ = SessionModel::Durable;
+  mojom::SessionModel session_model_ = mojom::SessionModel::DURABLE;
   // The lifetime of the setting. This may be zero iff `expiration_` is zero.
   base::TimeDelta lifetime_;
   // TPCD Metadata Source (go/measure3pcddtdeployment).

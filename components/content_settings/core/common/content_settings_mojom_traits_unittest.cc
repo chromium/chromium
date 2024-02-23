@@ -65,30 +65,14 @@ TEST(ContentSettingsTraitsTest, Roundtrips_ContentSetting) {
   }
 }
 
-TEST(ContentSettingsTraitsTest, Roundtrips_SessionModel) {
-  for (content_settings::SessionModel original : {
-           content_settings::SessionModel::Durable,
-           content_settings::SessionModel::UserSession,
-           content_settings::SessionModel::NonRestorableUserSession,
-           content_settings::SessionModel::OneTime,
-       }) {
-    content_settings::SessionModel round_tripped;
-
-    EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<
-            content_settings::mojom::SessionModel>(original, round_tripped));
-
-    EXPECT_EQ(original, round_tripped);
-  }
-}
-
 TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
   content_settings::RuleMetaData original;
   original.set_last_modified(base::Time::FromSecondsSinceUnixEpoch(123));
   original.set_last_visited(base::Time::FromSecondsSinceUnixEpoch(234));
   original.SetExpirationAndLifetime(base::Time::FromSecondsSinceUnixEpoch(345),
                                     base::Days(2));
-  original.set_session_model(content_settings::SessionModel::UserSession);
+  original.set_session_model(
+      content_settings::mojom::SessionModel::USER_SESSION);
   original.set_tpcd_metadata_rule_source(
       content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
 

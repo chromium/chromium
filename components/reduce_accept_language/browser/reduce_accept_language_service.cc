@@ -118,7 +118,7 @@ void ReduceAcceptLanguageService::PersistReducedLanguage(
   accept_language_dictionary.Set(kReduceAcceptLanguageSettingKey, language);
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(cache_duration);
-  constraints.set_session_model(content_settings::SessionModel::Durable);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE,
       base::Value(std::move(accept_language_dictionary)), constraints);

@@ -216,10 +216,10 @@ bool PrefProvider::SetWebsiteSetting(
                                 ? GetCoarseVisitedTime(clock_->Now())
                                 : base::Time();
 
-  // If SessionModel is OneTime, we know for sure that a one time permission
-  // has been set by the One Time Provider, therefore we reset a potentially
-  // existing Allow Always setting.
-  if (constraints.session_model() == SessionModel::OneTime) {
+  // If mojom::SessionModel is ONE_TIME, we know for sure that a one time
+  // permission has been set by the One Time Provider, therefore we reset a
+  // potentially existing Allow Always setting.
+  if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
     DCHECK(content_type == ContentSettingsType::GEOLOCATION ||
            content_type == ContentSettingsType::MEDIASTREAM_MIC ||
            content_type == ContentSettingsType::MEDIASTREAM_CAMERA);

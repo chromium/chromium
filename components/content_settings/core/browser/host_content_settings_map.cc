@@ -448,7 +448,7 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
 
 ContentSettingsForOneType HostContentSettingsMap::GetSettingsForOneType(
     ContentSettingsType content_type,
-    std::optional<content_settings::SessionModel> session_model) const {
+    std::optional<content_settings::mojom::SessionModel> session_model) const {
   ContentSettingsForOneType settings;
   UsedContentSettingsProviders();
 
@@ -941,7 +941,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     ContentSettingsType content_type,
     ContentSettingsForOneType* settings,
     bool incognito,
-    std::optional<content_settings::SessionModel> session_model) const {
+    std::optional<content_settings::mojom::SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       provider->GetRuleIterator(
           content_type, incognito,

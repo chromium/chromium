@@ -1407,7 +1407,7 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
 
   ContentSettingConstraints constraints;
   constraints.set_lifetime(base::Seconds(100));
-  constraints.set_session_model(SessionModel::UserSession);
+  constraints.set_session_model(mojom::SessionModel::USER_SESSION);
 
   settings_map_->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(url),

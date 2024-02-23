@@ -11,7 +11,8 @@ import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.
 
 import {getTemplate} from './content_setting_pattern_source.html.js';
 import type {ContentSettingPatternSource} from './content_settings.mojom-webui.js';
-import {ContentSetting, SessionModel} from './content_settings.mojom-webui.js';
+import {ContentSetting} from './content_settings.mojom-webui.js';
+import {SessionModel} from './content_settings_enums.mojom-webui.js';
 import type {PageHandlerInterface} from './privacy_sandbox_internals.mojom-webui.js';
 import type {LogicalFn} from './value_display.js';
 import {defaultLogicalFn} from './value_display.js';

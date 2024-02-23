@@ -6,33 +6,9 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_CONSTRAINTS_H_
 
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings_enums.mojom.h"
 
 namespace content_settings {
-
-// Options to restrict the scope of a content setting. These specify the
-// lifetime model of a given setting and how it may become invalidated or
-// expired.
-// Durable:     Settings persist forever and are bounded only by an expiry date,
-//              if set.
-// UserSession: Settings will persist no longer than the user session
-//              regardless of expiry date, if set.
-// NonRestorableUserSession: Same as UserSession, except this session-based
-//              setting will be reset when the user session ends regardless
-//              the restore setting. These settings will not be restored e.g.
-//              when the user selected "continue where you left off" or after
-//              a crash or update related restart.
-// OneTime:     Settings will persist for the current "tab session", meaning
-//              until the last tab from the origin is closed.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SessionModel
-enum class SessionModel : int32_t {
-  Durable = 0,
-  UserSession = 1,
-  NonRestorableUserSession = 2,
-  OneTime = 3,
-  kMaxValue = OneTime,
-};
-
 // Constraints to be applied when setting a content setting.
 class ContentSettingConstraints {
  public:
@@ -69,8 +45,8 @@ class ContentSettingConstraints {
     lifetime_ = lifetime;
   }
 
-  SessionModel session_model() const { return session_model_; }
-  void set_session_model(SessionModel model) { session_model_ = model; }
+  mojom::SessionModel session_model() const { return session_model_; }
+  void set_session_model(mojom::SessionModel model) { session_model_ = model; }
 
   bool track_last_visit_for_autoexpiration() const {
     return track_last_visit_for_autoexpiration_;
@@ -93,10 +69,10 @@ class ContentSettingConstraints {
   // persisted (likely in/by content_settings::RuleMetaData) and recreated in
   // order be useful. Otherwise, everything still operates in terms of
   // expirations.
-  base::TimeDelta lifetime_ = base::TimeDelta();
+  base::TimeDelta lifetime_;
 
   // Used to specify the lifetime model that should be used.
-  SessionModel session_model_ = SessionModel::Durable;
+  mojom::SessionModel session_model_ = mojom::SessionModel::DURABLE;
   // Set to true to keep track of the last visit to the origin of this
   // permission.
   // This is used for the Safety check permission module and unrelated to the

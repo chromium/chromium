@@ -58,7 +58,7 @@ public class WebsitePreferenceBridge {
             String origin,
             String embedder,
             boolean isEmbargoed,
-            @SessionModel int sessionModel) {
+            @SessionModel.EnumType int sessionModel) {
         if (type == ContentSettingsType.MEDIASTREAM_CAMERA
                 || type == ContentSettingsType.MEDIASTREAM_MIC) {
             for (PermissionInfo info : list) {

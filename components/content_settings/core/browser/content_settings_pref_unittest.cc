@@ -68,7 +68,7 @@ constexpr char kSessionModelKey[] = "model";
 base::Value::Dict CreateDummyContentSettingValue(
     base::StringPiece tag,
     bool expired,
-    SessionModel session_model = SessionModel::Durable) {
+    mojom::SessionModel session_model = mojom::SessionModel::DURABLE) {
   return base::Value::Dict()
       .Set(kSettingKey, base::Value::Dict().Set(kTagKey, tag))
       .Set(kLastModifiedKey, "13189876543210000")
@@ -469,10 +469,11 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
       CreateDummyContentSettingValue(kTestPatternCanonicalBeta,
                                      /*expired=*/false));
 
-  original_pref_value.Set(kTestPatternCanonicalGamma,
-                          CreateDummyContentSettingValue(
-                              kTestPatternCanonicalGamma, /*expired=*/false,
-                              SessionModel::NonRestorableUserSession));
+  original_pref_value.Set(
+      kTestPatternCanonicalGamma,
+      CreateDummyContentSettingValue(
+          kTestPatternCanonicalGamma, /*expired=*/false,
+          mojom::SessionModel::NON_RESTORABLE_USER_SESSION));
 
   SetPrefForPartition(partition_key(), std::move(original_pref_value));
   auto content_settings_pref =

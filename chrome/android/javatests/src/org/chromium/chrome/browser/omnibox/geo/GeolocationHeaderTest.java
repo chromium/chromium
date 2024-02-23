@@ -368,7 +368,7 @@ public class GeolocationHeaderTest {
     }
 
     private void setPermission(
-            final @ContentSettingValues int setting, @SessionModel int sessionModel) {
+            final @ContentSettingValues int setting, @SessionModel.EnumType int sessionModel) {
         PermissionInfo infoHttps =
                 new PermissionInfo(
                         ContentSettingsType.GEOLOCATION,
