@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -85,9 +84,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     public LayoutRenderHost getLayoutRenderHost() {
         return this;
     }
-
-    @Override
-    public void pushDebugRect(Rect rect, int color) {}
 
     @Override
     public void setContentOverlayVisibility(boolean visible, boolean canBeFocusable) {}

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.compositor;
 
-import android.graphics.Rect;
 import android.view.SurfaceView;
 import android.view.View;
 
@@ -53,9 +52,6 @@ public class CompositorVisibilityTest {
 
                 @Override
                 public void onSurfaceResized(int width, int height) {}
-
-                @Override
-                public void pushDebugRect(Rect rect, int color) {}
 
                 @Override
                 public ResourceManager getResourceManager() {
