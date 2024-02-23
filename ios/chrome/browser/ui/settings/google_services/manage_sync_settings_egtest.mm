@@ -1168,12 +1168,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // TODO(crbug.com/1482823): Test that items were actually moved.
 }
 
-// TODO(crbug.com/1515517): ManageSyncSettingsTestCase is failing
 // Tests that bulk upload moves the following data types to account:
 // - Passwords
 // - Bookmarks
 // - Reading List
-- (void)DISABLED_testBulkUploadForAllDataTypes {
+- (void)testBulkUploadForAllDataTypes {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
@@ -1234,11 +1233,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                    kBulkUploadSaveButtonAccessibilityIdentifer)]
       performAction:grey_tap()];
 
-  // Verify the "manage sync" view is not visible yet.
+  // Verify the "manage sync" view is not visible yet (it is present behind the
+  // screen, so we can't use notVisible directly).
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:grey_not(grey_minimumVisiblePercent(0.05))];
 
   // Successful auth should remove blocking view and "manage sync" view should
   // be visible.
@@ -1256,16 +1256,18 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Ensure that the batch upload dialog section does not exist anymore.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kBatchUploadRecommendationItemAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kBatchUploadRecommendationItemAccessibilityIdentifier),
+                     grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(
                                        kBatchUploadAccessibilityIdentifier),
-                                   grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_notVisible()];
+                                   grey_minimumVisiblePercent(0.05), nil)]
+      assertWithMatcher:grey_nil()];
 
   // TODO(crbug.com/1482823): Test that items were actually moved.
 }
