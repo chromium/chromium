@@ -58,7 +58,7 @@ BrowserAccessibilityManagerAuraLinux::~BrowserAccessibilityManagerAuraLinux() {
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerAuraLinux::GetEmptyDocument() {
   ui::AXNodeData empty_document;
-  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
+  empty_document.id = 1;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   ui::AXTreeUpdate update;
   update.root_id = empty_document.id;
@@ -301,25 +301,9 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       FireReadonlyChangedEvent(wrapper);
       break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      // Before firing the platform event, check to see that the object's
-      // properties still support range values, because some of the properties
-      // may have been updated after the event was generated.
-      if (wrapper->GetData().IsRangeValueSupported()) {
-        FireEvent(wrapper, ax::mojom::Event::kValueChanged);
-      }
+      DCHECK(wrapper->GetData().IsRangeValueSupported());
+      FireEvent(wrapper, ax::mojom::Event::kValueChanged);
       break;
-    case ui::AXEventGenerator::Event::ALERT:
-    case ui::AXEventGenerator::Event::ROLE_CHANGED: {
-      // In ATK, there is no role change event, and instead, role changes are
-      // mapped to a subtree being removed and re-added. Since the AXNodeID
-      // (and therefore the AXNode) in such cases may remain the same, this must
-      // be done manually.
-      ui::AXPlatformNodeAuraLinux* platform_node =
-          ToBrowserAccessibilityAuraLinux(wrapper)->GetNode();
-      platform_node->OnSubtreeWillBeDeleted();
-      platform_node->OnSubtreeCreated();
-      break;
-    }
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       FireEvent(wrapper, ax::mojom::Event::kSelectedChildrenChanged);
       break;
@@ -348,6 +332,7 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::NONE:
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
+    case ui::AXEventGenerator::Event::ALERT:
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case ui::AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
@@ -390,6 +375,7 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
+    case ui::AXEventGenerator::Event::ROLE_CHANGED:
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
     case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
     case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:

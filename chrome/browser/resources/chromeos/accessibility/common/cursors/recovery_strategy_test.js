@@ -24,8 +24,6 @@ AccessibilityExtensionRecoveryStrategyTest = class extends CommonE2ETestBase {
 };
 
 
-// TODO(https://issuetracker.google.com/issues/263127143) Recovery can likely be
-// simplified now that most ids are stable.
 AX_TEST_F(
     'AccessibilityExtensionRecoveryStrategyTest', 'ReparentedRecovery',
     async function() {
@@ -56,21 +54,30 @@ AX_TEST_F(
       assertFalse(
           bAncestryRecovery.requiresRecovery(),
           'bAncestryRecovery.requiresRecovery');
-      assertFalse(
+      assertTrue(
           pAncestryRecovery.requiresRecovery(),
           'pAncestryRecovery.requiresRecovery()');
-      assertFalse(
+      assertTrue(
           sAncestryRecovery.requiresRecovery(),
           'sAncestryRecovery.requiresRecovery()');
       assertFalse(
           bTreePathRecovery.requiresRecovery(),
           'bTreePathRecovery.requiresRecovery()');
-      assertFalse(
+      assertTrue(
           pTreePathRecovery.requiresRecovery(),
           'pTreePathRecovery.requiresRecovery()');
-      assertFalse(
+      assertTrue(
           sTreePathRecovery.requiresRecovery(),
           'sTreePathRecovery.requiresRecovery()');
+
+      assertEquals(RoleType.BUTTON, bAncestryRecovery.node.role);
+      assertEquals(root, pAncestryRecovery.node);
+      assertEquals(root, sAncestryRecovery.node);
+
+      assertEquals(b, bTreePathRecovery.node);
+      assertEquals(b, pTreePathRecovery.node);
+      assertEquals(b, sTreePathRecovery.node);
+
       assertFalse(
           bAncestryRecovery.requiresRecovery(),
           'bAncestryRecovery.requiresRecovery()');

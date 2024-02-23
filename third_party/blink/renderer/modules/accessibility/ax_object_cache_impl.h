@@ -74,10 +74,15 @@ class AbstractInlineTextBox;
 class HTMLAreaElement;
 class WebLocalFrameClient;
 
-// Describes a decision on whether to create an AXNodeObject, an AXLayoutObject,
+// Describes a decicion on whether to create an AXNodeObject, an AXLayoutObject,
 // or nothing (which will cause the AX subtree to be pruned at that point).
-// Not that AXLayoutObjects may be backed by a node, if it has one, and most do.
-// Only pseudo element descendants are missing DOM nodes.
+// Currently this also mirrors the decision on whether to back the object by a
+// node or a layout object. When the AXObject is backed by a node, it's
+// AXID can be looked up in node_object_mapping_, and when the AXObject is
+// backed by layout, it's AXID can be looked up in layout_object_mapping_.
+// TODO(accessibility) Split the decision of what to use for backing from what
+// type of object to create, and use a node whenever possible, in order to
+// enable more stable IDs for most objects.
 enum AXObjectType { kPruneSubtree = 0, kAXNodeObject, kAXLayoutObject };
 
 struct TextChangedOperation {
@@ -348,6 +353,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Compute the included parent and its children, and then return
   // the AXObject for |child|.
   AXObject* RepairChildrenOfIncludedParent(Node* child);
+
+  AXID GetAXID(Node*) override;
+
+  AXID GetExistingAXID(Node*) override;
 
   // Return an AXObject for the AccessibleNode. If the AccessibleNode is
   // attached to an element, will return the AXObject for that element instead.
@@ -677,6 +686,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Helpers for CreateAndInit().
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
+
   AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
 
   // Removes AXObject backed by passed-in object, if there is one.
@@ -706,10 +716,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool IsMainDocumentDirty() const;
   bool IsPopupDocumentDirty() const;
   void ProcessSubtreeRemoval(Node*, bool remove_root);
-
-  // Returns true if the AXID is for a DOM node.
-  // All other AXIDs are generated.
-  bool IsDOMNodeID(AXID axid) { return axid > 0; }
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 
@@ -854,14 +860,10 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   ui::AXMode ax_mode_;
 
-  // AXIDs for AXNodeObjects reuse the int ids in dom_node_id, all other AXIDs
-  // are negative in order to avoid a conflict.
   HeapHashMap<AXID, Member<AXObject>> objects_;
   HeapHashMap<Member<AccessibleNode>, AXID> accessible_node_mapping_;
-  // When the AXObject is backed by layout, its AXID can be looked up in
-  // layout_object_mapping_. When the AXObject is backed by a node, its
-  // AXID can be looked up via node->GetDomNodeId().
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
+  HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HeapHashMap<Member<AbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
 #if DCHECK_IS_ON()
@@ -1052,11 +1054,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   TreeUpdateCallbackQueue tree_update_callback_queue_popup_;
 
   // Help de-dupe processing of repetitive events.
-  HashSet<AXID> nodes_with_pending_children_changed_;
+  HeapHashSet<WeakMember<Node>> nodes_with_pending_children_changed_;
   HashSet<AXID> nodes_with_pending_location_changed_;
 
   // Nodes with document markers that have received accessibility updates.
-  HashSet<AXID> nodes_with_spelling_or_grammar_markers_;
+  HeapHashSet<WeakMember<Node>> nodes_with_spelling_or_grammar_markers_;
 
   // Nodes renoved from flat tree.
   HeapVector<std::pair<Member<Node>, bool>> nodes_for_subtree_removal_;
@@ -1156,8 +1158,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   bool updating_tree_ = false;
   // Make sure the next serialization sends everything.
   bool mark_all_dirty_ = false;
-
-  mutable bool has_axid_generator_looped_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,

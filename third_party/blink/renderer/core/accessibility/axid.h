@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AXID_H_
 
 namespace blink {
-using AXID = int;
+using AXID = unsigned;
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AXID_H_

@@ -1,18 +1,22 @@
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
 Name changed on role=group, name=open file and new done
-Name changed on role=menu, name=File
-Name changed on role=menu, name=New
 === Start Continuation ===
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
+MenuClosed 
+MenuClosed 
+MenuClosed 
+MenuClosed 
 Name changed on role=group, name=close file and new done
 === Start Continuation ===
 Name changed on role=group, name=open new done
 === Start Continuation ===
 ExpandCollapseExpandCollapseState changed on role=menuitem, name=File
 Name changed on role=group, name=open file done
-Name changed on role=menu, name=File
-Name changed on role=menu, name=New
 === Start Continuation ===
+MenuClosed 
+MenuClosed 
+MenuClosed 
+MenuClosed 
 Name changed on role=group, name=hide menubar done
 === Start Continuation ===
 Name changed on role=group, name=show menubar done

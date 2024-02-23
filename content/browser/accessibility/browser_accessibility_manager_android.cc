@@ -66,7 +66,7 @@ BrowserAccessibilityManagerAndroid::~BrowserAccessibilityManagerAndroid() =
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerAndroid::GetEmptyDocument() {
   ui::AXNodeData empty_document;
-  empty_document.id = ui::kInitialEmptyDocumentRootNodeID;
+  empty_document.id = 1;
   empty_document.role = ax::mojom::Role::kRootWebArea;
   empty_document.SetRestriction(ax::mojom::Restriction::kReadOnly);
   ui::AXTreeUpdate update;

@@ -111,10 +111,7 @@ class AXTreeSerializer {
   // Invalidate the subtree rooted at this node, ensuring that the entire
   // subtree is re-serialized the next time any of those nodes end up
   // being serialized.
-  void MarkSubtreeDirty(AXNodeID id);
-
-  // Invalidate a single node, ensuring that it is reserialized.
-  void MarkNodeDirty(AXNodeID id);
+  void MarkSubtreeDirty(AXNodeID node);
 
   // Return whether or not this node is in the client tree. If you call
   // this immediately after serializing, this indicates whether a given
@@ -606,19 +603,11 @@ AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::GetIncompleteNodeIds() {
 }
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
-void AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::MarkNodeDirty(
-    AXNodeID id) {
-  if (ClientTreeNode* client_node = ClientTreeNodeById(id)) {
-    client_node->is_dirty = true;
-  }
-}
-
-template <typename AXSourceNode, typename AXSourceNodeVectorType>
 void AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::MarkSubtreeDirty(
     AXNodeID id) {
-  if (ClientTreeNode* client_node = ClientTreeNodeById(id)) {
+  ClientTreeNode* client_node = ClientTreeNodeById(id);
+  if (client_node)
     MarkClientSubtreeDirty(client_node);
-  }
 }
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
