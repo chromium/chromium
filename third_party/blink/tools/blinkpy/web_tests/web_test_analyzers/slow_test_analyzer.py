@@ -22,9 +22,11 @@ builder2 : timeout count: 5, slow count: 32, slow ratio: 1.00, avg duration: 5.2
 """
 
 import argparse
+import logging
 import re
 import urllib.parse
 
+from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.web_tests.web_test_analyzers import analyzer
 from blinkpy.web_tests.web_test_analyzers import data_types
@@ -34,6 +36,8 @@ from blinkpy.web_tests.web_test_analyzers import results
 
 DASHBOARD_BASE_URL = 'go/slow_test_dashboard'
 RESULT_TITLE = 'Slow Test Analyzer result:'
+
+_log = logging.getLogger(__name__)
 
 
 def ParseArgs() -> argparse.Namespace:
@@ -83,6 +87,7 @@ def ParseArgs() -> argparse.Namespace:
 
 
 def main() -> int:
+    configure_logging(logging_level=logging.INFO, include_time=True)
     args = ParseArgs()
 
     querier_instance = queries.Querier(args.sample_period, args.project)
@@ -97,8 +102,10 @@ def main() -> int:
             ]
             if bug['bug_id']:
                 bugs[bug['bug_id']] = test_path_list
+                _log.info('Adding bug to check: %s', bug['bug_id'])
         if args.attach_analysis_result:
             buganizer_api = BuganizerClient()
+        _log.info('total bugs: %d', len(bugs))
     else:
         bugs = {'': [args.test_path]}
 
@@ -123,6 +130,7 @@ def main() -> int:
             if RESULT_TITLE not in str(buganizer_api.GetIssueComments(bug_id)):
                 buganizer_api.NewComment(bug_id, bug_result_string)
                 bug_ids.append(bug_id)
+                _log.info('Successfully attach result to bug: %s', bug_id)
 
     # Insert bug attachment results to database.
     if bug_ids:
