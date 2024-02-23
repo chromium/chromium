@@ -336,64 +336,22 @@ void SafeBrowsingService::SetDatabaseManagerForTest(
   services_delegate_->SetDatabaseManagerForTest(database_manager);
 }
 
-void SafeBrowsingService::StartOnIOThread(
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        browser_url_loader_factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (enabled_) {
-    return;
-  }
-
-  enabled_ = true;
-
-  V4ProtocolConfig v4_config = GetV4ProtocolConfig();
-
-  services_delegate_->StartOnSBThread(
-      network::SharedURLLoaderFactory::Create(
-          std::move(browser_url_loader_factory)),
-      v4_config);
-}
-
-void SafeBrowsingService::StopOnIOThread(bool shutdown) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  services_delegate_->StopOnSBThread(shutdown);
-
-  enabled_ = false;
-}
-
 void SafeBrowsingService::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    if (!enabled_) {
-      enabled_ = true;
-      services_delegate_->StartOnSBThread(
-          g_browser_process->shared_url_loader_factory(),
-          GetV4ProtocolConfig());
-    }
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SafeBrowsingService::StartOnIOThread, this,
-            std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-                g_browser_process->shared_url_loader_factory())));
+  if (!enabled_) {
+    enabled_ = true;
+    services_delegate_->StartOnSBThread(
+        g_browser_process->shared_url_loader_factory(), GetV4ProtocolConfig());
   }
 }
 
 void SafeBrowsingService::Stop(bool shutdown) {
   ui_manager_->Stop(shutdown);
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    services_delegate_->StopOnSBThread(shutdown);
+  services_delegate_->StopOnSBThread(shutdown);
 
-    enabled_ = false;
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SafeBrowsingService::StopOnIOThread, this, shutdown));
-  }
+  enabled_ = false;
 }
 
 void SafeBrowsingService::OnProfileAdded(Profile* profile) {

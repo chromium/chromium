@@ -51,10 +51,7 @@ FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {}
 bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (synchronous_failure_ && !url_to_threat_type_.count(url)) {
     return true;
@@ -67,11 +64,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   if (simulate_timeout_) {
     return false;
   }
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::GetUIThreadTaskRunner({})
-          : content::GetIOThreadTaskRunner({});
-  task_runner->PostTask(
+  content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeSafeBrowsingDatabaseManager::
                          OnCheckUrlForSubresourceFilterComplete,

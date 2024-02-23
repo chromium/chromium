@@ -6953,10 +6953,7 @@ ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate(
     bool safe_browsing_enabled_for_profile,
     bool should_check_on_sb_disabled,
     const std::vector<std::string>& allowlist_domains) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Should not bypass safe browsing check if the check is for enterprise
   // lookup.

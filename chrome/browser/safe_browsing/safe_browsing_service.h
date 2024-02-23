@@ -54,7 +54,6 @@ namespace network {
 namespace mojom {
 class NetworkContext;
 }
-class PendingSharedURLLoaderFactory;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -259,20 +258,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   friend class SendNotificationsAcceptedTest;
 
   void SetDatabaseManagerForTest(SafeBrowsingDatabaseManager* database_manager);
-
-  // Called to initialize objects that are used on the io_thread. This may be
-  // called multiple times during the life of the SafeBrowsingService.
-  // |sb_url_loader_factory| is a SharedURLLoaderFactory attached to the Safe
-  // Browsing NetworkContexts, and |browser_url_loader_factory| is attached to
-  // the global browser process.
-  void StartOnIOThread(std::unique_ptr<network::PendingSharedURLLoaderFactory>
-                           browser_url_loader_factory);
-
-  // Called to stop or shutdown operations on the io_thread. This may be called
-  // multiple times to stop during the life of the SafeBrowsingService. If
-  // shutdown is true, then the operations on the io thread are shutdown
-  // permanently and cannot be restarted.
-  void StopOnIOThread(bool shutdown);
 
   // Start up SafeBrowsing objects. This can be called at browser start, or when
   // the user checks the "Enable SafeBrowsing" option in the Advanced options

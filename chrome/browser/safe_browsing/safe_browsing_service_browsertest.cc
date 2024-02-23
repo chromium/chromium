@@ -353,48 +353,6 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 
   void CheckDownloadUrl(const std::vector<GURL>& url_chain) {
     base::RunLoop loop;
-    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-      CheckDownloadUrlOnSBThread(url_chain);
-    } else {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&TestSBClient::CheckDownloadUrlOnSBThread,
-                                    this, url_chain));
-    }
-    set_quit_closure(loop.QuitWhenIdleClosure());
-    loop.Run();
-  }
-
-  void CheckBrowseUrl(const GURL& url) {
-    base::RunLoop loop;
-    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-      CheckBrowseUrlOnSBThread(url);
-    } else {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&TestSBClient::CheckBrowseUrlOnSBThread, this, url));
-    }
-    set_quit_closure(loop.QuitWhenIdleClosure());
-    loop.Run();
-  }
-
-  void CheckResourceUrl(const GURL& url) {
-    base::RunLoop loop;
-    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-      CheckResourceUrlOnSBThread(url);
-    } else {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&TestSBClient::CheckResourceUrlOnSBThread, this, url));
-    }
-    set_quit_closure(loop.QuitWhenIdleClosure());
-    loop.Run();
-  }
-
- private:
-  friend class base::RefCountedThreadSafe<TestSBClient>;
-  ~TestSBClient() override {}
-
-  void CheckDownloadUrlOnSBThread(const std::vector<GURL>& url_chain) {
     bool synchronous_safe_signal =
         safe_browsing_service_->database_manager()->CheckDownloadUrl(url_chain,
                                                                      this);
@@ -403,11 +361,12 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&TestSBClient::CheckDone, this));
     }
+    set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
   }
-  void set_quit_closure(base::OnceClosure quit_closure) {
-    quit_closure_ = std::move(quit_closure);
-  }
-  void CheckBrowseUrlOnSBThread(const GURL& url) {
+
+  void CheckBrowseUrl(const GURL& url) {
+    base::RunLoop loop;
     SBThreatTypeSet threat_types = CreateSBThreatTypeSet(
         {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
          SB_THREAT_TYPE_URL_UNWANTED, SB_THREAT_TYPE_BILLING});
@@ -423,9 +382,12 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&TestSBClient::CheckDone, this));
     }
+    set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
   }
 
-  void CheckResourceUrlOnSBThread(const GURL& url) {
+  void CheckResourceUrl(const GURL& url) {
+    base::RunLoop loop;
     bool synchronous_safe_signal =
         safe_browsing_service_->database_manager()->CheckResourceUrl(url, this);
     if (synchronous_safe_signal) {
@@ -433,6 +395,16 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&TestSBClient::CheckDone, this));
     }
+    set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<TestSBClient>;
+  ~TestSBClient() override = default;
+
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
   }
 
   // Called when the result of checking a download URL is known.

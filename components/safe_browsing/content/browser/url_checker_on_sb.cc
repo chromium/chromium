@@ -85,20 +85,14 @@ UrlCheckerOnSB::UrlCheckerOnSB(
 }
 
 UrlCheckerOnSB::~UrlCheckerOnSB() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::UmaHistogramMediumTimes(
       "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
       base::TimeTicks::Now() - creation_time_);
 }
 
 void UrlCheckerOnSB::Start(const StartParams& params) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate =
       std::move(delegate_getter_).Run();
 
@@ -120,10 +114,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
 }
 
 void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(url_checker_);
   pending_checks_++;
   redirect_chain_.push_back(url);
@@ -179,12 +170,7 @@ void UrlCheckerOnSB::OnCompleteCheck(
   OnCompleteCheckResult result(proceed, showed_interstitial,
                                has_post_commit_interstitial_skipped,
                                performed_check, all_checks_completed);
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    complete_callback_.Run(result);
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(complete_callback_, result));
-  }
+  complete_callback_.Run(result);
 }
 
 }  // namespace safe_browsing

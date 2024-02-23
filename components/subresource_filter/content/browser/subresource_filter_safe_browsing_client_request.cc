@@ -33,31 +33,19 @@ SubresourceFilterSafeBrowsingClientRequest::
       start_time_(start_time),
       database_manager_(std::move(database_manager)),
       client_(client) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    timer_.SetTaskRunner(std::move(io_task_runner));
-  }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 SubresourceFilterSafeBrowsingClientRequest::
     ~SubresourceFilterSafeBrowsingClientRequest() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!request_completed_)
     database_manager_->CancelCheck(this);
   timer_.Stop();
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Just return SAFE if the database is not supported.
   bool synchronous_finish =
       database_manager_->CheckUrlForSubresourceFilter(url, this);
@@ -79,20 +67,14 @@ void SubresourceFilterSafeBrowsingClientRequest::OnCheckBrowseUrlResult(
     const GURL& url,
     safe_browsing::SBThreatType threat_type,
     const safe_browsing::ThreatMetadata& metadata) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   request_completed_ = true;
   SendCheckResultToClient(true /* served_from_network */, threat_type,
                           metadata);
 }
 
 void SubresourceFilterSafeBrowsingClientRequest::OnCheckUrlTimeout() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SendCheckResultToClient(true /* served_from_network */,
                           safe_browsing::SB_THREAT_TYPE_SAFE,
                           safe_browsing::ThreatMetadata());

@@ -57,9 +57,7 @@ void DownloadUrlSBClient::OnDownloadDestroyed(
 }
 
 void DownloadUrlSBClient::StartCheck() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!database_manager_.get() ||
       database_manager_->CheckDownloadUrl(url_chain_, this)) {
     CheckDone(SB_THREAT_TYPE_SAFE);

@@ -30,9 +30,7 @@ class UrlCheckerDelegate;
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
 
-// UrlCheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
-// must be called on the IO thread. The results are synced back to the
-// throttle.
+// UrlCheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl.
 // TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
 // UI thread.
 class UrlCheckerOnSB final {

@@ -674,10 +674,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
 
 scoped_refptr<safe_browsing::UrlCheckerDelegate>
 AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!safe_browsing_url_checker_delegate_) {
     safe_browsing_url_checker_delegate_ = new AwUrlCheckerDelegateImpl(

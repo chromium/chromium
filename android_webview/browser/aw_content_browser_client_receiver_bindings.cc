@@ -89,17 +89,9 @@ void MaybeCreateSafeBrowsing(
   if (!render_process_host)
     return;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-        rph_id, std::move(resource_context), std::move(get_checker_delegate),
-        std::move(receiver));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate,
-                       rph_id, std::move(resource_context),
-                       std::move(get_checker_delegate), std::move(receiver)));
-  }
+  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+      rph_id, std::move(resource_context), std::move(get_checker_delegate),
+      std::move(receiver));
 }
 
 void BindNetworkHintsHandler(

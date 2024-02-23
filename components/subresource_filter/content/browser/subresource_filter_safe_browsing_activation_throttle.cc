@@ -75,10 +75,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
       io_task_runner_(std::move(io_task_runner)),
       database_client_(nullptr,
                        base::OnTaskRunnerDeleter(
-                           base::FeatureList::IsEnabled(
-                               safe_browsing::kSafeBrowsingOnUIThread)
-                               ? base::SequencedTaskRunner::GetCurrentDefault()
-                               : io_task_runner_)),
+                           base::SequencedTaskRunner::GetCurrentDefault())),
       delegate_(delegate) {
   database_client_.reset(new SubresourceFilterSafeBrowsingClient(
       std::move(database_manager), weak_ptr_factory_.GetWeakPtr(),
@@ -159,17 +156,8 @@ void SubresourceFilterSafeBrowsingActivationThrottle::CheckCurrentUrl() {
   DCHECK(database_client_);
   check_results_.emplace_back();
   size_t id = check_results_.size() - 1;
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    database_client_->CheckUrlOnIO(navigation_handle()->GetURL(), id,
-                                   base::TimeTicks::Now());
-  } else {
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SubresourceFilterSafeBrowsingClient::CheckUrlOnIO,
-                       base::Unretained(database_client_.get()),
-                       navigation_handle()->GetURL(), id,
-                       base::TimeTicks::Now()));
-  }
+  database_client_->CheckUrl(navigation_handle()->GetURL(), id,
+                             base::TimeTicks::Now());
 }
 
 void SubresourceFilterSafeBrowsingActivationThrottle::NotifyResult() {

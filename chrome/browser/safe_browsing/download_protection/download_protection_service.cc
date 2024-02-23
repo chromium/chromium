@@ -330,12 +330,7 @@ void DownloadProtectionService::CheckDownloadUrl(
   scoped_refptr<DownloadUrlSBClient> client(new DownloadUrlSBClient(
       item, this, std::move(callback), ui_manager_, database_manager_));
   // The client will release itself once it is done.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    client->StartCheck();
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&DownloadUrlSBClient::StartCheck, client));
-  }
+  client->StartCheck();
 }
 
 bool DownloadProtectionService::IsSupportedDownload(

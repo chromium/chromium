@@ -152,10 +152,7 @@ void AwBrowserProcess::CreateSafeBrowsingAllowlistManager() {
 
 safe_browsing::RemoteSafeBrowsingDatabaseManager*
 AwBrowserProcess::GetSafeBrowsingDBManager() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!safe_browsing_db_manager_) {
     safe_browsing_db_manager_ =

@@ -78,10 +78,7 @@ void BrowserURLLoaderThrottle::SkipCheckCheckerOnSB::CheckOriginalUrl(
     OnCompleteCheckCallback callback,
     const GURL& url,
     bool originated_from_service_worker) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate =
       std::move(delegate_getter_).Run();
   should_skip_checks_ =
@@ -90,26 +87,13 @@ void BrowserURLLoaderThrottle::SkipCheckCheckerOnSB::CheckOriginalUrl(
           url, frame_tree_node_id_,
           /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
           /*render_frame_token=*/std::nullopt, originated_from_service_worker);
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    std::move(callback).Run(should_skip_checks_);
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), should_skip_checks_));
-  }
+  std::move(callback).Run(should_skip_checks_);
 }
 
 void BrowserURLLoaderThrottle::SkipCheckCheckerOnSB::CheckRedirectUrl(
     OnCompleteCheckCallback callback) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    std::move(callback).Run(should_skip_checks_);
-  } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), should_skip_checks_));
-  }
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(should_skip_checks_);
 }
 
 // static
@@ -170,7 +154,7 @@ BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
         "SafeBrowsing.BrowserThrottle.IsAsyncCheckFasterThanSyncCheck",
         was_async_faster_than_sync_.value());
   }
-  DeleteUrlCheckerOnSB();
+  DeleteUrlChecker();
 }
 
 void BrowserURLLoaderThrottle::WillStartRequest(
@@ -280,27 +264,13 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   start_request_time_ = base::TimeTicks::Now();
   is_start_request_called_ = true;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    skip_check_checker_->CheckOriginalUrl(
-        base::BindOnce(
-            &BrowserURLLoaderThrottle::OnSkipCheckCompleteOnOriginalUrl,
-            weak_factory_.GetWeakPtr(), request->headers, request->load_flags,
-            request->destination, request->has_user_gesture, request->url,
-            request->method),
-        request->url, request->originated_from_service_worker);
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SkipCheckCheckerOnSB::CheckOriginalUrl,
-            skip_check_checker_->AsWeakPtr(),
-            base::BindOnce(
-                &BrowserURLLoaderThrottle::OnSkipCheckCompleteOnOriginalUrl,
-                weak_factory_.GetWeakPtr(), request->headers,
-                request->load_flags, request->destination,
-                request->has_user_gesture, request->url, request->method),
-            request->url, request->originated_from_service_worker));
-  }
+  skip_check_checker_->CheckOriginalUrl(
+      base::BindOnce(
+          &BrowserURLLoaderThrottle::OnSkipCheckCompleteOnOriginalUrl,
+          weak_factory_.GetWeakPtr(), request->headers, request->load_flags,
+          request->destination, request->has_user_gesture, request->url,
+          request->method),
+      request->url, request->originated_from_service_worker);
 }
 
 void BrowserURLLoaderThrottle::OnSkipCheckCompleteOnOriginalUrl(
@@ -319,20 +289,9 @@ void BrowserURLLoaderThrottle::OnSkipCheckCompleteOnOriginalUrl(
 
   UrlCheckerOnSB::StartParams params(headers, load_flags, request_destination,
                                      has_user_gesture, url, method);
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    sync_sb_checker_->Start(params);
-    if (async_sb_checker_) {
-      async_sb_checker_->Start(params);
-    }
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&UrlCheckerOnSB::Start,
-                                  sync_sb_checker_->AsWeakPtr(), params));
-    if (async_sb_checker_) {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&UrlCheckerOnSB::Start,
-                                    async_sb_checker_->AsWeakPtr(), params));
-    }
+  sync_sb_checker_->Start(params);
+  if (async_sb_checker_) {
+    async_sb_checker_->Start(params);
   }
 }
 
@@ -366,22 +325,10 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
   // The check to |skip_check_checker| cannot be skipped because
   // WillRedirectRequest may be called while |skip_check_checker| is still in
   // progress.
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    skip_check_checker_->CheckRedirectUrl(base::BindOnce(
-        &BrowserURLLoaderThrottle::OnSkipCheckCompleteOnRedirectUrl,
-        weak_factory_.GetWeakPtr(), redirect_info->new_url,
-        redirect_info->new_method));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SkipCheckCheckerOnSB::CheckRedirectUrl,
-            skip_check_checker_->AsWeakPtr(),
-            base::BindOnce(
-                &BrowserURLLoaderThrottle::OnSkipCheckCompleteOnRedirectUrl,
-                weak_factory_.GetWeakPtr(), redirect_info->new_url,
-                redirect_info->new_method)));
-  }
+  skip_check_checker_->CheckRedirectUrl(base::BindOnce(
+      &BrowserURLLoaderThrottle::OnSkipCheckCompleteOnRedirectUrl,
+      weak_factory_.GetWeakPtr(), redirect_info->new_url,
+      redirect_info->new_method));
 }
 
 void BrowserURLLoaderThrottle::OnSkipCheckCompleteOnRedirectUrl(
@@ -400,21 +347,9 @@ void BrowserURLLoaderThrottle::OnSkipCheckCompleteOnRedirectUrl(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    sync_sb_checker_->CheckUrl(url, method);
-    if (async_sb_checker_) {
-      async_sb_checker_->CheckUrl(url, method);
-    }
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&UrlCheckerOnSB::CheckUrl,
-                                  sync_sb_checker_->AsWeakPtr(), url, method));
-    if (async_sb_checker_) {
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&UrlCheckerOnSB::CheckUrl,
-                         async_sb_checker_->AsWeakPtr(), url, method));
-    }
+  sync_sb_checker_->CheckUrl(url, method);
+  if (async_sb_checker_) {
+    async_sb_checker_->CheckUrl(url, method);
   }
 }
 
@@ -546,16 +481,6 @@ void BrowserURLLoaderThrottle::OnCompleteAsyncCheck(
     UrlCheckerOnSB::OnCompleteCheckResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // If the async checker is already transferred, notify tracker. This happens
-  // if it is transferred between complete callback is scheduled on the IO
-  // thread and executed on the UI thread.
-  if (!async_sb_checker_ &&
-      !base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    async_check_tracker_->PendingCheckerCompleted(navigation_id_.value(),
-                                                  result);
-    return;
-  }
-
   // |blocked| may already be set by |sync_sb_checker_|.
   if (blocked_) {
     return;
@@ -577,7 +502,7 @@ void BrowserURLLoaderThrottle::OnCompleteAsyncCheck(
 void BrowserURLLoaderThrottle::BlockUrlLoader(bool showed_interstitial) {
   blocked_ = true;
 
-  DeleteUrlCheckerOnSB();
+  DeleteUrlChecker();
   // If we didn't show an interstitial, we cancel with ERR_ABORTED to not show
   // an error page either.
   delegate_->CancelWithError(
@@ -619,21 +544,12 @@ void BrowserURLLoaderThrottle::SkipChecks() {
   }
 }
 
-void BrowserURLLoaderThrottle::DeleteUrlCheckerOnSB() {
+void BrowserURLLoaderThrottle::DeleteUrlChecker() {
   pending_sync_checks_ = 0;
   pending_async_checks_ = 0;
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    sync_sb_checker_.reset();
-    async_sb_checker_.reset();
-    skip_check_checker_.reset();
-  } else {
-    content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                   std::move(sync_sb_checker_));
-    content::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, std::move(async_sb_checker_));
-    content::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, std::move(skip_check_checker_));
-  }
+  sync_sb_checker_.reset();
+  async_sb_checker_.reset();
+  skip_check_checker_.reset();
 }
 
 void BrowserURLLoaderThrottle::MaybeTransferAsyncChecker() {

@@ -387,10 +387,7 @@ bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
 }
 
 bool AwContentsIoThreadClient::GetSafeBrowsingEnabled() const {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   JNIEnv* env = AttachCurrentThread();
   return Java_AwContentsIoThreadClient_getSafeBrowsingEnabled(env,

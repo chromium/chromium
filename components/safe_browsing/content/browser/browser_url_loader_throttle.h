@@ -147,9 +147,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Called when the URL is identified as dangerous.
   void BlockUrlLoader(bool showed_interstitial);
 
-  // Destroys all checkers on the IO thread, or UI thread if
-  // kSafeBrowsingOnUIThread is enabled.
-  void DeleteUrlCheckerOnSB();
+  // Destroys all checkers.
+  void DeleteUrlChecker();
 
   // If |sync_sb_checker_| has completed, but |async_sb_checker_| has not,
   // transfer the ownership of |async_sb_checker_| to |async_check_tracker_|.

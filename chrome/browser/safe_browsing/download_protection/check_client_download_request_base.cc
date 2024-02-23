@@ -139,18 +139,8 @@ void CheckClientDownloadRequestBase::Start() {
   // analysis.
   auto callback = base::BindOnce(
       &CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone, GetWeakPtr());
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    database_manager_->MatchDownloadAllowlistUrl(source_url_,
-                                                 std::move(callback));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&safe_browsing::SafeBrowsingDatabaseManager::
-                           MatchDownloadAllowlistUrl,
-                       database_manager_, source_url_,
-                       base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                                          std::move(callback))));
-  }
+  database_manager_->MatchDownloadAllowlistUrl(source_url_,
+                                               std::move(callback));
 }
 
 void CheckClientDownloadRequestBase::FinishRequest(

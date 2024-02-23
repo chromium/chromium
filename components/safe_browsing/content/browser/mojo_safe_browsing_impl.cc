@@ -85,10 +85,7 @@ MojoSafeBrowsingImpl::MojoSafeBrowsingImpl(
 }
 
 MojoSafeBrowsingImpl::~MojoSafeBrowsingImpl() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 // static
@@ -98,10 +95,7 @@ void MojoSafeBrowsingImpl::MaybeCreate(
     const base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>&
         delegate_getter,
     mojo::PendingReceiver<mojom::SafeBrowsing> receiver) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
 
@@ -109,22 +103,11 @@ void MojoSafeBrowsingImpl::MaybeCreate(
     return;
   }
 
-  // MojoSafeBrowsingImpl is either a UserData on ResourceContext or
-  // BrowserContext depending on which thread safe browsing runs on.
   base::SupportsUserData* user_data;
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(render_process_id);
-    DCHECK(rph);
-    user_data = rph->GetBrowserContext();
-  } else {
-    if (!resource_context) {
-      // The ResourceContext was deleted in between the hop from the UI thread
-      // to the IO thread.
-      return;
-    }
-    user_data = resource_context.get();
-  }
+  content::RenderProcessHost* rph =
+      content::RenderProcessHost::FromID(render_process_id);
+  DCHECK(rph);
+  user_data = rph->GetBrowserContext();
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(
       std::move(delegate), render_process_id, user_data));
@@ -148,10 +131,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     bool has_user_gesture,
     bool originated_from_service_worker,
     CreateCheckerAndCheckCallback callback) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::optional<base::UnguessableToken> sb_frame_token;
   if (frame_token) {

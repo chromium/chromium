@@ -969,29 +969,14 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   fake_safe_browsing_database()->SimulateTimeout();
   SimulateStartAndExpectProceed(url);
 
-  // Flush the pending tasks on the IO thread, so the delayed task surely gets
-  // posted.
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    task_environment()->RunUntilIdle();
-  } else {
-    test_io_task_runner()->RunUntilIdle();
-  }
+  // Flush the pending tasks, so the delayed task surely gets posted.
+  task_environment()->RunUntilIdle();
 
   // Expect one delayed task, and fast forward time.
   base::TimeDelta expected_delay =
       SubresourceFilterSafeBrowsingClientRequest::kCheckURLTimeout;
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    // When the safe browsing code runs on the UI thread, can't check
-    // task_environment()->NextMainThreadPendingTaskDelay() since there are many
-    // other tasks posted.
-    // EXPECT_EQ(expected_delay,
-    // task_environment()->NextMainThreadPendingTaskDelay());
-    task_environment()->FastForwardBy(expected_delay);
-  } else {
-    EXPECT_EQ(expected_delay, test_io_task_runner()->NextPendingTaskDelay());
-    test_io_task_runner()->FastForwardBy(expected_delay);
-  }
+  task_environment()->FastForwardBy(expected_delay);
 
   SimulateCommitAndExpectProceed();
   EXPECT_EQ(mojom::ActivationLevel::kDisabled,

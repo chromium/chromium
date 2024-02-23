@@ -95,10 +95,7 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDoneWeak(
     const base::WeakPtr<ClientRequest>& req,
     SBThreatType matched_threat_type,
     const ThreatMetadata& metadata) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!req) {
     return;  // Previously canceled
   }

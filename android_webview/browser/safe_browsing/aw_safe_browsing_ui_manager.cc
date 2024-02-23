@@ -85,21 +85,10 @@ void AwSafeBrowsingUIManager::DisplayBlockingPage(
 
 scoped_refptr<network::SharedURLLoaderFactory>
 AwSafeBrowsingUIManager::GetURLLoaderFactoryOnSBThread() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!shared_url_loader_factory_on_sb_) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      CreateURLLoaderFactoryForSB(
-          url_loader_factory_on_sb_.BindNewPipeAndPassReceiver());
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &AwSafeBrowsingUIManager::CreateURLLoaderFactoryForSB, this,
-              url_loader_factory_on_sb_.BindNewPipeAndPassReceiver()));
-    }
+    CreateURLLoaderFactoryForSB(
+        url_loader_factory_on_sb_.BindNewPipeAndPassReceiver());
     shared_url_loader_factory_on_sb_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_on_sb_.get());

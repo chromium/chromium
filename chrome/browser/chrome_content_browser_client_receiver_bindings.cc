@@ -159,30 +159,15 @@ void MaybeCreateSafeBrowsingForRenderer(
   bool safe_browsing_enabled =
       safe_browsing::IsSafeBrowsingEnabled(*pref_service);
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-        process_id, std::move(resource_context),
-        base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
-                            // Navigation initiated from renderer should never
-                            // check when safe browsing is disabled, because
-                            // enterprise check only supports mainframe URL.
-                            /*should_check_on_sb_disabled=*/false,
-                            allowlist_domains),
-        std::move(receiver));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, process_id,
-            std::move(resource_context),
-            base::BindRepeating(
-                get_checker_delegate, safe_browsing_enabled,
-                // Navigation initiated from renderer should never
-                // check when safe browsing is disabled, because
-                // enterprise check only supports mainframe URL.
-                /*should_check_on_sb_disabled=*/false, allowlist_domains),
-            std::move(receiver)));
-  }
+  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+      process_id, std::move(resource_context),
+      base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
+                          // Navigation initiated from renderer should never
+                          // check when safe browsing is disabled, because
+                          // enterprise check only supports mainframe URL.
+                          /*should_check_on_sb_disabled=*/false,
+                          allowlist_domains),
+      std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

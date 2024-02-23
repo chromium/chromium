@@ -235,12 +235,7 @@ void AsyncCheckTracker::MaybeDeleteChecker(int64_t navigation_id) {
   if (!base::Contains(pending_checkers_, navigation_id)) {
     return;
   }
-  if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-    pending_checkers_[navigation_id].reset();
-  } else {
-    content::GetIOThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, std::move(pending_checkers_[navigation_id]));
-  }
+  pending_checkers_[navigation_id].reset();
   pending_checkers_.erase(navigation_id);
   MaybeCallOnAllCheckersCompletedCallback();
 }
@@ -253,12 +248,7 @@ void AsyncCheckTracker::DeletePendingCheckers(
       it++;
       continue;
     }
-    if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-      it->second.reset();
-    } else {
-      content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                     std::move(it->second));
-    }
+    it->second.reset();
     it = pending_checkers_.erase(it);
     MaybeCallOnAllCheckersCompletedCallback();
   }
