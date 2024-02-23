@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import subprocess
 import sys
 import time
 from typing import Optional
@@ -17,6 +18,7 @@ from devil.android import logcat_monitor
 from devil.android.tools import script_common
 from devil.android.tools import webview_app
 from pylib.base import base_test_result
+from pylib.base import test_exception
 from pylib.base import test_run
 from pylib.local.machine import local_machine_junit_test_run as junitrun
 from pylib.symbols import stack_symbolizer
@@ -61,7 +63,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
 
   # override
   def GetTestsForListing(self):
-    raise NotImplementedError
+    return self._GetTests()
 
   # override
   def SetUp(self):
@@ -80,7 +82,17 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
       self.webview_context.__enter__()
       # pylint: enable=no-member
 
-  def _MakeJob(self, shard_id):
+  @staticmethod
+  def _ApplyExternalSharding(tests, shard_index, total_shards):
+    logging.info('Using external sharding settings. This is shard %d/%d',
+                 shard_index, total_shards)
+
+    if total_shards < 0 or shard_index < 0 or total_shards <= shard_index:
+      raise test_exception.InvalidShardingSettings(shard_index, total_shards)
+
+    return tests[shard_index::total_shards]
+
+  def _MakeModeArgs(self):
     if self._test_instance.instant_mode:
       mode_args = [
           '--module-parameter',
@@ -91,11 +103,28 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
           '--exclude-filter',
           f'{self.TestPackage()}[instant]',
       ]
+    return mode_args
 
+  def _MakeEnv(self):
+    return dict(
+        os.environ,
+        PATH=':'.join([
+          os.getenv('PATH'),
+          self._test_instance.aapt_path,
+          self._test_instance.adb_path]),
+        CTS_ROOT=os.path.join(
+          os.path.dirname(self._test_instance.tradefed_executable),
+          os.pardir,
+          os.pardir
+        )
+    )
+
+  def _GetTests(self):
     filter_args = []
+    # use passed in filters to list all filters tests
     for combined_filter in self._test_instance.test_filters:
       pattern_groups = combined_filter.split('-')
-      negative_pattern = pattern_groups[1] if len(pattern_groups) > 1 else None
+      negative_pattern = pattern_groups[1] if len(pattern_groups) > 1 else ''
       positive_pattern = pattern_groups[0]
       if negative_pattern:
         for exclude_filter in negative_pattern.split(':'):
@@ -104,7 +133,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
               self.TestPackage()
               + '[instant]' * self._test_instance.instant_mode
               + ' ' + '#'.join(exclude_filter.rsplit('.', 1)),
-          ])
+        ])
       if positive_pattern:
         for include_filter in positive_pattern.split(':'):
           filter_args.extend([
@@ -112,7 +141,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
               self.TestPackage()
               + '[instant]' * self._test_instance.instant_mode
               + ' ' + '#'.join(include_filter.rsplit('.', 1)),
-          ])
+        ])
 
     cmd = [
         self._test_instance.tradefed_executable,
@@ -121,7 +150,44 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
         'cts',
         '-m',
         self.TestPackage(),
-    ] + mode_args + filter_args + [
+    ] + self._MakeModeArgs() + filter_args + ['--collect-tests-only']
+
+    logging.info('Getting tests from cts-tradefed using --collect_tests_only.')
+    output = subprocess.check_output(
+        cmd,
+        timeout=600,
+        env=self._MakeEnv(),
+        universal_newlines=True,
+    )
+
+    tests = set()
+    for line in output.splitlines():
+      if test_start_match := _TEST_START_RE.match(line):
+        tests.add(test_start_match.group(1))
+    tests = self._ApplyExternalSharding(
+        sorted(tests),
+        self._test_instance.external_shard_index,
+        self._test_instance.total_external_shards)
+    return tests
+
+  def _MakeJob(self):
+    filter_args = []
+    # only include current shard tests
+    for test in self._GetTests():
+      filter_args.extend([
+          '--include-filter',
+          self.TestPackage() + '[instant]' * self._test_instance.instant_mode
+          + ' ' + test,
+      ])
+
+    cmd = [
+        self._test_instance.tradefed_executable,
+        'run',
+        'commandAndExit',
+        'cts',
+        '-m',
+        self.TestPackage(),
+    ] + self._MakeModeArgs() + filter_args + [
         '--retry-strategy',
         'RETRY_ANY_FAILURE',
         '--max-testcase-run-count',
@@ -132,25 +198,20 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
     ]
 
     return _Job(
-        shard_id=shard_id,
+        # Note: the shard_id here is not to be confused with the external shard
+        # index (set by swarming). This is a local shard index as we are reusing
+        # more general-purpose code that allows for having multiple subprocesses
+        # run tests locally in parallel. We are not doing that here, so sticking
+        # to a fixed shard_id.
+        shard_id=0,
         cmd=cmd,
         timeout=600,
-        env=dict(os.environ,
-                 PATH=':'.join([
-                   os.getenv('PATH'),
-                   self._test_instance.aapt_path,
-                   self._test_instance.adb_path]),
-                 CTS_ROOT=os.path.join(
-                   os.path.dirname(self._test_instance.tradefed_executable),
-                   os.pardir,
-                   os.pardir
-                 )
-        )
+        env=self._MakeEnv()
     )
 
   # override
   def RunTests(self, results, raw_logs_fh=None):
-    job = self._MakeJob(0)
+    job = self._MakeJob()
 
     per_test_logs = {}
     log_lines = []
@@ -239,7 +300,7 @@ class LocalMachineHostsideTestRun(test_run.TestRun):
   @contextlib.contextmanager
   def _ArchiveLogcat(self, device, test_name):
     stream_name = 'logcat_%s_shard%s_%s_%s' % (
-        test_name.replace('#', '.'), 0,
+        test_name.replace('#', '.'), self._test_instance.external_shard_index,
         time.strftime('%Y%m%dT%H%M%S-UTC', time.gmtime()), device.serial)
 
     logcat_file = None

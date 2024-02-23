@@ -21,8 +21,9 @@ from devil.android.tools import device_recovery
 from devil.utils import signal_handler
 from pylib import valgrind_tools
 from pylib.base import base_test_result
-from pylib.base import test_run
 from pylib.base import test_collection
+from pylib.base import test_exception
+from pylib.base import test_run
 from pylib.local.device import local_device_environment
 
 
@@ -41,13 +42,6 @@ def SubstituteDeviceRoot(device_path, device_root):
 
 class TestsTerminated(Exception):
   pass
-
-
-class InvalidShardingSettings(Exception):
-  def __init__(self, shard_index, total_shards):
-    super().__init__(
-        'Invalid sharding settings. shard_index: %d total_shards: %d' %
-        (shard_index, total_shards))
 
 
 class LocalDeviceTestRun(test_run.TestRun):
@@ -264,7 +258,7 @@ class LocalDeviceTestRun(test_run.TestRun):
                  shard_index, total_shards)
 
     if total_shards < 0 or shard_index < 0 or total_shards <= shard_index:
-      raise InvalidShardingSettings(shard_index, total_shards)
+      raise test_exception.InvalidShardingSettings(shard_index, total_shards)
 
     sharded_tests = []
 
