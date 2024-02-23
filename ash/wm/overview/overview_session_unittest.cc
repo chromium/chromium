@@ -463,6 +463,13 @@ TEST_P(OverviewSessionTest, Basic) {
   // In overview mode the windows should no longer overlap and the overview
   // focus window should be focused.
   ToggleOverview();
+
+  // Warms up the compositor so that UI changes are picked up in time before
+  // throughput tracker is stopped.
+  ui::Compositor* const compositor = window1->GetHost()->compositor();
+  compositor->ScheduleFullRedraw();
+  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+
   WaitForOverviewEnterAnimation();
 
   EXPECT_EQ(GetOverviewSession()->GetOverviewFocusWindow(),
@@ -472,6 +479,12 @@ TEST_P(OverviewSessionTest, Basic) {
 
   // Clicking window 1 should activate it.
   ClickWindow(window1.get());
+
+  // Warms up the compositor so that UI changes are picked up in time before
+  // throughput tracker is stopped.
+  compositor->ScheduleFullRedraw();
+  ASSERT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+
   WaitForOverviewExitAnimation();
 
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
