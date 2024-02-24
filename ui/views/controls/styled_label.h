@@ -187,6 +187,7 @@ class VIEWS_EXPORT StyledLabel : public View {
   gfx::Size CalculatePreferredSize() const final;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   int GetHeightForWidth(int w) const override;
   void Layout(PassKey) override;
   void PreferredSizeChanged() override;
@@ -247,6 +248,8 @@ class VIEWS_EXPORT StyledLabel : public View {
   // delete the rest.
   void RemoveOrDeleteAllChildViews();
 
+  void RecreateChildViews();
+
   // The text to display.
   std::u16string text_;
 
@@ -286,6 +289,12 @@ class VIEWS_EXPORT StyledLabel : public View {
 
   // Controls whether subpixel rendering is enabled.
   bool subpixel_rendering_enabled_ = true;
+
+  // Controls whether subviews need to be recreated. Recreating subviews can
+  // cause some functionality to break under certain circumstances.
+  // eg: If re-creating the subview occurs after OnMousePressed() and before
+  // OnMouseRelease(), the link will not be clickable.
+  bool need_recreate_child_ = true;
 
   // The horizontal alignment. This value is flipped for RTL. The default
   // behavior is to align left in LTR UI and right in RTL UI.
