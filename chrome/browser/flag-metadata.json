@@ -2269,7 +2269,7 @@
   {
     "name": "enable-builtin-hls",
     "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
-    "expiry_milestone": 123
+    "expiry_milestone": 125
   },
   {
     "name": "enable-cast-streaming-av1",
