@@ -47,6 +47,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/url_formatter/elide_url.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif
 
 namespace {
@@ -247,9 +249,20 @@ void OnDefaultSchemeClientWorkerFinished(
   // If we get here, either we are not the default or we cannot work out
   // what the default is, so we proceed.
   if (prompt_user) {
-    // Never prompt the user without a web_contents.
-    if (!web_contents)
+    // Never prompt the user without a web_contents or dialog manager.
+    if (!web_contents ||
+        !web_modal::WebContentsModalDialogManager::FromWebContents(
+            web_contents)) {
+      LOG(ERROR) << "Skipping ExternalProtocolDialog"
+                 << ", escaped_url=" << escaped_url.possibly_invalid_spec()
+                 << ", initiating_origin="
+                 << url_formatter::FormatOriginForSecurityDisplay(
+                        initiating_origin.value_or(url::Origin()))
+                 << ", web_contents?" << !!web_contents << ", browser?"
+                 << (web_contents && chrome::FindBrowserWithTab(web_contents));
+      base::debug::DumpWithoutCrashing();
       return;
+    }
 
     // Ask the user if they want to allow the protocol. This will call
     // LaunchUrlWithoutSecurityCheck if the user decides to accept the
