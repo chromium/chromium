@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/types/expected.h"
+#include "base/win/windows_types.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 
 namespace base {
@@ -17,10 +19,12 @@ namespace elevation_service {
 
 // Generates an opaque blob of validation data for the given `level` for the
 // calling process `process`. Returns the validation data if it was successfully
-// generated, or empty string otherwise. See elevation_service_idl.idl for the
-// definition of the valid protection levels.
-std::string GenerateValidationData(ProtectionLevel level,
-                                   const base::Process& process);
+// generated, or an error code - either a system HRESULT or a custom one defined
+// in elevator.h. See elevation_service_idl.idl for the definition of the valid
+// protection levels.
+base::expected<std::string, HRESULT> GenerateValidationData(
+    ProtectionLevel level,
+    const base::Process& process);
 
 // Validates `validation_data` validates for `process`, according to the
 // validation policy for the level encoded in `validation_data` when it was

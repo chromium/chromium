@@ -12,6 +12,7 @@
 #include "base/process/process.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/startup_information.h"
+#include "chrome/elevation_service/elevator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace elevation_service {
@@ -46,9 +47,10 @@ void VerifyValidationResult(const base::FilePath& path1,
   ASSERT_TRUE(process1.IsRunning());
   auto process2 = StartSuspendedFakeProcess(path2);
   ASSERT_TRUE(process2.IsRunning());
-  const std::string data =
+  const auto data =
       GenerateValidationData(ProtectionLevel::PATH_VALIDATION, process1);
-  EXPECT_EQ(expected_match, ValidateData(process2, data))
+  ASSERT_TRUE(data.has_value()) << data.error();
+  EXPECT_EQ(expected_match, ValidateData(process2, *data))
       << path1 << " vs. " << path2;
   process1.Terminate(0, /*wait=*/true);
   process2.Terminate(0, /*wait=*/true);
@@ -65,36 +67,35 @@ class CallerValidationTest : public ::testing::Test {
 
 TEST_F(CallerValidationTest, NoneValidationTest) {
   const auto my_process = base::Process::Current();
-  const std::string data =
-      GenerateValidationData(ProtectionLevel::NONE, my_process);
-  ASSERT_FALSE(data.empty());
-  ASSERT_TRUE(ValidateData(my_process, data));
+  const auto data = GenerateValidationData(ProtectionLevel::NONE, my_process);
+  ASSERT_TRUE(data.has_value()) << data.error();
+  ASSERT_TRUE(ValidateData(my_process, *data));
 }
 
 TEST_F(CallerValidationTest, PathValidationTest) {
   const auto my_process = base::Process::Current();
-  const std::string data =
+  const auto data =
       GenerateValidationData(ProtectionLevel::PATH_VALIDATION, my_process);
-  ASSERT_FALSE(data.empty());
-  ASSERT_TRUE(ValidateData(my_process, data));
+  ASSERT_TRUE(data.has_value()) << data.error();
+  ASSERT_TRUE(ValidateData(my_process, *data));
 }
 
 TEST_F(CallerValidationTest, PathValidationTestFail) {
   const auto my_process = base::Process::Current();
-  const std::string data =
+  const auto data =
       GenerateValidationData(ProtectionLevel::PATH_VALIDATION, my_process);
-  ASSERT_FALSE(data.empty());
+  ASSERT_TRUE(data.has_value()) << data.error();
 
   auto notepad_process =
       base::LaunchProcess(L"calc.exe", base::LaunchOptions());
   ASSERT_TRUE(notepad_process.IsRunning());
 
-  ASSERT_FALSE(ValidateData(notepad_process, data));
+  ASSERT_FALSE(ValidateData(notepad_process, *data));
   ASSERT_TRUE(notepad_process.Terminate(0, true));
 }
 
 TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
-  std::string data;
+  base::expected<std::string, HRESULT> data;
 
   // Start two separate notepad processes to validate that path validation only
   // cares about the process path and not the process itself.
@@ -108,30 +109,29 @@ TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
     ASSERT_TRUE(notepad_process.Terminate(0, true));
   }
 
-  ASSERT_FALSE(data.empty());
+  ASSERT_TRUE(data.has_value()) << data.error();
 
   {
     auto notepad_process =
         base::LaunchProcess(L"calc.exe", base::LaunchOptions());
     ASSERT_TRUE(notepad_process.IsRunning());
 
-    ASSERT_TRUE(ValidateData(notepad_process, data));
+    ASSERT_TRUE(ValidateData(notepad_process, *data));
     ASSERT_TRUE(notepad_process.Terminate(0, true));
   }
 }
 
 TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
   const auto my_process = base::Process::Current();
-  const std::string data =
-      GenerateValidationData(ProtectionLevel::NONE, my_process);
-  ASSERT_FALSE(data.empty());
+  const auto data = GenerateValidationData(ProtectionLevel::NONE, my_process);
+  ASSERT_TRUE(data.has_value()) << data.error();
 
   auto notepad_process =
       base::LaunchProcess(L"calc.exe", base::LaunchOptions());
   ASSERT_TRUE(notepad_process.IsRunning());
 
   // None validation should not care if the process is different.
-  ASSERT_TRUE(ValidateData(notepad_process, data));
+  ASSERT_TRUE(ValidateData(notepad_process, *data));
   ASSERT_TRUE(notepad_process.Terminate(0, true));
 }
 
@@ -198,6 +198,18 @@ TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
       VerifyValidationResult(app7_path, app3_path, /*expected_match=*/false));
   ASSERT_NO_FATAL_FAILURE(
       VerifyValidationResult(app7_path, app1_path, /*expected_match=*/false));
+}
+
+// To run this locally, copy the elevation_service_unittests binary to a
+// network drive (e.g. X:) and run it using:
+// X:\elevation_service_unittests.exe
+// --gtest_filter=CallerValidationTest.PathValidationNetwork
+// --gtest_also_run_disabled_tests.
+TEST_F(CallerValidationTest, DISABLED_PathValidationNetwork) {
+  const auto data = GenerateValidationData(ProtectionLevel::PATH_VALIDATION,
+                                           base::Process::Current());
+  EXPECT_FALSE(data.has_value());
+  EXPECT_EQ(data.error(), Elevator::kErrorUnsupportedFilePath);
 }
 
 }  // namespace elevation_service

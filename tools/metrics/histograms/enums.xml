@@ -12776,6 +12776,10 @@ Called by update_permissions_policy_enum.py.-->
       label="elevation_service::Elevator::kErrorCouldNotEncryptWithSystemContext"/>
   <int value="-2147180537"
       label="elevation_service::Elevator::kValidationDidNotPass"/>
+  <int value="-2147180536"
+      label="elevation_service::Elevator::kErrorCouldNotObtainPath"/>
+  <int value="-2147180535"
+      label="elevation_service::Elevator::kErrorUnsupportedFilePath"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
   <int value="-2147172346" label="DRM_E_INVALID_LICENSE"/>

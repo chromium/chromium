@@ -53,6 +53,10 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA006);
   static constexpr HRESULT kValidationDidNotPass =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA007);
+  static constexpr HRESULT kErrorCouldNotObtainPath =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA008);
+  static constexpr HRESULT kErrorUnsupportedFilePath =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009);
 
   Elevator() = default;
 

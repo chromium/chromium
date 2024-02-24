@@ -15,7 +15,9 @@
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
+#include "chrome/elevation_service/elevator.h"
 
 namespace elevation_service {
 
@@ -86,8 +88,20 @@ std::string GetProcessExecutablePath(const base::Process& process) {
 
 // Generate path based validation data, or return empty string if this was not
 // possible.
-std::string GeneratePathValidationData(const base::Process& process) {
-  return GetProcessExecutablePath(process);
+base::expected<std::string, HRESULT> GeneratePathValidationData(
+    const base::Process& process) {
+  auto path = GetProcessExecutablePath(process);
+  if (path.empty()) {
+    return base::unexpected(
+        elevation_service::Elevator::kErrorCouldNotObtainPath);
+  }
+  // Application identity capture for encrypt is only supported on local paths.
+  if (!base::StartsWith(path, "\\Device\\HarddiskVolume",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    return base::unexpected(
+        elevation_service::Elevator::kErrorUnsupportedFilePath);
+  }
+  return path;
 }
 
 bool ValidatePath(const base::Process& process, const std::string& data) {
@@ -97,21 +111,19 @@ bool ValidatePath(const base::Process& process, const std::string& data) {
 
 }  // namespace
 
-std::string GenerateValidationData(ProtectionLevel level,
-                                   const base::Process& process) {
-  std::string validation_data;
+base::expected<std::string, HRESULT> GenerateValidationData(
+    ProtectionLevel level,
+    const base::Process& process) {
   switch (level) {
     case ProtectionLevel::NONE:
-      validation_data.insert(0, kNoneValidationPrefix);
-      break;
+      return kNoneValidationPrefix;
     case ProtectionLevel::PATH_VALIDATION:
-      validation_data = GeneratePathValidationData(process);
-      if (validation_data.empty())
-        return std::string();
-      validation_data.insert(0, kPathValidationPrefix);
-      break;
+      auto path_validation_data = GeneratePathValidationData(process);
+      if (path_validation_data.has_value()) {
+        path_validation_data->insert(0, kPathValidationPrefix);
+      }
+      return path_validation_data;
   }
-  return validation_data;
 }
 
 bool ValidateData(const base::Process& process,
