@@ -81,18 +81,18 @@ void V8MemoryTestBase::DelayedReplyWithData(
 
 void V8MemoryTestBase::ExpectQuery(
     MockV8DetailedMemoryReporter* mock_reporter,
-    base::RepeatingCallback<
+    base::OnceCallback<
         void(MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback callback)>
         responder,
     ExpectedMode expected_mode) {
   EXPECT_CALL(*mock_reporter, GetV8MemoryUsage(expected_mode, _))
-      .WillOnce(
-          [this, responder](
-              ExpectedMode mode,
-              MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback callback) {
-            this->last_query_time_ = base::TimeTicks::Now();
-            responder.Run(std::move(callback));
-          });
+      .WillOnce([this, responder = std::move(responder)](
+                    ExpectedMode mode,
+                    MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback
+                        callback) mutable {
+        this->last_query_time_ = base::TimeTicks::Now();
+        std::move(responder).Run(std::move(callback));
+      });
 }
 
 void V8MemoryTestBase::ExpectQueryAndReply(
@@ -100,8 +100,8 @@ void V8MemoryTestBase::ExpectQueryAndReply(
     blink::mojom::PerProcessV8MemoryUsagePtr data,
     ExpectedMode expected_mode) {
   ExpectQuery(mock_reporter,
-              base::BindRepeating(&V8MemoryTestBase::ReplyWithData,
-                                  base::Unretained(this), base::Passed(&data)),
+              base::BindOnce(&V8MemoryTestBase::ReplyWithData,
+                             base::Unretained(this), std::move(data)),
               expected_mode);
 }
 
@@ -110,11 +110,10 @@ void V8MemoryTestBase::ExpectQueryAndDelayReply(
     const base::TimeDelta& delay,
     blink::mojom::PerProcessV8MemoryUsagePtr data,
     ExpectedMode expected_mode) {
-  ExpectQuery(
-      mock_reporter,
-      base::BindRepeating(&V8MemoryTestBase::DelayedReplyWithData,
-                          base::Unretained(this), delay, base::Passed(&data)),
-      expected_mode);
+  ExpectQuery(mock_reporter,
+              base::BindOnce(&V8MemoryTestBase::DelayedReplyWithData,
+                             base::Unretained(this), delay, std::move(data)),
+              expected_mode);
 }
 
 void V8MemoryTestBase::ExpectBindReceiver(

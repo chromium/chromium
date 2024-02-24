@@ -109,7 +109,7 @@ class V8MemoryTestBase {
   // methods that could be bound into |responder| callbacks.)
   void ExpectQuery(
       MockV8DetailedMemoryReporter* mock_reporter,
-      base::RepeatingCallback<
+      base::OnceCallback<
           void(MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback callback)>
           responder,
       ExpectedMode expected_mode = ExpectedMode::DEFAULT);
