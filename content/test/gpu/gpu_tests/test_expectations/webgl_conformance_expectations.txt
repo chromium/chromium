@@ -454,7 +454,6 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Fuchsia failures #
 ####################
 
-crbug.com/1371306 [ fuchsia fuchsia-board-nelson web-engine-shell ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Flaky tests
 crbug.com/1489477 [ fuchsia fuchsia-board-astro ] conformance/more/conformance/quickCheck* [ Failure ]
