@@ -102,7 +102,7 @@ def _write_build_ids_txt(readelf_exec, binary_paths, ids_txt_path):
 
         if len(unprocessed_binary_paths) == 1:
             # Readelf won't report a binary's path if only one was provided to the tool.
-            binary_path = unprocessed_binary_paths[0]
+            [binary_path] = unprocessed_binary_paths
         else:
             binary_path = None
 
