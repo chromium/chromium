@@ -5125,6 +5125,12 @@ if (is_linux || is_chromeos) {
   }
 }
 
+fuzzer_test("base_persistent_histogram_allocator_fuzzer") {
+  sources = [ "metrics/persistent_histogram_allocator_fuzzer.cc" ]
+  deps = [ "//base" ]
+  seed_corpus = "//base/test/data/pma_corpus"
+}
+
 fuzzer_test("string_number_conversions_fuzzer") {
   sources = [ "strings/string_number_conversions_fuzzer.cc" ]
   deps = [ "//base" ]
