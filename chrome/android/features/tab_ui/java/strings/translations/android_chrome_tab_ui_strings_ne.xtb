@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{समूहबाट ट्याब हटाउनुहोस्}other{समूहबाट ट्याबहरू हटाउनुहोस्}}</translation>
 <translation id="2277224997687551299">समूहको नाम परिवर्तन गर्नुहोस्</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{ट्याब बुकमार्क गर्नुहोस्}other{ट्याबहरू बुकमार्क गर्नुहोस्}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह कोल्याप्स गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह कोल्याप्स गर्नुहोस्।}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
 <translation id="2613747923081026172">समूह सिर्जना गर्नुहोस्</translation>

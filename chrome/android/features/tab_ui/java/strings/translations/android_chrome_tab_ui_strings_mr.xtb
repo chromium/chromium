@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{टॅब गटामधून काढून टाका}other{टॅब गटामधून काढून टाका}}</translation>
 <translation id="2277224997687551299">गटाचे नाव संपादित करा</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{टॅब बुकमार्क करा}other{टॅब बुकमार्क करा}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅबसह <ph name="TITLE_OF_GROUP" /> हा टॅब गट कोलॅप्स करा}other{<ph name="TABS_COUNT_MANY" /> टॅबसह <ph name="TITLE_OF_GROUP" /> हा टॅब गट कोलॅप्स करा}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
 <translation id="2613747923081026172">गट तयार करा</translation>

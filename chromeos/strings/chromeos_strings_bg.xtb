@@ -26,6 +26,7 @@
 <translation id="1145018782460575098">Отворен е прозорецът за актуализиране на фърмуера на външни устройства. Налице са <ph name="NUM_UPDATES" /> актуализации.</translation>
 <translation id="1145516343487477149">Намерете помощни статии и отговори на често задавани въпроси за Chromebook</translation>
 <translation id="1154390310959620237">Можете да персонализирате само 5 клавишни комбинации. Изтрийте някоя, за да добавите нова.</translation>
+<translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Скрийнсейвър „От зазоряване до здрачаване“</translation>
 <translation id="1167755866710282443">Отворете менюто, за да персонализирате клавишите. Плъзнете менюто за преместване.</translation>
 <translation id="1171349345463658120">пясъчна лагуна</translation>
@@ -46,6 +47,7 @@
 <translation id="1232610416724362657">водопад</translation>
 <translation id="1238612778414822719">Забавяне на HTTPS</translation>
 <translation id="1270369111467284986">Предполага се наличие на портал за удостоверяване</translation>
+<translation id="1274654146705270731">портокали</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1300115153046603471">Името на точката за достъп (APN) е стандартно и за <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -79,6 +81,7 @@
 <translation id="1446954767133808402">сапфир</translation>
 <translation id="1449035143498573192">Отваряне в Google Търсене</translation>
 <translation id="1451536289672181509">Устройството е клавиатура.</translation>
+<translation id="1452939186874918380">чадъри</translation>
 <translation id="1459693405370120464">Времето</translation>
 <translation id="1468664791493211953">Оферти</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
@@ -110,6 +113,7 @@
 <translation id="1626590945318984973">Клавишната комбинация не е налице. Използвайте друга, без да натискате функционалните клавиши и клавиша „<ph name="META_KEY" />“.</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
+<translation id="1642396894598555413">велосипеди</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="1651925268237749928">Избрахте споделен албум. Другите хора могат да добавят или променят снимки. Тапетът ви може да използва снимки, които понастоящем не са в този албум.</translation>
@@ -150,6 +154,7 @@
 <translation id="1801418420130173017">Деактивиране на тъмната тема</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1808803439260407870">Класическо изкуство</translation>
+<translation id="1823120442877418684">Обекти</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
 <translation id="1836553715834333258">Системен цвят</translation>
 <translation id="183675228220305365">реализъм</translation>
@@ -157,14 +162,17 @@
 <translation id="1840474674287087346">Цвят на работния плот</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1852934301711881861">Инсталиране на ChromeOS Flex</translation>
+<translation id="1854156910036166007">ленивци</translation>
 <translation id="1856388568474281774">Стрелка за надолу</translation>
 <translation id="1858620243986915808">Прикачване на екранна снимка</translation>
 <translation id="1871413952174074704">Името на точката за достъп (APN) не може да съдържа повече от <ph name="CHAR_LIMIT" /> знака</translation>
 <translation id="1871569928317311284">Изключване на тъмната тема</translation>
 <translation id="1874612839560830905">MTU</translation>
+<translation id="1876997008435570708">пеперуди</translation>
 <translation id="188114911237521550">Изключване на тъмния режим</translation>
 <translation id="1885577615937958993">превъртане на мултимедията напред</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
+<translation id="189221451253258459">неоновозелен</translation>
 <translation id="1904932688895783618">Ето някои други полезни ресурси:</translation>
 <translation id="1905710495812624430">Максималният брой опити е надвишен.</translation>
 <translation id="1908234395526491708">Неуспешни заявки през UDP</translation>
@@ -185,6 +193,7 @@
 <translation id="2011174342667534258">Версия на SDK:</translation>
 <translation id="2016697457005847575">Изпробвайте стъпките за отстраняване на неизправности</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2045814230297767491">прибори за хранене</translation>
 <translation id="2047316797244836561">Моля, свържете се с мрежа и презаредете страницата, за да прегледате скрийнсейвъра.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">необятен океан</translation>
@@ -207,6 +216,7 @@
 <translation id="2180197493692062006">Нещо се обърка. Опитайте да отворите приложението отново.</translation>
 <translation id="2189104374785738357">Редактиране на подробностите за името на точката за достъп (APN)</translation>
 <translation id="2201758491318984023">велосипед</translation>
+<translation id="2203222757805818543">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. За да се актуализира автоматично графикът за тъмния режим, <ph name="BEGIN_LINK" />предоставете достъп до местоположението<ph name="END_LINK" /></translation>
 <translation id="2203642483788377106">скала</translation>
 <translation id="2208388655216963643">импресионизъм</translation>
 <translation id="2209788852729124853">Нулиране на броячите за трафика</translation>
@@ -220,6 +230,7 @@
 <translation id="2230624078793142213">Създаване на още</translation>
 <translation id="2236746079896696523">Превключвател за фоновото осветление на клавиатурата</translation>
 <translation id="2240366984605217732">Превключване на подредбата</translation>
+<translation id="2244834438220057800">зелен</translation>
 <translation id="225692081236532131">Състояние на активирането</translation>
 <translation id="2267285889943769271">Добавяне на екранна снимка</translation>
 <translation id="2271469253353559191">График за тъмния режим</translation>
@@ -249,6 +260,7 @@
 <translation id="2446553403094072641">Точност на плаващата точка</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2465272316171730950">Капацитетът ни е достигнат. Заповядайте отново след малко.</translation>
+<translation id="2480572840229215612">раци</translation>
 <translation id="248546197012830854">Устройството е офлайн. Свържете се с Wi-Fi мрежа, за да видите помощното съдържание.</translation>
 <translation id="2486301288428798846">дърво</translation>
 <translation id="2491955442992294626">Клавишите не се тестват, когато използвате друг прозорец</translation>
@@ -265,6 +277,7 @@
 <translation id="2531772459602846206">Хортензия</translation>
 <translation id="2533048460510040082">Предложено помощно съдържание</translation>
 <translation id="2536159006530886390">Няма връзка с интернет.</translation>
+<translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
 <translation id="2584559707064218956">За настройване отворете „Настройки“</translation>
 <translation id="2586146417912237930">синьо и индиго</translation>
@@ -359,6 +372,7 @@
 <translation id="3340978935015468852">настройките</translation>
 <translation id="3359218928534347896">превключване на спирането на звука на микрофона</translation>
 <translation id="3360306038446926262">Windows</translation>
+<translation id="3361618936611118375">парчета суши</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
 <translation id="3373141842870501561">Тапет със Земята</translation>
@@ -398,11 +412,13 @@
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Голямо закъснение на уебсайтове, работещи с HTTPS</translation>
 <translation id="361575905210396100">Благодарим ви за отзивите</translation>
+<translation id="3621072146987826699">слонове</translation>
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
 <translation id="3651050199673793219">Изберете единица за температура</translation>
 <translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> – разцъфнало сияйно цвете в <ph name="FLOWER_COLOR" /></translation>
 <translation id="3662461537616691585">бургундско червено и тъмночервено</translation>
 <translation id="3668449597372804501">Тапет с облаци</translation>
+<translation id="3675132884790542448">прасета</translation>
 <translation id="3689839747745352263">Тест: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Зарежда се...</translation>
 <translation id="3708186454126126312">Свързвани преди</translation>
@@ -480,6 +496,7 @@
 <translation id="4171077696775491955">намаляване на яркостта</translation>
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4176659219503619100">Контролен панел</translation>
+<translation id="4198398257084619072">панди</translation>
 <translation id="420283545744377356">Изключване на скрийнсейвъра</translation>
 <translation id="4210659479607886331">ледникова река</translation>
 <translation id="4213104098953699324">Клавиатура с USB</translation>
@@ -493,17 +510,20 @@
 <translation id="4271957103967917607">Преглед на цял екран</translation>
 <translation id="4275663329226226506">Медия</translation>
 <translation id="4278766082079064416">Клавишната комбинация се използва за „<ph name="CONFLICT_ACCEL_NAME" />“. Редактирайте или премахнете действието, за да отстраните конфликта.</translation>
+<translation id="4285999655021474887">лилав</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
 <translation id="430786093962686457">шифон</translation>
 <translation id="4310735698903592804">Скорошни тапети, базирани на AI на Google</translation>
+<translation id="4320904097188876154">неоноворозов</translation>
 <translation id="4333390807948134856">Клавишът <ph name="KEY_NAME" /> е натиснат</translation>
 <translation id="4341897648462347919">тъмно синьо-зелено</translation>
 <translation id="4354430579665871434">клавиш</translation>
 <translation id="4361257691546579041">Името на точката за достъп (APN) е стандартно.</translation>
 <translation id="437294888293595148">Нулиране на всички клавишни комбинации</translation>
+<translation id="437477383107495720">зайчета</translation>
 <translation id="4376423484621194274">Администраторът ви не разрешава затварянето на <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4378551569595875038">Свързване...</translation>
@@ -518,6 +538,7 @@
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е изключена</translation>
 <translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
 <translation id="4431821876790500265">Преглед на отчета</translation>
+<translation id="4443192710976771874">червен</translation>
 <translation id="445059817448385655">Стара парола</translation>
 <translation id="4453205916657964690">Подмрежова маска</translation>
 <translation id="4454245904991689773">Сканиране във</translation>
@@ -628,6 +649,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Подобни:</translation>
+<translation id="5130848777448318809">понита</translation>
 <translation id="5137451382116112100">Цял екран</translation>
 <translation id="5142961317498132443">Удостоверяване</translation>
 <translation id="5144887194300568405">Копиране на превода</translation>
@@ -645,6 +667,7 @@
 <translation id="5229344016299762883">Изход от режима на цял екран</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Администраторът ви е настроил <ph name="APP_NAME" /> така, че да се стартира автоматично всеки път, когато влезете в профила си.}=2{Администраторът ви е настроил <ph name="APP_NAME" /> и още 1 приложение така, че да се стартират автоматично всеки път, когато влезете в профила си.}other{Администраторът ви е настроил <ph name="APP_NAME" /> и още # приложения така, че да се стартират автоматично всеки път, когато влезете в профила си.}}</translation>
+<translation id="5248419081947706722">син</translation>
 <translation id="5252456968953390977">Роуминг</translation>
 <translation id="5257811368506016604">Активиране на режима за светли цветове</translation>
 <translation id="5264277876637023664">Тестване на процесора</translation>
@@ -675,6 +698,7 @@
 <translation id="5396811372860835203">Кала</translation>
 <translation id="5400907029458559844">Устройството установява връзка.</translation>
 <translation id="5401938042319910061">Стартиране на всички процедури</translation>
+<translation id="5410755018770633464">хотдози</translation>
 <translation id="5423849171846380976">Активиран</translation>
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
@@ -682,6 +706,7 @@
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5470776029649730099">груб конопен плат</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Остава {0} опит}other{Остават {0} опита}}</translation>
+<translation id="5488280942828718790">пурпурен</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
 <translation id="5499762266711462226">Цветът на клавиатурата е въз основа на тапета</translation>
@@ -697,6 +722,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Повторно сканиране</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5595623927872580850">сив</translation>
 <translation id="5600027863942488546">Клавишът <ph name="KEY_NAME" /> е тестван</translation>
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5630438231335788050">Баухаус</translation>
@@ -709,6 +735,7 @@
 <translation id="5662240986744577912">превключване на екрана за поверителност</translation>
 <translation id="5669267381087807207">Активира се</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5685478548317291523">череши</translation>
 <translation id="5691511426247308406">Семейство</translation>
 <translation id="5695599963893094957">Натиснете произволен клавиш на клавиатурата си. Можете да натиснете до 4 наведнъж.</translation>
 <translation id="5701381305118179107">Центриране</translation>
@@ -743,6 +770,7 @@
 <translation id="5901630391730855834">жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
 <translation id="5904994456462260490">Добавяне на ново име на точката за достъп (APN)</translation>
+<translation id="590746845088109442">котки</translation>
 <translation id="5907649332524363701">цвят на клавишите</translation>
 <translation id="5916084858004523819">Забранено</translation>
 <translation id="5916664084637901428">Включено</translation>
@@ -753,6 +781,7 @@
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
 <translation id="5946538341867151940">Още нямате връзка. Ако мобилният ви оператор препоръчва персонализирано име на точката за достъп (APN), въведете съответната информация, като изберете „+ Ново име на точка за достъп (APN)“</translation>
+<translation id="5948460390109837040">кучета</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">оранжево-червено</translation>
 <translation id="5984145644188835034">Тапет по подразбиране</translation>
@@ -772,6 +801,7 @@
 <translation id="6073292342939316679">намаляване на яркостта на клавиатурата</translation>
 <translation id="6075872808778243331">(Android) Забавяне на HTTP</translation>
 <translation id="6078323886959318429">Добавяне на пряк път</translation>
+<translation id="6091080061796993741">жълт</translation>
 <translation id="6104112872696127344">Сканирането бе отменено</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
@@ -799,6 +829,7 @@
 <translation id="6232017090690406397">Батерия</translation>
 <translation id="6235460611964961764">Ръчно нулиране на преноса на данни</translation>
 <translation id="6243280677745499710">Зададено понастоящем</translation>
+<translation id="6250316632541035980">бекон и яйца</translation>
 <translation id="6275224645089671689">Стрелка за надясно</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -839,6 +870,7 @@
 <translation id="6462978824459367242">Бутонът за добавяне на име на точката за достъп (APN) вече е активиран</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се сканира ли повторно страницата?}=1{Да се сканира ли повторно страница {PAGE_NUMBER}?}other{Да се сканира ли повторно страница {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
+<translation id="6472979596862005515">лодки</translation>
 <translation id="64778964625672495">тъмночервено</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Скрийнсейвър специално за <ph name="PRODUCT_NAME" /></translation>
@@ -852,6 +884,8 @@
 <translation id="6526200165918397681">Съответствие с тапета</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
 <translation id="6535178685492749208">Офлайн сте. Отзивите ще се изпратят по-късно.</translation>
+<translation id="6543412779435705598">такос</translation>
+<translation id="6551839203326557324">ябълки</translation>
 <translation id="6557784757915238407">Името на точката за достъп (APN) е за <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Плосък скенер</translation>
 <translation id="6560196641871357166">Ярък</translation>
@@ -871,11 +905,13 @@
 <translation id="6650062777702288430">Превключване на кана/букви и цифри</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659594942844771486">Раздел</translation>
+<translation id="66621959568103627">кораловорозов</translation>
 <translation id="6673898378497337661">увеличаване на яркостта на клавиатурата</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
 <translation id="6694534975463174713">катинар</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6712933881624804031">долина</translation>
+<translation id="6716013206176357696">ягоди</translation>
 <translation id="671733080802536771">ар нуво</translation>
 <translation id="6721525125027474520">блато</translation>
 <translation id="6723839937902243910">Захранване</translation>
@@ -906,17 +942,20 @@
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
 <translation id="6911383237894364323">Не може да се установи връзка с мултимедийните сървъри</translation>
 <translation id="6943893908656559156">Отдалечена самоличност (по избор)</translation>
+<translation id="6953137545147683679">златист</translation>
 <translation id="6957231940976260713">Имe на услугата</translation>
 <translation id="695776212669661671">стрелка за надясно</translation>
 <translation id="6961170852793647506">За да започнете, поставете документа върху скенера</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Устройство</translation>
+<translation id="6975981640379148271">коали</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6982462588253070448">пясъчни дюни</translation>
 <translation id="6988803763488977828">Съсънка</translation>
 <translation id="7005833343836210400">Устройството е офлайн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
+<translation id="7035168792582749309">картофи</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Устройството не е свързано.</translation>
 <translation id="7046522406494308071">Да се възстановят ли стандартните настройки за всички клавишни комбинации?</translation>
@@ -952,6 +991,7 @@
 <translation id="7180865173735832675">Персонализиране</translation>
 <translation id="7184043045742675738">Кликнете върху който и да е клавиш, за да персонализирате бутона. Преместете клавиша с мишката или клавишите със стрелки.</translation>
 <translation id="7206979415662233817">Общи условия</translation>
+<translation id="7210635925306941239">синьо-зелен</translation>
 <translation id="7212547870105584639">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
@@ -1020,6 +1060,7 @@
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
 <translation id="7633068090678117093">Фоново изображение</translation>
+<translation id="763873111564339966">индиговосин</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7656388927906093505">Устройството е мишка.</translation>
 <translation id="7658239707568436148">Отказ</translation>
@@ -1084,7 +1125,10 @@
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8045012663542226664">Заглушаване на микрофона</translation>
+<translation id="8054112564438735763">бежов</translation>
+<translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> на <ph name="CHARACTERS_BACKGROUND" /> фон</translation>
 <translation id="8067126283828232460">Името на точката за достъп (APN) е свързано.</translation>
+<translation id="8067208048261192356">кафяв</translation>
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8079860070590459552">поле с цветя</translation>
@@ -1100,6 +1144,7 @@
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Инстр. за програмисти</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
+<translation id="8162776280680283326">лисици</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">плаж</translation>
 <translation id="8206859287963243715">Клетъчно</translation>
@@ -1108,6 +1153,7 @@
 <translation id="8227119283605456246">Прикачване на файл</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
+<translation id="8250926778281121244">ръждив</translation>
 <translation id="8257572018929862473">Към настройките за „Бързи отговори“</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8262870577632766028">1 час</translation>
@@ -1124,12 +1170,14 @@
 <translation id="8339024191194156249">Научете повече за автоматичното стартиране</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> или <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Задания за отпечатване</translation>
+<translation id="8349758651405877930">инструменти</translation>
 <translation id="8349826889576450703">стартов панел</translation>
 <translation id="8351482263741655895">Умножете стойността за <ph name="CATEGORY_TEXT" /> по <ph name="CONVERSION_RATE" /></translation>
 <translation id="8351855506390808906">Точка на докосване за задаване на функции за клавишите</translation>
 <translation id="8352772353338965963">Добавете профил към функцията за централизиран вход. Всички профили, в които влезете чрез нея, ще бъдат достъпни без парола, така че трябва да използвате тази функция само с надеждни профили.</translation>
 <translation id="8364946094152050673">Не са посочени сървъри за имена</translation>
 <translation id="8372477600026034341">Допълнителни хостове</translation>
+<translation id="8372667721254470022">маслинен</translation>
 <translation id="8373046809163484087">Използване на цветови набори, съответстващи на тапета ви</translation>
 <translation id="8380114448424469341">Прикрепване на прозореца в <ph name="DIRECTION" /> половина на екрана</translation>
 <translation id="8395584934117017006">Това устройство <ph name="DEVICE_TYPE" /> се управлява корпоративно</translation>
@@ -1171,6 +1219,7 @@
 <translation id="8670574982334489519">дясна страна</translation>
 <translation id="8675354002693747642">Предварително споделен ключ</translation>
 <translation id="8677859815076891398">Няма албуми. Създайте албум в <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
+<translation id="8682949824227998083">спагети рамен</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
@@ -1204,6 +1253,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
+<translation id="8882789155418924367">сови</translation>
 <translation id="8892443466059986410">Анулиране на редактирането на прекия път</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>
 <translation id="8909114361904403025">стрелка за нагоре</translation>
@@ -1217,9 +1267,12 @@
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8936793075252196307">IP адрес на клиентската програма</translation>
 <translation id="8944651180182756621">Цвят на стартовия панел</translation>
+<translation id="8945308580158685341">пчели</translation>
 <translation id="894617464444543719">Устройството е телефон.</translation>
 <translation id="8950424402482976779">горна част</translation>
 <translation id="8954341524817067858">планини</translation>
+<translation id="8960969673307890087">дини</translation>
+<translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Скорост на зареждане</translation>
 <translation id="8970109610781093811">Повторно изпълняване</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1227,13 +1280,16 @@
 <translation id="89945434909472341">село</translation>
 <translation id="8997710128084572139">Нивото на батерията на устройството е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
+<translation id="9003499805101629690">парчета пица</translation>
 <translation id="9003704114456258138">Честота</translation>
 <translation id="901834265349196618">имейл</translation>
+<translation id="9022897536196898720">цветя</translation>
 <translation id="9024331582947483881">цял екран</translation>
 <translation id="9025198690966128418">Използване като лично устройство</translation>
 <translation id="902638246363752736">Настройки на клавиатурата</translation>
 <translation id="9028832514430399253">Включете превключвателя, за да изберете опциите за скрийнсейвъра</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9045842401566197375">книги</translation>
 <translation id="9049868303458988905">Бутонът за запазване на името на точката за достъп (APN) вече е активиран</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Голямо забавяне при преобразуването от DNS</translation>
@@ -1255,6 +1311,7 @@
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9138630967333032450">Клавиш „shift“ вляво</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
+<translation id="9159524746324788320">хамбургери</translation>
 <translation id="9161276708550942948">интервал</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>
 <translation id="9174334653006917325">Цвят на потребителския интерфейс</translation>

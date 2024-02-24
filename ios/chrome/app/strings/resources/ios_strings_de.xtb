@@ -288,6 +288,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="2476359652512522418">Nicht ausgewählt</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
+<translation id="2480445180439820402">Verlauf</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484459871750294497">Wie aktiviere ich diese Funktion?</translation>
 <translation id="2496626742194544812">Zum ersten Tab</translation>
@@ -578,6 +579,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3962326069546168954">Speichern</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3968505803272650567">Interessen verwalten</translation>
+<translation id="3976922811715736829">Letzte Tabs</translation>
 <translation id="3989635538409502728">Abmelden</translation>
 <translation id="3994422733891749358">Benachrichtigungen auswählen, die du erhalten möchtest</translation>
 <translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
@@ -636,6 +638,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4282944936010261425">Es wurden keine Sicherheitsprobleme gefunden, die behoben werden müssen.</translation>
 <translation id="4286718549648564014">Die Adresse wurde in dein Konto <ph name="USER_EMAIL" /> verschoben</translation>
+<translation id="428768789042547925">Neuheiten</translation>
 <translation id="4293080268407233932">Suchen</translation>
 <translation id="4302248187517737842">Kein Nutzername ••••••••</translation>
 <translation id="4302415908542657649">Passwort wird geteilt</translation>
@@ -690,6 +693,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4587589328781138893">Websites</translation>
 <translation id="4588014171431912783">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. <ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst.<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Tastatur</translation>
+<translation id="4596899661486753028">Leseliste</translation>
 <translation id="4601095002996233687">Umfangreiche Scans für verdächtige Downloads.</translation>
 <translation id="4606247758155004938">Dein Browser wird von deiner Organisation verwaltet.</translation>
 <translation id="4607887340472970274">Preis-Tracking</translation>
@@ -1156,6 +1160,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="6822587385560699678">Wenn diese Option aktiviert ist, werden Passwörter in <ph name="ACCOUNT" /> gespeichert. Ist sie deaktiviert, werden Passwörter nur auf diesem Gerät gespeichert.</translation>
+<translation id="6824350924364057989">Einstellungen</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6842136130964845393">Bestätige deine Identität, damit du jederzeit auf deine gespeicherten Passwörter zugreifen kannst</translation>
 <translation id="6851516051005285358">Desktop-Version</translation>
@@ -1194,6 +1199,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
 <translation id="7006788746334555276">Inhaltseinstellungen</translation>
 <translation id="7016070607649558507">Du nutzt 1 schwaches Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
+<translation id="7022197654033719543">Websitein­formationen</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="704692552158601232">Standard-Browser-App</translation>
 <translation id="7062545763355031412">Akzeptieren und Konto wechseln</translation>
@@ -1278,7 +1284,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7527917367892640435">Paket wird bereits verfolgt</translation>
 <translation id="7531345132340165516">Aktuelle Website</translation>
 <translation id="7537586195939242955">Dein Pass kann derzeit nicht in Passbook installiert werden.</translation>
-<translation id="754655535278952384">Vor <ph name="TIME" /> geprüft</translation>
+<translation id="754655535278952384">Zuletzt geprüft: <ph name="TIME" /></translation>
 <translation id="7552154146060018538">Zuletzt verwendeter Tab auf <ph name="SOURCE_DEVICE" /></translation>
 <translation id="7553234618121028547">Öffne zum Deaktivieren <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehe zu „Passwortoptionen“.</translation>
 <translation id="7554645225856321710">Alle schließen</translation>
@@ -1293,6 +1299,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Tabgruppen</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
+<translation id="7609559547731036746">Lesezeichen</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7640669552036055091">Tabs von Android</translation>
 <translation id="7646263789464975852">Menü → Einstellungen → Sicherheitscheck</translation>
@@ -1330,8 +1337,10 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7781069478569868053">"Neuer Tab"-Seite</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{Nach 1 Tag}other{Nach {COUNT} Tagen}}</translation>
+<translation id="7788868432173225918">Erweiterte Ansicht schließen</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7792549458069452436">APP HERUNTERLADEN</translation>
+<translation id="7800723706644914607">Passwortmanager</translation>
 <translation id="7807060072011926525">Von Google bereitgestellt</translation>
 <translation id="7812377703891978671">Du kannst auf deinen gesamten Browserverlauf zugreifen, indem du „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“ auswählst.</translation>
 <translation id="78146569776629510">Downloads</translation>
@@ -1404,6 +1413,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="81313319706244542">2. Tippe auf „Passwörter“</translation>
 <translation id="8132598642024322408">Jetzt: <ph name="PRICE" /> – zuvor: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Verwende unterschiedliche Passwörter für jede Website oder App. Falls jemand Zugriff auf ein wiederverwendetes Passwort erlangt, kann die Person sich damit auch in deinen anderen Konten anmelden. Klicke hier, um die Website zu öffnen und deine Passwörter zu ändern.</translation>
+<translation id="814463369662540460">Preis beobachten</translation>
 <translation id="8156478151976189188">Die Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> Konten</translation>
 <translation id="8159358225423560600">gerade eben</translation>
@@ -1511,6 +1521,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8703536910991780768">Deine Passwörter sind stark</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8709409604518538305">Tabs wurden geschlossen</translation>
+<translation id="8709773186849937451">Downloads</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8721297211384281569">Menü "Tools"</translation>

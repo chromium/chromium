@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Hlukanisa ithebhu}one{Hlukanisa amathebhu}other{Hlukanisa amathebhu}}</translation>
 <translation id="2277224997687551299">Hlela igama leqembu</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Faka ibhukhimakhi kuthebhu}one{Faka ibhukhimakhi kumathebhu}other{Faka ibhukhimakhi kumathebhu}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Goqa iqembu lethebhu ethi <ph name="TITLE_OF_GROUP" /> ngethebhu engu-<ph name="TABS_COUNT_ONE" />.}one{Goqa iqembu lethebhu ethi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Goqa iqembu lethebhu ethi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Goqa ithebhu engu-<ph name="TABS_COUNT_ONE" />.}one{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Isiphakamiso: <ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
 <translation id="2613747923081026172">Dala iqembu</translation>

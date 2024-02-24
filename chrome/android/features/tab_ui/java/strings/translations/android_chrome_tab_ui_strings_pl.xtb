@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Usuń kartę z grupy}few{Usuń karty z grupy}many{Usuń karty z grupy}other{Usuń karty z grupy}}</translation>
 <translation id="2277224997687551299">Edytuj nazwę grupy</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Dodaj kartę do zakładek}few{Dodaj karty do zakładek}many{Dodaj karty do zakładek}other{Dodaj karty do zakładek}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
 <translation id="2613747923081026172">Utwórz grupę</translation>

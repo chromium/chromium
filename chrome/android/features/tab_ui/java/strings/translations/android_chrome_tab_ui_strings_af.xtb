@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ongroepeer oortjie}other{Ongroepeer oortjies}}</translation>
 <translation id="2277224997687551299">Wysig groep se naam</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Boekmerk oortjie}other{Boekmerk oortjies}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="2569352796411618312">Voorstel: <ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
 <translation id="2613747923081026172">Skep groep</translation>

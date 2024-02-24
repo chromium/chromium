@@ -288,7 +288,7 @@
 <translation id="2473876017985765807">您已儲存 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="2476359652512522418">無揀</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
-<translation id="2480445180439820402">歷史記錄</translation>
+<translation id="2480445180439820402">記錄</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">如何啟用此功能？</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
@@ -579,7 +579,7 @@
 <translation id="3962326069546168954">儲存</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
-<translation id="3976922811715736829">最近關閉的分頁</translation>
+<translation id="3976922811715736829">最近開啟的分頁</translation>
 <translation id="3989635538409502728">登出</translation>
 <translation id="3994422733891749358">選擇要接收的通知</translation>
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
@@ -636,9 +636,9 @@
 <translation id="4277990410970811858">安全瀏覽</translation>
 <translation id="4279431713294750185">只要在邊緣滑動即可前往下一個畫面。</translation>
 <translation id="4281844954008187215">服務條款</translation>
-<translation id="4282944936010261425">沒有任何需要修正的安全性問題。</translation>
+<translation id="4282944936010261425">沒有需修正的安全問題。</translation>
 <translation id="4286718549648564014">地址已移至你的帳戶 <ph name="USER_EMAIL" /></translation>
-<translation id="428768789042547925">新功能</translation>
+<translation id="428768789042547925">最新資訊</translation>
 <translation id="4293080268407233932">搜尋</translation>
 <translation id="4302248187517737842">沒有使用者名稱 ••••••••</translation>
 <translation id="4302415908542657649">正在分享密碼</translation>
@@ -1199,7 +1199,7 @@
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006788746334555276">內容設定</translation>
 <translation id="7016070607649558507">你有 1 個安全度低的密碼。請立即修正以確保安全。</translation>
-<translation id="7022197654033719543">網站資訊</translation>
+<translation id="7022197654033719543">網站資料</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="704692552158601232">預設瀏覽器應用程式</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
@@ -1337,7 +1337,7 @@
 <translation id="7781069478569868053">新分頁</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 天後}other{{COUNT} 天後}}</translation>
-<translation id="7788868432173225918">關閉展開的檢視畫面</translation>
+<translation id="7788868432173225918">閂埋開咗嘅檢視畫面</translation>
 <translation id="7791543448312431591">新增</translation>
 <translation id="7792549458069452436">下載應用程式</translation>
 <translation id="7800723706644914607">密碼管理工具</translation>
@@ -1432,7 +1432,7 @@
 <translation id="8248969482078657578">「閒置分頁」可助您保持專注</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8263336784344783289">為此群組命名</translation>
-<translation id="8263809106706527890">預設瀏覽器設定可能已有變更，你可以前往「設定」查看。</translation>
+<translation id="8263809106706527890">預設瀏覽器設定可能已有變更，你可在設定中查看。</translation>
 <translation id="8264966119170358612">非 Google 資料外洩中包含部分您儲存的密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">您已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕按下方的 [繼續]。</translation>
 <translation id="8271720166617117963">接受並登入</translation>

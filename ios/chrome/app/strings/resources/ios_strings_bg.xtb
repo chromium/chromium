@@ -288,6 +288,7 @@
 <translation id="2473876017985765807">Вече запазихте парола за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
 <translation id="2479148705183875116">Към настройките</translation>
+<translation id="2480445180439820402">История</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2484459871750294497">Как да активирам тази функция?</translation>
 <translation id="2496626742194544812">Към първия раздел</translation>
@@ -578,6 +579,7 @@
 <translation id="3962326069546168954">Запазване</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3968505803272650567">Управление на интересите</translation>
+<translation id="3976922811715736829">Скорошни раздели</translation>
 <translation id="3989635538409502728">Изход</translation>
 <translation id="3994422733891749358">Изберете известията, които искате да получавате</translation>
 <translation id="3995521777587992544">Лента за напредъка на зареждането на страницата. Заредени са <ph name="EMAIL" />.</translation>
@@ -636,6 +638,7 @@
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4282944936010261425">Няма проблеми със сигурността, които да отстраните.</translation>
 <translation id="4286718549648564014">Адресът бе преместен в профила ви <ph name="USER_EMAIL" /></translation>
+<translation id="428768789042547925">Новите неща</translation>
 <translation id="4293080268407233932">Търсене</translation>
 <translation id="4302248187517737842">Няма потребителско име ••••••••</translation>
 <translation id="4302415908542657649">Паролата се споделя</translation>
@@ -690,6 +693,7 @@
 <translation id="4587589328781138893">Сайтове</translation>
 <translation id="4588014171431912783">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">Клавиатура</translation>
+<translation id="4596899661486753028">Списък за четене</translation>
 <translation id="4601095002996233687">Задълбочено сканиране за подозрителни изтегляния.</translation>
 <translation id="4606247758155004938">Браузърът се управлява от организацията ви.</translation>
 <translation id="4607887340472970274">Проследяване на цената</translation>
@@ -1156,6 +1160,7 @@
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="6822587385560699678">Когато функцията е включена, паролите се запазват в(ъв) <ph name="ACCOUNT" />. Когато е изключена, те се запазват само на това устройство.</translation>
+<translation id="6824350924364057989">Настройки</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6842136130964845393">Потвърдете, че сте вие, за да имате постоянен достъп до запазените си пароли</translation>
 <translation id="6851516051005285358">Заявка за настолния сайт</translation>
@@ -1194,6 +1199,7 @@
 <translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7006788746334555276">Настройки за съдържанието</translation>
 <translation id="7016070607649558507">Имате 1 ненадеждна парола. Коригирайте я сега, за да сте в безопасност.</translation>
+<translation id="7022197654033719543">Информация за сайта</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="704692552158601232">Стандартно приложение за браузър</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
@@ -1293,6 +1299,7 @@
 <translation id="7603852183842204213">Блок. изск. прозорци (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Групи раздели</translation>
 <translation id="7607521702806708809">Изтриване на паролата</translation>
+<translation id="7609559547731036746">Отметки</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
 <translation id="7640669552036055091">Раздели от Android</translation>
 <translation id="7646263789464975852">„Меню → Настройки → Проверка на безопасността“</translation>
@@ -1330,8 +1337,10 @@
 <translation id="7781069478569868053">Нов раздел в браузъра</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{След 1 ден}other{След {COUNT} дни}}</translation>
+<translation id="7788868432173225918">Отхвърляне на разгънатия изглед</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7792549458069452436">ИЗТЕГЛЯНЕ НА ПРИЛОЖ.</translation>
+<translation id="7800723706644914607">Мениджър на пароли</translation>
 <translation id="7807060072011926525">Предоставено от Google</translation>
 <translation id="7812377703891978671">Имате достъп до цялата си история на сърфиране, като изберете „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Изтегляния</translation>
@@ -1404,6 +1413,7 @@
 <translation id="81313319706244542">2. Докоснете „Пароли“.</translation>
 <translation id="8132598642024322408">Сега цената е <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Използвайте уникална парола за всеки сайт или приложение. Ако някой разкрие повторно използвана парола, тя може да послужи за достъп до другите ви профили. Кликнете, за да отворите уебсайта и да промените съответните пароли сега.</translation>
+<translation id="814463369662540460">Проследяване на цената</translation>
 <translation id="8156478151976189188">Синхронизирането на паролите не работи</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> профила</translation>
 <translation id="8159358225423560600">току-що</translation>
@@ -1511,6 +1521,7 @@
 <translation id="8703536910991780768">Паролите ви изглеждат надеждни</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8709409604518538305">Разделите бяха затворени</translation>
+<translation id="8709773186849937451">Изтегляния</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8721297211384281569">Меню „Инструменти“</translation>

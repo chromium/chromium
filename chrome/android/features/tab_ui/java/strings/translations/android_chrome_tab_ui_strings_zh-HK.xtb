@@ -19,7 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{將分頁移出群組}other{將分頁移出群組}}</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{將分頁加入書籤}other{將分頁加入書籤}}</translation>
-<translation id="2375257132547014176">{TABS_COUNT,plural, =1{收合含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{收合含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{收埋有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{收埋有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅分頁群組。}}</translation>
 <translation id="2569352796411618312">我有建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近冇用過，係咪要閂咗佢？</translation>
 <translation id="2613747923081026172">建立群組</translation>

@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tühista vahelehe grupeerimine}other{Tühista vahelehtede grupeerimine}}</translation>
 <translation id="2277224997687551299">Grupi nime muutmine</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Lisa vaheleht järjehoidjatesse}other{Lisa vahelehed järjehoidjatesse}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="2569352796411618312">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
 <translation id="2613747923081026172">Loo grupp</translation>

@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Използване на микрофона и камерата ви</translation>
 <translation id="1005333234656240382">Да се активира ли отстраняването на грешки през ADB?</translation>
 <translation id="1005671386794704751">розово</translation>
+<translation id="1006033052970139968">Достъпът до микрофона е разрешен за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="1006557561787696884">Използване на ключове за достъп на устройствата ви от Apple</translation>
 <translation id="1006873397406093306">Това разширение може да чете и променя данните ви на сайтовете. Можете да контролирате кои сайтове да са достъпни за него.</translation>
 <translation id="1007057452468855774">Включване на Google Play Магазин</translation>
@@ -1287,6 +1288,7 @@
 <translation id="1944535645109964458">Няма налични кодове за достъп</translation>
 <translation id="1944921356641260203">Намерена е актуализация</translation>
 <translation id="1947136734041527201">Позволява ви да влизате в уебсайтове посредством профила си в услуга за идентифициране</translation>
+<translation id="1948528728718281125">Достъпът до камерата е разрешен за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="1949332606889020901">Идентификатори на сривовете</translation>
 <translation id="1949584741547056205">Кратки отговори</translation>
 <translation id="1949849604471335579">Персонализирайте тапета, скрийнсейвъра, цветовете на акцентирането и др.</translation>
@@ -2486,6 +2488,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2822910719211888134">Грешка при създаването на резервно копие за Linux</translation>
 <translation id="2823176412251649407">Променете връзката си с интернет и изберете „Нов опит“ или „Отваряне в офлайн редактора“, за да използвате ограничените опции за преглед и редактиране.</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> използва настройки за прокси сървър, зададени от администратора ви</translation>
+<translation id="2825151610926840364">Разрешаване на достъп за приложенията и уебсайтовете, които имат разрешение за камерата. За да използвате камерата, може да се наложи да рестартирате приложението или да опресните страницата.</translation>
 <translation id="2825758591930162672">Публичен ключ на субект</translation>
 <translation id="2828375943530438449">Връщане от страницата за вход</translation>
 <translation id="2828650939514476812">Свързване с Wi-Fi мрежата</translation>
@@ -4005,6 +4008,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4001540981461989979">Открояване на курсора на мишката при преместване</translation>
 <translation id="4002347779798688515">Изтегленият потребителски профил може да не е използваем, ако доставчикът на мрежови услуги е заключен. Обърнете се към него за поддръжка.</translation>
 <translation id="4002440992267487163">Настройване на ПИН код</translation>
+<translation id="4003647532210142956">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Ако искате графикът за залеза и изгрева да се актуализира автоматично, <ph name="BEGIN_LINK" />предоставете достъп до местоположението<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
 <translation id="4007856537951125667">Скриване на преките пътища</translation>
 <translation id="4010746393007464819">Налице е надстройка до Debian 12 (Bookworm)</translation>
@@ -4043,6 +4047,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4036778507053569103">Изтегленото от сървъра правило е невалидно.</translation>
 <translation id="4037084878352560732">Кон</translation>
 <translation id="403725336528835653">Изпробване</translation>
+<translation id="4039966970282098406">Управлявайте поверителността си, като контролирате достъпа до микрофона, камерата и др.</translation>
 <translation id="4040041015953651705">Изходен език</translation>
 <translation id="4042660782729322247">Споделяте екрана си</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Изход от страницата}other{Изход от страниците}}</translation>
@@ -4414,6 +4419,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="434198521554309404">Бързо. Сигурно. Лесно.</translation>
 <translation id="4342417854108207000">С разрешение за редактиране на файловете и папките на устройството</translation>
 <translation id="4343250402091037179">За да търсите в конкретен сайт или в част от Chrome, въведете съответния пряк път в адресната лента и натиснете предпочитаната от вас клавишна комбинация.</translation>
+<translation id="4343283008857332996">Достъпът до камерата е разрешен за приложенията и уебсайтовете със съответното разрешение и за системните услуги. За да използвате камерата, може да се наложи да рестартирате приложението или да опресните страницата.</translation>
 <translation id="4345457680916430965">&amp;Отваряне в(ъв) <ph name="APP" /></translation>
 <translation id="4345587454538109430">Конфигуриране...</translation>
 <translation id="4345732373643853732">Потребителското име не е известно на сървъра</translation>
@@ -4722,6 +4728,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4576541033847873020">Сдвояване на устройство с Bluetooth</translation>
 <translation id="4576763597586015380">За да продължите да запазвате пароли в профила си в Google, потвърдете, че това сте вие</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> – неактивен раздел</translation>
+<translation id="4577995939477504370">Микрофонът може да се използва от приложенията и уебсайтовете, които имат разрешение за достъп до него, и от системните услуги</translation>
 <translation id="4579453506923101210">Забравяне на свързания телефон</translation>
 <translation id="4579581181964204535">Предаването на <ph name="HOST_NAME" /> не е възможно.</translation>
 <translation id="4579876313423027742">За известията в браузъра отворете <ph name="LINK_BEGIN" />настройките на Chrome<ph name="LINK_END" /></translation>
@@ -5715,6 +5722,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5385628342687007304">Паролата е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.</translation>
 <translation id="5387116558048951800">Редактиране на <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Корпоративните правила бяха променени. Бутонът за експерименти бе добавен към лентата с инструменти. Кликнете върху него, за да се отвори диалогов прозорец за активиране на експериментите.</translation>
+<translation id="5388436023007579456">Камерата може да се използва от приложенията и уебсайтовете, които имат разрешение за достъп до нея, и от системните услуги. За да използвате камерата, може да се наложи да рестартирате приложението или да опресните страницата.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Намерен е 1 сайт с много известия}other{Намерени са {NUM_SITES} сайта с много известия}}</translation>
 <translation id="5388885445722491159">Сдвоено</translation>
 <translation id="5389626883706033615">Сайтовете не могат да извеждат запитвания за използване на информацията, която са запазили за вас</translation>
@@ -5816,6 +5824,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5458214261780477893">Дворак</translation>
 <translation id="5458998536542739734">Бележки на заключения екран</translation>
 <translation id="5459864179070366255">Продължаване с инсталирането</translation>
+<translation id="5460641065520325899">Управлявайте типовете информация, които сайтовете могат да използват, за да ви проследяват, докато сърфирате.</translation>
 <translation id="5460861858595506978">Вдъхновение</translation>
 <translation id="5461050611724244538">Връзката с телефона ви прекъсна</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
@@ -6902,6 +6911,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="630292539633944562">Предложения за лична информация</translation>
 <translation id="6305607932814307878">Глобално правило:</translation>
 <translation id="6305702903308659374">Възпроизвеждане с нормална сила на звука дори ако ChromeVox говори</translation>
+<translation id="6307268917612054609">Камерата може да се използва от приложенията и уебсайтовете, които имат разрешение за достъп до нея, и от системните услуги</translation>
 <translation id="6307990684951724544">Системата е заета</translation>
 <translation id="6308493641021088955">Влизането се осигурява от <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">З&amp;апазване на връзката като...</translation>
@@ -8229,6 +8239,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7367714965999718019">Генератор на кодове за бърза реакция</translation>
 <translation id="7368695150573390554">Всички офлайн данни ще бъдат изтрити</translation>
 <translation id="736877393389250337"><ph name="URL" /> не можа да се отвори чрез <ph name="ALTERNATIVE_BROWSER_NAME" />. Моля, обърнете се към системния си администратор.</translation>
+<translation id="7368927539449986686">Редактиране на функцията за търсене в сайта</translation>
 <translation id="7370592524170198497">EAP за Ethernet:</translation>
 <translation id="7370751048350026847">Поставянето на съдържанието в този сайт не се препоръчва</translation>
 <translation id="7371917887111892735">Разделите се свиват до ширината на фиксиран раздел</translation>
@@ -8495,6 +8506,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="756583107125124860">Някои функции могат да използват съдържанието на отворените и сродните скорошни страници, за да предоставят по-полезна информация или предложения</translation>
 <translation id="7566118625369982896">Управление на връзките към приложения в Google Play</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">Създаване на клавишна комбинация</translation>
 <translation id="756809126120519699">Данните в Chrome са изчистени</translation>
 <translation id="756876171895853918">Персонализиране на аватара</translation>
 <translation id="7568790562536448087">Актуализира се</translation>
@@ -8756,6 +8768,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7757787379047923882">Текст, споделен от <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Коригиране на границите на екрана</translation>
+<translation id="7758884017823246335">Добавяне на функцията за търсене в сайта</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7762024824096060040">Не можете да използвате този профил</translation>
 <translation id="7762243782113123335">За съжаление, нещо се обърка. Моля, изпратете отзиви, като включите #bruschetta в описанието. Кодът на грешката е <ph name="ERROR" />.</translation>
@@ -10623,6 +10636,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9153274276370926498">Системна информация за Lacros</translation>
 <translation id="9153367754133725216">Показване на предложения за нови приложения и уеб съдържание в стартовия панел и резултатите от търсенето. Изпраща статистически данни, за да подобри предложенията само ако сте избрали да изпращате до ChromeOS сигнали за сривове, диагностична информация и данни за употребата.</translation>
 <translation id="9154194610265714752">Актуализирано</translation>
+<translation id="915485121129452731">Графичен таблет</translation>
 <translation id="9155344700756733162">Отмяна на избрания цвят</translation>
 <translation id="9157096865782046368">0,8 секунди</translation>
 <translation id="9157697743260533322">Настройването на автоматични актуализации за всички потребители не бе успешно (грешка при стартирането на предстартовия процес: <ph name="ERROR_NUMBER" />)</translation>

@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">マイクとカメラを使用する</translation>
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1005671386794704751">ローズ</translation>
+<translation id="1006033052970139968">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、マイクへのアクセスが許可されています</translation>
 <translation id="1006557561787696884">Apple デバイスでパスキーを使用する</translation>
 <translation id="1006873397406093306">この拡張機能は、サイト上でユーザー自身のデータを読み取りおよび変更できます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
 <translation id="1007057452468855774">Google Play ストアを有効にする</translation>
@@ -1276,6 +1277,7 @@
 <translation id="1944535645109964458">利用可能なパスキーがありません</translation>
 <translation id="1944921356641260203">アップデートが見つかりました</translation>
 <translation id="1947136734041527201">ID サービスで使用しているアカウントでウェブサイトにログインできます</translation>
+<translation id="1948528728718281125">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対してカメラへのアクセスが許可されています</translation>
 <translation id="1949332606889020901">クラッシュ ID</translation>
 <translation id="1949584741547056205">クイック アンサー</translation>
 <translation id="1949849604471335579">壁紙、スクリーン セーバー、アクセント カラーなどをパーソナライズ</translation>
@@ -2469,6 +2471,7 @@
 <translation id="2822910719211888134">Linux のバックアップ中にエラーが発生しました</translation>
 <translation id="2823176412251649407">インターネット接続を変更して、[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> は管理者により指定されたプロキシ設定を使用しています</translation>
+<translation id="2825151610926840364">カメラへのアクセス権を持つアプリとウェブサイトに対して、アクセスを許可します。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
 <translation id="2825758591930162672">サブジェクトの公開鍵</translation>
 <translation id="2828375943530438449">ログインページから戻る</translation>
 <translation id="2828650939514476812">Wi-Fi ネットワークへの接続</translation>
@@ -3986,6 +3989,7 @@
 <translation id="4001540981461989979">移動中のマウスカーソルをハイライト表示する</translation>
 <translation id="4002347779798688515">モバイル ネットワーク プロバイダがロックされている場合は、ダウンロードしたプロファイルを使用できない可能性があります。サポートについてはプロバイダにお問い合わせください。</translation>
 <translation id="4002440992267487163">PIN の設定</translation>
+<translation id="4003647532210142956">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。日の入りと日の出のスケジュールを自動的に更新するには、<ph name="BEGIN_LINK" />位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
 <translation id="4007856537951125667">ショートカットを非表示にする</translation>
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
@@ -4024,6 +4028,7 @@
 <translation id="4036778507053569103">サーバーからダウンロードされたポリシーが無効です。</translation>
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">試してみる</translation>
+<translation id="4039966970282098406">マイクやカメラなどへのアクセスを制御して、プライバシーを管理します</translation>
 <translation id="4040041015953651705">翻訳元の言語</translation>
 <translation id="4042660782729322247">画面を共有しています</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{ページを離れる}other{ページを離れる}}</translation>
@@ -4395,6 +4400,7 @@
 <translation id="434198521554309404">高速。安全。簡単。</translation>
 <translation id="4342417854108207000">デバイスのファイルやフォルダの編集を許可するサイト</translation>
 <translation id="4343250402091037179">特定のサイトや Chrome のセクションを検索するには、アドレスバーにそれらのショートカットを入力して、設定したキーボード ショートカットを押します。</translation>
+<translation id="4343283008857332996">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、カメラへのアクセスが許可されています。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
 <translation id="4345457680916430965"><ph name="APP" /> で開く(&amp;O)</translation>
 <translation id="4345587454538109430">設定...</translation>
 <translation id="4345732373643853732">サーバーに認識されないユーザー名です</translation>
@@ -4701,6 +4707,7 @@
 <translation id="4576541033847873020">Bluetooth デバイスのペア設定</translation>
 <translation id="4576763597586015380">Google アカウントでパスワードの保存を続行するには、本人確認を行ってください</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - アクティブでないタブ</translation>
+<translation id="4577995939477504370">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスでマイクを使用できます</translation>
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> をキャストできません。</translation>
 <translation id="4579876313423027742">ブラウザの通知は、<ph name="LINK_BEGIN" />Chrome ブラウザの設定<ph name="LINK_END" />で確認できます</translation>
@@ -5693,6 +5700,7 @@
 <translation id="5385628342687007304">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウントに保存してください。</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> を編集</translation>
 <translation id="538822246583124912">エンタープライズ ポリシーが変更され、ツールバーにテストボタンが追加されました。ボタンをクリックすると、ダイアログを開いてテストを有効にできます。</translation>
+<translation id="5388436023007579456">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスでカメラを使用できます。カメラを使用するには、アプリの再起動やページの更新が必要になることがあります。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{通知の数が多いサイトが 1 件見つかりました}other{通知の数が多いサイトが {NUM_SITES} 件見つかりました}}</translation>
 <translation id="5388885445722491159">ペア設定済み</translation>
 <translation id="5389626883706033615">保存したあなたに関する情報の使用をサイトが求めることをブロックする</translation>
@@ -5793,6 +5801,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">ロック画面のメモ</translation>
 <translation id="5459864179070366255">インストールに進む</translation>
+<translation id="5460641065520325899">サイトがブラウジング中のユーザーのトラッキングに使用できる情報の種類を管理します。</translation>
 <translation id="5460861858595506978">インスピレーション</translation>
 <translation id="5461050611724244538">スマートフォンとの接続が切断されました</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> のインデックス</translation>
@@ -6878,6 +6887,7 @@
 <translation id="630292539633944562">個人情報の候補</translation>
 <translation id="6305607932814307878">グローバル ポリシー:</translation>
 <translation id="6305702903308659374">ChromeVox の読み上げ中も通常の音量で再生する</translation>
+<translation id="6307268917612054609">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスでカメラを使用できます</translation>
 <translation id="6307990684951724544">システムがビジー状態です</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> によるログイン</translation>
 <translation id="6308937455967653460">名前を付けてリンク先を保存(&amp;K)...</translation>
@@ -8202,6 +8212,7 @@
 <translation id="7367714965999718019">QR コード生成ツール</translation>
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
 <translation id="736877393389250337"><ph name="URL" /> を <ph name="ALTERNATIVE_BROWSER_NAME" /> で開けませんでした。システム管理者にお問い合わせください。</translation>
+<translation id="7368927539449986686">サイト内検索を編集</translation>
 <translation id="7370592524170198497">イーサネット EAP:</translation>
 <translation id="7370751048350026847">このコンテンツをこのサイトに貼り付けることは推奨されていません</translation>
 <translation id="7371917887111892735">タブを固定幅まで縮小</translation>
@@ -8468,6 +8479,7 @@
 <translation id="756583107125124860">一部の機能では、より有益な情報や候補を提供するため、開いているページや関連する最近のページのコンテンツを使用する場合があります</translation>
 <translation id="7566118625369982896">Play アプリのリンクを管理する</translation>
 <translation id="7566723889363720618">F12</translation>
+<translation id="7566969018588966785">キーの組み合わせを作成</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="756876171895853918">アバターをカスタマイズ</translation>
 <translation id="7568790562536448087">更新中:</translation>
@@ -8728,6 +8740,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7758143121000533418">ファミリー リンク</translation>
 <translation id="7758450972308449809">ディスプレイの外枠を調整します</translation>
+<translation id="7758884017823246335">サイト内検索を追加</translation>
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
 <translation id="7762243782113123335">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。</translation>
@@ -10595,6 +10608,7 @@
 <translation id="9153274276370926498">Lacros システム情報</translation>
 <translation id="9153367754133725216">ランチャーと検索結果に新しいアプリやウェブ コンテンツの候補が表示されます。障害レポート、診断データ、使用状況データを ChromeOS に送信するよう選択した場合のみ、候補の精度を向上させるために統計情報を送信します。</translation>
 <translation id="9154194610265714752">更新完了</translation>
+<translation id="915485121129452731">ペンタブレット</translation>
 <translation id="9155344700756733162">色の選択を解除</translation>
 <translation id="9157096865782046368">0.8秒</translation>
 <translation id="9157697743260533322">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト開始エラー: <ph name="ERROR_NUMBER" />）</translation>

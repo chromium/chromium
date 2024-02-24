@@ -358,6 +358,7 @@
 <translation id="2484513351006226581">ចុច <ph name="KEYBOARD_SHORTCUT" /> ដើម្បី​ប្តូរប្លង់​ក្តារ​ចុច។</translation>
 <translation id="2486214324139475545">ការមើល <ph name="DESK_NAME" /> សាកល្បង។ តុ​សកម្ម។</translation>
 <translation id="2487915095798731898">ចូលរួម</translation>
+<translation id="2499445554382787206">ម៉ឺនុយ​កម្រងព័ត៌មាន​តុ។ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">គ្រាប់ចុចស្អិត</translation>
 <translation id="2504454902900101003">ច្រានចោល​ការរៀបចំ​ការមើល​រូបថត មេឌៀ និង​ការជូនដំណឹង​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
 <translation id="2509468283778169019">CAPS LOCK ត្រូវបានបើក</translation>
@@ -604,6 +605,7 @@
 <translation id="3509391053705095206">រកទូរសព្ទរបស់អ្នក​មិនឃើញទេ។ សូមប្រាកដ​ថាបាន​បើកប៊្លូធូស​ទូរសព្ទ​របស់​អ្នក។</translation>
 <translation id="3510164367642747937">រំលេច​ទស្សន៍ទ្រនិច​កណ្ដុរ</translation>
 <translation id="3513798432020909783">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3517037892157925473">បានធ្វើបច្ចុប្បន្នភាព​កិច្ចការ​ចុងក្រោយ៖ <ph name="TIME" /> <ph name="DATE" />។</translation>
 <translation id="352245152354538528">{0,plural, =1{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល 1 នាទី​}other{ដំឡើងកំណែ​ឧបករណ៍​ក្នុងរយៈពេល # នាទី​}}</translation>
 <translation id="3522979239100719575">កំពុងរកមើល​កម្រងព័ត៌មាន​ដែលអាចប្រើបាន។ សកម្មភាពនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="3526440770046466733">បើក​តំណ​នៅ​ក្នុង​ផ្ទាំង​ថ្មី រួច​បន្ត​នៅ​ក្នុង​ផ្ទាំង​បច្ចុប្បន្ន</translation>
@@ -1142,6 +1144,7 @@
 <translation id="5536723544185013515">កម្មវិធីថ្មីៗ, រុករកដោយប្រើគ្រាប់ចុចព្រួញទៅ​ឆ្វេង ឬ​ទៅ​ស្ដាំ ដើម្បីចូលប្រើប្រាស់​កម្មវិធីថ្មីៗទាំងអស់</translation>
 <translation id="553675580533261935">ការ​ចាកចេញ​ពី​សម័យ</translation>
 <translation id="5537725057119320332">ខាស</translation>
+<translation id="554017492391497564">មិនអាច​សម្គាល់ថា​បានបញ្ចប់​បានទេ។</translation>
 <translation id="5546397813406633847">ស្ដារអ្នកប្រើប្រាស់ឡើងវិញ</translation>
 <translation id="554893713779400387">បិទ/បើក​ការសរសេរតាមអាន</translation>
 <translation id="5550417424894892620">ទម្លាក់​ឯកសារ​នៅលើ​អេក្រង់ដើម ដើម្បី​បញ្ចូល​ឯកសារ​ទាំងនោះ​ទៅ <ph name="HOLDING_SPACE_TITLE" />។ អ្នក​មិនអាច​បញ្ចូលឯកសារ​ទៅ​អេក្រង់ដើម​បានទេ។</translation>
@@ -1336,6 +1339,7 @@
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">ថ្មសល់តិច។ បានបើក​មុខងារ​សន្សំថ្ម។</translation>
 <translation id="6247728804802644171">បើក​ការ​ជូន​ដំណឹង</translation>
+<translation id="6249795363855770621">មិនអាច​សម្គាល់ថា​បានបញ្ចប់​បានទេ។ សូមព្យាយាម​ម្ដងទៀត នៅពេលមាន​អ៊ីនធឺណិត។</translation>
 <translation id="6254629735336163724">បាន​ចាក់សោ​ឱ្យ​ស្ថិត​ក្នុងទិសដៅផ្ដេក</translation>
 <translation id="6259254695169772643">ប្រើប៊ិច​របស់អ្នក​ដើម្បី​ជ្រើសរើស</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: កំពុងធ្វើសកម្មភាព...</translation>
@@ -1496,6 +1500,7 @@
 <translation id="6896758677409633944">ចម្លង</translation>
 <translation id="6912841030378044227">ផ្ដោតលើ​របារ​អាសយដ្ឋាន</translation>
 <translation id="6912901278692845878">ណែនាំ​បង្ហាញ​ត្រួសៗ</translation>
+<translation id="6917259695595127329">បានធ្វើបច្ចុប្បន្នភាព​កិច្ចការ​ចុងក្រោយ៖ <ph name="TIME" />។</translation>
 <translation id="6919251195245069855">មិន​ស្គាល់​កាត​ឆ្លាតវៃរបស់អ្នកទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="692135145298539227">លុប</translation>
 <translation id="6929081673585394903">បង្ហាញ​ការគ្រប់គ្រង</translation>
@@ -1894,7 +1899,6 @@
 <translation id="8553395910833293175">បានកំណត់​ទៅតុទាំងអស់​រួចហើយ។</translation>
 <translation id="8555757996376137129">ដកតុ​បច្ចុប្បន្នចេញ</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> ណែនាំឱ្យអ្នក​ដំឡើងកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
-<translation id="8563862697512465947">​កំណត់​ការ​ជូន​ដំណឹង</translation>
 <translation id="8569751806372591456">ទាំងនេះជាការណែនាំមួយចំនួនសម្រាប់សាកល្បង</translation>
 <translation id="857201607579416096">ម៉ឺនុយ​ត្រូវបានផ្លាស់ទី​ទៅ​ជ្រុងខាងក្រោម​ផ្នែកខាងស្ដាំ​នៃអេក្រង់​។</translation>
 <translation id="8581946341807941670">ចុច <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> រួចចុចតំណ</translation>

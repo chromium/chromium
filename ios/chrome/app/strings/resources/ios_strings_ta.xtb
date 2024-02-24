@@ -288,6 +288,7 @@
 <translation id="2473876017985765807"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2476359652512522418">தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
+<translation id="2480445180439820402">பதிவு</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2484459871750294497">இந்த அம்சத்தை எப்படி இயக்குவது?</translation>
 <translation id="2496626742194544812">முதல் பக்கத்திற்குச் செல்</translation>
@@ -578,6 +579,7 @@
 <translation id="3962326069546168954">சேமி</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
+<translation id="3976922811715736829">சமீபத்தியவை</translation>
 <translation id="3989635538409502728">வெளியேறு</translation>
 <translation id="3994422733891749358">நீங்கள் பெற விரும்பும் அறிவிப்புகளைத் தேர்வுசெய்தல்</translation>
 <translation id="3995521777587992544">பக்க ஏற்றச் செயல்நிலைப் பட்டி, <ph name="EMAIL" /> ஏற்றப்பட்டுள்ளது.</translation>
@@ -636,6 +638,7 @@
 <translation id="4281844954008187215">சேவை விதிமுறைகள்</translation>
 <translation id="4282944936010261425">நீங்கள் சரிசெய்வதற்கான பாதுகாப்புச் சிக்கல்கள் எதுவும் இல்லை.</translation>
 <translation id="4286718549648564014">உங்கள் கணக்கிற்கு (<ph name="USER_EMAIL" />) முகவரி நகர்த்தப்பட்டது</translation>
+<translation id="428768789042547925">புதியவை</translation>
 <translation id="4293080268407233932">தேடு</translation>
 <translation id="4302248187517737842">பயனர்பெயர் இல்லை ••••••••</translation>
 <translation id="4302415908542657649">கடவுச்சொல்லைப் பகிர்கிறது</translation>
@@ -690,6 +693,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4588014171431912783">நீங்கள் கடைசியாக எடுத்த காப்புப் பிரதியின் அடிப்படையில் ஒத்திசைவு அமைப்புகள் மீட்டெடுக்கப்படும். <ph name="BEGIN_LINK" />எதையெல்லாம் ஒத்திசைக்கலாம் என அறிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">கீபோர்டு</translation>
+<translation id="4596899661486753028">வாசிப்புப் பட்டியல்</translation>
 <translation id="4601095002996233687">சந்தேகத்திற்கிடமான பதிவிறக்கங்களை விரிவாக ஸ்கேன் செய்யலாம்.</translation>
 <translation id="4606247758155004938">உங்கள் உலாவியை உங்கள் நிறுவனம் நிர்வகிக்கிறது.</translation>
 <translation id="4607887340472970274">விலைக் கண்காணிப்பு</translation>
@@ -1156,6 +1160,7 @@
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
 <translation id="6822587385560699678">இயக்கத்தில் இருக்கும்போது <ph name="ACCOUNT" /> கணக்கில் கடவுச்சொற்கள் சேமிக்கப்படும். முடக்கத்தில் இருக்கும்போது கடவுச்சொற்கள் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்படும்.</translation>
+<translation id="6824350924364057989">அமைப்புகள்</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6851516051005285358">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
@@ -1194,6 +1199,7 @@
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7006788746334555276">உள்ளடக்க அமைப்புகள்</translation>
 <translation id="7016070607649558507">ஒரு வலுவற்ற கடவுச்சொல் உள்ளது. பாதுகாப்பாக இருக்க அதை இப்போதே மாற்றுங்கள்.</translation>
+<translation id="7022197654033719543">தளம் குறித்த தகவல்கள்</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="704692552158601232">இயல்பு உலாவி ஆப்ஸ்</translation>
 <translation id="7062545763355031412">சரி, கணக்குகளை மாற்று</translation>
@@ -1293,6 +1299,7 @@
 <translation id="7603852183842204213">பாப்-அப்கள் தடுக்கப்பட்டன (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">பக்கக் குழுக்கள்</translation>
 <translation id="7607521702806708809">கடவுச்சொல்லை நீக்கு</translation>
+<translation id="7609559547731036746">புக்மார்க்குகள்</translation>
 <translation id="7638584964844754484">தவறான கடவுத்தொடர்</translation>
 <translation id="7640669552036055091">Androidல் செயலில் இருந்த பக்கங்கள்</translation>
 <translation id="7646263789464975852">மெனு → அமைப்புகள் → பாதுகாப்புச் சரிபார்ப்பு</translation>
@@ -1330,8 +1337,10 @@
 <translation id="7781069478569868053">புதிய தாவல் பக்கம்</translation>
 <translation id="7781829728241885113">நேற்று</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 நாளுக்குப் பிறகு}other{{COUNT} நாட்களுக்குப் பிறகு}}</translation>
+<translation id="7788868432173225918">விரிவாக்கப்பட்ட காட்சியை மூடும்</translation>
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="7792549458069452436">ஆப்ஸைப் பெறுங்கள்</translation>
+<translation id="7800723706644914607">Password Manager</translation>
 <translation id="7807060072011926525">Google வழங்கியது</translation>
 <translation id="7812377703891978671">நீங்கள் இதுவரை இணையத்தில் பார்த்தவை அனைத்தையும் <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> ஐத் தேர்ந்தெடுப்பதன் மூலம் அணுகலாம்.</translation>
 <translation id="78146569776629510">பதிவிறக்கங்கள்</translation>
@@ -1404,6 +1413,7 @@
 <translation id="81313319706244542">2. கடவுச்சொற்கள் என்பதைத் தட்டவும்</translation>
 <translation id="8132598642024322408">தற்போதைய விலை: <ph name="PRICE" />, முந்தைய விலை: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">தளம் அல்லது ஆப்ஸ் ஒவ்வொன்றுக்கும் தனித்துவமான கடவுச்சொல்லைப் பயன்படுத்தவும். ஏற்கெனவே பயன்படுத்திய கடவுச்சொல்லை யாரேனும் கண்டறிந்தால் அதைக் கொண்டு உங்களின் மற்ற கணக்குகளை அணுக முடியும். இணையதளத்தைத் திறந்து அவற்றை இப்போதே மாற்ற கிளிக் செய்யவும்.</translation>
+<translation id="814463369662540460">விலைக் கண்காணிப்பு</translation>
 <translation id="8156478151976189188">கடவுச்சொல்லை ஒத்திசைக்க முடியவில்லை</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> கணக்குகள்</translation>
 <translation id="8159358225423560600">சற்றுமுன்</translation>
@@ -1511,6 +1521,7 @@
 <translation id="8703536910991780768">உங்கள் கடவுச்சொற்கள் வலிமையாக உள்ளன</translation>
 <translation id="8706253136355675497">வெப்பநிலை</translation>
 <translation id="8709409604518538305">பக்கங்கள் மூடப்பட்டன</translation>
+<translation id="8709773186849937451">பதிவிறக்கியவை</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8717864919010420084">இணைப்பை நகலெடு</translation>
 <translation id="8721297211384281569">கருவிகள் மெனு</translation>

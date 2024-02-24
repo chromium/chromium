@@ -19,6 +19,7 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Varaqni yechish}other{Varaqlar guruhini yechish}}</translation>
 <translation id="2277224997687551299">Guruh nomini tahrirlash</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Varaqni bukmarklash}other{Varaqlarni bukmarklash}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini yigʻish.}other{<ph name="TABS_COUNT_MANY" /> ta varaq bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini yigʻish.}}</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli guruhni yigʻish.}}</translation>
 <translation id="2569352796411618312">Bildirgi: <ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
 <translation id="2613747923081026172">Guruh yaratish</translation>
