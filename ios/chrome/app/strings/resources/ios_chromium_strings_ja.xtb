@@ -51,6 +51,7 @@
 <translation id="22313767259766852">この住所は現在、Chromium に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
 <translation id="2236584955986023187">Chromium は毎回 PC 版サイトをリクエストします。</translation>
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
+<translation id="231828342043114302">興味や関心に基づいてパーソナライズされたコンテンツを受け取るには、Chromium にログインします。</translation>
 <translation id="2374627437126809292">Chromium では Google マップを使用して、検出された住所までの経路やローカル情報を表示しています。</translation>
 <translation id="2386292341327187942">[検索ウィジェット] ボックスに「Chromium」と入力します</translation>
 <translation id="2426113998523353159">Chromium を使用するためにログインするよう、組織が求めています。</translation>

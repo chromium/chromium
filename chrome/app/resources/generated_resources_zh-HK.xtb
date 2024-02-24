@@ -10,7 +10,7 @@
 <translation id="1005274289863221750">使用您的麥克風和相機</translation>
 <translation id="1005333234656240382">要啟用 ADB 偵錯嗎？</translation>
 <translation id="1005671386794704751">玫瑰粉紅</translation>
-<translation id="1006033052970139968">允許系統服務和具有麥克風權限的應用程式與網站存取麥克風</translation>
+<translation id="1006033052970139968">已向應用程式、具有麥克風權限的網站及系統服務授予麥克風存取權</translation>
 <translation id="1006557561787696884">在 Apple 裝置上使用密鑰</translation>
 <translation id="1006873397406093306">此擴充程式可讀取及變更您在網站上的資料。您可控制擴充程式可以存取的網站。</translation>
 <translation id="1007057452468855774">開「Google Play 商店」</translation>
@@ -32,7 +32,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">您的裝置由 <ph name="DOMAIN" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
-<translation id="1022719295563085177">網路預設值</translation>
+<translation id="1022719295563085177">網絡預設值</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外置安全密鑰</translation>
@@ -322,7 +322,7 @@
 <translation id="123578888592755962">磁碟空間已滿</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{文字}other{# 段文字}}</translation>
 <translation id="1236009322878349843">編輯手機</translation>
-<translation id="1237950098253310325">使用 Ctrl + 向上鍵或向下鍵調整「<ph name="BUTTON_NAME" />」的順序</translation>
+<translation id="1237950098253310325">用 Ctrl 制加向上或向下箭咀嚟重新排列<ph name="BUTTON_NAME" /></translation>
 <translation id="1238293488628890871">要切換個人檔案嗎？</translation>
 <translation id="1239594683407221485">在「檔案」應用程式中探索裝置內容。</translation>
 <translation id="1239841552505950173">啟動應用程式</translation>
@@ -1291,7 +1291,7 @@
 <translation id="1944535645109964458">沒有密鑰</translation>
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓您使用具有身分服務的帳戶來登入網站</translation>
-<translation id="1948528728718281125">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機</translation>
+<translation id="1948528728718281125">已向應用程式、具有相機權限的網站及系統服務授予相機存取權</translation>
 <translation id="1949332606889020901">當機 ID</translation>
 <translation id="1949584741547056205">快速解答</translation>
 <translation id="1949849604471335579">根據個人喜好設定桌布、螢幕保護程式、強調色等項目</translation>
@@ -2488,7 +2488,7 @@
 <translation id="2822910719211888134">備份 Linux 時發生錯誤</translation>
 <translation id="2823176412251649407">請變更互聯網連線並選擇「再試一次」。你亦能選擇「在離線編輯器中開啟」以使用有限的查看和編輯選項。</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用管理員的 Proxy 設定</translation>
-<translation id="2825151610926840364">允許擁有攝影機權限的應用程式和網站存取。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
+<translation id="2825151610926840364">允許具備相機權限的應用程式和網站存取相機。如要使用相機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="2825758591930162672">主體的公開金鑰</translation>
 <translation id="2828375943530438449">從「登入」頁面返回</translation>
 <translation id="2828650939514476812">連線至 Wi-Fi 網絡</translation>
@@ -2841,7 +2841,7 @@
 <translation id="3101709781009526431">日期和時間</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上載這些資料的原因：</translation>
-<translation id="3103512663951238230">Alt + 滑鼠左鍵</translation>
+<translation id="3103512663951238230">Alt 鍵 + 按一下左鍵</translation>
 <translation id="3105339775057145050">上次不成功的更新</translation>
 <translation id="3105796011181310544">要改回使用 Google 嗎？</translation>
 <translation id="3105820656234755131">已更新密碼</translation>
@@ -3238,7 +3238,7 @@
 <translation id="3440663250074896476">顯示可以對 <ph name="BOOKMARK_NAME" /> 執行嘅更多操作</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">請再次登入 <ph name="ACCOUNT" /> 以驗證此帳戶</translation>
-<translation id="3441824746233675597">讓可存取你網路流量的使用者難以查看你造訪的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
+<translation id="3441824746233675597">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。<ph name="PRODUCT_NAME" /> 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="3442674350323953953">允許 Google 使用硬件資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，此資料仍會傳送至 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
 <translation id="3443744348829035122">「<ph name="BRAND" />」逾時</translation>
 <translation id="3443754338602062261">您的「<ph name="BRAND" />」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
@@ -3418,7 +3418,7 @@
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
-<translation id="3587279952965197737">長度不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個半形字元</translation>
+<translation id="3587279952965197737">長度不得超過 <ph name="MAX_CHARACTER_COUNT" /> 個字元</translation>
 <translation id="3587438013689771191">進一步了解：<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">已允許安裝付款處理常式</translation>
@@ -4004,7 +4004,7 @@
 <translation id="4001540981461989979">移動時突顯滑鼠游標</translation>
 <translation id="4002347779798688515">如果已鎖定流動網絡供應商，已下載的設定檔便可能無法使用。請向供應商尋求支援。</translation>
 <translation id="4002440992267487163">PIN 設定</translation>
-<translation id="4003647532210142956">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟位置資訊存取權<ph name="END_LINK" /></translation>
+<translation id="4003647532210142956">目前的時間表已設定為<ph name="SUNRISE" />至<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟位置存取權<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007856537951125667">隱藏捷徑</translation>
 <translation id="4010746393007464819">可以升級至 Debian 12 (Bookworm)</translation>
@@ -4041,7 +4041,7 @@
 <translation id="4036778507053569103">從伺服器下載的政策無效。</translation>
 <translation id="4037084878352560732">馬</translation>
 <translation id="403725336528835653">先試用</translation>
-<translation id="4039966970282098406">控管麥克風、攝影機等權限，掌握自己的隱私權</translation>
+<translation id="4039966970282098406">透過控制麥克風、相機等裝置存取權來管理私隱權</translation>
 <translation id="4040041015953651705">要翻譯的語言</translation>
 <translation id="4042660782729322247">您正在分享螢幕畫面</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
@@ -4413,7 +4413,7 @@
 <translation id="434198521554309404">快捷。安全。輕鬆便利。</translation>
 <translation id="4342417854108207000">允許編輯裝置上的檔案或資料夾</translation>
 <translation id="4343250402091037179">如要搜尋特定網站或 Chrome，請在網址列中輸入相關的快捷字詞，然後按下您偏好的鍵盤快速鍵。</translation>
-<translation id="4343283008857332996">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
+<translation id="4343283008857332996">已向應用程式、具有相機權限的網站及系統服務授予相機存取權。如要使用相機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="4345457680916430965">在 <ph name="APP" /> 中開啟(&amp;O)</translation>
 <translation id="4345587454538109430">設定…</translation>
 <translation id="4345732373643853732">伺服器無法辨識使用者名稱</translation>
@@ -4721,7 +4721,7 @@
 <translation id="4576541033847873020">配對藍牙裝置</translation>
 <translation id="4576763597586015380">如要繼續將密碼儲存在 Google 帳戶中，請驗證您的身份</translation>
 <translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - 閒置分頁</translation>
-<translation id="4577995939477504370">系統服務和具有麥克風權限的應用程式和網站可使用麥克風</translation>
+<translation id="4577995939477504370">系統服務與具備麥克風權限的應用程式和網站可使用麥克風</translation>
 <translation id="4579453506923101210">清除已連接的手機</translation>
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
 <translation id="4579876313423027742">如要設定瀏覽器通知，請前往 <ph name="LINK_BEGIN" />Chrome 瀏覽器設定<ph name="LINK_END" /></translation>
@@ -5168,7 +5168,7 @@
 <translation id="4929386379796360314">列印目的地</translation>
 <translation id="4930447554870711875">開發人員</translation>
 <translation id="4930714375720679147">開啟</translation>
-<translation id="4931347390544064118">使用網路預設值時，有時可能無法使用安全連線。建議你選取其他供應商，確保隨時都能使用安全連線。</translation>
+<translation id="4931347390544064118">使用網絡預設值時，有時可能無法使用安全連線。建議你選取其他供應商，確保隨時都能使用安全連線。</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入至 <ph name="URL" /></translation>
 <translation id="4936042273057045735">設有工作設定檔的手機不支援通知同步功能</translation>
@@ -5716,7 +5716,7 @@
 <translation id="5385628342687007304">此密碼只會儲存至此裝置。如要在其他裝置上使用此密碼，請將密碼儲存至 Google 帳戶。</translation>
 <translation id="5387116558048951800">修改<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">企業政策改咗，已經將實驗掣加咗去工具列。㩒一下粒掣就可以開對話框同埋啟用實驗。</translation>
-<translation id="5388436023007579456">系統服務和具有攝影機權限的應用程式與網站可使用攝影機。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
+<translation id="5388436023007579456">系統服務與具備相機權限的應用程式和網站可使用相機。如要使用相機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
@@ -5817,7 +5817,7 @@
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">上鎖畫面筆記</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
-<translation id="5460641065520325899">管理網站可在你瀏覽時用來追蹤的資訊類型。</translation>
+<translation id="5460641065520325899">管理網站可利用哪些類型的資訊來追蹤你瀏覽時的活動。</translation>
 <translation id="5460861858595506978">靈感</translation>
 <translation id="5461050611724244538">手機連線中斷</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
@@ -6901,7 +6901,7 @@
 <translation id="630292539633944562">個人資料建議</translation>
 <translation id="6305607932814307878">通用政策：</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗讀時仍以正常音量播放音訊</translation>
-<translation id="6307268917612054609">系統服務和具有攝影機權限的應用程式與網站可使用攝影機</translation>
+<translation id="6307268917612054609">系統服務與具備相機權限的應用程式和網站可使用相機</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
 <translation id="6308493641021088955">登入資料由<ph name="EXTENSION_NAME" />提供</translation>
 <translation id="6308937455967653460">另存連結為(&amp;K)…</translation>
@@ -8228,7 +8228,7 @@
 <translation id="7367714965999718019">二維條碼產生器</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
 <translation id="736877393389250337">無法在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟 <ph name="URL" />。請聯絡您的系統管理員。</translation>
-<translation id="7368927539449986686">編輯網站搜尋引擎</translation>
+<translation id="7368927539449986686">編輯站內搜尋</translation>
 <translation id="7370592524170198497">以太網 EAP：</translation>
 <translation id="7371490947952970241">關閉裝置的主要位置資訊設定，即可關閉定位服務。您也可以在位置資訊設定中關閉使用 Wi‑Fi、流動網絡和感應器確定位置的功能。</translation>
 <translation id="7371917887111892735">將分頁縮至固定分頁寬度</translation>
@@ -8494,7 +8494,7 @@
 <translation id="756583107125124860">部分功能可運用已開啟網頁和近期相關網頁的內容，為你提供更實用的資訊或建議</translation>
 <translation id="7566118625369982896">管理 Play 應用程式連結</translation>
 <translation id="7566723889363720618">F12</translation>
-<translation id="7566969018588966785">建立按鍵組合</translation>
+<translation id="7566969018588966785">管理按鍵組合</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="756876171895853918">自訂顯示圖片</translation>
 <translation id="7568790562536448087">正在更新</translation>
@@ -8756,7 +8756,7 @@
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">調整顯示屏的邊界</translation>
-<translation id="7758884017823246335">新增網站搜尋引擎</translation>
+<translation id="7758884017823246335">新增站內搜尋</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7762024824096060040">無法使用此帳戶</translation>
 <translation id="7762243782113123335">抱歉，發生錯誤。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
@@ -9240,7 +9240,7 @@
 <translation id="8102139037507939978">移除 system_logs.txt 中的個人識別資料。</translation>
 <translation id="810362914482827094">搜尋密鑰</translation>
 <translation id="8104088837833760645">下載 eSIM 卡設定檔</translation>
-<translation id="8105273883928376822">如要繼續進行，請登入帳戶。</translation>
+<translation id="8105273883928376822">如要繼續，請登入帳戶。</translation>
 <translation id="8107015733319732394">正在為 <ph name="DEVICE_TYPE" /> 安裝「Google Play 商店」。這可能需時幾分鐘。</translation>
 <translation id="810728361871746125">螢幕解像度</translation>
 <translation id="8109109153262930486">預設圖片</translation>
@@ -10054,7 +10054,7 @@
 <translation id="8732030010853991079">按一下這個圖示，即可使用這項擴充功能。</translation>
 <translation id="8732212173949624846">讀取及變更您已登入的所有裝置上的瀏覽記錄</translation>
 <translation id="8732844209475700754">更多與私隱權、安全性和資料收集相關的設定</translation>
-<translation id="8733779588180110397">⌥ + 滑鼠左鍵</translation>
+<translation id="8733779588180110397">⌥ + 按一下左鍵</translation>
 <translation id="8734073480934656039">啟用這項設定後，Kiosk 應用程式會在裝置開機時自動啟動。</translation>
 <translation id="8734755021067981851">未連接任何 USB 裝置。</translation>
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
@@ -10422,7 +10422,7 @@
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
 <translation id="9013037634206938463">安裝 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空間。如要增加可用空間，請刪除裝置內的檔案。</translation>
 <translation id="9014206344398081366">ChromeVox 教學課程</translation>
-<translation id="9014674417732091912">已移至第 <ph name="ROW_NUMBER" /> 列</translation>
+<translation id="9014674417732091912">移去第 <ph name="ROW_NUMBER" /> 列</translation>
 <translation id="901668144954885282">備份至「Google 雲端硬碟」</translation>
 <translation id="9016827136585652292">私隱保護畫面切換</translation>
 <translation id="90181708067259747">到期日：<ph name="CARD" /></translation>
@@ -10624,7 +10624,7 @@
 <translation id="9153274276370926498">Lacros 系統資料</translation>
 <translation id="9153367754133725216">在「啟動器」和搜尋結果中顯示新應用程式和網絡內容的建議。只有在你選擇將當機報告、診斷和使用情況資料傳送至 ChromeOS 時，系統才會傳送統計資料以改善建議內容。</translation>
 <translation id="9154194610265714752">已更新</translation>
-<translation id="915485121129452731">繪圖板</translation>
+<translation id="915485121129452731">數位繪圖板</translation>
 <translation id="9155344700756733162">取消揀顏色</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">無法為所有使用者設定自動更新 (預先啟動錯誤：<ph name="ERROR_NUMBER" />)</translation>

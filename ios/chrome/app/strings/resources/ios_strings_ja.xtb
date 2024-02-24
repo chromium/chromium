@@ -287,6 +287,7 @@
 <translation id="2473876017985765807"><ph name="WEBSITE" /> のパスワードは保存済みです</translation>
 <translation id="2476359652512522418">選択されていません</translation>
 <translation id="2479148705183875116">設定に移動</translation>
+<translation id="2480445180439820402">履歴</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2484459871750294497">この機能を有効にするには</translation>
 <translation id="2496626742194544812">最初のタブに移動</translation>
@@ -577,6 +578,7 @@
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3968505803272650567">興味のあるトピックを管理</translation>
+<translation id="3976922811715736829">最近使ったタブ</translation>
 <translation id="3989635538409502728">ログアウト</translation>
 <translation id="3994422733891749358">受信する通知を選択してください</translation>
 <translation id="3995521777587992544">ページ読み込み状況バー、<ph name="EMAIL" /> 読み込み完了。</translation>
@@ -635,6 +637,7 @@
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4282944936010261425">解決が必要なセキュリティの問題はありません。</translation>
 <translation id="4286718549648564014">住所をアカウント <ph name="USER_EMAIL" /> に移動しました</translation>
+<translation id="428768789042547925">最新情報</translation>
 <translation id="4293080268407233932">検索</translation>
 <translation id="4302248187517737842">ユーザー名が指定されていません ••••••••</translation>
 <translation id="4302415908542657649">パスワードの共有中</translation>
@@ -689,6 +692,7 @@
 <translation id="4587589328781138893">ウェブサイト</translation>
 <translation id="4588014171431912783">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">キーボード</translation>
+<translation id="4596899661486753028">リーディング リスト</translation>
 <translation id="4601095002996233687">不審なダウンロードを詳しくスキャンします。</translation>
 <translation id="4606247758155004938">お使いのブラウザは組織によって管理されています。</translation>
 <translation id="4607887340472970274">価格の追跡</translation>
@@ -1155,6 +1159,7 @@
 <translation id="6807889908376551050">すべて表示...</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="6822587385560699678">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
+<translation id="6824350924364057989">設定</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6842136130964845393">保存したパスワードに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="6851516051005285358">PC 版サイトを見る</translation>
@@ -1193,6 +1198,7 @@
 <translation id="7004499039102548441">最近使ったタブ</translation>
 <translation id="7006788746334555276">コンテンツの設定</translation>
 <translation id="7016070607649558507">脆弱なパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
+<translation id="7022197654033719543">サイト情報</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="704692552158601232">デフォルトのブラウザ App</translation>
 <translation id="7062545763355031412">同意してアカウントを切り替える</translation>
@@ -1292,6 +1298,7 @@
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7606639338662398635">タブグループ</translation>
 <translation id="7607521702806708809">パスワードを削除</translation>
+<translation id="7609559547731036746">ブックマーク</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7640669552036055091">Android で開いたタブ</translation>
 <translation id="7646263789464975852">メニュー → 設定 → 安全チェック</translation>
@@ -1329,8 +1336,10 @@
 <translation id="7781069478569868053">新しいタブページ</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{1 日後}other{{COUNT} 日後}}</translation>
+<translation id="7788868432173225918">展開されたビューを閉じる</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7792549458069452436">アプリをダウンロード</translation>
+<translation id="7800723706644914607">パスワード マネージャー</translation>
 <translation id="7807060072011926525">Google から提供</translation>
 <translation id="7812377703891978671">[<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />] を選択すると、すべての閲覧履歴にアクセスできます。</translation>
 <translation id="78146569776629510">ダウンロード</translation>
@@ -1403,6 +1412,7 @@
 <translation id="81313319706244542">2. パスワードをタップします</translation>
 <translation id="8132598642024322408">今なら <ph name="PREVIOUS_PRICE" /> が <ph name="PRICE" /></translation>
 <translation id="813370552429173916">サイトやアプリごとに異なるパスワードを使用してください。使い回しているパスワードが他人に知られると、そのパスワードであなたの他のアカウントにもアクセスされる恐れがあります。クリックしてウェブサイトを開き、今すぐ変更してください。</translation>
+<translation id="814463369662540460">価格のトラッキング</translation>
 <translation id="8156478151976189188">パスワード同期が機能していません</translation>
 <translation id="8157532349231307196">アカウント数: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8159358225423560600">たった今</translation>
@@ -1510,6 +1520,7 @@
 <translation id="8703536910991780768">安全なパスワードが使用されています</translation>
 <translation id="8706253136355675497">温度</translation>
 <translation id="8709409604518538305">タブを閉じました</translation>
+<translation id="8709773186849937451">ダウンロード</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>
 <translation id="8721297211384281569">ツールメニュー</translation>

@@ -1847,7 +1847,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2364498172489649528">Başarılı oldu</translation>
 <translation id="2365507699358342471">Bu site, panoya kopyalanan metin ve resimleri görebilir.</translation>
 <translation id="2367972762794486313">Uygulamaları göster</translation>
-<translation id="2369058545741334020">Okuma Modu'nda aç</translation>
+<translation id="2369058545741334020">Okuma Modu'nda Aç</translation>
 <translation id="236939127352773362">Yakındaki cihazlar paylaşırken</translation>
 <translation id="2371076942591664043">İşlem tamamlandığın&amp;da aç</translation>
 <translation id="237336063998926520">Konumu belirlemek için IP adresinizi kullanın</translation>
@@ -3134,7 +3134,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3371351218553893534">Satır çok uzun: <ph name="ERROR_LINE" /></translation>
 <translation id="3372602033006349389">Diğer cihazlarda</translation>
 <translation id="337286756654493126">Uygulamada açtığınız klasörleri okuma</translation>
-<translation id="3373059063088819384">Okuma Modu'nda aç</translation>
+<translation id="3373059063088819384">Okuma Modu'nda Aç</translation>
 <translation id="3373196968211632036">Chromebook için Steam (Beta), çocuklara ait Google Hesaplarında kullanılamaz</translation>
 <translation id="3373701465337594448">Bu ayar açık olduğunda, ziyaret ettiğiniz ve ilgi alanlarınızı tahmin eden sitelerin listesi burada gösterilir</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />", "<ph name="NEW_FOLDER_TITLE" />" klasörüne taşındı.</translation>
@@ -10626,7 +10626,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
       <ph name="LIST_ITEM" />Kablosuz ağa tekrar bağlanma
       <ph name="LIST_ITEM" />Chrome Bağlantı Teşhisi'ni çalıştırma
     <ph name="END_LIST" /></translation>
-<translation id="916607977885256133">Pencere içinde Pencere</translation>
+<translation id="916607977885256133">Pencere İçinde Pencere</translation>
 <translation id="9166253503936244008">Bu QR kodunu, <ph name="APP_NAME" /> için kullanmak istediğiniz geçiş anahtarına sahip cihazla tarayın</translation>
 <translation id="9167063903968449027">Okuma Listesini Göster</translation>
 <translation id="9167450455589251456">Profil desteklenmiyor</translation>

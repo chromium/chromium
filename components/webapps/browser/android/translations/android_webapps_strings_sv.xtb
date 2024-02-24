@@ -3,6 +3,7 @@
 <translationbundle lang="sv">
 <translation id="1213425325105380833">Återställ webbappar som du har använt nyligen på enheter som är anslutna till det här kontot</translation>
 <translation id="1344914278748983512">Den här appen är redan installerad</translation>
+<translation id="1353513225130339633">Kontrollerar om appen kan installeras \u2026</translation>
 <translation id="1786044937610313874">Genvägar öppnas i Chrome</translation>
 <translation id="204914487372604757">Skapa genväg</translation>
 <translation id="2065911435109240297">Återställ webbappar</translation>
@@ -10,6 +11,7 @@
 <translation id="2139186145475833000">Lägg till på startskärmen</translation>
 <translation id="2172982519592313442">Granska webbappar</translation>
 <translation id="2478076885740497414">Installera appen</translation>
+<translation id="3470954020960831923">Det går inte att installera appen.</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3910402514791813257">Installationen misslyckades</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
