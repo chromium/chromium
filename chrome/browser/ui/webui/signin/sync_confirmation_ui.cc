@@ -150,6 +150,11 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
       profile_, chrome::kChromeUISyncConfirmationHost);
   webui::SetJSModuleDefaults(source);
   webui::EnableTrustedTypesCSP(source);
+  // Per https//issues.chromium.org/issues/40091019 this WebUI issues direct
+  // network requests for images, so allow them from anywhere for this UI only.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src * data: blob: 'self';");
 
   static constexpr webui::ResourcePath kResources[] = {
       {"icons.html.js", IDR_SIGNIN_ICONS_HTML_JS},
