@@ -1097,6 +1097,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Toggled on"/>
 </enum>
 
+<enum name="IneligibityReason">
+  <int value="0" label="OS version"/>
+  <int value="1" label="Form factor (e.g. tablet)"/>
+  <int value="2" label="Navigation mode (e.g. 3-button mode)"/>
+  <int value="3" label="Device type (e.g. automotive)"/>
+</enum>
+
 <enum name="InputDeviceSource">
   <int value="0" label="Other"/>
   <int value="1" label="Touchscreen"/>

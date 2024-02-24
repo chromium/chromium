@@ -146,6 +146,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -1742,11 +1743,11 @@ public class RootUiCoordinator
     }
 
     /** Setup drawing using Android Edge-to-Edge. */
-    @VisibleForTesting
-    void initializeEdgeToEdgeController(
+    protected void initializeEdgeToEdgeController(
             Activity activity,
             ActivityTabProvider activityTabProvider,
             ObservableSupplierImpl<EdgeToEdgeController> supplier) {
+        EdgeToEdgeUtils.recordEligibility(activity);
         if (supportsEdgeToEdge() && EdgeToEdgeControllerFactory.isEnabled()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
