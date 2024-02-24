@@ -70,6 +70,23 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
   ~FirmwareUpdateManager() override;
 
+  // Used in histograms. Keep in sync with FirmwareUpdateInstallResult in
+  // tools/metrics/histograms/metadata/chromeos/enums.xml.
+  enum class InstallResult {
+    kSuccess = 0,
+    kInstallFailed = 1,
+    kFailedToCreateUpdateDirectory = 2,
+    // DEPRECATED: kInvalidDestinationFile = 3,
+    kInvalidFileDescriptor = 4,
+    kFailedToDownloadToFile = 5,
+    kFailedToCreatePatchFile = 6,
+    kEmptyPatchFile = 7,
+    kInvalidPatchFileUri = 8,
+    kInvalidPatchFile = 9,
+    kInstallFailedTimeout = 10,
+    kMaxValue = kInstallFailedTimeout,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
@@ -131,12 +148,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Query all updates for all devices.
   void RequestAllUpdates();
 
-  // TODO(jimmyxgong): This should override the mojo api interface.
-  // Download and prepare the install file for a specific device.
-  void StartInstall(const std::string& device_id,
-                    const base::FilePath& filepath,
-                    base::OnceCallback<void()> callback);
-
   void BindInterface(
       mojo::PendingReceiver<firmware_update::mojom::UpdateProvider>
           pending_receiver);
@@ -160,40 +171,53 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 
+  typedef base::OnceCallback<void(InstallResult)> InstallCallback;
+
+  // Download and prepare the install file for a specific device.
+  void StartInstall(const std::string& device_id,
+                    const base::FilePath& filepath,
+                    InstallCallback callback);
+
   // Callback handler after fetching the file descriptor.
   void OnGetFileDescriptor(const std::string& device_id,
                            FirmwareInstallOptions options,
-                           base::OnceCallback<void()> callback,
+                           InstallCallback callback,
                            base::ScopedFD file_descriptor);
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
                      FirmwareInstallOptions options,
-                     base::OnceCallback<void()> callback,
+                     InstallCallback callback,
                      base::File patch_file);
 
-  void OnInstallResponse(bool success);
+  // Response from fwupd DBus client InstallUpdate call.
+  void OnInstallResponse(InstallCallback callback, bool success);
+
+  // InstallComplete will be called exactly once with a result when an install
+  // attempt succeeds or fails for any reason.
+  void InstallComplete(InstallResult result);
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,
                             const base::FilePath& filepath,
-                            base::OnceCallback<void()> callback);
+                            InstallCallback callback,
+                            bool create_dir_success);
 
   void MaybeDownloadFileToInternal(const base::FilePath& patch_path,
                                    const std::string& device_id,
                                    const base::FilePath& filepath,
-                                   base::OnceCallback<void()> callback,
+                                   InstallCallback callback,
                                    bool write_file_success);
 
   void DownloadFileToInternal(const base::FilePath& patch_path,
                               const std::string& device_id,
                               const base::FilePath& filepath,
-                              base::OnceCallback<void()> callback);
+                              InstallCallback callback);
 
   void OnUrlDownloadedToFile(
       const std::string& device_id,
       std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      base::OnceCallback<void()> callback,
+      InstallCallback callback,
       base::FilePath download_path);
 
   // Notifies observers registered with ObservePeripheralUpdates() the current

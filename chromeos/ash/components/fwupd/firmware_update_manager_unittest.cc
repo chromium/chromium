@@ -81,7 +81,12 @@ const uint64_t kFakeReportFlagForTesting = 1llu << 8;
 
 void RunResponseCallback(dbus::ObjectProxy::ResponseOrErrorCallback callback,
                          std::unique_ptr<dbus::Response> response) {
-  std::move(callback).Run(response.get(), nullptr);
+  if (response->GetMessageType() == DBUS_MESSAGE_TYPE_ERROR) {
+    std::move(callback).Run(nullptr,
+                            static_cast<dbus::ErrorResponse*>(response.get()));
+  } else {
+    std::move(callback).Run(response.get(), nullptr);
+  }
 }
 
 class FakeUpdateObserver : public ash::firmware_update::mojom::UpdateObserver {
@@ -178,6 +183,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
                 GetObjectProxy(kFwupdServiceName, fwupd_service_path))
         .WillRepeatedly(testing::Return(proxy_.get()));
 
+    EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+        .WillRepeatedly(
+            Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
     FwupdClient::Initialize(bus_.get());
     dbus_client_ = FwupdClient::Get();
     fake_fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
@@ -222,16 +231,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
         ->set_should_show_notification_for_test(/*show_notification=*/true);
   }
 
-  void StartInstall(const std::string& device_id,
-                    const base::FilePath& filepath) {
-    base::RunLoop loop;
-    firmware_update_manager_->StartInstall(
-        device_id, filepath,
-        base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
-                       loop.QuitClosure()));
-    loop.Run();
-  }
-
   void RequestDevices() {
     firmware_update_manager_->RequestDevices();
     task_environment_.RunUntilIdle();
@@ -262,7 +261,9 @@ class FirmwareUpdateManagerTest : public testing::Test {
     // Create a fake update so that the following method call works correctly.
     firmware_update_manager_->inflight_update_ = CreateFakeUpdate();
     // Trigger an unsuccessful update.
-    firmware_update_manager_->OnInstallResponse(/*success=*/false);
+    firmware_update_manager_->OnInstallResponse(
+        base::BindOnce([](FirmwareUpdateManager::InstallResult) {}),
+        /*success=*/false);
     task_environment_.RunUntilIdle();
   }
 
@@ -522,6 +523,16 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return response;
   }
 
+  std::unique_ptr<dbus::ErrorResponse> CreateErrorResponse() {
+    DBusMessage* raw_message = dbus_message_new(DBUS_MESSAGE_TYPE_ERROR);
+    return dbus::ErrorResponse::FromRawMessage(raw_message);
+  }
+
+  void CreateOneDeviceAndUpdateResponse() {
+    dbus_responses_.push_back(CreateOneDeviceResponse());
+    dbus_responses_.push_back(CreateOneUpdateResponse());
+  }
+
   void SetupObserver(FakeUpdateObserver* observer) {
     firmware_update_manager_->ObservePeripheralUpdates(
         observer->pending_remote());
@@ -568,6 +579,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
   void BeginUpdate(const std::string& device_id,
                    const base::FilePath& filepath) {
     firmware_update_manager_->BeginUpdate(device_id, filepath);
+    task_environment_.RunUntilIdle();
   }
 
   void RequestAllUpdates() { firmware_update_manager_->RequestAllUpdates(); }
@@ -607,9 +619,6 @@ TEST_F(FirmwareUpdateManagerTest, CorrectMockInstance) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesNoDevices) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateEmptyDeviceResponse());
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
@@ -621,9 +630,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesNoDevices) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceNoUpdates) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateNoUpdateResponse());
 
@@ -637,9 +643,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceNoUpdates) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
 
@@ -663,11 +666,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
+  CreateOneDeviceAndUpdateResponse();
 
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
@@ -677,8 +676,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
   ASSERT_EQ(1U, updates.size());
   ASSERT_EQ(1U, firmware_update_manager_->GetUpdateCount());
 
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
+  CreateOneDeviceAndUpdateResponse();
 
   RequestDevices();
 
@@ -690,9 +688,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateNumberOfDeviceResponses(2));
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
@@ -718,9 +713,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateNumberOfDeviceResponses(2));
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
@@ -756,18 +748,16 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
   ASSERT_EQ(3, update_observer.num_times_notified());
 }
 
-TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
+TEST_F(FirmwareUpdateManagerTest, BeginUpdate) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
+  // Provide one device and update for RequestUpdates() call from SetupObserver.
+  CreateOneDeviceAndUpdateResponse();
+  // InstallUpdate success response.
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
-  // Add dbus response for RequestAllUpdates() call made after an install
-  // is completed.
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
+  // For RequestAllUpdates() call after install completes.
+  CreateOneDeviceAndUpdateResponse();
+
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
   ASSERT_EQ(1, update_observer.num_times_notified());
@@ -780,20 +770,8 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
   FakeUpdateProgressObserver update_progress_observer;
   SetupProgressObserver(&update_progress_observer);
-  StartInstall(std::string(kFakeDeviceIdForTesting), base::FilePath(fake_url));
 
-  task_environment_.RunUntilIdle();
-
-  base::FilePath root_dir;
-  CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
-  const base::FilePath root_path =
-      root_dir.Append(FILE_PATH_LITERAL(kDownloadDir))
-          .Append(FILE_PATH_LITERAL(kCacheDir));
-  const std::string test_filename =
-      std::string(kFakeDeviceIdForTesting) + std::string(kCabExtension);
-  base::FilePath full_path = root_path.Append(test_filename);
-  // TODO(jimmyxgong): Check that the file was created. Tests are failing
-  // because file isn't created initially.
+  BeginUpdate(std::string(kFakeDeviceIdForTesting), base::FilePath(fake_url));
 
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kSuccess,
             update_progress_observer.GetLatestUpdate()->state);
@@ -803,20 +781,54 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
 
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.FirmwareUpdateUi.InstallResult",
-      firmware_update::metrics::FirmwareUpdateInstallResult::kSuccess, 1);
+      FirmwareUpdateManager::InstallResult::kSuccess, 1);
 }
 
-TEST_F(FirmwareUpdateManagerTest, RequestInstallLocalPatch) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+TEST_F(FirmwareUpdateManagerTest, BeginUpdateFailed) {
+  base::HistogramTester histogram_tester;
 
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
-  dbus_responses_.push_back(dbus::Response::CreateEmpty());
-  // Add dbus response for RequestAllUpdates() call made after an install
-  // is completed.
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
+  // Provide one device and update for RequestUpdates() call from SetupObserver.
+  CreateOneDeviceAndUpdateResponse();
+  // InstallUpdate failed response.
+  dbus_responses_.push_back(CreateErrorResponse());
+  // For RequestAllUpdates() call after install completes.
+  CreateOneDeviceAndUpdateResponse();
+
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  ASSERT_EQ(1, update_observer.num_times_notified());
+
+  const std::string fake_url =
+      std::string("https://faketesturl/") + kFakeUpdateFileNameForTesting;
+  SetFakeUrlForTesting(fake_url);
+  GetTestUrlLoaderFactory().AddResponse(fake_url, "");
+
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+
+  BeginUpdate(std::string(kFakeDeviceIdForTesting), base::FilePath(fake_url));
+
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kFailed,
+            update_progress_observer.GetLatestUpdate()->state);
+  // Expect RequestAllUpdates() to have been called after an install to refresh
+  // the update list.
+  ASSERT_EQ(2, update_observer.num_times_notified());
+
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.InstallResult",
+      FirmwareUpdateManager::InstallResult::kInstallFailed, 1);
+}
+
+TEST_F(FirmwareUpdateManagerTest, BeginUpdateLocalPatch) {
+  base::HistogramTester histogram_tester;
+
+  // Provide one device and update for RequestUpdates() call from SetupObserver.
+  CreateOneDeviceAndUpdateResponse();
+  // InstallUpdate success response.
+  dbus_responses_.push_back(dbus::ErrorResponse::CreateEmpty());
+  // For RequestAllUpdates() call after install completes.
+  CreateOneDeviceAndUpdateResponse();
 
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
@@ -837,11 +849,42 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstallLocalPatch) {
   EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
   FakeUpdateProgressObserver update_progress_observer;
   SetupProgressObserver(&update_progress_observer);
-  StartInstall(std::string(kFakeDeviceIdForTesting), base::FilePath(uri));
+  BeginUpdate(std::string(kFakeDeviceIdForTesting), base::FilePath(uri));
 
-  task_environment_.RunUntilIdle();
-
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.InstallResult",
+      FirmwareUpdateManager::InstallResult::kSuccess, 1);
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kSuccess,
+            update_progress_observer.GetLatestUpdate()->state);
+}
+
+TEST_F(FirmwareUpdateManagerTest, BeginUpdateInvalidFile) {
+  base::HistogramTester histogram_tester;
+
+  // Provide one device and update for RequestUpdates() call from SetupObserver.
+  CreateOneDeviceAndUpdateResponse();
+  // InstallUpdateResponse.
+  dbus_responses_.push_back(dbus::Response::CreateEmpty());
+  // For RequestAllUpdates() call after install completes.
+  CreateOneDeviceAndUpdateResponse();
+
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+
+  std::string fake_url = "https://faketesturl/";
+  SetFakeUrlForTesting(fake_url);
+  GetTestUrlLoaderFactory().AddResponse(fake_url, "");
+
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+  BeginUpdate(std::string(kFakeDeviceIdForTesting),
+              base::FilePath("BadTestFilename@#.cab"));
+
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.InstallResult",
+      FirmwareUpdateManager::InstallResult::kInvalidPatchFile, 1);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kFailed,
             update_progress_observer.GetLatestUpdate()->state);
 }
 
@@ -878,40 +921,7 @@ TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {
   EXPECT_EQ(100u, update_progress_observer.GetLatestUpdate()->percentage);
 }
 
-TEST_F(FirmwareUpdateManagerTest, InvalidFile) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
-  dbus_responses_.push_back(CreateOneDeviceResponse());
-  dbus_responses_.push_back(CreateOneUpdateResponse());
-  dbus_responses_.push_back(dbus::Response::CreateEmpty());
-
-  FakeUpdateObserver update_observer;
-  SetupObserver(&update_observer);
-
-  std::string fake_url = "https://faketesturl/";
-  std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
-  SetFakeUrlForTesting(fake_url);
-  GetTestUrlLoaderFactory().AddResponse(fake_url, "");
-
-  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
-  FakeUpdateProgressObserver update_progress_observer;
-  SetupProgressObserver(&update_progress_observer);
-  BeginUpdate(std::string(kFakeDeviceIdForTesting),
-              base::FilePath("BadTestFilename@#.cab"));
-
-  task_environment_.RunUntilIdle();
-
-  // An invalid filepath will never trigger the install. Expect no updates
-  // progress to be available.
-  EXPECT_TRUE(!update_progress_observer.GetLatestUpdate());
-}
-
 TEST_F(FirmwareUpdateManagerTest, InvalidChecksum) {
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponseWithChecksum(
       "badbbadbad1ef97238fb24c5e40a979bc544bb2b0967b863e43e7d58e0d9a923f"));
@@ -926,10 +936,6 @@ TEST_F(FirmwareUpdateManagerTest, InvalidChecksum) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, EmptyChecksum) {
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponseWithChecksum(""));
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
@@ -944,10 +950,6 @@ TEST_F(FirmwareUpdateManagerTest, EmptyChecksum) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, WrongChecksumVariant) {
-  base::HistogramTester histogram_tester;
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponseWithChecksum(
       "badbbadbad1ef97238fb24c5e40a979bc544bb2b"));
@@ -964,8 +966,7 @@ TEST_F(FirmwareUpdateManagerTest, WrongChecksumVariant) {
 
 TEST_F(FirmwareUpdateManagerTest, NotificationShownForCriticalUpdate) {
   InitializeNotificationController();
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneCriticalUpdateResponse());
   FakeUpdateObserver update_observer;
@@ -987,8 +988,6 @@ TEST_F(FirmwareUpdateManagerTest, NotificationShownForCriticalUpdate) {
 
 TEST_F(FirmwareUpdateManagerTest, NotificationNotShownIfNoCriticalUpdates) {
   InitializeNotificationController();
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(
       kFirmwareUpdateNotificationId));
   dbus_responses_.push_back(CreateOneDeviceResponse());
@@ -1001,8 +1000,7 @@ TEST_F(FirmwareUpdateManagerTest, NotificationNotShownIfNoCriticalUpdates) {
 
 TEST_F(FirmwareUpdateManagerTest, DeviceCountMetric) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   dbus_responses_.push_back(CreateOneDeviceResponse());
@@ -1018,8 +1016,7 @@ TEST_F(FirmwareUpdateManagerTest, DeviceCountMetric) {
 
 TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
   dbus_responses_.push_back(CreateNumberOfDeviceResponses(3));
   dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(1));
   dbus_responses_.push_back(CreateOneUpdateResponseWithPriority(1));
@@ -1053,9 +1050,6 @@ TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
 }
 
 TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {
-  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
-      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
-
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   dbus_responses_.push_back(CreateInternalDeviceResponse());
