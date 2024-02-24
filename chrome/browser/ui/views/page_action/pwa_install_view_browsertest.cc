@@ -56,6 +56,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -249,9 +251,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
     app_banner_manager_->WaitForInstallableCheckTearDown();
   }
 
-  webapps::AppId ExecutePwaInstallIcon() {
-    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-
+  webapps::AppId StartPwaInstallFromPageActionViewAndGetInstalledApp() {
     webapps::AppId app_id;
     base::RunLoop run_loop;
     web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
@@ -261,11 +261,17 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
           run_loop.Quit();
         }));
 
-    pwa_install_view_->ExecuteForTesting();
+    {
+      views::Widget* install_dialog_widget =
+          ClickPWAInstallIconAndWaitForBubbleShown();
+      EXPECT_NE(install_dialog_widget, nullptr);
+      views::test::WidgetDestroyedWaiter destroyed_waiter(
+          install_dialog_widget);
+      views::test::AcceptDialog(install_dialog_widget);
+      destroyed_waiter.Wait();
+    }
 
     run_loop.Run();
-
-    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
     return app_id;
   }
@@ -295,7 +301,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time);
 
-    const webapps::AppId app_id = ExecutePwaInstallIcon();
+    const webapps::AppId app_id =
+        StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time + install_duration);
 
@@ -313,7 +320,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
               expected_buckets);
   }
 
-  void WaitForSimpleInstallBubbleViewShown() {
+  views::Widget* ClickPWAInstallIconAndWaitForBubbleShown() {
     std::string bubble_view_name = IsUniversalInstallEnabled()
                                        ? "WebAppSimpleInstallDialog"
                                        : "PWAConfirmationBubbleView";
@@ -321,10 +328,10 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
         views::test::AnyWidgetTestPasskey(), bubble_view_name);
 
     pwa_install_view_->ExecuteForTesting();
-    pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
+    return pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
   }
 
-  void WaitPwaConfirmationBubbleClosed() {
+  void AwaitPwaInstallDialogClosed() {
     auto* install_dialog_coordinator =
         web_app::WebAppInstallDialogCoordinator::GetOrCreateForBrowser(
             browser());
@@ -362,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        PwaSetToOpenInWindowIsNotInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
-  ExecutePwaInstallIcon();
+  StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetInstallableAppURL());
@@ -383,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
   // Install the outer PWA.
   ASSERT_TRUE(OpenTab(GetInstallableAppURL()).installable);
-  ExecutePwaInstallIcon();
+  StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(GetNestedInstallableAppURL());
@@ -400,7 +407,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
                        PwaSetToOpenInTabIsInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
-  webapps::AppId app_id = ExecutePwaInstallIcon();
+  webapps::AppId app_id = StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Change launch container to open in tab.
   web_app::WebAppProvider::GetForTest(browser()->profile())
@@ -464,10 +471,10 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(installable_web_contents, GetCurrentTab());
   EXPECT_TRUE(pwa_install_view_->GetVisible());
 
-  WaitForSimpleInstallBubbleViewShown();
+  EXPECT_NE(ClickPWAInstallIconAndWaitForBubbleShown(), nullptr);
 
   chrome::SelectNextTab(browser());
-  WaitPwaConfirmationBubbleClosed();
+  AwaitPwaInstallDialogClosed();
   ASSERT_EQ(non_installable_web_contents, GetCurrentTab());
 
   EXPECT_FALSE(
@@ -521,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   OpenTabResult result = OpenTab(GetInstallableAppURL());
   EXPECT_TRUE(result.installable);
   EXPECT_NE(first_tab, GetCurrentTab());
-  ExecutePwaInstallIcon();
+  StartPwaInstallFromPageActionViewAndGetInstalledApp();
   EXPECT_EQ(first_tab, GetCurrentTab());
   EXPECT_FALSE(pwa_install_view_->GetVisible());
 }
@@ -597,7 +604,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
-  const webapps::AppId app_id = ExecutePwaInstallIcon();
+  const webapps::AppId app_id =
+      StartPwaInstallFromPageActionViewAndGetInstalledApp();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(app_url);
