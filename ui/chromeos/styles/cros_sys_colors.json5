@@ -518,6 +518,9 @@
       light: '$cros.ref.neutral30',
       dark: '$cros.ref.neutral0',
     },
+    'shadow-ambient': 'rgba($cros.sys.shadow.rgb, 0.2)',
+    'shadow-key': 'rgba($cros.sys.shadow.rgb, 0.1)',
+
     /* When the button is pressed, we layer the ripple color on top of the hover color to form the pressed color, that's what blend() does here. */
     'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
     'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',

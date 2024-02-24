@@ -1,0 +1,19 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD_style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * Chrome OS shadows.
+ *
+ *
+ */
+ {
+  token_namespace: 'cros.sys',
+  untyped_css: {
+    shadows: {
+      app_elevation_1_shadow: '0px 0px 4px 0px var(--cros-sys-shadow_key), 0px 4px 4px 0px var(--cros-sys-shadow_ambient)',
+      app_elevation_3_shadow: '0px 0px 12px 0px var(--cros-sys-shadow_key), 0px 12px 12px 0px var(--cros-sys-shadow_ambient)',
+      app_elevation_5_shadow: '0px 0px 24px 0px var(--cros-sys-shadow_key), 0px 24px 24px 0px var(--cros-sys-shadow_ambient)',
+    }
+  }
+ }
