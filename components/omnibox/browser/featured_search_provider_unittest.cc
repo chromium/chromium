@@ -64,9 +64,6 @@ class FeaturedSearchProviderTest : public testing::Test {
       ASSERT_EQ(cases[i].output.size(), matches.size());
       for (size_t j = 0; j < cases[i].output.size(); ++j) {
         EXPECT_EQ(cases[i].output[j], matches[j].destination_url);
-        EXPECT_EQ(matches[j].allowed_to_be_default_match,
-                  matches[j].type == AutocompleteMatchType::STARTER_PACK &&
-                      matches[j].inline_autocompletion.empty());
       }
     }
   }
