@@ -2102,13 +2102,6 @@ AXID AXObjectCacheImpl::GenerateAXID() const {
   return obj_id;
 }
 
-void AXObjectCacheImpl::AddAriaNotification(
-    Node* node,
-    const String announcement,
-    const AriaNotificationOptions* options) {
-  aria_notifications_.emplace_back(announcement, options);
-}
-
 void AXObjectCacheImpl::AddToFixedOrStickyNodeList(const AXObject* object) {
   DCHECK(object);
   DCHECK(!object->IsDetached());
@@ -3881,6 +3874,18 @@ void AXObjectCacheImpl::HandleAttributeChanged(
   if (!accessible_node)
     return;
   MarkAXObjectDirty(Get(accessible_node));
+}
+
+void AXObjectCacheImpl::HandleAriaNotification(
+    const Node* node,
+    const String& announcement,
+    const AriaNotificationOptions* options) {
+  if (auto* obj = Get(node)) {
+    aria_notifications_.Set(
+        obj->AXObjectID(),
+        std::make_unique<AriaNotification>(announcement, options));
+    DeferTreeUpdate(TreeUpdateReason::kMarkAXObjectDirty, obj);
+  }
 }
 
 void AXObjectCacheImpl::UpdateTableRoleWithCleanLayout(Node* table) {

@@ -288,6 +288,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleAttributeChanged(const QualifiedName& attr_name,
                               AccessibleNode*) override;
 
+  void HandleAriaNotification(const Node*,
+                              const String&,
+                              const AriaNotificationOptions*) override;
+
   void SetCanvasObjectBounds(HTMLCanvasElement*,
                              Element*,
                              const PhysicalRect&) override;
@@ -420,10 +424,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void UpdateTableRoleWithCleanLayout(Node*);
 
   AXID GenerateAXID() const override;
-
-  void AddAriaNotification(Node*,
-                           const String,
-                           const AriaNotificationOptions*) override;
 
   void PostNotification(const LayoutObject*, ax::mojom::blink::Event);
   void PostNotification(Node*, ax::mojom::blink::Event);
@@ -1131,6 +1131,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // instantiated in this document to avoid constructing duplicates.
   HeapHashMap<AXID, Member<ComputedAccessibleNode>> computed_node_mapping_;
 
+  // A set of ARIA notifications that have yet to be added to `ax_tree_data`.
+  HashMap<AXID, std::unique_ptr<AriaNotification>> aria_notifications_;
+
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =
       ax::mojom::blink::EventFrom::kNone;
@@ -1142,9 +1145,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // A set of currently active event intents.
   BlinkAXEventIntentsSet active_event_intents_;
-
-  // A set of aria notifications that have yet to be added to ax_tree_data.
-  Vector<AriaNotification> aria_notifications_;
 
   // If false, exposes the internal accessibility tree of a select pop-up
   // instead.

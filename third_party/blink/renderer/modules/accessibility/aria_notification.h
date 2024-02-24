@@ -12,6 +12,8 @@
 namespace blink {
 
 class AriaNotification {
+  USING_FAST_MALLOC(AriaNotification);
+
  public:
   AriaNotification(const String& announcement,
                    const AriaNotificationOptions* options);

@@ -7139,11 +7139,9 @@ void Document::ariaNotify(const String& announcement,
                           const AriaNotificationOptions* options) {
   DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
 
-  AXObjectCache* cache = ExistingAXObjectCache();
-  if (!cache)
-    return;
-
-  cache->AddAriaNotification(this, announcement, options);
+  if (auto* cache = ExistingAXObjectCache()) {
+    cache->HandleAriaNotification(this, announcement, options);
+  }
 }
 
 static bool IsValidNameNonASCII(const LChar* characters, unsigned length) {

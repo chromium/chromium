@@ -2468,12 +2468,9 @@ void Element::ariaNotify(const String& announcement,
                          const AriaNotificationOptions* options) {
   DCHECK(RuntimeEnabledFeatures::AriaNotifyEnabled());
 
-  AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
-  if (!cache) {
-    return;
+  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->HandleAriaNotification(this, announcement, options);
   }
-
-  cache->AddAriaNotification(this, announcement, options);
 }
 
 bool Element::toggleAttribute(const AtomicString& qualified_name,

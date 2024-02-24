@@ -164,6 +164,11 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void HandleAttributeChanged(const QualifiedName& attr_name,
                                       AccessibleNode*) = 0;
 
+  // Handle notifications from the `ariaNotify` API.
+  virtual void HandleAriaNotification(const Node*,
+                                      const String&,
+                                      const AriaNotificationOptions*) = 0;
+
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
   virtual void EmbeddingTokenChanged(HTMLFrameOwnerElement*) = 0;
@@ -208,10 +213,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual AXObject* Root() = 0;
 
   virtual AXID GenerateAXID() const = 0;
-
-  virtual void AddAriaNotification(Node*,
-                                   const String,
-                                   const AriaNotificationOptions*) = 0;
 
   virtual ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID) = 0;
 
