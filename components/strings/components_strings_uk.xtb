@@ -1271,7 +1271,7 @@
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />: зараз відкрито, натисніть Tab, а потім – клавішу Enter, щоб перейти на відкриту вкладку</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб закрити всі відкриті вікна в режимі анонімного перегляду</translation>
 <translation id="3474392552865647225">Кнопка "Налаштувати шрифти в Chrome"; активуйте, щоб налаштувати розміри й гарнітури шрифтів у Chrome</translation>
-<translation id="3477679029130949506">Кіноафіши й години показу фільмів</translation>
+<translation id="3477679029130949506">Кіноафіші й години показу фільмів</translation>
 <translation id="3478033058537426179">За групами</translation>
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3484560055331845446">Ви можете втратити доступ до облікового запису Google. Chrome радить змінити пароль. Вам буде запропоновано ввійти в обліковий запис.</translation>
@@ -3024,7 +3024,7 @@
 <translation id="6957887021205513506">Схоже, що сертифікат сервера підроблено.</translation>
 <translation id="6958564499836457428">Керуйте налаштуваннями конфіденційності в обліковому записі Google</translation>
 <translation id="695864015080711809">Вакансії й освіта</translation>
-<translation id="6961733224437895943">Страхування нерухомості</translation>
+<translation id="6961733224437895943">Страхування житла</translation>
 <translation id="6961844873822989059">Може просити дозвіл використовувати шрифти, установлені на пристрої</translation>
 <translation id="6961980518585973432">Ювілеї</translation>
 <translation id="6962858948849099922">Час очікування переміщення минув</translation>
@@ -3992,7 +3992,7 @@
 <translation id="8798739476508189189">Шукаєте експериментальні параметри для веб-переглядача? Перейти</translation>
 <translation id="8800034312320686233">Сайт не працює?</translation>
 <translation id="8805819170075074995">Елемент списку <ph name="LANGUAGE_ID" />: елемент ігнорується, оскільки його також включено в правило SpellcheckLanguage.</translation>
-<translation id="8806285662264631610">Косметика для ванної та догляду за тілом</translation>
+<translation id="8806285662264631610">Косметика для тіла й ванни</translation>
 <translation id="8806696968588872703">Пластик (сатиновий)</translation>
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
 <translation id="8809203544698246977">Тут відображатимуться заблоковані теми</translation>
