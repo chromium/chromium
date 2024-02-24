@@ -14,6 +14,10 @@ FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
 
 FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
 
+void FacilitatedPaymentsDriver::DidFinishNavigation() const {
+  manager_->Reset();
+}
+
 void FacilitatedPaymentsDriver::DidFinishLoad(const GURL& url) const {
   manager_->DelayedCheckAllowlistAndTriggerPixCodeDetection(url);
 }

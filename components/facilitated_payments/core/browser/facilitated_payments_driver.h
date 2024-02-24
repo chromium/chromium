@@ -30,6 +30,11 @@ class FacilitatedPaymentsDriver {
       delete;
   virtual ~FacilitatedPaymentsDriver();
 
+  // Informs `FacilitatedPaymentsManager` about a navigation that has committed.
+  // It is invoked only for the primary main frame by the platform-specific
+  // implementation.
+  void DidFinishNavigation() const;
+
   // Informs `FacilitatedPaymentsManager` about the finished loading. It is
   // invoked only for the primary main frame by the platform-specific
   // implementation.

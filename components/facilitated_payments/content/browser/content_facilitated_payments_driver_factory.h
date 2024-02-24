@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -46,6 +47,8 @@ class ContentFacilitatedPaymentsDriverFactory
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 

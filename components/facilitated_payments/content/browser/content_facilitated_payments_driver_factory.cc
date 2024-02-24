@@ -4,6 +4,8 @@
 
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
+#include "content/public/browser/navigation_handle.h"
+
 namespace payments::facilitated {
 
 ContentFacilitatedPaymentsDriverFactory::
@@ -24,6 +26,18 @@ ContentFacilitatedPaymentsDriverFactory::
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   driver_map_.erase(render_frame_host);
+}
+
+void ContentFacilitatedPaymentsDriverFactory::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->IsInOutermostMainFrame()) {
+    return;
+  }
+  auto& driver = GetOrCreateForFrame(navigation_handle->GetRenderFrameHost());
+  driver.DidFinishNavigation();
 }
 
 void ContentFacilitatedPaymentsDriverFactory::DidFinishLoad(

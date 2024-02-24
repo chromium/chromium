@@ -27,15 +27,15 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() = default;
 
+void FacilitatedPaymentsManager::Reset() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  pix_code_detection_triggering_timer_.Stop();
+}
+
 void FacilitatedPaymentsManager::
     DelayedCheckAllowlistAndTriggerPixCodeDetection(const GURL& url,
                                                     int attempt_number) {
-  // TODO(b/300332597): If a page navigation takes place, it might be too late,
-  // and PIX code detection might have already run on the previous page. Find an
-  // earlier point in the page loading sequence of events where the timer could
-  // be stopped.
-  // Stop the timer in case it is running from a previous page load.
-  pix_code_detection_triggering_timer_.Stop();
+  Reset();
   switch (GetAllowlistCheckResult(url)) {
     case optimization_guide::OptimizationGuideDecision::kTrue: {
       // The PIX code detection should be triggered after `kPageLoadWaitTime`.

@@ -40,6 +40,9 @@ class FacilitatedPaymentsManager {
       delete;
   virtual ~FacilitatedPaymentsManager();
 
+  // Resets `this` to initial state. Cancels any alive async callbacks.
+  void Reset();
+
   // Initiates the PIX payments flow on the browser. There are 2 steps involved:
   // 1. Query the allowlist to check if PIX code detection should be run on the
   // page. It is possible that the infrastructure that supports querying the
@@ -73,6 +76,8 @@ class FacilitatedPaymentsManager {
   optimization_guide::OptimizationGuideDecision GetAllowlistCheckResult(
       const GURL& url) const;
 
+  // Asks the renderer to scan the document for a PIX code. The call is made via
+  // the `driver_`.
   void TriggerPixCodeDetection();
 
   // Callback to be called after attempting PIX code detection. `pix_code_found`
