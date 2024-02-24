@@ -103,7 +103,7 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       if (search_it == keyword_to_data_map.end()) {
         keyword_to_data_map[search_terms] = history::ClusterKeywordData(
             history::ClusterKeywordData::kSearchTerms,
-            /*score=*/kSearchTermsScore, /*entity_collections=*/{});
+            /*score=*/kSearchTermsScore);
       } else {
         search_it->second.score += kSearchTermsScore;
         search_it->second.MaybeUpdateKeywordType(

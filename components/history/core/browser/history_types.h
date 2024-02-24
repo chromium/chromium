@@ -1064,11 +1064,7 @@ struct ClusterKeywordData {
   };
 
   ClusterKeywordData();
-  explicit ClusterKeywordData(
-      const std::vector<std::string>& entity_collections);
-  ClusterKeywordData(ClusterKeywordType type,
-                     float score,
-                     const std::vector<std::string>& entity_collections);
+  ClusterKeywordData(ClusterKeywordType type, float score);
   ClusterKeywordData(const ClusterKeywordData&);
   ClusterKeywordData(ClusterKeywordData&&);
   ClusterKeywordData& operator=(const ClusterKeywordData&);
@@ -1093,9 +1089,6 @@ struct ClusterKeywordData {
   // A floating point score describing how important this keyword is to the
   // containing cluster.
   float score = 0;
-
-  // Entity collections associated with the keyword this is attached to.
-  std::vector<std::string> entity_collections;
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const ClusterKeywordData& data);

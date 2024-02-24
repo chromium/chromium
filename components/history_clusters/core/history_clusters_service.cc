@@ -62,12 +62,6 @@ base::Value::Dict KeywordsCacheToDict(
     base::Value::Dict cluster_keyword_dict;
     cluster_keyword_dict.Set("type", pair.second.type);
     cluster_keyword_dict.Set("score", pair.second.score);
-    base::Value::List entity_collections_list;
-    for (std::string entity : pair.second.entity_collections) {
-      entity_collections_list.Append(entity);
-    }
-    cluster_keyword_dict.Set("entity_collections",
-                             std::move(entity_collections_list));
     keyword_dict.Set(base::UTF16ToUTF8(pair.first),
                      std::move(cluster_keyword_dict));
   }
@@ -90,19 +84,11 @@ HistoryClustersService::KeywordMap DictToKeywordsCache(
     if (!type || !score) {
       continue;
     }
-    std::vector<std::string> entity_collections;
-    const base::Value::List* entity_collections_list =
-        entry_dict.FindList("entity_collections");
-    if (entity_collections_list) {
-      for (const auto& val : *entity_collections_list) {
-        entity_collections.push_back(val.GetString());
-      }
-    }
     keyword_map.insert(std::make_pair(
         base::UTF8ToUTF16(pair.first),
         history::ClusterKeywordData(
             static_cast<history::ClusterKeywordData::ClusterKeywordType>(*type),
-            *score, entity_collections)));
+            *score)));
   }
 
   return keyword_map;

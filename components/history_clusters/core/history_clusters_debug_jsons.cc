@@ -132,19 +132,11 @@ std::string GetDebugJSONForClusters(
     base::Value::Dict debug_cluster;
     debug_cluster.Set("id", static_cast<int>(cluster.cluster_id));
     debug_cluster.Set("label", cluster.label.value_or(u""));
-    base::Value::Dict debug_keyword_to_data_map;
+    base::Value::List debug_keywords;
     for (const auto& keyword_data_p : cluster.keyword_to_data_map) {
-      base::Value::List debug_collection;
-      for (const auto& collection : keyword_data_p.second.entity_collections) {
-        debug_collection.Append(collection);
-      }
-      base::Value::Dict debug_keyword_data;
-      debug_keyword_data.Set("collections", std::move(debug_collection));
-      debug_keyword_to_data_map.Set(base::UTF16ToUTF8(keyword_data_p.first),
-                                    std::move(debug_keyword_data));
+      debug_keywords.Append(base::UTF16ToUTF8(keyword_data_p.first));
     }
-    debug_cluster.Set("keyword_to_data_map",
-                      std::move(debug_keyword_to_data_map));
+    debug_cluster.Set("keywords", std::move(debug_keywords));
     debug_cluster.Set("should_show_on_prominent_ui_surfaces",
                       cluster.should_show_on_prominent_ui_surfaces);
     debug_cluster.Set("triggerability_calculated",
@@ -207,20 +199,13 @@ template std::string GetDebugJSONForUrlKeywordSet<std::string>(
 std::string GetDebugJSONForKeywordMap(
     const std::unordered_map<std::u16string, history::ClusterKeywordData>&
         keyword_to_data_map) {
-  base::Value::Dict debug_keyword_to_data_map;
+  base::Value::List debug_keywords;
   for (const auto& keyword_data_p : keyword_to_data_map) {
-    base::Value::List debug_collection;
-    for (const auto& collection : keyword_data_p.second.entity_collections) {
-      debug_collection.Append(collection);
-    }
-    base::Value::Dict debug_keyword_data;
-    debug_keyword_data.Set("collections", std::move(debug_collection));
-    debug_keyword_to_data_map.Set(base::UTF16ToUTF8(keyword_data_p.first),
-                                  std::move(debug_keyword_data));
+    debug_keywords.Append(base::UTF16ToUTF8(keyword_data_p.first));
   }
   std::string debug_string;
   if (!base::JSONWriter::WriteWithOptions(
-          debug_keyword_to_data_map, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+          debug_keywords, base::JSONWriter::OPTIONS_PRETTY_PRINT,
           &debug_string)) {
     debug_string = "Error: Could not write keywords list to JSON.";
   }

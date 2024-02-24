@@ -75,7 +75,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   EXPECT_THAT(cluster.GetKeywords(), UnorderedElementsAre(u"search"));
   EXPECT_EQ(cluster.keyword_to_data_map.at(u"search"),
             history::ClusterKeywordData(
-                history::ClusterKeywordData::kSearchTerms, 100, {}));
+                history::ClusterKeywordData::kSearchTerms, 100));
 }
 
 }  // namespace
