@@ -8479,6 +8479,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "web-hid-in-web-view",
+    "owners": ["vkovalova@google.com", "giovax@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "web-identity-digital-credentials",
     "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 125

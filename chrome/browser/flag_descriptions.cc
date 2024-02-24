@@ -1638,6 +1638,10 @@ const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
     "protocol.";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+const char kEnableWebHidInWebViewName[] = "Web HID in WebView";
+const char kEnableWebHidInWebViewDescription[] =
+    "Enable WebViews to access Web HID upon embedder's permission.";
+
 const char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
 const char kExtensionsMenuAccessControlDescription[] =

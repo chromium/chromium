@@ -3786,6 +3786,9 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kVerboseLoggingInNaclChoices)},
 #endif  // ENABLE_NACL
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"web-hid-in-web-view", flag_descriptions::kEnableWebHidInWebViewName,
+     flag_descriptions::kEnableWebHidInWebViewDescription, kOsAll,
+     FEATURE_VALUE_TYPE(extensions_features::kEnableWebHidInWebView)},
     {"extensions-on-chrome-urls",
      flag_descriptions::kExtensionsOnChromeUrlsName,
      flag_descriptions::kExtensionsOnChromeUrlsDescription, kOsAll,

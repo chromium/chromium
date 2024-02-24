@@ -929,6 +929,9 @@ extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
 extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+extern const char kEnableWebHidInWebViewName[];
+extern const char kEnableWebHidInWebViewDescription[];
+
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
 extern const char kIPHExtensionsMenuFeatureName[];

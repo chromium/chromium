@@ -19986,6 +19986,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationContextChecking:enabled"/>
   <int value="-351552989" label="disable-hosted-apps-in-windows"/>
   <int value="-351127770" label="enable-offline-pages-as-bookmarks"/>
+  <int value="-350558651" label="EnableWebHidInWebView:disabled"/>
   <int value="-350336634"
       label="ExperimentalAccessibilityDictationExtension:enabled"/>
   <int value="-349505266" label="ShimlessRMADisableDarkMode:enabled"/>
@@ -20013,6 +20014,7 @@ from previous Chrome versions.
   <int value="-343769596" label="ServiceWorkerScriptStreaming:disabled"/>
   <int value="-343314036" label="WebBluetooth:enabled"/>
   <int value="-342421456" label="EnableOverviewRoundedCorners:disabled"/>
+  <int value="-342243498" label="EnableWebHidInWebView:enabled"/>
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
   <int value="-340255045" label="allow-nacl-socket-api"/>
   <int value="-340023285" label="WebNFC:enabled"/>
