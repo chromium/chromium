@@ -37,6 +37,7 @@ namespace optimization_guide {
 class OnDeviceModelAccessController;
 class OnDeviceModelComponentStateManager;
 class OnDeviceModelExecutionConfigInterpreter;
+class ModelQualityLogsUploaderService;
 
 // Controls the lifetime of the on-device model service, loading and unloading
 // of the models, and executing them via the service.
@@ -68,7 +69,9 @@ class OnDeviceModelServiceController
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       proto::ModelExecutionFeature feature,
       ExecuteRemoteFn execute_remote_fn,
-      OptimizationGuideLogger* logger);
+      OptimizationGuideLogger* logger,
+      base::WeakPtr<ModelQualityLogsUploaderService>
+          model_quality_uploader_service);
 
   // Launches the on-device model-service.
   virtual void LaunchService() = 0;

@@ -145,7 +145,9 @@ std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::CreateSession(
     proto::ModelExecutionFeature feature,
     ExecuteRemoteFn execute_remote_fn,
-    OptimizationGuideLogger* optimization_guide_logger) {
+    OptimizationGuideLogger* optimization_guide_logger,
+    base::WeakPtr<ModelQualityLogsUploaderService>
+        model_quality_uploader_service) {
   if (on_device_component_state_manager_) {
     on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
   }
@@ -224,7 +226,8 @@ OnDeviceModelServiceController::CreateSession(
                           weak_ptr_factory_.GetWeakPtr(), model_paths),
       feature, model_versions_, config_interpreter_.get(),
       weak_ptr_factory_.GetWeakPtr(), safety_config,
-      std::move(execute_remote_fn), optimization_guide_logger);
+      std::move(execute_remote_fn), optimization_guide_logger,
+      model_quality_uploader_service);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
@@ -266,9 +269,8 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
     on_device_model::ModelAssets assets) {
   if (!service_remote_) {
     // Close the files on a background thread.
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::DoNothingWithBoundArgs(std::move(assets)));
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               base::DoNothingWithBoundArgs(std::move(assets)));
     return;
   }
   // TODO(b/302402959): Choose max_tokens based on device.

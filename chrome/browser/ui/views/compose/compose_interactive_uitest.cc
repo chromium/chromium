@@ -259,7 +259,8 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
                           std::make_unique<
                               optimization_guide::ModelQualityLogEntry>(
                               std::make_unique<optimization_guide::proto::
-                                                   LogAiDataRequest>()))));
+                                                   LogAiDataRequest>(),
+                              nullptr))));
             })));
   }
 

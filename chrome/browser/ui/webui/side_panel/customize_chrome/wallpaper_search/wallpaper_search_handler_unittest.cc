@@ -132,7 +132,7 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
 
 std::unique_ptr<optimization_guide::ModelQualityLogEntry> ModelQuality() {
   return std::make_unique<optimization_guide::ModelQualityLogEntry>(
-      std::make_unique<optimization_guide::proto::LogAiDataRequest>());
+      std::make_unique<optimization_guide::proto::LogAiDataRequest>(), nullptr);
 }
 
 }  // namespace

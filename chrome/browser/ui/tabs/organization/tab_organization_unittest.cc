@@ -38,7 +38,8 @@ class FakeModelQualityLogEntry
  public:
   FakeModelQualityLogEntry()
       : optimization_guide::ModelQualityLogEntry(
-            std::make_unique<optimization_guide::proto::LogAiDataRequest>()) {}
+            std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
+            nullptr) {}
 };
 
 }  // anonymous namespace

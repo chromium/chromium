@@ -23,7 +23,7 @@ proto::ModelExecutionFeature GetModelExecutionFeature(
       NOTREACHED();
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
     case proto::LogAiDataRequest::FeatureCase::FEATURE_NOT_SET:
-      NOTREACHED();
+      // This can be used for testing.
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED;
   }
 }

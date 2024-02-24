@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -48,8 +49,15 @@ class ModelQualityLogsUploaderService {
 
   void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry);
 
+  // Returns the WeakPtr for uploading logs during model qualtiy logs
+  // destruction.
+  base::WeakPtr<ModelQualityLogsUploaderService> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class ModelQualityLogsUploaderServiceTest;
+  friend class ModelQualityLogEntry;
 
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request);

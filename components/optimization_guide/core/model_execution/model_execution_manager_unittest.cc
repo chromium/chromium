@@ -112,7 +112,8 @@ class ModelExecutionManagerTest : public testing::Test {
     service_controller_ = base::MakeRefCounted<FakeServiceController>();
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
         url_loader_factory_, identity_test_env_.identity_manager(),
-        service_controller_, &model_provider_, &optimization_guide_logger_);
+        service_controller_, &model_provider_, &optimization_guide_logger_,
+        nullptr);
   }
 
   bool SimulateResponse(const std::string& content,

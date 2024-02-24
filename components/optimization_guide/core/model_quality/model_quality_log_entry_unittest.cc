@@ -18,7 +18,7 @@ TEST_F(ModelQualityLogEntryTest, Initialize) {
   optimization_guide::proto::LoggingMetadata* logging_metadata =
       log_ai_data_request.get()->mutable_logging_metadata();
 
-  ModelQualityLogEntry log_entry(std::move(log_ai_data_request));
+  ModelQualityLogEntry log_entry(std::move(log_ai_data_request), nullptr);
 
   EXPECT_EQ(log_entry.logging_metadata(), logging_metadata);
 }
@@ -30,7 +30,7 @@ TEST_F(ModelQualityLogEntryTest, ClientId) {
   int64_t client_id =
       log_ai_data_request.get()->mutable_logging_metadata()->client_id();
 
-  ModelQualityLogEntry log_entry(std::move(log_ai_data_request));
+  ModelQualityLogEntry log_entry(std::move(log_ai_data_request), nullptr);
 
   EXPECT_EQ(log_entry.client_id(), client_id);
 }

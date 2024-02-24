@@ -129,13 +129,16 @@ SessionImpl::SessionImpl(
     base::WeakPtr<OnDeviceModelServiceController> controller,
     const std::optional<proto::FeatureTextSafetyConfiguration>& safety_config,
     ExecuteRemoteFn execute_remote_fn,
-    OptimizationGuideLogger* optimization_guide_logger)
+    OptimizationGuideLogger* optimization_guide_logger,
+    base::WeakPtr<ModelQualityLogsUploaderService>
+        model_quality_uploader_service)
     : controller_(controller),
       feature_(feature),
       on_device_model_versions_(on_device_model_versions),
       safety_config_(safety_config),
       execute_remote_fn_(std::move(execute_remote_fn)),
-      optimization_guide_logger_(optimization_guide_logger) {
+      optimization_guide_logger_(optimization_guide_logger),
+      model_quality_uploader_service_(model_quality_uploader_service) {
   if (controller_ && controller_->ShouldStartNewSession()) {
     on_device_state_.emplace(std::move(start_session_fn), this);
     on_device_state_->config_interpreter = config_interpreter;
@@ -466,7 +469,7 @@ void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
     std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr;
     if (og_error.ShouldLogModelQuality()) {
       log_entry = std::make_unique<ModelQualityLogEntry>(
-          std::move(log_ai_data_request));
+          std::move(log_ai_data_request), model_quality_uploader_service_);
       log_entry->set_model_execution_id(GenerateExecutionId());
     }
     callback.Run(OptimizationGuideModelStreamingExecutionResult(
@@ -594,7 +597,8 @@ void SessionImpl::SendResponse(ResponseType response_type) {
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
       log_entry = std::make_unique<ModelQualityLogEntry>(
-          std::move(on_device_state_->log_ai_data_request));
+          std::move(on_device_state_->log_ai_data_request),
+          model_quality_uploader_service_);
       log_entry->set_model_execution_id(GenerateExecutionId());
       on_device_state_->log_ai_data_request.reset();
     }

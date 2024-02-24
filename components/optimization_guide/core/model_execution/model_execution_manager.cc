@@ -101,8 +101,11 @@ ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<OnDeviceModelServiceController>
         on_device_model_service_controller,
     OptimizationGuideModelProvider* model_provider,
-    OptimizationGuideLogger* optimization_guide_logger)
-    : optimization_guide_logger_(optimization_guide_logger),
+    OptimizationGuideLogger* optimization_guide_logger,
+    base::WeakPtr<ModelQualityLogsUploaderService>
+        model_quality_uploader_service)
+    : model_quality_uploader_service_(model_quality_uploader_service),
+      optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
           GetModelExecutionServiceURL(),
           "key",
@@ -241,7 +244,8 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
                           base::Unretained(this));
   if (on_device_model_service_controller_) {
     auto session = on_device_model_service_controller_->CreateSession(
-        feature, execute_fn, optimization_guide_logger_.get());
+        feature, execute_fn, optimization_guide_logger_.get(),
+        model_quality_uploader_service_);
     if (session) {
       RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
       return session;
@@ -252,7 +256,7 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   return std::make_unique<SessionImpl>(
       base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
       /*safety_config=*/std::nullopt, std::move(execute_fn),
-      optimization_guide_logger_.get());
+      optimization_guide_logger_.get(), model_quality_uploader_service_);
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(
@@ -275,7 +279,8 @@ void ModelExecutionManager::OnModelExecuteResponse(
   // Create corresponding log entry for `log_ai_data_request` to pass it with
   // the callback.
   std::unique_ptr<ModelQualityLogEntry> log_entry =
-      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request));
+      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request),
+                                             model_quality_uploader_service_);
 
   // Set the id if present.
   if (execute_response->has_server_execution_id()) {

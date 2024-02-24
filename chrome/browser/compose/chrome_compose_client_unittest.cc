@@ -198,7 +198,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                           std::make_unique<
                               optimization_guide::ModelQualityLogEntry>(
                               std::make_unique<optimization_guide::proto::
-                                                   LogAiDataRequest>()))));
+                                                   LogAiDataRequest>(),
+                              nullptr))));
             })));
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
@@ -944,7 +945,8 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
                     false,
                     std::make_unique<optimization_guide::ModelQualityLogEntry>(
                         std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>())));
+                            optimization_guide::proto::LogAiDataRequest>(),
+                        nullptr)));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
@@ -2252,7 +2254,8 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLoggedOnSubsequentError) {
                     /*provided_by_on_device=*/false,
                     std::make_unique<optimization_guide::ModelQualityLogEntry>(
                         std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>())));
+                            optimization_guide::proto::LogAiDataRequest>(),
+                        nullptr)));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
@@ -2905,7 +2908,8 @@ TEST_F(ChromeComposeClientTest, TestOfflineError) {
                     /*provided_by_on_device=*/false,
                     std::make_unique<optimization_guide::ModelQualityLogEntry>(
                         std::make_unique<
-                            optimization_guide::proto::LogAiDataRequest>())));
+                            optimization_guide::proto::LogAiDataRequest>(),
+                        nullptr)));
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;

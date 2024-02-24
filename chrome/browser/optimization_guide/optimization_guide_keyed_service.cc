@@ -419,12 +419,6 @@ void OptimizationGuideKeyedService::Initialize() {
         service_controller = GetOnDeviceModelServiceController(
             on_device_component_manager_->GetWeakPtr());
       }
-      model_execution_manager_ =
-          std::make_unique<optimization_guide::ModelExecutionManager>(
-              url_loader_factory,
-              IdentityManagerFactory::GetForProfile(profile),
-              std::move(service_controller), this,
-              optimization_guide_logger_.get());
 
       model_execution_features_controller_ = std::make_unique<
           optimization_guide::ModelExecutionFeaturesController>(
@@ -442,6 +436,16 @@ void OptimizationGuideKeyedService::Initialize() {
                 ? model_execution_features_controller_->GetWeakPtr()
                 : nullptr);
       }
+
+      model_execution_manager_ =
+          std::make_unique<optimization_guide::ModelExecutionManager>(
+              url_loader_factory,
+              IdentityManagerFactory::GetForProfile(profile),
+              std::move(service_controller), this,
+              optimization_guide_logger_.get(),
+              model_quality_logs_uploader_service_
+                  ? model_quality_logs_uploader_service_->GetWeakPtr()
+                  : nullptr);
     }
   }
 
@@ -618,18 +622,8 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
       "feature",
       optimization_guide::GetStringNameForModelExecutionFeature(feature));
 
-  // Only log if we are allowed for logging based on user consent and enterprise
-  // policy check.
-  if (!model_quality_logs_uploader_service_->CanUploadLogs(feature)) {
-    return;
-  }
-
-  // Set system profile proto before uploading.
-  model_quality_logs_uploader_service_->SetSystemProfileProto(
-      log_entry->logging_metadata());
-
-  model_quality_logs_uploader_service_.get()->UploadModelQualityLogs(
-      std::move(log_entry));
+  // This uploads the logs on ModelQualityLogEntry destruction.
+  log_entry.reset();
 }
 
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(

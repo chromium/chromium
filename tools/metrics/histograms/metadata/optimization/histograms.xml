@@ -1060,6 +1060,17 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
+<histogram name="OptimizationGuide.ModelQualityLogEntry.UploadedOnDestruction"
+    enum="Boolean" expires_after="2024-07-30">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the model quality logs are uploaded during destruction or
+    not which means feature teams have manually called UploadModelQualityLogs.
+    Recorded once for lifetime of ModelQualityLogEntry.
+  </summary>
+</histogram>
+
 <histogram
     name="OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode"
     enum="NetErrorCodes" expires_after="2024-07-14">
