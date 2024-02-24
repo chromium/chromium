@@ -255,4 +255,89 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, LaunchBrowsersToDesks) {
   EXPECT_EQ(1u, desks[2]->windows().size());
 }
 
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_WindowStates) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Browser* browser_maximized = CreateBrowser(profile);
+  Browser* browser_minimized = CreateBrowser(profile);
+  Browser* browser_fullscreened = CreateBrowser(profile);
+  Browser* browser_floated = CreateBrowser(profile);
+  Browser* browser_snapped = CreateBrowser(profile);
+  EXPECT_EQ(5u, BrowserList::GetInstance()->size());
+
+  WindowState::Get(browser_maximized->window()->GetNativeWindow())->Maximize();
+
+  // Also maximize `browser_minimized` before minimizing so we can test the
+  // pre-minimized state as well.
+  WindowState::Get(browser_minimized->window()->GetNativeWindow())->Maximize();
+  WindowState::Get(browser_minimized->window()->GetNativeWindow())->Minimize();
+
+  // Fullscreen a window. This should not be restored as full restore does not
+  // support restoring fullscreen state.
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  WindowState::Get(browser_fullscreened->window()->GetNativeWindow())
+      ->OnWMEvent(&fullscreen_event);
+
+  const WMEvent float_event(WM_EVENT_FLOAT);
+  WindowState::Get(browser_floated->window()->GetNativeWindow())
+      ->OnWMEvent(&float_event);
+
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(browser_snapped->window()->GetNativeWindow())
+      ->OnWMEvent(&snap_event);
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Tests that the browser windows are restored to their old window states.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, WindowStates) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  // Verify we have entered overview. The restore button will be null if we
+  // failed to enter overview.
+  WaitForOverviewEnterAnimation();
+  const PillButton* restore_button = GetPineDialogRestoreButton();
+  ASSERT_TRUE(restore_button);
+
+  // Click the "Restore" button and verify we have launched 5 browsers.
+  BrowsersWaiter waiter(/*expected_count=*/5);
+  test::Click(restore_button, /*flag=*/0);
+  waiter.Wait();
+
+  auto* browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(5u, browser_list->size());
+
+  // Test that there is a maximized, floated and snapped window.
+  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+    return WindowState::Get(browser->window()->GetNativeWindow())
+        ->IsMaximized();
+  }));
+  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+    return WindowState::Get(browser->window()->GetNativeWindow())->IsFloated();
+  }));
+  EXPECT_TRUE(base::ranges::any_of(*browser_list, [](Browser* browser) {
+    return WindowState::Get(browser->window()->GetNativeWindow())->IsSnapped();
+  }));
+
+  // Test that there is no fullscreen window as full restore does not restore
+  // fullscreen state.
+  EXPECT_TRUE(base::ranges::none_of(*browser_list, [](Browser* browser) {
+    return WindowState::Get(browser->window()->GetNativeWindow())
+        ->IsFullscreen();
+  }));
+
+  // Test the pre-minimized state of the minimized browser window. When we
+  // unminimize it, it should be maximized state.
+  auto it = base::ranges::find_if(*browser_list, [](Browser* browser) {
+    return WindowState::Get(browser->window()->GetNativeWindow())
+        ->IsMinimized();
+  });
+  ASSERT_NE(it, browser_list->end());
+  auto* window_state = WindowState::Get((*it)->window()->GetNativeWindow());
+  window_state->Unminimize();
+  EXPECT_TRUE(window_state->IsMaximized());
+}
+
 }  // namespace ash::full_restore
