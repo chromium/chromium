@@ -197,6 +197,8 @@ bool AAudioStreamWrapper::Open() {
     return false;
   }
 
+  CHECK_EQ(AAUDIO_FORMAT_PCM_FLOAT, AAudioStream_getFormat(aaudio_stream_));
+
   // After opening the stream, sets the effective buffer size to 3X the burst
   // size to prevent glitching if the burst is small (e.g. < 128). On some
   // devices you can get by with 1X or 2X, but 3X is safer.
