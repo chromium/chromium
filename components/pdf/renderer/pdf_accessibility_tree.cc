@@ -2700,7 +2700,6 @@ bool PdfAccessibilityTree::UpdateDependentObjects(bool set_this) {
   if (obj && !obj->IsDetached()) {
     obj->SetPluginTreeSource(set_this ? this : nullptr);
   } else {
-    CHECK_IS_TEST();
     success &= !force_plugin_ax_object_for_testing_.IsDetached();
   }
 
