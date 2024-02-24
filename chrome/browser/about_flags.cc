@@ -3666,6 +3666,22 @@ const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kUserEducationVersion2ShortIdleSessionCooldownDuration[] = {
+        {"idle_time_between_sessions", "10m"},
+        {"session_start_grace_period", "1m"},
+        {"low_priority_cooldown", "5m"}};
+
+const FeatureEntry::FeatureVariation
+    kUserEducationExperienceVersion2Variants[] = {
+        {"with 10 minutes Idle Session and 5 minutes Cooldown Period",
+         kUserEducationVersion2ShortIdleSessionCooldownDuration,
+         std::size(kUserEducationVersion2ShortIdleSessionCooldownDuration),
+         nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -4607,8 +4623,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"user-education-experience-v2",
      flag_descriptions::kUserEducationExperienceVersion2Name,
      flag_descriptions::kUserEducationExperienceVersion2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         user_education::features::kUserEducationExperienceVersion2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         user_education::features::kUserEducationExperienceVersion2,
+         kUserEducationExperienceVersion2Variants,
+         "UserEducationExperienceVersion2")},
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-lock-screen-notification",
