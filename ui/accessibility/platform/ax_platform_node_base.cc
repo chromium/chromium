@@ -1038,86 +1038,45 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetTable() const {
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCaption() const {
   if (!delegate_)
     return nullptr;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return nullptr;
-
-  DCHECK(table->delegate_);
-  return static_cast<AXPlatformNodeBase*>(table->delegate_->GetTableCaption());
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetTableCaption());
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int index) const {
   if (!delegate_)
     return nullptr;
-  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole()))
-    return nullptr;
 
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return nullptr;
-
-  DCHECK(table->delegate_);
-  std::optional<int32_t> cell_id = table->delegate_->CellIndexToId(index);
+  std::optional<int32_t> cell_id = delegate_->CellIndexToId(index);
   if (!cell_id)
     return nullptr;
 
-  return static_cast<AXPlatformNodeBase*>(
-      table->delegate_->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetTableCell(int row,
                                                      int column) const {
-  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole()))
-    return nullptr;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table || !GetTableRowCount() || !GetTableColumnCount())
-    return nullptr;
-
-  if (row < 0 || row >= *GetTableRowCount() || column < 0 ||
-      column >= *GetTableColumnCount()) {
+  if (!delegate_) {
     return nullptr;
   }
 
-  DCHECK(table->delegate_);
-  std::optional<int32_t> cell_id = table->delegate_->GetCellId(row, column);
+  std::optional<int32_t> cell_id = delegate_->GetCellId(row, column);
   if (!cell_id)
     return nullptr;
 
-  return static_cast<AXPlatformNodeBase*>(
-      table->delegate_->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetAriaTableCell(int aria_row,
                                                          int aria_column) const {
-  if (!IsTableLike(GetRole()) && !IsCellOrTableHeader(GetRole())) {
+  if (!delegate_) {
     return nullptr;
   }
 
-  AXPlatformNodeBase* table = GetTable();
-  if (!table) {
-    return nullptr;
-  }
-  std::optional<int> aria_row_count = GetTableAriaRowCount();
-  std::optional<int> aria_col_count = GetTableAriaColumnCount();
-  if (!aria_row_count || !aria_col_count) {
-    return nullptr;
-  }
-
-  if (aria_row < 1 || aria_row > *aria_row_count || aria_column < 1 ||
-      aria_column > *aria_col_count) {
-    return nullptr;
-  }
-
-  DCHECK(table->delegate_);
   std::optional<int32_t> cell_id =
-      table->delegate_->GetCellIdAriaCoords(aria_row, aria_column);
+      delegate_->GetCellIdAriaCoords(aria_row, aria_column);
   if (!cell_id) {
     return nullptr;
   }
-  return static_cast<AXPlatformNodeBase*>(
-      table->delegate_->GetFromNodeID(*cell_id));
+  return static_cast<AXPlatformNodeBase*>(delegate_->GetFromNodeID(*cell_id));
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableCellIndex() const {
@@ -1135,25 +1094,13 @@ std::optional<int> AXPlatformNodeBase::GetTableColumn() const {
 std::optional<int> AXPlatformNodeBase::GetTableColumnCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableColCount();
+  return delegate_->GetTableColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaColumnCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableAriaColCount();
+  return delegate_->GetTableAriaColCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableColumnSpan() const {
@@ -1175,25 +1122,13 @@ std::optional<int> AXPlatformNodeBase::GetTableRow() const {
 std::optional<int> AXPlatformNodeBase::GetTableRowCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableRowCount();
+  return delegate_->GetTableRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableAriaRowCount() const {
   if (!delegate_)
     return std::nullopt;
-
-  AXPlatformNodeBase* table = GetTable();
-  if (!table)
-    return std::nullopt;
-
-  DCHECK(table->delegate_);
-  return table->delegate_->GetTableAriaRowCount();
+  return delegate_->GetTableAriaRowCount();
 }
 
 std::optional<int> AXPlatformNodeBase::GetTableRowSpan() const {
