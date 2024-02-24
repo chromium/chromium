@@ -92,6 +92,7 @@ std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.context = root_window;
   params.name = "BirchBarWidget";
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
 
