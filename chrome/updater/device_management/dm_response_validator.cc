@@ -336,6 +336,7 @@ bool DMResponseValidator::ValidateSignature(
   const std::string& policy_data = policy_response.policy_data();
   if (!VerifySHA256Signature(policy_data, signature_key,
                              policy_response.policy_data_signature())) {
+    VLOG(1) << "Policy signature validation failed.";
     validation_result.status =
         PolicyValidationResult::Status::kValidationBadSignature;
     return false;

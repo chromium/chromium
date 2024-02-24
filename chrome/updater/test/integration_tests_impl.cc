@@ -556,6 +556,13 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
   for (const AppUpdateExpectation& app : apps) {
     app_requests.push_back(
         base::StringPrintf(R"("appid":"%s")", app.app_id.c_str()));
+    if (app.allow_rollback) {
+      app_requests.push_back(R"("rollback_allowed":true,)");
+    }
+    if (!app.target_version_prefix.empty()) {
+      app_requests.push_back(base::StringPrintf(
+          R"("targetversionprefix":"%s")", app.target_version_prefix.c_str()));
+    }
     if (!app.target_channel.empty()) {
       app_requests.push_back(base::StringPrintf(R"("release_channel":"%s",)",
                                                 app.target_channel.c_str()));

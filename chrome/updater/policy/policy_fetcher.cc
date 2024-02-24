@@ -129,6 +129,9 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
   }
 
   for (const auto& validation_result : validation_results) {
+    VLOG(1) << "Sending policy validation error, status: "
+            << validation_result.status
+            << ", issues cout: " << validation_result.issues.size();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
