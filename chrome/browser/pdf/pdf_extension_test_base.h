@@ -86,9 +86,6 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
 
-  content::RenderFrameHost* GetPluginFrame(
-      extensions::MimeHandlerViewGuest* guest) const;
-
   int CountPDFProcesses();
 
   // TODO(crbug.com/1445746): Remove this once there are no more existing use

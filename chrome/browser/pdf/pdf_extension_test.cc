@@ -1490,7 +1490,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(guest);
 
-  content::RenderFrameHost* frame = GetPluginFrame(guest);
+  content::RenderFrameHost* frame =
+      pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
   ASSERT_TRUE(frame);
   content::RenderWidgetHostView* view = frame->GetView();
   EXPECT_THAT(view->GetSelectedText(), IsEmpty());
@@ -2103,7 +2104,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
     // Make sure mouse events are sent completely before proceeding, in order to
     // avoid races with subsequent keyboard events.
     content::InputEventAckWaiter mouse_waiter(
-        GetPluginFrame(guest)->GetRenderWidgetHost(),
+        pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame())
+            ->GetRenderWidgetHost(),
         blink::WebInputEvent::Type::kMouseUp);
     mouse_waiter.Wait();
   }
@@ -2123,7 +2125,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
         {'O', ui::DomCode::US_O, ui::VKEY_O},
     };
 
-    content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+    content::RenderFrameHost* plugin_frame =
+        pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
     // Make sure that the plugin frame of guest has focus.
     ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), plugin_frame);
     for (const auto& data : kData) {
@@ -2142,7 +2145,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   // Presses the left arrow key.
   void PressLeftArrow(MimeHandlerViewGuest* guest) {
     // Make sure that the plugin frame of guest has focus.
-    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
+              pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame()));
     content::SimulateKeyPressWithoutChar(
         guest->embedder_web_contents(), ui::DomKey::ARROW_LEFT,
         ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT, false, false, false, false);
@@ -2151,7 +2155,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   // Presses down shift, presses the left arrow, and lets go of shift.
   void PressShiftLeftArrow(MimeHandlerViewGuest* guest) {
     // Make sure that the plugin frame of guest has focus.
-    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
+              pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame()));
     content::SimulateKeyPressWithoutChar(guest->embedder_web_contents(),
                                          ui::DomKey::ARROW_LEFT,
                                          ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT,
@@ -2161,7 +2166,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   // Presses the right arrow key.
   void PressRightArrow(MimeHandlerViewGuest* guest) {
     // Make sure that the plugin frame of guest has focus.
-    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
+              pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame()));
     content::SimulateKeyPressWithoutChar(
         guest->embedder_web_contents(), ui::DomKey::ARROW_RIGHT,
         ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT, false, false, false, false);
@@ -2170,7 +2176,8 @@ class PDFExtensionComboBoxTest : public PDFExtensionTest {
   // Presses down shift, presses the right arrow, and lets go of shift.
   void PressShiftRightArrow(MimeHandlerViewGuest* guest) {
     // Make sure that the plugin frame of guest has focus.
-    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(), GetPluginFrame(guest));
+    ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
+              pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame()));
     content::SimulateKeyPressWithoutChar(
         guest->embedder_web_contents(), ui::DomKey::ARROW_RIGHT,
         ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT, false, /*shift=*/true, false,
@@ -2803,7 +2810,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   content::WaitForHitTestData(guest_mainframe);
 
   // Observe context menu IPC.
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
+  content::RenderFrameHost* plugin_frame =
+      pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
   content::ContextMenuInterceptor context_menu_interceptor(plugin_frame);
 
   ContextMenuWaiter menu_observer;

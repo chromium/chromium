@@ -224,11 +224,6 @@ PDFExtensionTestBase::GetOnlyPdfExtensionHostEnsureValid() {
   return extension_host;
 }
 
-content::RenderFrameHost* PDFExtensionTestBase::GetPluginFrame(
-    MimeHandlerViewGuest* guest) const {
-  return pdf_frame_util::FindPdfChildFrame(guest->GetGuestMainFrame());
-}
-
 int PDFExtensionTestBase::CountPDFProcesses() {
   return pdf_extension_test_util::CountPdfPluginProcesses(browser());
 }
