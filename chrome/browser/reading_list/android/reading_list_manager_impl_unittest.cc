@@ -169,6 +169,23 @@ TEST_F(ReadingListManagerImplTest, AddGetDelete) {
   EXPECT_TRUE(manager()->GetRoot()->children().empty());
 }
 
+TEST_F(ReadingListManagerImplTest, DeleteAllEntries) {
+  // Adds a node.
+  GURL url(kURL);
+  Add(url, kTitle);
+  EXPECT_EQ(1u, manager()->size());
+  EXPECT_EQ(1u, manager()->unread_size());
+  EXPECT_EQ(1u, manager()->GetRoot()->children().size())
+      << "The reading list node should be the child of the root.";
+
+  EXPECT_CALL(*observer(), ReadingListChanged()).RetiresOnSaturation();
+  // Deletes the node.
+  manager()->DeleteAll();
+  EXPECT_EQ(0u, manager()->size());
+  EXPECT_EQ(0u, manager()->unread_size());
+  EXPECT_TRUE(manager()->GetRoot()->children().empty());
+}
+
 // Verifies GetNodeByID() and IsReadingListBookmark() works correctly.
 TEST_F(ReadingListManagerImplTest, GetNodeByIDIsReadingListBookmark) {
   GURL url(kURL);

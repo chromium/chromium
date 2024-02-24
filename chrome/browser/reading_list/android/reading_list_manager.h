@@ -76,6 +76,9 @@ class ReadingListManager : public KeyedService {
   // Deletes a reading list article.
   virtual void Delete(const GURL& url) = 0;
 
+  // Deletes all reading list articles.
+  virtual void DeleteAll() = 0;
+
   // Returns the root bookmark node for the reading list article. The bookmark
   // node tree is owned by this class. All reading list articles are children of
   // this root.

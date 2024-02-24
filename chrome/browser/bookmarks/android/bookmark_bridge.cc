@@ -1060,6 +1060,10 @@ void BookmarkBridge::RemoveAllUserBookmarks(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(IsLoaded());
   bookmark_model_->RemoveAllUserBookmarks();
+  local_or_syncable_reading_list_manager_->DeleteAll();
+  if (account_reading_list_manager_) {
+    account_reading_list_manager_->DeleteAll();
+  }
 }
 
 void BookmarkBridge::MoveBookmark(

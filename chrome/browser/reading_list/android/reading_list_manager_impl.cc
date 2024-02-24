@@ -218,6 +218,11 @@ void ReadingListManagerImpl::Delete(const GURL& url) {
   reading_list_model_->RemoveEntryByURL(url);
 }
 
+void ReadingListManagerImpl::DeleteAll() {
+  DCHECK(reading_list_model_->loaded());
+  reading_list_model_->DeleteAllEntries();
+}
+
 const BookmarkNode* ReadingListManagerImpl::GetRoot() const {
   DCHECK(reading_list_model_->loaded());
   return root_.get();

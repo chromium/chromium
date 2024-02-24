@@ -63,6 +63,7 @@ class ReadingListManagerImpl : public ReadingListManager,
   bool IsReadingListBookmark(
       const bookmarks::BookmarkNode* node) const override;
   void Delete(const GURL& url) override;
+  void DeleteAll() override;
   const bookmarks::BookmarkNode* GetRoot() const override;
   size_t size() const override;
   size_t unread_size() const override;
