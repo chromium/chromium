@@ -44,11 +44,8 @@ import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
-/**
- * TODO(crbug.com/322869650): Replace the help URL when the correct article
- * is ready.
- */
-export const GOOGLE_PAY_HELP_URL = 'https://support.google.com/googlepay/';
+export const GOOGLE_PAY_HELP_URL =
+    'https://support.google.com/googlepay?p=card_benefits_chrome';
 
 type DotsCardMenuiClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
