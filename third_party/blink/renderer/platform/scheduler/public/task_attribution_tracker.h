@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 
 #include <optional>
+#include <utility>
 
 #include "base/functional/function_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -16,7 +18,6 @@
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
-class ExecutionContext;
 class ScriptState;
 }  // namespace blink
 
@@ -27,6 +28,7 @@ class Isolate;
 namespace blink::scheduler {
 
 class TaskAttributionInfo;
+class TaskAttributionTrackerImpl;
 
 // This public interface enables platform/ and core/ callers to create a task
 // scope on the one hand, and check on the ID of the currently running task as
@@ -59,7 +61,41 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   class Observer : public GarbageCollectedMixin {
    public:
     virtual void OnCreateTaskScope(TaskAttributionInfo&) = 0;
-    virtual ExecutionContext* GetExecutionContext() = 0;
+  };
+
+  class PLATFORM_EXPORT ObserverScope {
+    STACK_ALLOCATED();
+
+   public:
+    ObserverScope(ObserverScope&& other)
+        : task_tracker_(std::exchange(other.task_tracker_, nullptr)),
+          previous_observer_(std::exchange(other.previous_observer_, nullptr)) {
+    }
+
+    ObserverScope& operator=(ObserverScope&& other) {
+      task_tracker_ = std::exchange(other.task_tracker_, nullptr);
+      previous_observer_ = std::exchange(other.previous_observer_, nullptr);
+      return *this;
+    }
+
+    ~ObserverScope() {
+      if (task_tracker_) {
+        task_tracker_->OnObserverScopeDestroyed(*this);
+      }
+    }
+
+   private:
+    friend class TaskAttributionTrackerImpl;
+
+    ObserverScope(TaskAttributionTracker* tracker,
+                  Observer* observer,
+                  Observer* previous_observer)
+        : task_tracker_(tracker), previous_observer_(previous_observer) {}
+
+    Observer* PreviousObserver() const { return previous_observer_; }
+
+    TaskAttributionTracker* task_tracker_;
+    Observer* previous_observer_;
   };
 
   virtual ~TaskAttributionTracker() = default;
@@ -92,11 +128,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
           visitor) = 0;
 
-  // Register an observer if one isn't yet registered, to be notified when a
-  // task is started. Return false if no observer was registered.
-  virtual bool RegisterObserverIfNeeded(Observer* observer) = 0;
-  // Unregister the observer.
-  virtual void UnregisterObserver(Observer* observer) = 0;
+  // Registers an observer to be notified when a `TaskScope` has been created.
+  // Multiple `Observer`s can be registered, but only the innermost one will
+  // receive callbacks.
+  virtual ObserverScope RegisterObserver(Observer* observer) = 0;
 
   // Setter and getter for a pointer to a pending same-document navigation task,
   // to ensure the task's lifetime.
@@ -104,6 +139,9 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual void ResetSameDocumentNavigationTasks() = 0;
   virtual TaskAttributionInfo* CommitSameDocumentNavigation(
       TaskAttributionId) = 0;
+
+ protected:
+  virtual void OnObserverScopeDestroyed(const ObserverScope&) = 0;
 };
 
 }  // namespace blink::scheduler

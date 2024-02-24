@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -59,24 +58,7 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
       AbortSignal* abort_source,
       DOMTaskSignal* priority_source) override;
 
-  bool RegisterObserverIfNeeded(
-      TaskAttributionTracker::Observer* observer) override {
-    bool not_registered = !base::Contains(observers_, observer);
-    if (not_registered) {
-      observers_.insert(observer);
-    }
-    return not_registered;
-  }
-
-  void UnregisterObserver(TaskAttributionTracker::Observer* observer) override {
-    auto it = observers_.find(observer);
-    // It's possible for the observer to not be registered if it already
-    // unregistered itself in the past.
-    if (it != observers_.end()) {
-      observers_.erase(it);
-    }
-  }
-
+  ObserverScope RegisterObserver(Observer* observer) override;
   void AddSameDocumentNavigationTask(TaskAttributionInfo* task) override;
   void ResetSameDocumentNavigationTasks() override;
   TaskAttributionInfo* CommitSameDocumentNavigation(TaskAttributionId) override;
@@ -132,11 +114,11 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   };
 
   void TaskScopeCompleted(const TaskScopeImpl&);
+  void OnObserverScopeDestroyed(const ObserverScope&) override;
 
   TaskAttributionId next_task_id_;
   Persistent<TaskAttributionInfo> running_task_ = nullptr;
-
-  WTF::HashSet<WeakPersistent<TaskAttributionTracker::Observer>> observers_;
+  Persistent<Observer> observer_ = nullptr;
 
   // A queue of TaskAttributionInfo objects representing tasks that initiated a
   // same-document navigation that was sent to the browser side. They are kept

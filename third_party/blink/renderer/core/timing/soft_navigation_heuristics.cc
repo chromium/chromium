@@ -220,7 +220,7 @@ SoftNavigationHeuristics::GetUserInteractionAncestorTaskIfAny() {
   if (scheduler::TaskAttributionTracker* tracker =
           scheduler->GetTaskAttributionTracker()) {
     scheduler::TaskAttributionInfo* task =
-        tracker->RunningTask(GetExecutionContext()->GetIsolate());
+        tracker->RunningTask(GetSupplementable()->GetIsolate());
     if (!task) {
       return std::nullopt;
     }
@@ -631,10 +631,6 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   }
 }
 
-ExecutionContext* SoftNavigationHeuristics::GetExecutionContext() {
-  return GetSupplementable();
-}
-
 LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
   LocalDOMWindow* window = GetSupplementable();
   return window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
@@ -688,17 +684,17 @@ SoftNavigationHeuristics::EventScope::EventScope(
   if (!tracker) {
     return;
   }
-  nested_ = !tracker->RegisterObserverIfNeeded(heuristics_);
+  observer_scope_ = tracker->RegisterObserver(heuristics_);
 }
 
 SoftNavigationHeuristics::EventScope::EventScope(EventScope&& other)
     : heuristics_(std::exchange(other.heuristics_, nullptr)),
-      nested_(other.nested_) {}
+      observer_scope_(std::move(other.observer_scope_)) {}
 
 SoftNavigationHeuristics::EventScope&
 SoftNavigationHeuristics::EventScope::operator=(EventScope&& other) {
   heuristics_ = std::exchange(other.heuristics_, nullptr);
-  nested_ = other.nested_;
+  observer_scope_ = std::move(other.observer_scope_);
   return *this;
 }
 
@@ -707,17 +703,6 @@ SoftNavigationHeuristics::EventScope::~EventScope() {
     return;
   }
   heuristics_->OnSoftNavigationEventScopeDestroyed();
-
-  // Only the top level EventScope should unregister the observer.
-  if (!nested_) {
-    ThreadScheduler* scheduler = ThreadScheduler::Current();
-    DCHECK(scheduler);
-    auto* tracker = scheduler->GetTaskAttributionTracker();
-    if (!tracker) {
-      return;
-    }
-    tracker->UnregisterObserver(heuristics_);
-  }
 }
 
 }  // namespace blink

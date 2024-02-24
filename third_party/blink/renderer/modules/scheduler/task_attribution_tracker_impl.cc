@@ -117,11 +117,8 @@ TaskAttributionTrackerImpl::CreateTaskScope(ScriptState* script_state,
     running_task_ = parent_task;
   }
 
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  for (Observer* observer : observers_) {
-    if (observer->GetExecutionContext() == execution_context) {
-      observer->OnCreateTaskScope(*running_task_);
-    }
+  if (observer_) {
+    observer_->OnCreateTaskScope(*running_task_);
   }
 
   ScriptWrappableTaskState::SetCurrent(
@@ -144,6 +141,19 @@ void TaskAttributionTrackerImpl::TaskScopeCompleted(
   ScriptWrappableTaskState::SetCurrent(
       task_scope.GetScriptState(),
       task_scope.ContinuationTaskStateToBeRestored());
+}
+
+TaskAttributionTracker::ObserverScope
+TaskAttributionTrackerImpl::RegisterObserver(Observer* observer) {
+  CHECK(observer);
+  Observer* previous_observer = observer_.Get();
+  observer_ = observer;
+  return ObserverScope(this, observer, previous_observer);
+}
+
+void TaskAttributionTrackerImpl::OnObserverScopeDestroyed(
+    const ObserverScope& observer_scope) {
+  observer_ = observer_scope.PreviousObserver();
 }
 
 void TaskAttributionTrackerImpl::AddSameDocumentNavigationTask(

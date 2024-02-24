@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_HEURISTICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_SOFT_NAVIGATION_HEURISTICS_H_
 
+#include <optional>
+
 #include "base/containers/enum_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/stack_allocated.h"
@@ -77,7 +79,8 @@ class CORE_EXPORT SoftNavigationHeuristics
     explicit EventScope(SoftNavigationHeuristics*);
 
     SoftNavigationHeuristics* heuristics_;
-    bool nested_ = false;
+    std::optional<scheduler::TaskAttributionTracker::ObserverScope>
+        observer_scope_;
   };
 
   // Supplement boilerplate.
@@ -99,7 +102,6 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
-  ExecutionContext* GetExecutionContext() override;
 
   void RecordPaint(LocalFrame*,
                    uint64_t painted_area,
