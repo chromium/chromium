@@ -177,6 +177,14 @@ gfx::Size OverviewItemView::GetPreviewViewSize() const {
 }
 
 void OverviewItemView::RefreshItemVisuals() {
+  // `overview_item_` may get reset in `OnOverviewItemWindowRestoring()` since
+  // the corresponding `item_widget_` may outlive its corresponding
+  // `overview_item_`, we want to avoid `overview_item_` from being accessed
+  // again.
+  if (!overview_item_) {
+    return;
+  }
+
   // Set the rounded corners to accommodate for the customized rounded corners
   // needed for the overview group item.
   if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {

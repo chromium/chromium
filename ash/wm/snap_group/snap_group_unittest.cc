@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/snap_group/snap_group.h"
-
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -44,6 +42,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -1911,13 +1910,10 @@ class SnapGroupTest : public FasterSplitScreenTest {
     CHECK_NE(window1, window2);
     // Snap `window1` to trigger the overview session shown on the other side of
     // the screen.
-    SnapOneTestWindow(window1,
-                      /*state_type=*/WindowStateType::kPrimarySnapped);
-    EXPECT_TRUE(split_view_controller()->InClamshellSplitViewMode());
-    EXPECT_EQ(split_view_controller()->state(),
-              SplitViewController::State::kPrimarySnapped);
-    EXPECT_EQ(split_view_controller()->primary_window(), window1);
-    WaitForOverviewEnterAnimation();
+    SnapOneTestWindow(
+        window1,
+        /*state_type=*/chromeos::WindowStateType::kPrimarySnapped);
+    WaitForOverviewEntered();
     VerifySplitViewOverviewSession(window1);
 
     // When the first window is snapped, it takes exactly half the width.
@@ -1930,6 +1926,8 @@ class SnapGroupTest : public FasterSplitScreenTest {
     // non-occupied snap position and the overview session will end.
     ClickOverviewItem(GetEventGenerator(), window2);
     WaitForOverviewExitAnimation();
+    EXPECT_EQ(WindowState::Get(window2)->GetStateType(),
+              chromeos::WindowStateType::kSecondarySnapped);
     EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
     EXPECT_FALSE(RootWindowController::ForWindow(window1)
                      ->split_view_overview_session());
@@ -1988,8 +1986,8 @@ class SnapGroupTest : public FasterSplitScreenTest {
   }
 
   std::unique_ptr<aura::Window> CreateTransientChildWindow(
-      gfx::Rect child_window_bounds,
-      aura::Window* transient_parent) {
+      aura::Window* transient_parent,
+      gfx::Rect child_window_bounds) {
     auto child = CreateTestWindow(child_window_bounds);
     wm::AddTransientChild(transient_parent, child.get());
     return child;
@@ -2379,7 +2377,7 @@ TEST_F(SnapGroupTest, DividerStackingOrderWithTransientWindow) {
   EXPECT_TRUE(window_util::IsStackedBelow(w2.get(), divider_window));
 
   auto w1_transient =
-      CreateTransientChildWindow(gfx::Rect(100, 200, 200, 200), w1.get());
+      CreateTransientChildWindow(w1.get(), gfx::Rect(100, 200, 200, 200));
   w1_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
   wm::SetModalParent(w1_transient.get(), w1.get());
   EXPECT_TRUE(window_util::IsStackedBelow(divider_window, w1_transient.get()));
@@ -2404,12 +2402,12 @@ TEST_F(SnapGroupTest, DividerStackingOrderWithTwoTransientWindows) {
   // By default `w1_transient` is `MODAL_TYPE_NONE`, meaning that the associated
   // `w1` interactable.
   std::unique_ptr<aura::Window> w1_transient(
-      CreateTransientChildWindow(gfx::Rect(10, 20, 20, 30), w1.get()));
+      CreateTransientChildWindow(w1.get(), gfx::Rect(10, 20, 20, 30)));
 
   // Add transient window for `w2` and making it not interactable by setting it
   // with the type of `ui::MODAL_TYPE_WINDOW`.
   std::unique_ptr<aura::Window> w2_transient(
-      CreateTransientChildWindow(gfx::Rect(200, 20, 20, 30), w2.get()));
+      CreateTransientChildWindow(w2.get(), gfx::Rect(200, 20, 20, 30)));
   w2_transient->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
   wm::SetModalParent(w2_transient.get(), w2.get());
 
@@ -3307,6 +3305,80 @@ TEST_F(SnapGroupTest, DragOverviewGroupItemToAnotherDesk) {
   EXPECT_EQ(desks_util::GetDeskForContext(
                 split_view_divider()->divider_widget()->GetNativeWindow()),
             desk1);
+}
+
+// Verify that there will be no crash when dragging the group item with the
+// existence of bubble widget to another desk in overview. See the crash at
+// http://b/311255082.
+TEST_F(SnapGroupTest,
+       NoCrashWhenDraggingOverviewGroupItemWithBubbleToAnotherDesk) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow(gfx::Rect(0, 0, 300, 300)));
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(500, 20, 200, 200)));
+  SnapTwoTestWindows(w0.get(), w1.get());
+
+  // Create a dummy view for the bubble, adding it to the `w0`.
+  views::Widget* w0_widget = views::Widget::GetWidgetForNativeWindow(w0.get());
+  auto* child_view =
+      w0_widget->GetRootView()->AddChildView(std::make_unique<views::View>());
+  child_view->SetBounds(100, 10, 20, 20);
+
+  // Create a bubble widget that's anchored to `w0`.
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
+      child_view, views::BubbleBorder::TOP_RIGHT);
+
+  // The line below is essential to make sure that the bubble doesn't get closed
+  // when entering overview.
+  bubble_delegate->set_close_on_deactivate(false);
+  views::Widget* bubble_widget(views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble_delegate)));
+  aura::Window* bubble_window = bubble_widget->GetNativeWindow();
+  wm::AddTransientChild(w0.get(), bubble_window);
+
+  bubble_widget->Show();
+  EXPECT_TRUE(wm::HasTransientAncestor(bubble_window, w0.get()));
+
+  // Verify that the bubble is created inside its anchor widget.
+  EXPECT_TRUE(
+      w0->GetBoundsInScreen().Contains(bubble_window->GetBoundsInScreen()));
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 1u);
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  const auto& mini_views = desks_bar_view->mini_views();
+  ASSERT_EQ(mini_views.size(), 2u);
+
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+
+  // Verify the initial conditions before dragging the item to another desk.
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  // Test that both windows contained in the overview group item are contained
+  // in `desk1` after the drag.
+  DragGroupItemToPoint(
+      overview_controller->overview_session()->GetOverviewItemForWindow(
+          w0.get()),
+      mini_views[1]->GetBoundsInScreen().CenterPoint(), GetEventGenerator(),
+      /*by_touch_gestures=*/false,
+      /*drop=*/true);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk1);
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w0.get(), w1.get()));
 }
 
 // Tests that the hit area of the split view divider can be outside of its

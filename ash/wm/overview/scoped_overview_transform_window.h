@@ -62,6 +62,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   aura::Window* window() const { return window_; }
 
+  bool is_restoring() const { return is_restoring_; }
+
   OverviewGridWindowFillMode type() const { return type_; }
 
   // Starts an animation sequence which will use animation settings specified by
@@ -177,6 +179,12 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // A weak pointer to the real window in the overview.
   raw_ptr<aura::Window> window_;
+
+  // True during the process of `RestoreWindow()`. This prevents redundant
+  // cyclic calls to `OverviewItem::SetBounds()`, which may happen when
+  // `ScopedOverviewTransformWindow::OnWindowBoundsChanged()` is triggered
+  // during the restore see http://b/311255082 for an example.
+  bool is_restoring_ = false;
 
   // The original opacity of the window before entering overview mode.
   float original_opacity_;

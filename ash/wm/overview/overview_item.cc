@@ -65,7 +65,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::WindowStateType;
+using chromeos::WindowStateType;
 
 // Opacity for fading out during closing a window.
 constexpr float kClosingItemOpacity = 0.8f;
@@ -285,7 +285,8 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // initial transform.
   ScopedPauseRasterScaleUpdates scoped_pause;
 
-  if (in_bounds_update_ || !OverviewController::Get()->InOverviewSession()) {
+  if (in_bounds_update_ || transform_window_.is_restoring() ||
+      !OverviewController::Get()->InOverviewSession()) {
     return;
   }
 
