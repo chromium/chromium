@@ -77,7 +77,8 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
   }
 
   private computeShowEditIcon_(): boolean {
-    return !this.engine.canBeActivated && !this.engine.isManaged;
+    return !this.engine.isStarterPack && !this.engine.canBeActivated &&
+        !this.engine.isManaged;
   }
 
   private onDeleteClick_(e: Event) {

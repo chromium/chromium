@@ -267,6 +267,7 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);
   dict.Set("isPrepopulated", template_url->prepopulate_id() > 0);
+  dict.Set("isStarterPack", template_url->starter_pack_id() > 0);
   if (type == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
       type == TemplateURL::OMNIBOX_API_EXTENSION) {
     const extensions::Extension* extension =

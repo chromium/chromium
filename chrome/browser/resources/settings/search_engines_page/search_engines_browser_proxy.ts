@@ -29,6 +29,7 @@ export interface SearchEngine {
   isManaged: boolean;
   isOmniboxExtension: boolean;
   isPrepopulated: boolean;
+  isStarterPack: boolean;
   keyword: string;
   modelIndex: number;
   name: string;
