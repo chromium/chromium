@@ -46,6 +46,9 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -385,3 +388,47 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          WebAppsPreventCloseChromeOsBrowserTest,
                          ::testing::Bool());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class IsolatedWebAppChromeOsBrowserTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  void SetUp() override {
+    app_ = web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+               .BuildBundle();
+    InProcessBrowserTest::SetUp();
+  }
+
+  web_app::ScopedBundledIsolatedWebApp* app() { return app_.get(); }
+
+ private:
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppChromeOsBrowserTest,
+                       ContextMenuOnlyHasLaunchNew) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      app()->InstallChecked(browser()->profile());
+
+  PinAppWithIDToShelf(url_info.app_id());
+
+  ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
+  ASSERT_TRUE(shelf_model);
+
+  ash::ShelfItemDelegate* const delegate =
+      shelf_model->GetShelfItemDelegate(ash::ShelfID(url_info.app_id()));
+  ASSERT_TRUE(delegate);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> model_future;
+  delegate->GetContextMenu(display::Display::GetDefaultDisplay().id(),
+                           model_future.GetCallback());
+  std::unique_ptr<ui::SimpleMenuModel> menu_model(model_future.Take());
+  ASSERT_TRUE(menu_model);
+
+  // Isolated web apps context menu should have an "Open in new Window" command
+  // instead of a open mode selector submenu.
+  EXPECT_NE(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_SUBMENU);
+  EXPECT_EQ(menu_model->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_COMMAND);
+  EXPECT_EQ(menu_model->GetCommandIdAt(0), ash::LAUNCH_NEW);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

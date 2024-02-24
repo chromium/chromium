@@ -207,7 +207,9 @@ void WebApps::GetMenuModel(const std::string& app_id,
     // should not allow open more windows because user won't be able to close
     // them.
   } else if (can_close) {
-    if (chromeos::features::IsCrosShortstandEnabled()) {
+    // Isolated web apps can only be launched in new window.
+    if (chromeos::features::IsCrosShortstandEnabled() ||
+        web_app->isolation_data().has_value()) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     } else {
