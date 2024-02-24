@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -21,8 +22,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -41,6 +45,57 @@ constexpr int kNameTagAndLabelsPaddingForEditingList = 12;
 
 constexpr int kFocusRingHaloInset = -5;
 constexpr int kFocusRingHaloThickness = 2;
+
+void SetUpInkDrop(ActionEditView* host,
+                  bool highlight_on_hover,
+                  bool highlight_on_focus) {
+  CHECK(host);
+  auto* ink_drop = views::InkDrop::Get(host);
+  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+  host->SetHasInkDropActionOnClick(true);
+
+  ink_drop->SetCreateInkDropCallback(base::BindRepeating(
+      [](ActionEditView* host, bool highlight_on_hover,
+         bool highlight_on_focus) {
+        return views::InkDrop::CreateInkDropForFloodFillRipple(
+            views::InkDrop::Get(host), highlight_on_hover, highlight_on_focus);
+      },
+      host, highlight_on_hover, highlight_on_focus));
+
+  const auto* color_provider = host->GetColorProvider();
+  CHECK(color_provider);
+
+  const bool is_dark =
+      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+  const SkColor ink_drop_color =
+      is_dark ? SkColorSetA(
+                    color_provider->GetColor(cros_tokens::kCrosRefPrimary50),
+                    GetAlpha(/*percent=*/0.4f))
+              : SkColorSetA(
+                    color_provider->GetColor(cros_tokens::kCrosRefPrimary70),
+                    GetAlpha(/*percent=*/0.44f));
+
+  ink_drop->SetCreateRippleCallback(base::BindRepeating(
+      [](ActionEditView* host,
+         SkColor color) -> std::unique_ptr<views::InkDropRipple> {
+        auto* ink_drop = views::InkDrop::Get(host);
+        return std::make_unique<views::FloodFillInkDropRipple>(
+            const_cast<views::InkDropHost*>(ink_drop), host->size(),
+            gfx::Insets(), ink_drop->GetInkDropCenterBasedOnLastEvent(), color,
+            1.0f);
+      },
+      host, ink_drop_color));
+
+  ink_drop->SetCreateHighlightCallback(base::BindRepeating(
+      [](ActionEditView* host, SkColor color) {
+        auto highlight = std::make_unique<views::InkDropHighlight>(
+            gfx::SizeF(host->size()), color);
+        // Opacity is already set the in `color`.
+        highlight->set_visible_opacity(1.0f);
+        return highlight;
+      },
+      host, ink_drop_color));
+}
 
 }  // namespace
 
@@ -103,6 +158,12 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
                              ? gfx::RoundedCornersF(kCornerRadius)
                              : gfx::RoundedCornersF(0.0f, 0.0f, kCornerRadius,
                                                     kCornerRadius)));
+
+  // Set focus ring.
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHaloInset(kFocusRingHaloInset);
+  focus_ring->SetHaloThickness(kFocusRingHaloThickness);
+  focus_ring->SetColorId(ui::kColorAshFocusRing);
 }
 
 ActionEditView::~ActionEditView() = default;
@@ -147,17 +208,8 @@ std::u16string ActionEditView::CalculateAccessibleLabel() const {
 void ActionEditView::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  // Set up highlight and focus ring for `DeleteButton`.
-  ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                        /*highlight_on_hover=*/true,
-                                        /*highlight_on_focus=*/false);
-
-  // `StyleUtil::SetUpInkDropForButton()` reinstalls the focus ring, so it
-  // needs to set the focus ring size after calling
-  // `StyleUtil::SetUpInkDropForButton()`.
-  auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetHaloInset(kFocusRingHaloInset);
-  focus_ring->SetHaloThickness(kFocusRingHaloThickness);
+  SetUpInkDrop(this, /*highlight_on_hover=*/for_editing_list_,
+               /*highlight_on_focus=*/for_editing_list_);
 }
 
 BEGIN_METADATA(ActionEditView)
