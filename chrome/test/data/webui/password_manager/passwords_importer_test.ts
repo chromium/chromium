@@ -388,7 +388,10 @@ suite('PasswordsImporterTest', function() {
     assertTrue(dialog.open);
 
     const passwordItems = dialog.querySelectorAll('password-preview-item');
-    passwordItems.forEach(item => item.$.checkbox.click());
+    for (const item of passwordItems) {
+      item.$.checkbox.click();
+      await item.$.checkbox.updateComplete;
+    }
 
     const replaceButton =
         dialog.querySelector<CrButtonElement>('#replaceButton');
@@ -444,7 +447,10 @@ suite('PasswordsImporterTest', function() {
 
     let passwordItems = dialog.querySelectorAll('password-preview-item');
     // Select all rows.
-    passwordItems.forEach(item => item.$.checkbox.click());
+    for (const item of passwordItems) {
+      item.$.checkbox.click();
+      await item.$.checkbox.updateComplete;
+    }
 
     let replaceButton = dialog.querySelector<CrButtonElement>('#replaceButton');
     assertTrue(!!replaceButton);

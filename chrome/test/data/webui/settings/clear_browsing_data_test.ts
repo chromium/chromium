@@ -448,8 +448,10 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
+    await element.$.cookiesCheckbox.$.checkbox.updateComplete;
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
+    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
     // Confirming the deletion persists the dropdown selection to the pref.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
@@ -491,6 +493,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckbox);
     element.$.cookiesCheckbox.$.checkbox.click();
+    await element.$.cookiesCheckbox.$.checkbox.updateComplete;
     // Confirming the deletion persists the tab selection to the pref.
     const actionButton =
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
@@ -515,6 +518,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
+    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
 
     assertFalse(cancelButton!.disabled);
     assertFalse(actionButton!.disabled);
@@ -551,7 +555,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertFalse(!!element.shadowRoot!.querySelector('#passwordsNotice'));
   });
 
-  test('ClearBrowsingDataClearButton', function() {
+  test('ClearBrowsingDataClearButton', async function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);
 
     const actionButton =
@@ -562,6 +566,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertTrue(actionButton!.disabled);
     // The button gets enabled if any checkbox is selected.
     element.$.cookiesCheckboxBasic.$.checkbox.click();
+    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
     assertTrue(element.$.cookiesCheckboxBasic.checked);
     assertFalse(actionButton!.disabled);
     // Switching to advanced disables the button.
@@ -581,6 +586,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Select a datatype for deletion to enable the clear button.
     assertTrue(!!element.$.cookiesCheckboxBasic);
     element.$.cookiesCheckboxBasic.$.checkbox.click();
+    await element.$.cookiesCheckboxBasic.$.checkbox.updateComplete;
     assertFalse(actionButton!.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
@@ -634,6 +640,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
+    await cookieCheckbox.$.checkbox.updateComplete;
     assertFalse(actionButton!.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();
@@ -684,6 +691,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     const cookieCheckbox = element.$.cookiesCheckboxBasic;
     assertTrue(!!cookieCheckbox);
     cookieCheckbox.$.checkbox.click();
+    await cookieCheckbox.$.checkbox.updateComplete;
     assertFalse(actionButton!.disabled);
 
     const promiseResolver = new PromiseResolver<ClearBrowsingDataResult>();

@@ -243,9 +243,14 @@ suite('TabDiscardExceptionsDialog', function() {
     assertEquals(ExceptionAddDialogTabs.CURRENT_SITES, dialog.$.tabs.selected);
     assertRulesListEquals(dialog, expectedRules);
     assertTrue(dialog.$.actionButton.disabled);
-    getRulesListEntry(dialog, 2).click();
+    let checkbox = getRulesListEntry(dialog, 2);
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
+
     assertFalse(dialog.$.actionButton.disabled);
-    getRulesListEntry(dialog, 4).click();
+    checkbox = getRulesListEntry(dialog, 4);
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
     assertSubmit([EXISTING_RULE, 'rule2', 'rule4']);
   });
 
@@ -263,14 +268,17 @@ suite('TabDiscardExceptionsDialog', function() {
     dialog = await setupTabbedAddDialog();
     flush();
 
-    getRulesListEntry(dialog, 0).click();
+    const checkbox = getRulesListEntry(dialog, 0);
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
     assertFalse(dialog.$.actionButton.disabled);
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     assertTrue(dialog.$.actionButton.disabled);
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.CURRENT_SITES);
     assertFalse(dialog.$.actionButton.disabled);
 
-    getRulesListEntry(dialog, 0).click();
+    checkbox.click();
+    await checkbox.$.checkbox.updateComplete;
     switchAddDialogTab(dialog, ExceptionAddDialogTabs.MANUAL);
     await assertUserInputValidated(VALID_RULE);
     assertFalse(dialog.$.actionButton.disabled);

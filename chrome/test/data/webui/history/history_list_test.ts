@@ -80,6 +80,7 @@ suite('HistoryListTest', function() {
 
     assertEquals(1, items.length);
     items[0]!.$.checkbox.click();
+    await items[0]!.$.checkbox.updateComplete;
     assertDeepEquals([true], getHistoryData().map(i => i.selected));
     await flushTasks();
     toolbar.deleteSelectedItems();
@@ -110,6 +111,11 @@ suite('HistoryListTest', function() {
     items[2]!.$.checkbox.click();
     items[3]!.$.checkbox.click();
 
+    await Promise.all([
+      items[2]!.$.checkbox.updateComplete,
+      items[3]!.$.checkbox.updateComplete,
+    ]);
+
     // Make sure that the array of data that determines whether or not
     // an item is selected is what we expect after selecting the two
     // items.
@@ -136,42 +142,44 @@ suite('HistoryListTest', function() {
     const items = element.shadowRoot!.querySelectorAll('history-item');
 
     items[1]!.$.checkbox.click();
+    await items[1]!.$.checkbox.updateComplete;
     assertDeepEquals(
         [false, true, false, false], getHistoryData().map(i => i.selected));
     assertDeepEquals([1], Array.from(element.selectedItems).sort());
 
     // Shift-select to the last item.
-    shiftClick(items[3]!.$.checkbox);
+    await shiftClick(items[3]!.$.checkbox);
     assertDeepEquals(
         [false, true, true, true], getHistoryData().map(i => i.selected));
     assertDeepEquals([1, 2, 3], Array.from(element.selectedItems).sort());
 
     // Shift-select back to the first item.
-    shiftClick(items[0]!.$.checkbox);
+    await shiftClick(items[0]!.$.checkbox);
     assertDeepEquals(
         [true, true, true, true], getHistoryData().map(i => i.selected));
     assertDeepEquals([0, 1, 2, 3], Array.from(element.selectedItems).sort());
 
     // Shift-deselect to the third item.
-    shiftClick(items[2]!.$.checkbox);
+    await shiftClick(items[2]!.$.checkbox);
     assertDeepEquals(
         [false, false, false, true], getHistoryData().map(i => i.selected));
     assertDeepEquals([3], Array.from(element.selectedItems).sort());
 
     // Select the second item.
     items[1]!.$.checkbox.click();
+    await items[1]!.$.checkbox.updateComplete;
     assertDeepEquals(
         [false, true, false, true], getHistoryData().map(i => i.selected));
     assertDeepEquals([1, 3], Array.from(element.selectedItems).sort());
 
     // Shift-deselect to the last item.
-    shiftClick(items[3]!.$.checkbox);
+    await shiftClick(items[3]!.$.checkbox);
     assertDeepEquals(
         [false, false, false, false], getHistoryData().map(i => i.selected));
     assertDeepEquals([], Array.from(element.selectedItems).sort());
 
     // Shift-select back to the third item.
-    shiftClick(items[2]!.$.checkbox);
+    await shiftClick(items[2]!.$.checkbox);
     assertDeepEquals(
         [false, false, true, true], getHistoryData().map(i => i.selected));
     assertDeepEquals([2, 3], Array.from(element.selectedItems).sort());
@@ -345,6 +353,7 @@ suite('HistoryListTest', function() {
     await flushTasks();
     const item = element.shadowRoot!.querySelector('history-item')!;
     item.$.checkbox.click();
+    await item.$.checkbox.updateComplete;
 
     assertEquals(1, toolbar.count);
     app.shadowRoot!.querySelector(
@@ -373,6 +382,12 @@ suite('HistoryListTest', function() {
     items[2]!.$.checkbox.click();
     items[5]!.$.checkbox.click();
     items[7]!.$.checkbox.click();
+
+    await Promise.all([
+      items[2]!.$.checkbox.updateComplete,
+      items[5]!.$.checkbox.updateComplete,
+      items[7]!.$.checkbox.updateComplete,
+    ]);
 
     await flushTasks();
     toolbar.deleteSelectedItems();
@@ -421,7 +436,14 @@ suite('HistoryListTest', function() {
     const items = element.shadowRoot!.querySelectorAll('history-item');
     items[1]!.$.checkbox.click();
     items[3]!.$.checkbox.click();
+
+    await Promise.all([
+      items[1]!.$.checkbox.updateComplete,
+      items[3]!.$.checkbox.updateComplete,
+    ]);
+
     items[1]!.$['menu-button'].click();
+
     element.$.sharedMenu.get();
     element.shadowRoot!.querySelector<HTMLElement>(
                            '#menuRemoveButton')!.click();
@@ -457,6 +479,10 @@ suite('HistoryListTest', function() {
     items = element.shadowRoot!.querySelectorAll('history-item');
     items[1]!.$.checkbox.click();
     items[2]!.$.checkbox.click();
+    await Promise.all([
+      items[1]!.$.checkbox.updateComplete,
+      items[2]!.$.checkbox.updateComplete,
+    ]);
     items[1]!.$['menu-button'].click();
     element.$.sharedMenu.get();
     element.shadowRoot!.querySelector<HTMLElement>(
@@ -490,6 +516,11 @@ suite('HistoryListTest', function() {
     items[1]!.$.checkbox.click();
     items[2]!.$.checkbox.click();
 
+    await Promise.all([
+      items[1]!.$.checkbox.updateComplete,
+      items[2]!.$.checkbox.updateComplete,
+    ]);
+
     // Check that delete option is re-enabled.
     assertEquals(2, toolbar.count);
     assertFalse(
@@ -521,6 +552,11 @@ suite('HistoryListTest', function() {
 
     items[1]!.$.checkbox.click();
     items[2]!.$.checkbox.click();
+
+    await Promise.all([
+      items[1]!.$.checkbox.updateComplete,
+      items[2]!.$.checkbox.updateComplete,
+    ]);
 
     assertEquals(2, toolbar.count);
 
@@ -573,6 +609,7 @@ suite('HistoryListTest', function() {
     const items = element.shadowRoot!.querySelectorAll('history-item');
 
     items[2]!.$.checkbox.click();
+    await items[2]!.$.checkbox.updateComplete;
     await flushTasks();
     toolbar.deleteSelectedItems();
     await flushTasks();
@@ -608,6 +645,11 @@ suite('HistoryListTest', function() {
     const items = element.shadowRoot!.querySelectorAll('history-item');
     items[2]!.$.checkbox.click();
     items[3]!.$.checkbox.click();
+
+    await Promise.all([
+      items[2]!.$.checkbox.updateComplete,
+      items[3]!.$.checkbox.updateComplete,
+    ]);
 
     testService.resetResolver('queryHistory');
     webUIListenerCallback('history-deleted');

@@ -42,6 +42,7 @@ suite('history-toolbar', function() {
     await flushTasks();
     const item = app.$.history.shadowRoot!.querySelector('history-item')!;
     item.$.checkbox.click();
+    await item.$.checkbox.updateComplete;
 
     const toolbar = app.$.toolbar;
 
@@ -51,6 +52,7 @@ suite('history-toolbar', function() {
     assertTrue(toolbar.$.mainToolbar.hasAttribute('has-overlay'));
 
     item.$.checkbox.click();
+    await item.$.checkbox.updateComplete;
 
     // Ensure that when an item is deselected the count held by the
     // toolbar decreases.

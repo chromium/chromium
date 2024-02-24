@@ -4,7 +4,7 @@
 
 /** @fileoverview Suite of tests for extension-kiosk-dialog. */
 
-import type {CrCheckboxElement, ExtensionsKioskDialogElement, KioskApp, KioskAppSettings, KioskSettings} from 'chrome://extensions/extensions.js';
+import type {ExtensionsKioskDialogElement, KioskApp, KioskAppSettings, KioskSettings} from 'chrome://extensions/extensions.js';
 import {KioskBrowserProxyImpl} from 'chrome://extensions/extensions.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -135,8 +135,7 @@ suite('KioskModeTests', function() {
 
     await initPage();
 
-    const bailoutCheckbox: CrCheckboxElement =
-        dialog.shadowRoot!.querySelector('cr-checkbox')!;
+    const bailoutCheckbox = dialog.$.bailout;
     // Bailout checkbox should be usable when auto-launching.
     assertFalse(bailoutCheckbox.hidden);
     assertFalse(bailoutCheckbox.disabled);
@@ -144,7 +143,7 @@ suite('KioskModeTests', function() {
 
     // Making sure canceling doesn't change anything.
     bailoutCheckbox.click();
-    flush();
+    await bailoutCheckbox.updateComplete;
     assertTrue(dialog.$.confirmDialog.open);
 
     dialog.$.confirmDialog.querySelector<HTMLElement>(
@@ -156,7 +155,7 @@ suite('KioskModeTests', function() {
 
     // Accepting confirmation dialog should trigger browserProxy call.
     bailoutCheckbox.click();
-    flush();
+    await bailoutCheckbox.updateComplete;
     assertTrue(dialog.$.confirmDialog.open);
 
     dialog.$.confirmDialog.querySelector<HTMLElement>(
@@ -171,6 +170,7 @@ suite('KioskModeTests', function() {
     // Test clicking on checkbox again should simply re-enable bailout.
     browserProxy.reset();
     bailoutCheckbox.click();
+    await bailoutCheckbox.updateComplete;
     assertFalse(bailoutCheckbox.checked);
     assertFalse(dialog.$.confirmDialog.open);
     disabled = await browserProxy.whenCalled('setDisableBailoutShortcut');

@@ -177,10 +177,12 @@ suite('LanguagesPage', function() {
       return dialogClosedResolver.promise;
     });
 
-    test('add languages and cancel', function() {
+    test('add languages and cancel', async function() {
       // Check some languages.
       dialogItems[1]!.click();  // en-CA.
+      await dialogItems[1]!.$.checkbox.updateComplete;
       dialogItems[2]!.click();  // tk.
+      await dialogItems[2]!.$.checkbox.updateComplete;
 
       // Canceling the dialog should close and remove it without enabling
       // the checked languages.
@@ -192,7 +194,7 @@ suite('LanguagesPage', function() {
       });
     });
 
-    test('add languages and confirm', function() {
+    test('add languages and confirm', async function() {
       // No languages have been checked, so the action button is inert.
       actionButton.click();
       flush();
@@ -203,13 +205,17 @@ suite('LanguagesPage', function() {
 
       // Check and uncheck one language.
       dialogItems[0]!.click();
+      await dialogItems[0]!.$.checkbox.updateComplete;
       assertFalse(actionButton.disabled);
       dialogItems[0]!.click();
+      await dialogItems[0]!.$.checkbox.updateComplete;
       assertTrue(actionButton.disabled);
 
       // Check multiple languages.
       dialogItems[0]!.click();  // en.
+      await dialogItems[0]!.$.checkbox.updateComplete;
       dialogItems[2]!.click();  // tk.
+      await dialogItems[2]!.$.checkbox.updateComplete;
       assertFalse(actionButton.disabled);
 
       // The action button should close and remove the dialog, enabling the

@@ -141,7 +141,7 @@ suite('CrActionMenu', function() {
     assertEquals(items[0], getDeepActiveElement());
   });
 
-  test('focus skips cr-checkbox when disabled or hidden', () => {
+  test('focus skips cr-checkbox when disabled or hidden', async () => {
     menu.showAt(dots);
     const crCheckbox = document.querySelector('cr-checkbox')!;
     assertEquals(items[2], crCheckbox);
@@ -155,22 +155,24 @@ suite('CrActionMenu', function() {
     assertEquals(checkboxFocusableElement, getDeepActiveElement());
 
     // Check checkbox is not focusable when either disabled or hidden.
-    ([
+    const cases: Array<[boolean, boolean]> = [
       [false, true],
       [true, false],
       [true, true],
-    ] as Array<[boolean, boolean]>)
-        .forEach(([disabled, hidden]) => {
-          crCheckbox.disabled = disabled;
-          crCheckbox.hidden = hidden;
-          (getDeepActiveElement() as HTMLElement).blur();
-          down();
-          assertEquals(items[0], getDeepActiveElement());
-          down();
-          assertEquals(items[1], getDeepActiveElement());
-          down();
-          assertEquals(items[0], getDeepActiveElement());
-        });
+    ];
+
+    for (const [disabled, hidden] of cases) {
+      crCheckbox.disabled = disabled;
+      crCheckbox.hidden = hidden;
+      await crCheckbox.updateComplete;
+      (getDeepActiveElement() as HTMLElement).blur();
+      down();
+      assertEquals(items[0], getDeepActiveElement());
+      down();
+      assertEquals(items[1], getDeepActiveElement());
+      down();
+      assertEquals(items[0], getDeepActiveElement());
+    }
   });
 
   test('pressing up arrow when no focus will focus last item', function() {

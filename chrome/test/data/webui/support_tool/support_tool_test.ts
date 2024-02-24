@@ -406,6 +406,7 @@ suite('UrlGeneratorTest', function() {
         urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select the first one of data collectors.
     dataCollectors[0]!.click();
+    await dataCollectors[0]!.updateComplete;
     // Ensure the button is enabled after we select at least one data collector.
     assertFalse(copyLinkButton.disabled);
     const expectedToken = 'chrome://support-tool/?case_id=test123&module=jekhh';
@@ -453,6 +454,7 @@ suite('UrlGeneratorTest', function() {
         urlGenerator.shadowRoot!.querySelectorAll('cr-checkbox');
     // Select one of data collectors to enable the button.
     dataCollectors[1]!.click();
+    await dataCollectors[1]!.updateComplete;
     // Ensure the button is enabled after we select at least one data collector.
     assertFalse(copyTokenButton.disabled);
     const expectedToken = 'jekhh';

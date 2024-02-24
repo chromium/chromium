@@ -19,43 +19,53 @@ suite('SettingsCheckboxListEntry', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  test('click', function() {
+  test('click', async function() {
     assertFalse(checkboxListEntry.checked);
 
     checkboxListEntry.click();
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertTrue(checkboxListEntry.checked);
 
     checkboxListEntry.click();
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertFalse(checkboxListEntry.checked);
   });
 
-  test('space', function() {
+  test('space', async function() {
     assertFalse(checkboxListEntry.checked);
 
     checkboxListEntry.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertFalse(checkboxListEntry.checked);
     checkboxListEntry.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertTrue(checkboxListEntry.checked);
 
     checkboxListEntry.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertTrue(checkboxListEntry.checked);
     checkboxListEntry.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertFalse(checkboxListEntry.checked);
   });
 
-  test('enter', function() {
+  test('enter', async function() {
     assertFalse(checkboxListEntry.checked);
 
     checkboxListEntry.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter'}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertTrue(checkboxListEntry.checked);
     checkboxListEntry.dispatchEvent(new KeyboardEvent('keyup', {key: 'Enter'}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertTrue(checkboxListEntry.checked);
 
     checkboxListEntry.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Enter'}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertFalse(checkboxListEntry.checked);
     checkboxListEntry.dispatchEvent(new KeyboardEvent('keyup', {key: 'Enter'}));
+    await checkboxListEntry.$.checkbox.updateComplete;
     assertFalse(checkboxListEntry.checked);
   });
 

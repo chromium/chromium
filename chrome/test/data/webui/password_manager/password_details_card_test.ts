@@ -241,10 +241,12 @@ suite('PasswordDetailsCardTest', function() {
 
                 if (store === chrome.passwordsPrivate.PasswordStoreSet.DEVICE) {
                   deleteDialog.$.removeFromAccountCheckbox.click();
+                  await deleteDialog.$.removeFromAccountCheckbox.updateComplete;
                 } else if (
                     store ===
                     chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT) {
                   deleteDialog.$.removeFromDeviceCheckbox.click();
+                  await deleteDialog.$.removeFromDeviceCheckbox.updateComplete;
                 }
                 deleteDialog.$.removeButton.click();
 
@@ -282,7 +284,9 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(!!deleteDialog);
     assertTrue(deleteDialog.$.dialog.open);
     deleteDialog.$.removeFromAccountCheckbox.click();
+    await deleteDialog.$.removeFromAccountCheckbox.updateComplete;
     deleteDialog.$.removeFromDeviceCheckbox.click();
+    await deleteDialog.$.removeFromDeviceCheckbox.updateComplete;
 
     assertFalse(deleteDialog.$.removeFromAccountCheckbox.checked);
     assertFalse(deleteDialog.$.removeFromDeviceCheckbox.checked);

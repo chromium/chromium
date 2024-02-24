@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement, HistoryEntry, HistoryQuery} from 'chrome://history/history.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {middleOfNode} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 
@@ -105,7 +106,7 @@ export function waitForEvent(
 /**
  * Sends a shift click event to |element|.
  */
-export function shiftClick(element: HTMLElement) {
+export async function shiftClick(element: CrLitElement): Promise<void> {
   const xy = middleOfNode(element);
   const props = {
     bubbles: true,
@@ -119,6 +120,7 @@ export function shiftClick(element: HTMLElement) {
   element.dispatchEvent(new MouseEvent('mousedown', props));
   element.dispatchEvent(new MouseEvent('mouseup', props));
   element.dispatchEvent(new MouseEvent('click', props));
+  await element.updateComplete;
 }
 
 export function disableLinkClicks() {

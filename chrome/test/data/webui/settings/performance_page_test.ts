@@ -502,12 +502,14 @@ suite('TabDiscardExceptionList', function() {
     await eventToPromise('iron-resize', addDialog);
     flush();
 
-    addDialog.$.list.$.list
-        .querySelectorAll<SettingsCheckboxListEntryElement>(
-            'settings-checkbox-list-entry:not([hidden])')
-        .forEach(currentSitesEntryElement => {
-          currentSitesEntryElement.$.checkbox.click();
-        });
+    const listEntries = addDialog.$.list.$.list
+                            .querySelectorAll<SettingsCheckboxListEntryElement>(
+                                'settings-checkbox-list-entry:not([hidden])');
+    for (const entry of listEntries) {
+      entry.$.checkbox.click();
+      await entry.$.checkbox.updateComplete;
+    }
+
     assertFalse(addDialog.$.actionButton.disabled);
     addDialog.$.actionButton.click();
     flush();

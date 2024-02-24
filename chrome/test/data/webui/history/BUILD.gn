@@ -39,6 +39,7 @@ build_webui_tests("build") {
   ]
   ts_deps = [
     "//chrome/browser/resources/history:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
   ]
