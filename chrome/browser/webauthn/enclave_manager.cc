@@ -692,7 +692,7 @@ class EnclaveManager::StateMachine {
   void Start() {
     if (state_ == State::kInit) {
       state_ = State::kNextAction;
-      Loop(None());
+      Process(None());
     }
   }
 
@@ -763,149 +763,102 @@ class EnclaveManager::StateMachine {
                               PINHashed,
                               Response>;
 
-  void Loop(Event in_event) {
+  void Process(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    for (;;) {
-      const State initial_state = state_;
-      Event event = std::move(in_event);
-      const std::string event_str = ToString(event);
-      in_event = None();
+    const State initial_state = state_;
+    const std::string event_str = ToString(event);
 
-      switch (state_) {
-        case State::kInit:
-          // This state should never be observed. `Start` should set the
-          // state to `kNextAction` before starting the event loop for the first
-          // time.
-          NOTREACHED();
-          break;
+    switch (state_) {
+      case State::kInit:
+        // This state should never be observed. `Start` should set the
+        // state to `kNextAction` before starting the event Process for the
+        // first time.
+        NOTREACHED();
+        break;
 
-        case State::kStop:
-          // This should never be observed here as this special case is handled
-          // below.
-          NOTREACHED();
-          break;
+      case State::kStop:
+        // This should never be observed here as this special case is handled
+        // below.
+        NOTREACHED();
+        break;
 
-        case State::kNextAction:
-          CHECK(absl::holds_alternative<None>(event)) << ToString(event);
-          DoNextAction();
-          break;
+      case State::kNextAction:
+        CHECK(absl::holds_alternative<None>(event)) << ToString(event);
+        DoNextAction();
+        break;
 
-        case State::kGeneratingKeys: {
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          } else if (absl::holds_alternative<Failure>(event)) {
-            // The object that requested the registration will observe when this
-            // object idles again, and will notice that the user still isn't
-            // registered.
-            state_ = State::kNextAction;
-            return;
-          }
-          DoGeneratingKeys(std::move(event));
-          break;
-        }
+      case State::kGeneratingKeys:
+        DoGeneratingKeys(std::move(event));
+        break;
 
-        case State::kWaitingForEnclaveTokenForRegistration: {
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWaitingForEnclaveTokenForRegistration(std::move(event));
-          break;
-        }
+      case State::kWaitingForEnclaveTokenForRegistration:
+        DoWaitingForEnclaveTokenForRegistration(std::move(event));
+        break;
 
-        case State::kRegisteringWithEnclave: {
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          } else if (absl::holds_alternative<Failure>(event)) {
-            // The object that requested the registration will observe when this
-            // object idles again, and will notice that the user still isn't
-            // registered.
-            FIDO_LOG(ERROR) << "Failed to register with enclave";
-            state_ = State::kStop;
-            break;
-          }
-          DoRegisteringWithEnclave(std::move(event));
+      case State::kRegisteringWithEnclave:
+        DoRegisteringWithEnclave(std::move(event));
+        break;
 
-          break;
-        }
+      case State::kWaitingForEnclaveTokenForWrapping:
+        DoWaitingForEnclaveTokenForWrapping(std::move(event));
+        break;
 
-        case State::kWaitingForEnclaveTokenForWrapping: {
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWaitingForEnclaveTokenForWrapping(std::move(event));
-          break;
-        }
+      case State::kWrappingSecrets:
+        DoWrappingSecrets(std::move(event));
+        break;
 
-        case State::kWrappingSecrets: {
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWrappingSecrets(std::move(event));
+      case State::kJoiningDomain:
+        DoJoiningDomain(std::move(event));
+        break;
 
-          break;
-        }
+      case State::kHashingPIN:
+        DoHashingPIN(std::move(event));
+        break;
 
-        case State::kJoiningDomain: {
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
+      case State::kDownloadingRecoveryKeyStoreKeys:
+        DoDownloadingRecoveryKeyStoreKeys(std::move(event));
+        break;
 
-          DoJoiningDomain(std::move(event));
-          break;
-        }
+      case State::kWaitingForEnclaveTokenForPINWrapping:
+        DoWaitingForEnclaveTokenForPINWrapping(std::move(event));
+        break;
 
-        case State::kHashingPIN:
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoHashingPIN(std::move(event));
-          break;
+      case State::kWrappingPIN:
+        DoWrappingPIN(std::move(event));
+        break;
 
-        case State::kDownloadingRecoveryKeyStoreKeys:
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoDownloadingRecoveryKeyStoreKeys(std::move(event));
-          break;
+      case State::kWaitingForRecoveryKeyStoreTokenForUpload:
+        DoWaitingForRecoveryKeyStoreTokenForUpload(std::move(event));
+        break;
 
-        case State::kWaitingForEnclaveTokenForPINWrapping:
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWaitingForEnclaveTokenForPINWrapping(std::move(event));
-          break;
+      case State::kWaitingForRecoveryKeyStore:
+        DoWaitingForRecoveryKeyStore(std::move(event));
+        break;
+    }
 
-        case State::kWrappingPIN:
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWrappingPIN(std::move(event));
-          break;
+    FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
+                    << ToString(state_);
 
-        case State::kWaitingForRecoveryKeyStoreTokenForUpload:
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWaitingForRecoveryKeyStoreTokenForUpload(std::move(event));
-          break;
+    if (state_ == State::kStop) {
+      manager_->Stopped();
+      // `this` has been deleted now.
+      return;
+    }
 
-        case State::kWaitingForRecoveryKeyStore:
-          if (absl::holds_alternative<None>(event)) {
-            return;
-          }
-          DoWaitingForRecoveryKeyStore(std::move(event));
-          break;
-      }
+    // The only internal state transition (i.e. where one state moves to another
+    // without waiting for an external event) allowed is to `kNextAction`.
+    if (state_ != State::kNextAction) {
+      return;
+    }
 
-      FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
-                      << ToString(state_);
+    const State prior_state = state_;
+    DoNextAction();
+    FIDO_LOG(EVENT) << ToString(prior_state) << " --> " << ToString(state_);
 
-      if (state_ == State::kStop) {
-        manager_->Stopped();
-        // `this` has been deleted now.
-        return;
-      }
+    if (state_ == State::kStop) {
+      manager_->Stopped();
+      // `this` has been deleted now.
     }
   }
 
@@ -1043,7 +996,7 @@ class EnclaveManager::StateMachine {
                 if (!machine) {
                   return;
                 }
-                machine->Loop(PINHashed(std::move(hashed)));
+                machine->Process(PINHashed(std::move(hashed)));
               },
               weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -1053,7 +1006,7 @@ class EnclaveManager::StateMachine {
   }
 
   void FetchComplete(FetchedFile file, std::optional<std::string> contents) {
-    Loop(FileFetched(std::make_pair(file, std::move(contents))));
+    Process(FileFetched(std::make_pair(file, std::move(contents))));
   }
 
   void StartEnclaveRegistration() {
@@ -1121,11 +1074,16 @@ class EnclaveManager::StateMachine {
                   std::make_pair(std::move(uv_key), std::move(key)));
             },
             std::move(existing_key_id), std::move(uv_key)),
-        base::BindOnce(&StateMachine::Loop, weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&StateMachine::Process, weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoGeneratingKeys(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (absl::holds_alternative<Failure>(event)) {
+      state_ = State::kStop;
+      return;
+    }
     CHECK(absl::holds_alternative<KeyReady>(event)) << ToString(event);
 
     bool state_dirty = false;
@@ -1191,6 +1149,11 @@ class EnclaveManager::StateMachine {
   void DoRegisteringWithEnclave(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    if (absl::holds_alternative<Failure>(event)) {
+      state_ = State::kStop;
+      return;
+    }
+
     cbor::Value response =
         std::move(absl::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
@@ -1239,9 +1202,9 @@ class EnclaveManager::StateMachine {
                 return;
               }
               if (!response) {
-                machine->Loop(Failure());
+                machine->Process(Failure());
               } else {
-                machine->Loop(EnclaveResponse(std::move(*response)));
+                machine->Process(EnclaveResponse(std::move(*response)));
               }
             },
             weak_ptr_factory_.GetWeakPtr()));
@@ -1301,7 +1264,7 @@ class EnclaveManager::StateMachine {
               if (!machine) {
                 return;
               }
-              machine->Loop(JoinStatus(status));
+              machine->Process(JoinStatus(status));
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1482,9 +1445,9 @@ class EnclaveManager::StateMachine {
                 return;
               }
               if (response) {
-                machine->Loop(Response(std::move(*response)));
+                machine->Process(Response(std::move(*response)));
               } else {
-                machine->Loop(Failure());
+                machine->Process(Failure());
               }
             },
             weak_ptr_factory_.GetWeakPtr()));
@@ -1527,9 +1490,9 @@ class EnclaveManager::StateMachine {
                     return;
                   }
                   if (error.state() == GoogleServiceAuthError::NONE) {
-                    machine->Loop(AccessToken(access_token_info.token));
+                    machine->Process(AccessToken(access_token_info.token));
                   } else {
-                    machine->Loop(Failure());
+                    machine->Process(Failure());
                   }
                 },
                 weak_ptr_factory_.GetWeakPtr()),
@@ -1539,9 +1502,9 @@ class EnclaveManager::StateMachine {
 
   void OnEnclaveResponse(std::optional<cbor::Value> response) {
     if (!response) {
-      Loop(Failure());
+      Process(Failure());
     } else {
-      Loop(EnclaveResponse(std::move(*response)));
+      Process(EnclaveResponse(std::move(*response)));
     }
   }
 
