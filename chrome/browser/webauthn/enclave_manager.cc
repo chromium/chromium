@@ -1184,19 +1184,8 @@ class EnclaveManager::StateMachine {
         std::move(token),
         BuildRegistrationMessage(user()->device_id(), hardware_key_.get()),
         enclave::SigningCallback(),
-        base::BindOnce(
-            [](base::WeakPtr<StateMachine> machine,
-               std::optional<cbor::Value> response) {
-              if (!machine) {
-                return;
-              }
-              if (!response) {
-                machine->Loop(Failure());
-              } else {
-                machine->Loop(EnclaveResponse(std::move(*response)));
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoRegisteringWithEnclave(Event event) {
@@ -1414,21 +1403,8 @@ class EnclaveManager::StateMachine {
         BuildPINWrappingMessage(hashed_pin_->hashed, std::move(*cert_xml_),
                                 std::move(*sig_xml_)),
         enclave::SigningCallback(),
-        base::BindOnce(
-            // TODO(enclave): abstract this callback out since it's the second
-            // time it's been used.
-            [](base::WeakPtr<StateMachine> machine,
-               std::optional<cbor::Value> response) {
-              if (!machine) {
-                return;
-              }
-              if (!response) {
-                machine->Loop(Failure());
-              } else {
-                machine->Loop(EnclaveResponse(std::move(*response)));
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&StateMachine::OnEnclaveResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   void DoWrappingPIN(Event event) {
@@ -1559,6 +1535,14 @@ class EnclaveManager::StateMachine {
                 weak_ptr_factory_.GetWeakPtr()),
             signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
             signin::ConsentLevel::kSignin);
+  }
+
+  void OnEnclaveResponse(std::optional<cbor::Value> response) {
+    if (!response) {
+      Loop(Failure());
+    } else {
+      Loop(EnclaveResponse(std::move(*response)));
+    }
   }
 
   EnclaveLocalState::User* user() const {
