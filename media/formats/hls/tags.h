@@ -408,6 +408,43 @@ struct MEDIA_EXPORT XSkipTag {
       std::nullopt;
 };
 
+// A server MAY omit adding an attribute to an EXT-X-RENDITION-REPORT tag - even
+// a mandatory attribute - if its value is the same as that of the Rendition
+// Report of the Media Playlist to which the EXT-X-RENDITION-REPORT tag is being
+// added.  Doing so reduces the size of the Rendition Report.
+struct MEDIA_EXPORT XRenditionReportTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXRenditionReport;
+  static ParseStatus::Or<XRenditionReportTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // Url for the media playlist of the specified rendition. It MUST be relative
+  // to the URI of the media playlist containing the EXT-X-RENDITION-REPORT tag.
+  std::optional<ResolvedSourceString> uri;
+
+  // The valid specifying the last media segment's sequence number in the
+  // rendition. if the rendition contains partial segments, then this value is
+  // the last partial segments media sequence number.
+  std::optional<types::DecimalInteger> last_msn;
+
+  // The value is a decimal-integer that indicates the Part Index of the last
+  // Partial Segment currently in the specified Rendition whose Media Sequence
+  // Number is equal to the LAST-MSN attribute value. This attribute is REQUIRED
+  // if the Rendition contains a Partial Segment.
+  std::optional<types::DecimalInteger> last_part;
+};
+
+// The EXT-X-PROGRAM-DATE-TIME tag associates the first sample of a Media
+// Segment with an absolute date and/or time. It applies only to the next
+// Media Segment.
+struct MEDIA_EXPORT XProgramDateTimeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXProgramDateTime;
+  static ParseStatus::Or<XProgramDateTimeTag> Parse(TagItem);
+
+  base::Time time;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

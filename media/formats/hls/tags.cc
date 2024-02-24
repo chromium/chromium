@@ -49,6 +49,24 @@ ParseStatus::Or<T> ParseDecimalIntegerTag(TagItem tag,
   return out;
 }
 
+template <typename T>
+ParseStatus::Or<T> ParseISO8601DateTimeTag(TagItem tag, base::Time T::*field) {
+  CHECK(tag.GetName() == ToTagName(T::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+  const auto content = tag.GetContent()->SkipVariableSubstitution().Str();
+  std::string content_nullterm = std::string(content);
+  T out;
+  base::Time time;
+  if (base::Time::FromString(content_nullterm.c_str(), &time)) {
+    out.*field = time;
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+  return out;
+}
+
 // Attributes expected in `EXT-X-DEFINE` tag contents.
 // These must remain sorted alphabetically.
 enum class XDefineTagAttribute {
@@ -177,6 +195,25 @@ constexpr std::string_view GetAttributeName(XSkipTagAttribute attribute) {
       return "RECENTLY-REMOVED-DATERANGES";
     case XSkipTagAttribute::kSkippedSegments:
       return "SKIPPED-SEGMENTS";
+  }
+  NOTREACHED_NORETURN();
+}
+
+enum class XRenditionReportTagAttribute {
+  kLastMSN,
+  kLastPart,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr std::string_view GetAttributeName(XRenditionReportTagAttribute attr) {
+  switch (attr) {
+    case XRenditionReportTagAttribute::kUri:
+      return "URI";
+    case XRenditionReportTagAttribute::kLastMSN:
+      return "LAST-MSN";
+    case XRenditionReportTagAttribute::kLastPart:
+      return "LAST-PART";
   }
   NOTREACHED_NORETURN();
 }
@@ -1368,6 +1405,60 @@ ParseStatus::Or<XSkipTag> XSkipTag::Parse(
   }
 
   return out;
+}
+
+ParseStatus::Or<XRenditionReportTag> XRenditionReportTag::Parse(
+    TagItem tag,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer) {
+  CHECK(tag.GetName() == ToTagName(XRenditionReportTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+  XRenditionReportTag out;
+  TypedAttributeMap<XRenditionReportTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return std::move(map_result).AddHere();
+  }
+
+  if (map.HasValue(XRenditionReportTagAttribute::kUri)) {
+    auto uri_result = types::ParseQuotedString(
+        map.GetValue(XRenditionReportTagAttribute::kUri), variable_dict,
+        sub_buffer);
+    if (!uri_result.has_value()) {
+      return std::move(uri_result).error().AddHere();
+    }
+    out.uri = std::move(uri_result).value();
+  }
+
+  if (map.HasValue(XRenditionReportTagAttribute::kLastMSN)) {
+    auto msn_result = types::ParseDecimalInteger(
+        map.GetValue(XRenditionReportTagAttribute::kLastMSN)
+            .SkipVariableSubstitution());
+    if (!msn_result.has_value()) {
+      return std::move(msn_result).error().AddHere();
+    }
+    out.last_msn = std::move(msn_result).value();
+  }
+
+  if (map.HasValue(XRenditionReportTagAttribute::kLastPart)) {
+    auto part_result = types::ParseDecimalInteger(
+        map.GetValue(XRenditionReportTagAttribute::kLastPart)
+            .SkipVariableSubstitution());
+    if (!part_result.has_value()) {
+      return std::move(part_result).error().AddHere();
+    }
+    out.last_part = std::move(part_result).value();
+  }
+
+  return out;
+}
+
+ParseStatus::Or<XProgramDateTimeTag> XProgramDateTimeTag::Parse(TagItem tag) {
+  return ParseISO8601DateTimeTag(tag, &XProgramDateTimeTag::time);
 }
 
 }  // namespace media::hls

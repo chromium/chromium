@@ -56,7 +56,9 @@ void ErrorTest(std::optional<base::StringPiece> content,
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   ASSERT_FALSE(result.has_value()) << from.ToString();
   auto error = std::move(result).error();
-  EXPECT_EQ(error.code(), expected_status) << from.ToString();
+  EXPECT_EQ(error.code(), expected_status)
+      << "Actual Error: " << MediaSerialize(error) << "\n"
+      << from.ToString();
 }
 
 template <typename T>
@@ -1578,7 +1580,16 @@ TEST(HlsTagsTest, ParseXProgramDateTimeTag) {
       ToTagName(MediaPlaylistTagName::kXProgramDateTime),
       "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031+08:00\n",
       "2010-02-19T14:54:23.031+08:00");
-  // TODO(crbug.com/1266991): Implement the EXT-X-PROGRAM-DATE-TIME tag.
+
+  ErrorTest<XProgramDateTimeTag>(std::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XProgramDateTimeTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XProgramDateTimeTag>("today", ParseStatusCode::kMalformedTag);
+
+  auto result = OkTest<XProgramDateTimeTag>("2010-02-19T14:54:23.031+08:00");
+  EXPECT_EQ(result.tag.time.InMillisecondsSinceUnixEpoch(), 1266562463031);
+
+  result = OkTest<XProgramDateTimeTag>("1970-01-01T00:00:00.1+00:00");
+  EXPECT_EQ(result.tag.time.InMillisecondsSinceUnixEpoch(), 100);
 }
 
 TEST(HlsTagsTest, ParseXRenditionReportTag) {
@@ -1586,7 +1597,42 @@ TEST(HlsTagsTest, ParseXRenditionReportTag) {
       ToTagName(MediaPlaylistTagName::kXRenditionReport),
       "#EXT-X-RENDITION-REPORT:URI=\"foo.m3u8\",LAST-MSN=200\n",
       "URI=\"foo.m3u8\",LAST-MSN=200");
-  // TODO(crbug.com/1266991): Implement the EXT-X-RENDITION-REPORT tag.
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  ErrorTest<XRenditionReportTag>(std::nullopt, dict, subs,
+                                 ParseStatusCode::kMalformedTag);
+  ErrorTest<XRenditionReportTag>("URI", dict, subs,
+                                 ParseStatusCode::kMalformedAttributeList);
+  ErrorTest<XRenditionReportTag>("URI=\"", dict, subs,
+                                 ParseStatusCode::kMalformedAttributeList);
+
+  auto result = OkTest<XRenditionReportTag>("", dict, subs);
+  EXPECT_FALSE(result.tag.uri.has_value());
+  EXPECT_FALSE(result.tag.last_msn.has_value());
+  EXPECT_FALSE(result.tag.last_part.has_value());
+
+  result = OkTest<XRenditionReportTag>("URI=\"foo\"", dict, subs);
+  EXPECT_EQ(result.tag.uri->Str(), "foo");
+  EXPECT_FALSE(result.tag.last_msn.has_value());
+  EXPECT_FALSE(result.tag.last_part.has_value());
+
+  result = OkTest<XRenditionReportTag>("LAST-MSN=3,", dict, subs);
+  EXPECT_FALSE(result.tag.uri.has_value());
+  EXPECT_EQ(result.tag.last_msn.value(), 3u);
+  EXPECT_FALSE(result.tag.last_part.has_value());
+
+  result = OkTest<XRenditionReportTag>("LAST-PART=3", dict, subs);
+  EXPECT_FALSE(result.tag.uri.has_value());
+  EXPECT_FALSE(result.tag.last_msn.has_value());
+  EXPECT_EQ(result.tag.last_part.value(), 3u);
+
+  result = OkTest<XRenditionReportTag>("URI=\"x\",LAST-PART=3,LAST-MSN=1", dict,
+                                       subs);
+  EXPECT_EQ(result.tag.uri->Str(), "x");
+  EXPECT_EQ(result.tag.last_msn.value(), 1u);
+  EXPECT_EQ(result.tag.last_part.value(), 3u);
 }
 
 TEST(HlsTagsTest, ParseXServerControlTag) {
