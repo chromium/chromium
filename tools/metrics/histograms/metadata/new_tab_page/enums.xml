@@ -483,6 +483,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Signed out user"/>
 </enum>
 
+<enum name="NtpWallpaperSearchThemeType">
+  <int value="0" label="Result"/>
+  <int value="1" label="Inspiration"/>
+  <int value="2" label="History"/>
+</enum>
+
 <enum name="PhotosModuleRequestResult">
   <int value="0" label="kError"/>
   <int value="1" label="kSuccess"/>

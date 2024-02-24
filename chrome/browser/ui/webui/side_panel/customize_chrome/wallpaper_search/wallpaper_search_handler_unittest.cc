@@ -108,6 +108,7 @@ class MockWallpaperSearchBackgroundManager
                     base::ElapsedTimer timer));
   MOCK_METHOD1(SaveCurrentBackgroundToHistory,
                std::optional<base::Token>(const HistoryEntry& history_entry));
+  MOCK_METHOD1(IsCurrentBackground, bool(const base::Token& id));
 };
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -1237,12 +1238,21 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
   // Check that the processing timer is being passed.
   EXPECT_EQ(timer.Elapsed().InMilliseconds(), 321);
 
-  // Check that the set theme is saved to history on destruction.
+  // Check that the set theme is saved to history and histogram on destruction.
   handler.reset();
   EXPECT_EQ(token_arg.ToString(), history_entry_arg.id.ToString());
   EXPECT_EQ("foo", history_entry_arg.subject);
   EXPECT_EQ("bar", history_entry_arg.mood);
   EXPECT_EQ("foobar", history_entry_arg.style);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kResult, 0);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kInspiration, 0);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kHistory, 1);
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -1375,7 +1385,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   // Should not be marked as an inspiration image.
   EXPECT_FALSE(is_inspiration_image);
 
-  // Simulate current background is saved to history.
+  // Simulate current background is saved to history and histogram.
   HistoryEntry history_entry_arg;
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SaveCurrentBackgroundToHistory)
@@ -1419,9 +1429,18 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_TRUE(qualities[0]->images_quality(1).selected());
   EXPECT_EQ(123, qualities[0]->images_quality(1).preview_latency_ms());
 
-  // Set background saves on destruction.
+  // Set background saves to history and histogram on destruction.
   EXPECT_EQ(history_entry_arg.id, token);
   EXPECT_EQ("foo", history_entry_arg.subject);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kResult, 1);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kInspiration, 0);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kHistory, 0);
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
@@ -1812,6 +1831,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToInspirationImage) {
       .WillOnce(DoAll(SaveArg<0>(&token_arg), SaveArg<1>(&bitmap_arg),
                       SaveArg<2>(&is_inspiration_image_arg),
                       MoveArg<3>(&timer_arg)));
+
   // Ensure that the set theme is *not* saved to history on destruction.
   EXPECT_CALL(mock_wallpaper_search_background_manager(),
               SaveCurrentBackgroundToHistory(_))
@@ -1845,9 +1865,20 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToInspirationImage) {
   EXPECT_EQ(timer_arg.Elapsed().InMilliseconds(), 123);
   EXPECT_TRUE(is_inspiration_image_arg);
 
-  // Ensure that after resetting a handler, no call is made to
-  // |mock_wallpaper_search_background_manager|'s,
-  // |SaveCurrentBackgroundToHistory|. The expectation is declared earlier in
-  // this test.
+  // Ensure that history entry sends to histogram on destruction.
+  base::Token token_arg_histogram;
+  EXPECT_CALL(mock_wallpaper_search_background_manager(), IsCurrentBackground)
+      .WillOnce(MoveArgAndReturn(&token_arg_histogram, true));
+
   handler.reset();
+  EXPECT_EQ(token_arg_histogram, token);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kResult, 0);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kInspiration, 1);
+  histogram_tester().ExpectBucketCount(
+      "NewTabPage.WallpaperSearch.SessionSetTheme",
+      NtpWallpaperSearchThemeType::kHistory, 0);
 }
