@@ -151,6 +151,13 @@ void FakeCrosNetworkConfigBase::CreateCustomApn(
   NOTREACHED();
 }
 
+void FakeCrosNetworkConfigBase::CreateExclusivelyEnabledCustomApn(
+    const std::string& network_guid,
+    chromeos::network_config::mojom::ApnPropertiesPtr apn,
+    CreateExclusivelyEnabledCustomApnCallback callback) {
+  NOTREACHED();
+}
+
 void FakeCrosNetworkConfigBase::RemoveCustomApn(const std::string& network_guid,
                                                 const std::string& apn_id) {
   NOTREACHED();

@@ -194,6 +194,35 @@ void CellularNetworkMetricsLogger::LogCreateCustomApnResult(
 }
 
 // static
+void CellularNetworkMetricsLogger::LogCreateExclusivelyEnabledCustomApnResult(
+    bool success,
+    chromeos::network_config::mojom::ApnPropertiesPtr apn) {
+  base::UmaHistogramBoolean(kCreateExclusivelyEnabledCustomApnResultHistogram,
+                            success);
+
+  // Only emit APN property metrics if the APN was successfully added.
+  if (!success) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      kCreateExclusivelyEnabledCustomApnAuthenticationTypeHistogram,
+      apn->authentication);
+  base::UmaHistogramEnumeration(
+      kCreateExclusivelyEnabledCustomApnIpTypeHistogram, apn->ip_type);
+
+  std::optional<CellularNetworkMetricsLogger::ApnTypes> apn_types =
+      GetApnTypes(apn->apn_types);
+  if (!apn_types.has_value()) {
+    NET_LOG(DEBUG) << "CreateExclusivelyEnabledCustomApn.ApnTypes not logged "
+                   << "for APN because it doesn't have any APN types.";
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      kCreateExclusivelyEnabledCustomApnApnTypesHistogram, apn_types.value());
+}
+
+// static
 void CellularNetworkMetricsLogger::LogRemoveCustomApnResult(
     bool success,
     std::vector<chromeos::network_config::mojom::ApnType> apn_types) {

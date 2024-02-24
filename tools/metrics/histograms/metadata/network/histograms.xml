@@ -144,6 +144,50 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of an attempt to create a custom APN.</summary>
 </histogram>
 
+<histogram
+    name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.ApnTypes"
+    enum="ApnTypes" expires_after="2024-09-30">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the APN types of an APN. This is emitted each time a user creates an
+    exclusively enabled custom APN.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.AuthenticationType"
+    enum="ApnAuthenticationType" expires_after="2024-09-30">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the authentication type of an APN. This is emitted each time a user
+    creates an exclusively enabled custom APN.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.IpType"
+    enum="ApnIpType" expires_after="2024-09-30">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the IP type of an APN. This is emitted each time a user creates an
+    exclusively enabled custom APN.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.Result"
+    enum="BooleanSuccess" expires_after="2024-09-30">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the result of an attempt to create an exclusively enabled custom
+    APN.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.Apn.CustomApns.Count" units="count"
     expires_after="2025-02-20">
   <owner>gordonseto@google.com</owner>

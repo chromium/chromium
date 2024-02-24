@@ -935,6 +935,22 @@ class CrosNetworkConfigTest : public testing::Test {
     return success;
   }
 
+  bool CreateExclusivelyEnabledCustomApn(const std::string& guid,
+                                         mojom::ApnPropertiesPtr apn) {
+    bool success = false;
+    base::RunLoop run_loop;
+    cros_network_config()->CreateExclusivelyEnabledCustomApn(
+        guid, std::move(apn),
+        base::BindOnce(
+            [](bool* successp, base::OnceClosure quit_closure, bool success) {
+              *successp = success;
+              std::move(quit_closure).Run();
+            },
+            &success, run_loop.QuitClosure()));
+    run_loop.Run();
+    return success;
+  }
+
   void RemoveCustomApn(const std::string& guid, const std::string& apn_id) {
     cros_network_config()->RemoveCustomApn(guid, apn_id);
     base::RunLoop().RunUntilIdle();
@@ -1050,6 +1066,52 @@ class CrosNetworkConfigTest : public testing::Test {
         ip_type_count);
     histogram_tester_.ExpectBucketCount(
         CellularNetworkMetricsLogger::kCreateCustomApnApnTypesHistogram,
+        apn_types, apn_types_count);
+  }
+
+  void AssertCreateExclusivelyEnabledCustomApnResultBucketCount(
+      size_t num_success,
+      size_t num_failure) {
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnResultHistogram,
+        true, num_success);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnResultHistogram,
+        false, num_failure);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnAuthenticationTypeHistogram,
+        num_success);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnIpTypeHistogram,
+        num_success);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnApnTypesHistogram,
+        num_success);
+  }
+
+  void AssertCreateExclusivelyEnabledCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType auth_type,
+      size_t auth_type_count,
+      mojom::ApnIpType ip_type,
+      size_t ip_type_count,
+      ApnTypes apn_types,
+      size_t apn_types_count) {
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnAuthenticationTypeHistogram,
+        auth_type, auth_type_count);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnIpTypeHistogram,
+        ip_type, ip_type_count);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::
+            kCreateExclusivelyEnabledCustomApnApnTypesHistogram,
         apn_types, apn_types_count);
   }
 
@@ -2284,6 +2346,138 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   }
   AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/1);
   AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/2, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/2, ApnTypes::kAttach, /*apn_types_count=*/1);
+}
+
+TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  const base::Value::List* custom_apns =
+      network_metadata_store()->GetCustomApnList(kCellularGuid);
+  ASSERT_FALSE(custom_apns);
+
+  // CreateExclusivelyEnabledCustomApn with attach only and verify that it
+  // doesn't get added because its missing a default.
+  TestApnData test_apn1;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  EXPECT_FALSE(
+      CreateExclusivelyEnabledCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+
+  EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> empty_apn_list({});
+    EXPECT_TRUE(
+        CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, empty_apn_list));
+    EXPECT_TRUE(CustomApnsInCellularConfigMatch(kCellularGuid, empty_apn_list,
+                                                network_config_observer));
+    EXPECT_TRUE(
+        CustomApnsInManagedPropertiesMatch(kCellularGuid, empty_apn_list));
+  }
+  AssertCreateExclusivelyEnabledCustomApnResultBucketCount(/*num_success=*/0,
+                                                           /*num_failure=*/0);
+  AssertCreateExclusivelyEnabledCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/0, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/0, ApnTypes::kAttach, /*apn_types_count=*/0);
+
+  // CreateExclusivelyEnabledCustomApn with attach and default and mock a
+  // failure.
+  ShillServiceClient::Get()
+      ->GetTestInterface()
+      ->SetErrorForNextSetPropertiesAttempt("Error.NotReady");
+  TestApnData test_apn2;
+  test_apn2.access_point_name = kCellularTestApn1;
+  test_apn2.name = kCellularTestApnName1;
+  test_apn2.username = kCellularTestApnUsername1;
+  test_apn2.password = kCellularTestApnPassword1;
+  test_apn2.attach = kCellularTestApnAttach1;
+  test_apn2.mojo_apn_types = {mojom::ApnType::kDefault,
+                              mojom::ApnType::kAttach};
+  test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
+                             ::onc::cellular_apn::kApnTypeAttach};
+  EXPECT_FALSE(
+      CreateExclusivelyEnabledCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
+  EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> empty_apn_list({});
+    EXPECT_TRUE(
+        CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, empty_apn_list));
+    EXPECT_TRUE(CustomApnsInCellularConfigMatch(kCellularGuid, empty_apn_list,
+                                                network_config_observer));
+    EXPECT_TRUE(
+        CustomApnsInManagedPropertiesMatch(kCellularGuid, empty_apn_list));
+  }
+  AssertCreateExclusivelyEnabledCustomApnResultBucketCount(/*num_success=*/0,
+                                                           /*num_failure=*/1);
+  AssertCreateExclusivelyEnabledCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/0, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/0, ApnTypes::kDefaultAndAttach, /*apn_types_count=*/0);
+
+  // Try again to create the APN without mocking a failure.
+  EXPECT_TRUE(
+      CreateExclusivelyEnabledCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
+
+  EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn2});
+    EXPECT_TRUE(
+        CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(CustomApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                                network_config_observer));
+    EXPECT_TRUE(
+        CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertCreateExclusivelyEnabledCustomApnResultBucketCount(/*num_success=*/1,
+                                                           /*num_failure=*/1);
+  AssertCreateExclusivelyEnabledCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/1, ApnTypes::kDefaultAndAttach, /*apn_types_count=*/1);
+
+  // CreateExclusivelyEnabledCustomApn with attach and make sure that it gets
+  // added because there’s an APN with default added in |test_apn2|.
+  TestApnData test_apn3;
+  test_apn3.access_point_name = kCellularTestApn1;
+  test_apn3.name = kCellularTestApnName1;
+  test_apn3.username = kCellularTestApnUsername1;
+  test_apn3.password = kCellularTestApnPassword1;
+  test_apn3.attach = kCellularTestApnAttach1;
+  test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  EXPECT_TRUE(
+      CreateExclusivelyEnabledCustomApn(kCellularGuid, test_apn3.AsMojoApn()));
+
+  // All other APNs should be disabled.
+  test_apn2.mojo_state = mojom::ApnState::kDisabled;
+  test_apn2.onc_state = ::onc::cellular_apn::kStateDisabled;
+
+  EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn2});
+    EXPECT_TRUE(
+        CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(CustomApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                                network_config_observer));
+    EXPECT_TRUE(
+        CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertCreateExclusivelyEnabledCustomApnResultBucketCount(/*num_success=*/2,
+                                                           /*num_failure=*/1);
+  AssertCreateExclusivelyEnabledCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/2, mojom::ApnIpType::kAutomatic,
       /*ip_type_count=*/2, ApnTypes::kAttach, /*apn_types_count=*/1);

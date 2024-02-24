@@ -152,7 +152,7 @@ export class FakeNetworkConfig {
      'startConnect', 'startDisconnect', 'configureNetwork', 'forgetNetwork',
      'getAlwaysOnVpn', 'getSupportedVpnTypes', 'requestTrafficCounters',
      'resetTrafficCounters', 'setTrafficCountersAutoReset', 'removeCustomApn',
-     'createCustomApn', 'modifyCustomApn']
+     'createCustomApn', 'createExclusivelyEnabledCustomApn', 'modifyCustomApn']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
         });
@@ -814,6 +814,17 @@ export class FakeNetworkConfig {
       }
       properties.typeProperties.cellular.customApnList.unshift(apn);
       this.methodCalled('createCustomApn');
+      resolve(true);
+    });
+  }
+
+  /**
+   * @param {!string} guid
+   * @param {!ApnProperties} apn
+   */
+  createExclusivelyEnabledCustomApn(guid, apn) {
+    return new Promise(resolve => {
+      this.methodCalled('createExclusivelyEnabledCustomApn');
       resolve(true);
     });
   }

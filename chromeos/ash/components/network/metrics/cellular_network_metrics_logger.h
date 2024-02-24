@@ -116,6 +116,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
       "Network.Ash.Cellular.Apn.CreateCustomApn.IpType";
   static constexpr char kCreateCustomApnApnTypesHistogram[] =
       "Network.Ash.Cellular.Apn.CreateCustomApn.ApnTypes";
+  static constexpr char kCreateExclusivelyEnabledCustomApnResultHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.Result";
+  static constexpr char
+      kCreateExclusivelyEnabledCustomApnAuthenticationTypeHistogram[] =
+          "Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn."
+          "AuthenticationType";
+  static constexpr char kCreateExclusivelyEnabledCustomApnIpTypeHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.IpType";
+  static constexpr char kCreateExclusivelyEnabledCustomApnApnTypesHistogram[] =
+      "Network.Ash.Cellular.Apn.CreateExclusivelyEnabledCustomApn.ApnTypes";
   static constexpr char kRemoveCustomApnResultHistogram[] =
       "Network.Ash.Cellular.Apn.RemoveCustomApn.Result";
   static constexpr char kRemoveCustomApnApnTypesHistogram[] =
@@ -263,6 +273,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // Logs results from attempting operations related to custom APNs.
   static void LogCreateCustomApnResult(
+      bool success,
+      chromeos::network_config::mojom::ApnPropertiesPtr apn);
+  static void LogCreateExclusivelyEnabledCustomApnResult(
       bool success,
       chromeos::network_config::mojom::ApnPropertiesPtr apn);
   static void LogRemoveCustomApnResult(

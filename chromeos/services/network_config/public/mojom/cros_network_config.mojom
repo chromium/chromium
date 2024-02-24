@@ -1342,6 +1342,13 @@ interface CrosNetworkConfig {
   CreateCustomApn(string network_guid, ApnProperties apn) =>
     (bool success);
 
+  // Creates a new APN for the cellular network with ID |network_guid|,
+  // appends it to |custom_apn_list| in the enabled state, and disables
+  // all other existing custom APNs. Should only be called when the APN
+  // Revamp feature flag is enabled.
+  CreateExclusivelyEnabledCustomApn(string network_guid, ApnProperties apn) =>
+    (bool success);
+
   // Removes the APN with ID |apn_id| from |custom_apn_list| for the cellular
   // network with ID |network_guid|. Should only be called when the APN
   // Revamp feature flag is enabled.

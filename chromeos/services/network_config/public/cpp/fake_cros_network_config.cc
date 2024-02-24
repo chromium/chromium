@@ -66,6 +66,14 @@ void FakeCrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
       std::make_pair(std::move(callback), std::move(apn)));
 }
 
+void FakeCrosNetworkConfig::CreateExclusivelyEnabledCustomApn(
+    const std::string& network_guid,
+    mojom::ApnPropertiesPtr apn,
+    CreateExclusivelyEnabledCustomApnCallback callback) {
+  pending_create_exclusively_enabled_custom_apn_callbacks_.push(
+      std::make_pair(std::move(callback), std::move(apn)));
+}
+
 void FakeCrosNetworkConfig::InvokePendingCreateCustomApnCallback(bool success) {
   if (success) {
     custom_apns_.push_back(

@@ -2268,6 +2268,61 @@ bool GetReportXdrEventsEnabledValue() {
   return store->report_xdr_events_enabled();
 }
 
+// Creates a new APN list by prepending the new |apn| to existing APNs
+// associated with the |network_guid|. If |enable_exclusively| is true, the new
+// |apn| will be enabled and all other apns will be disabled. Returns nullopt on
+// invalid list creation.
+std::optional<base::Value::List> CopyExistingAndPrependNewApn(
+    const std::string network_guid,
+    mojom::ApnPropertiesPtr& apn,
+    bool enable_exclusively) {
+  NetworkMetadataStore* network_metadata_store =
+      NetworkHandler::Get()->network_metadata_store();
+  DCHECK(network_metadata_store);
+
+  base::Value::List apn_list;
+
+  if (const base::Value::List* old_custom_apns =
+          network_metadata_store->GetCustomApnList(network_guid)) {
+    if (old_custom_apns->size() >= mojom::kMaxNumCustomApns) {
+      NET_LOG(ERROR) << "Cannot create new custom APN for network: "
+                     << network_guid
+                     << ". Network already has the max amount allowed: "
+                     << mojom::kMaxNumCustomApns;
+      return std::nullopt;
+    }
+
+    apn_list = old_custom_apns->Clone();
+  }
+
+  if (enable_exclusively) {
+    apn->state = mojom::ApnState::kEnabled;
+    for (base::Value& apn_properties : apn_list) {
+      apn_properties.GetDict().Set(::onc::cellular_apn::kState,
+                                   ::onc::cellular_apn::kStateDisabled);
+    }
+  }
+
+  // Set unique Id for custom APNs
+  apn->id = base::Token::CreateRandom().ToString();
+  // Insert the new custom APN at the beginning of the list to store them by
+  // insertion order
+  apn_list.Insert(apn_list.begin(), base::Value(MojoApnToOnc(*apn)));
+
+  NET_LOG(USER) << "Setting custom APNs for: " << network_guid << ": "
+                << apn_list.size();
+
+  if (!DoesDefaultApnExist(apn_list) &&
+      apn->state == mojom::ApnState::kEnabled) {
+    NET_LOG(ERROR) << "Cannot create new custom APN in enabled state without a"
+                   << "default type if no custom APN with a default type exist"
+                   << "yet.";
+    return std::nullopt;
+  }
+
+  return apn_list;
+}
+
 }  // namespace
 
 CrosNetworkConfig::CrosNetworkConfig()
@@ -3501,52 +3556,25 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
     return;
   }
 
-  NetworkMetadataStore* network_metadata_store =
-      NetworkHandler::Get()->network_metadata_store();
-  DCHECK(network_metadata_store);
-
-  base::Value::List new_apns;
-  if (const base::Value::List* old_custom_apns =
-          network_metadata_store->GetCustomApnList(network_guid)) {
-    if (old_custom_apns->size() >= mojom::kMaxNumCustomApns) {
-      NET_LOG(ERROR)
-          << "CreateCustomApn: Cannot create new custom APN for network: "
-          << network_guid << ". Network already has the max amount allowed: "
-          << mojom::kMaxNumCustomApns;
-      std::move(callback).Run(/*success=*/false);
-      return;
-    }
-
-    new_apns = old_custom_apns->Clone();
-  }
-
-  // Set unique Id for custom APNs
-  apn->id = base::Token::CreateRandom().ToString();
-  // Insert the new custom APN at the beginning of the list to store them by
-  // insertion order
-  new_apns.Insert(new_apns.begin(), base::Value(MojoApnToOnc(*apn)));
-
-  NET_LOG(USER) << "CreateCustomApn: Setting custom APNs for: " << network_guid
-                << ": " << new_apns.size();
-
-  if (!DoesDefaultApnExist(new_apns) &&
-      apn->state == mojom::ApnState::kEnabled) {
-    NET_LOG(ERROR) << "CreateCustomApn: Cannot create new custom APN in "
-                      "enabled state without a default type if no custom APN "
-                      "with a default type exist yet.";
+  std::optional<base::Value::List> new_apn_list =
+      CopyExistingAndPrependNewApn(network_guid, apn,
+                                   /*enable_exclusively=*/false);
+  if (!new_apn_list) {
+    NET_LOG(ERROR) << "CreateCustomApn: New APN list will not be valid.";
     std::move(callback).Run(/*success=*/false);
     return;
   }
 
   SetPropertiesInternal(
-      network_guid, *network, CustomApnListToOnc(network_guid, &new_apns),
+      network_guid, *network,
+      CustomApnListToOnc(network_guid, &new_apn_list.value()),
       base::BindOnce(
-          [](const std::string& guid, base::Value::List new_apns,
+          [](const std::string& guid, base::Value::List new_apn_list,
              mojom::ApnPropertiesPtr apn, CreateCustomApnCallback callback,
              bool success, const std::string& message) {
             if (success) {
               NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
-                  guid, std::move(new_apns));
+                  guid, std::move(new_apn_list));
             } else {
               NET_LOG(ERROR)
                   << "CreateCustomApn: Failed to update the custom APN "
@@ -3557,7 +3585,65 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
             CellularNetworkMetricsLogger::LogCreateCustomApnResult(
                 success, std::move(apn));
           },
-          network_guid, new_apns.Clone(), std::move(apn), std::move(callback)));
+          network_guid, new_apn_list->Clone(), std::move(apn),
+          std::move(callback)));
+}
+
+void CrosNetworkConfig::CreateExclusivelyEnabledCustomApn(
+    const std::string& network_guid,
+    mojom::ApnPropertiesPtr apn,
+    CreateExclusivelyEnabledCustomApnCallback callback) {
+  if (!features::IsApnRevampEnabled()) {
+    receivers_.ReportBadMessage(
+        "CreateExclusivelyEnabledCustomApn cannot be called if the APN Revamp "
+        "feature flag is disabled.");
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  const NetworkState* network =
+      network_state_handler_->GetNetworkStateFromGuid(network_guid);
+  if (!network || network->profile_path().empty()) {
+    NET_LOG(ERROR) << "CreateExclusivelyEnabledCustomApn: Called with "
+                   << "unconfigured network: " << network_guid << ".";
+    CellularNetworkMetricsLogger::LogCreateExclusivelyEnabledCustomApnResult(
+        /*success=*/false, std::move(apn));
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  std::optional<base::Value::List> new_apn_list = CopyExistingAndPrependNewApn(
+      network_guid, apn, /*enable_exclusively=*/true);
+  if (!new_apn_list) {
+    NET_LOG(ERROR)
+        << "CreateExclusivelyEnabledCustomApn: New APN list will not be valid.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  SetPropertiesInternal(
+      network_guid, *network,
+      CustomApnListToOnc(network_guid, &new_apn_list.value()),
+      base::BindOnce(
+          [](const std::string& guid, base::Value::List new_apn_list,
+             mojom::ApnPropertiesPtr apn,
+             CreateExclusivelyEnabledCustomApnCallback callback, bool success,
+             const std::string& message) {
+            if (success) {
+              NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
+                  guid, std::move(new_apn_list));
+            } else {
+              NET_LOG(ERROR) << "CreateExclusivelyEnabledCustomApn: Failed to "
+                             << "update the custom APN list in Shill for "
+                             << "network: " << guid << ": [" << message << "]";
+            }
+            std::move(callback).Run(success);
+            CellularNetworkMetricsLogger::
+                LogCreateExclusivelyEnabledCustomApnResult(success,
+                                                           std::move(apn));
+          },
+          network_guid, new_apn_list->Clone(), std::move(apn),
+          std::move(callback)));
 }
 
 void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
