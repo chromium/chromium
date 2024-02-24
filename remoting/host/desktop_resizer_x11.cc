@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -588,12 +589,28 @@ void DesktopResizerX11::RequestGnomeDisplayConfig() {
 
 void DesktopResizerX11::OnGnomeDisplayConfigReceived(
     GnomeDisplayConfig config) {
-  if (config.monitors.size() != 1) {
-    HOST_LOG << "Not setting text-scale-factor for multiple monitors.";
+  // Look for an enabled monitor. Disabled monitors have no Mode set - a
+  // monitor can become disabled by being added then removed (using the website
+  // Display options). The Xorg xf86-video-dummy driver has a quirk that, once a
+  // monitor becomes "connected", it stays forever in the connected state, even
+  // if it is later disabled. All connected monitors (enabled or disabled) are
+  // included in the GNOME config.
+
+  // For X11, the calculation of the text-scaling-factor does not depend on
+  // which enabled monitor is chosen here, because GNOME's X11 backend forces
+  // all monitors to have the same scale. However, it makes sense to select
+  // an enabled monitor, since a disabled monitor might not have a reliable
+  // "scale" property returned by GNOME.
+  auto monitor_iter =
+      base::ranges::find_if(config.monitors, [](const auto& entry) {
+        return entry.second.GetCurrentMode() != nullptr;
+      });
+  if (monitor_iter == base::ranges::end(config.monitors)) {
+    LOG(ERROR) << "No enabled monitor found in GNOME config.";
     return;
   }
+  const auto& monitor = monitor_iter->second;
 
-  const auto& monitor = config.monitors.cbegin()->second;
   if (monitor.scale == 0) {
     // This should never happen - avoid division by 0.
     return;
