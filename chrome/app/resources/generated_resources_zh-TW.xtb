@@ -8347,7 +8347,7 @@
 <translation id="7457831169406914076">{COUNT,plural, =1{1 個連結}other{# 個連結}}</translation>
 <translation id="7458168200501453431">系統會使用與 Google 搜尋相同的拼字檢查技術，將你在瀏覽器中輸入的文字傳送給 Google。</translation>
 <translation id="7458715171471938198">要還原應用程式嗎？</translation>
-<translation id="7458933488302148148">請檢查已儲存的密碼，強化安全性並保護自己的線上安全</translation>
+<translation id="7458933488302148148">檢查已儲存的密碼，強化安全防護來提升網路安全</translation>
 <translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />你可以讓 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量等資訊。如果同時開啟應用程式同步功能，系統也會收集其他應用程式診斷和使用資料 (包括 Android 和網頁應用程式)。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />你隨時可在 Chrome 裝置設定中啟用或停用這類報告。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7460045493116006516">你目前安裝的主題</translation>

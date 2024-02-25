@@ -32,6 +32,7 @@
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="155168855724261758">Наладзіць Chrome</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
@@ -71,6 +72,7 @@
 <translation id="2121284319307530122">Перазапусціць, каб абнавіць &amp;Chrome</translation>
 <translation id="2123055963409958220">Дапамажыце палепшыць Chrome, паведаміўшы <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
 <translation id="2126108037660393668">Спампаваны файл не прайшоў праверку.</translation>
+<translation id="2128411189117340671">Кіраваць профілямі Chrome</translation>
 <translation id="2130870084309816036">Не ўдалося падключыцца да інтэрнэту. Калі вы выкарыстоўваеце брандмаўар, дадайце <ph name="PRODUCT_EXE_NAME" /> у белы спіс.</translation>
 <translation id="2131230230468101642">У мэтах аховы вашай прыватнасці старэйшыя за 4 тыдні звесткі пра вашы інтарэсы аўтаматычна выдаляюцца. Па меры прагляду сайтаў у інтэрнэце пэўныя інтарэсы могуць з'яўляцца ў спісе зноў. Вы таксама можаце выдаляць пэўныя інтарэсы, калі не хочаце, каб браўзер Chrome іх улічваў.</translation>
 <translation id="2139300032719313227">Перазапусціце Chrome OS</translation>
@@ -424,6 +426,7 @@
 <translation id="7917876797003313048">У гэтым раздзеле можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Вашы Уліковыя запісы Google выкарыстоўваюцца ў браўзеры Chrome, Краме Play, пошце Gmail і іншых сэрвісах. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ (напрыклад, для ўдзельніка сямейнай групы), дадайце на прыладу "<ph name="DEVICE_TYPE" />" новага карыстальніка. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Браўзер Chrome заблакіраваў спампоўку, бо гэты файл з'яўляецца падманным і можа ўнесці нечаканыя змяненні на вашай прыладзе</translation>
 <translation id="7951272445806340501">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS Flex.</translation>
+<translation id="7959172989483770734">Кіраваць профілямі Chrome</translation>
 <translation id="7962368738413920945">Сайты, хутчэй за ўсё, будуць працаваць для вас як звычайна, але даныя пра вас будуць выдаляцца пасля закрыцця вамі ўсіх вокнаў браўзера Chrome</translation>
 <translation id="7962410387636238736">Гэты камп'ютар больш не будзе атрымліваць абнаўленні Google Chrome: Windows XP і Windows Vista цяпер не падтрымліваюцца</translation>
 <translation id="8005666035647241369">У Менеджары пароляў Google на гэтай прыладзе</translation>
@@ -431,6 +434,7 @@
 <translation id="8009904340233602924">Выкарыстоўваць Chrome без уліковага запісу</translation>
 <translation id="8013993649590906847">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google.</translation>
 <translation id="8019103195866286235">Публікацыя гэтага пашырэння была адроблена распрацоўшчыкам, яно можа быць небяспечным. Выдаліце яго з Chrome, каб яно больш не магло бачыць і змяняць даныя на сайтах, якія вы наведваеце, уключаючы вашу асабістую інфармацыю.</translation>
+<translation id="8031641407207794385">Наладзіць Chrome</translation>
 <translation id="80471789339884597">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце ўсе свае браўзеры.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Іншыя профілі Chrome</translation>

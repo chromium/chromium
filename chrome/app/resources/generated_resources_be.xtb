@@ -117,6 +117,7 @@
 <translation id="1082214733466244292">Адміністратар заблакіраваў пэўныя функцыі для гэтай прылады</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> спрабуе аднавіць налады Chrome да стандартных значэнняў. Будуць скінуты налады галоўнай старонкі, старонкі новай укладкі і пошукавай сістэмы, а таксама выключаны пашырэнні і адмацаваны ўсе ўкладкі. Таксама будуць выдалены ўсе часовыя і кэшаваныя даныя, такія як файлы cookie, даныя сайтаў і змесціва.</translation>
 <translation id="1082725763867769612">Пазасеткавыя файлы</translation>
+<translation id="1084026333130513768">Захаваць, абагуліць і трансліраваць</translation>
 <translation id="1084096383128641877">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="DOMAIN" /> не выдаліцца. Каб абараніць свой уліковы запіс (на <ph name="DOMAIN_LINK" />), выдаліце яго або змяніце пароль.</translation>
 <translation id="1084288067399862432">Раскрыты пароль зменены.
 
@@ -1232,6 +1233,7 @@
 <translation id="1910721550319506122">Вітаем!</translation>
 <translation id="1910736334623230603">Пошук па некалькіх відарысах немагчымы. Дадавайце іх па адным.</translation>
 <translation id="1910908536872421421">Chrome for Testing версіі <ph name="BROWSER_VERSION" /> прызначаецца толькі для аўтаматычнага тэсціравання. Для звычайнага прагляду выкарыстоўвайце стандартную версію Chrome, якая абнаўляецца аўтаматычна.</translation>
+<translation id="1913749768968678106">Трансліраваць, захаваць і абагуліць</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Закрыць</translation>
 <translation id="1915734383465415025">Нумар крамы</translation>
@@ -1333,6 +1335,7 @@
 <translation id="197989455406964291">KDC не падтрымлівае шыфраванне гэтых тыпаў</translation>
 <translation id="1981434377190976112">Праглядаць усе вашы даныя на ўсіх вэб-сайтах</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
+<translation id="1986836014090708999">Пашыраныя налады месцазнаходжання</translation>
 <translation id="1987317783729300807">Уліковыя запісы</translation>
 <translation id="1987574314042117472">Выбраць і ўсталяваць папулярныя праграмы</translation>
 <translation id="1988259784461813694">Патрабаванні</translation>
@@ -1600,6 +1603,7 @@
 <translation id="2182058453334755893">Скапіравана ў буфер абмену</translation>
 <translation id="2182419606502127232">Дадаць журналы сервера.</translation>
 <translation id="2183570493397356669">Кнопка "Працягнуць" адключана</translation>
+<translation id="2184272387334793084">Увайдзіце, каб атрымаць доступ да пароляў і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="2184515124301515068">Дазволіць браўзеру Chrome вызначаць, калі сайты могуць прайграваць гук (рэкамендуецца)</translation>
 <translation id="2186206192313702726">Google Аб'ектыў</translation>
 <translation id="2186711480981247270">Старонка абагулена з іншай прылады</translation>
@@ -2568,6 +2572,7 @@
 <translation id="2893180576842394309">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google</translation>
 <translation id="2893701697603065178">Асяроддзе распрацоўкі пад кіраваннем</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
+<translation id="2895730582088342039">Захаваць, абагуліць і трансліраваць</translation>
 <translation id="289695669188700754">Ідэнтыфікатар ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Гэта карыстальніцкая налада будзе выдалена, калі вы закрыеце ўсе вокны, адкрытыя ў рэжыме інкогніта</translation>
 <translation id="2897878306272793870">Сапраўды адкрыць укладкі (<ph name="TAB_COUNT" />)?</translation>
@@ -3202,6 +3207,7 @@
 <translation id="3420501302812554910">Неабходна скінуць унутраны ключ бяспекі</translation>
 <translation id="3421387094817716717">Эліптычны адкрыты ключ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Заўвага.<ph name="END_BOLD" /> Чалавек з падобным да вашага голасам або запісам вашага голасу зможа атрымаць доступ да вашых персанальных вынікаў ці да Памочніка.</translation>
+<translation id="3421835120203732951">Дадаць новы профіль</translation>
 <translation id="3423111258700187173">Вынікі знойдзены ў папцы "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3423463006624419153">На тэлефонах "<ph name="PHONE_NAME_1" />" і "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Перазапусціце <ph name="PRODUCT_NAME" /></translation>
@@ -4590,6 +4596,7 @@
 <translation id="4481448477173043917">Адбыўся раптоўны перазапуск прылады <ph name="DEVICE_TYPE" /></translation>
 <translation id="4481467543947557978">службовы сцэнарый</translation>
 <translation id="4482990632723642375">Нядаўна закрытая ўкладка</translation>
+<translation id="4486333480498805415">Дакладнасць вызначэння месцазнаходжання</translation>
 <translation id="4487489714832036847">Замест традыцыйнага праграмнага забеспячэння прылады Chromebook выкарыстоўваюць праграмы. Усталёўвайце праграмы для эфектыўнай работы, забаў і не толькі.</translation>
 <translation id="4488257340342212116">Дазволена выкарыстоўваць камеру</translation>
 <translation id="4490086832405043258">Выкарыстоўваць налады проксі-сервера Chrome OS для гэтага профілю.</translation>
@@ -5450,6 +5457,7 @@
 <translation id="5162905305237671850">Прылада "<ph name="DEVICE_TYPE" />" заблакіравана</translation>
 <translation id="5163910114647549394">Укладка перамешчана ў канец панэлі</translation>
 <translation id="5164530241085602114">Сайту <ph name="SITE" /> забаронена адпраўляць апавяшчэнні</translation>
+<translation id="5165989352025966137">Сайты, якім дазволена аўтаматычна запускаць поўнаэкранны рэжым</translation>
 <translation id="516747639689914043">Пратакол перадачы гіпертэксту (HTTP)</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5171045022955879922">Увядзіце запыт або URL-адрас</translation>
@@ -8131,6 +8139,7 @@
 <translation id="7290242001003353852">Гэты сэрвіс уваходу, размешчаны на дамене <ph name="SAML_DOMAIN" />, атрымлівае доступ да вашай камеры.</translation>
 <translation id="7292067737327289208">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> ваша арганізацыя, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7295305918366078219">Сайты, якім забаронена аўтаматычна запускаць поўнаэкранны рэжым</translation>
 <translation id="7295614427631867477">Заўважце, што сістэма Android, крама Play і звязаныя з імі праграмы рэгулююцца ўласнымі палітыкамі збору і выкарыстання даных.</translation>
 <translation id="729583233778673644">Дазволіць шыфраванне з дапамогай алгарытмаў AES і RC4. Выкарыстоўваць гэты параметр небяспечна з-за ненадзейнасці шыфраў RC4.</translation>
 <translation id="7296503797589217366">Выберыце папку <ph name="FOLDER_TITLE" /></translation>
@@ -8559,6 +8568,7 @@
 <translation id="7622768823216805500">Сайты звычайна ўсталёўваюць апрацоўшчыкі плацяжоў для рэалізацыі функцый купляў, напрыклад для спрашчэння афармлення заказу</translation>
 <translation id="7622966771025050155">Пераключыцца на ўкладку, здымка якой ажыццяўлялася</translation>
 <translation id="7624337243375417909">Caps Lock выключаны</translation>
+<translation id="7625025537587898155">Дадаць новы профіль</translation>
 <translation id="7625568159987162309">Праглядзець дазволы і захаваныя з сайтаў даныя</translation>
 <translation id="7625823789272218216">Новая ўкладка злева</translation>
 <translation id="7628201176665550262">Частата абнаўлення</translation>
@@ -9237,6 +9247,7 @@
 <translation id="810185532889603849">Карыстальніцкі колер</translation>
 <translation id="8101987792947961127">Пры наступнай перазагрузцы патрабуецца Powerwash</translation>
 <translation id="8102139037507939978">Выдаліць інфармацыю, якая дазваляе ідэнтыфікаваць асобу, з файла system_logs.txt.</translation>
+<translation id="8102344699913991108">Дзякуючы гэтай наладзе сайты могуць запускаць поўнаэкранны рэжым для зручнага прагляду незалежна ад жэстаў карыстальніка</translation>
 <translation id="810362914482827094">Пошук ключоў доступу</translation>
 <translation id="8104088837833760645">Спампаваць профіль eSIM-карты</translation>
 <translation id="8105273883928376822">Увайдзіце, каб працягнуць.</translation>
@@ -9558,6 +9569,7 @@
 <translation id="8351630282875799764">Акумулятар не зараджаецца</translation>
 <translation id="8352287103893778223">Назва групы ўкладак</translation>
 <translation id="835238322900896202">Падчас выдалення ўзнікла памылка. Ажыццявіце выдаленне праз Тэрмінал.</translation>
+<translation id="8353420862507374944">Трансліраваць, захаваць і абагуліць</translation>
 <translation id="8353683614194668312">Дазволы:</translation>
 <translation id="8354034204605718473">PIN-код дзіцяці дададзены</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> – <ph name="COUNT" /></translation>
@@ -9664,6 +9676,7 @@
 <translation id="8428271547607112339">Дадаць навучальны ўліковы запіс</translation>
 <translation id="84297032718407999">Выхад будзе выкананы праз <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Паказ дотыкаў</translation>
+<translation id="8432724317983466962">Стандартна для пераходу ў поўнаэкранны рэжым патрабуецца жэст карыстальніка</translation>
 <translation id="8433186206711564395">Налады сеткі</translation>
 <translation id="8434480141477525001">Порт адладкі NaCl</translation>
 <translation id="8436054240208929121">Увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю, каб Chrome мог упарадкаваць укладкі і даваць прапановы па іх групаванні</translation>
@@ -10048,6 +10061,7 @@
 <translation id="8729133765463465108">Адсканіраваць QR-код з дапамогай камеры</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731029916209785242">Дазволы (<ph name="FORMATTED_ORIGIN" />)</translation>
+<translation id="873125854638499125">Павысіць дакладнасць вызначэння месцазнаходжання</translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
 <translation id="8731629443331803108">Сайт <ph name="SITE_NAME" /> запытвае наступны дазвол: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Нумар порта</translation>
