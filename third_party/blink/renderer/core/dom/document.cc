@@ -4342,7 +4342,7 @@ void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
   load_event_progress_ = kPageHideInProgress;
   LocalDOMWindow* window = domWindow();
   // We check for DispatchedPagehideAndStillHidden() here because it's possible
-  // to dispath pagehide with 'persisted' set to false before this and pass the
+  // to dispatch pagehide with 'persisted' set to false before this and pass the
   // |dispatched_pagehide_persisted| above, if we enable same-site
   // ProactivelySwapBrowsingInstance but not BackForwardCache.
   if (window && !GetPage()->DispatchedPagehideAndStillHidden()) {
