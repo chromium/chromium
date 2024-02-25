@@ -75,15 +75,6 @@ struct StartParams {
   // flakiness in tests.
   bool disable_download_provider = false;
 
-  // Flag to disable ureadahead completely, including host and guest parts.
-  // TODO(b/264585671): Refactor this and |host_ureadahead_generation| to
-  // mode enum.
-  bool disable_ureadahead = false;
-
-  // Flag to indicate host ureadahead generation.
-  // TODO(b/264585671): Refactor this and |disable_ureadahead| to mode enum.
-  bool host_ureadahead_generation = false;
-
   // Flag to indicate whether to use dev caches.
   bool use_dev_caches = false;
 

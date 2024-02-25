@@ -218,18 +218,6 @@ bool IsArcVmDevConfIgnored() {
       ash::switches::kIgnoreArcVmDevConf);
 }
 
-// TODO(b/315507371): Remove after deprecated switches are not in use
-bool IsUreadaheadDisabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kArcDisableUreadahead);
-}
-
-// TODO(b/315507371): Remove after deprecated switches are not in use
-bool IsHostUreadaheadGeneration() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kArcHostUreadaheadGeneration);
-}
-
 bool IsArcUseDevCaches() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcUseDevCaches);

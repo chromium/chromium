@@ -1023,25 +1023,6 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_UreadaheadByDefault) {
   EXPECT_TRUE(ops[1].env.empty());
 }
 
-// Tests that StartMiniArc()'s JOB_STOP_AND_START for
-// |kArcVmPreLoginServicesJobName| has DISABLE_UREADAHEAD variable.
-TEST_F(ArcVmClientAdapterTest, StartMiniArc_DisableUreadahead) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.disable_ureadahead = true;
-  ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
-  StartMiniArcWithParams(true, std::move(start_params));
-
-  const auto& ops =
-      ash::FakeUpstartClient::Get()->GetRecordedUpstartOperationsForJob(
-          kArcVmPreLoginServicesJobName);
-  ASSERT_EQ(ops.size(), 2u);
-  EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
-  EXPECT_EQ(ops[1].type, ash::FakeUpstartClient::UpstartOperationType::START);
-  const auto it_ureadahead =
-      base::ranges::find(ops[1].env, "DISABLE_UREADAHEAD=1");
-  EXPECT_NE(ops[1].env.end(), it_ureadahead);
-}
-
 // Tests that StartMiniArc() handles arcvm-post-vm-start-services stop failures
 // properly.
 TEST_F(ArcVmClientAdapterTest,

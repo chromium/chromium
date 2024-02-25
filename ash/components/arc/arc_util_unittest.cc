@@ -310,28 +310,6 @@ TEST_F(ArcUtilTest, GetArcUreadaheadModeContainerSwitch) {
   EXPECT_EQ(ArcUreadaheadMode::DISABLED, GetArcUreadaheadMode(mode));
 }
 
-TEST_F(ArcUtilTest, UreadaheadDefault) {
-  EXPECT_FALSE(IsUreadaheadDisabled());
-}
-
-TEST_F(ArcUtilTest, UreadaheadDisabled) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
-  EXPECT_TRUE(IsUreadaheadDisabled());
-}
-
-TEST_F(ArcUtilTest, HostUreadaheadGenerationDefault) {
-  EXPECT_FALSE(IsHostUreadaheadGeneration());
-  EXPECT_FALSE(IsUreadaheadDisabled());
-}
-
-TEST_F(ArcUtilTest, HostUreadaheadGenerationSet) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--arc-host-ureadahead-generation"});
-  EXPECT_TRUE(IsHostUreadaheadGeneration());
-  EXPECT_FALSE(IsUreadaheadDisabled());
-}
-
 TEST_F(ArcUtilTest, UseDevCachesDefault) {
   EXPECT_FALSE(IsArcUseDevCaches());
 }

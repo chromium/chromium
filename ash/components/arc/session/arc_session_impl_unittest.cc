@@ -886,53 +886,6 @@ TEST_F(ArcSessionImplTest, CanChangeAdbSideloading_True) {
                   .is_managed_adb_sideloading_allowed);
 }
 
-// Test that validates disabling ureadahead is not enforced by default.
-TEST_F(ArcSessionImplTest, UreadaheadByDefault) {
-  auto arc_session = CreateArcSession();
-  arc_session->StartMiniInstance();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      GetClient(arc_session.get())->last_start_params().disable_ureadahead);
-}
-
-// Test that validates disabling ureadahead is enforced by switch.
-TEST_F(ArcSessionImplTest, DisableUreadahead) {
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(ash::switches::kArcDisableUreadahead);
-  auto arc_session = CreateArcSession();
-  arc_session->StartMiniInstance();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(
-      GetClient(arc_session.get())->last_start_params().disable_ureadahead);
-}
-
-// Test that validates host ureadahead generation flag is not set by default.
-TEST_F(ArcSessionImplTest, NoHostUreadaheadGenerationDefault) {
-  auto arc_session = CreateArcSession();
-  arc_session->StartMiniInstance();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(GetClient(arc_session.get())
-                   ->last_start_params()
-                   .host_ureadahead_generation);
-}
-
-// Test that validates host ureadahead generation flag is set.
-TEST_F(ArcSessionImplTest, HostUreadaheadGenerationSet) {
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(ash::switches::kArcHostUreadaheadGeneration);
-  auto arc_session = CreateArcSession();
-  arc_session->StartMiniInstance();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetClient(arc_session.get())
-                  ->last_start_params()
-                  .host_ureadahead_generation);
-  // Host ureadahead generation implies disabling ureadahead.
-  EXPECT_TRUE(
-      GetClient(arc_session.get())->last_start_params().disable_ureadahead);
-}
-
 // Test that validates arc signed in flag is not set by default.
 TEST_F(ArcSessionImplTest, NotArcSignedInByDefault) {
   auto arc_session = CreateArcSession();

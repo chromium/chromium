@@ -837,9 +837,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     std::vector<std::string> environment;
-    if (start_params_.disable_ureadahead) {
-      environment.emplace_back("DISABLE_UREADAHEAD=1");
-    }
     std::deque<JobDesc> jobs{
         // Note: the first Upstart job is a task, and the callback for the start
         // request won't be called until the task finishes. When the callback is

@@ -156,16 +156,6 @@ void ApplyDisableDownloadProvider(StartParams* params) {
           ash::switches::kArcDisableDownloadProvider);
 }
 
-void ApplyDisableUreadahed(StartParams* params) {
-  // Host ureadahead generation implies disabling ureadahead.
-  params->disable_ureadahead =
-      IsUreadaheadDisabled() || IsHostUreadaheadGeneration();
-}
-
-void ApplyHostUreadahedGeneration(StartParams* params) {
-  params->host_ureadahead_generation = IsHostUreadaheadGeneration();
-}
-
 void ApplyUseDevCaches(StartParams* params) {
   params->use_dev_caches = IsArcUseDevCaches();
 }
@@ -515,8 +505,6 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
 
   ApplyDalvikMemoryProfile(system_memory_info_callback_, &params);
   ApplyDisableDownloadProvider(&params);
-  ApplyDisableUreadahed(&params);
-  ApplyHostUreadahedGeneration(&params);
   ApplyUseDevCaches(&params);
   ApplyHostUreadaheadMode(&params);
 

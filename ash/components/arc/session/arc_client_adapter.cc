@@ -92,8 +92,6 @@ ArcClientAdapter::ConvertStartParamsToStartArcMiniInstanceRequest(
   request.set_disable_media_store_maintenance(
       params.disable_media_store_maintenance);
   request.set_disable_download_provider(params.disable_download_provider);
-  request.set_disable_ureadahead(params.disable_ureadahead);
-  request.set_host_ureadahead_generation(params.host_ureadahead_generation);
   request.set_host_ureadahead_mode(
       ToArcMiniInstanceRequestHostUreadaheadMode(params.host_ureadahead_mode));
   request.set_use_dev_caches(params.use_dev_caches);
