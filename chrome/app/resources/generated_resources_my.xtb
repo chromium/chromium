@@ -757,7 +757,7 @@
 <translation id="1574335334663388774"><ph name="APP_NAME" /> ဗားရှင်း <ph name="APP_VERSION" /> ကို ဤစက်တွင် ထည့်သွင်းပြီးဖြစ်သည်</translation>
 <translation id="1575036763505533001">Chrome ဘေးအကန့် စိတ်ကြိုက်လုပ်ခြင်း</translation>
 <translation id="1575741822946219011">ဘာသာစကားနှင့် လက်ကွက်များ</translation>
-<translation id="1576594961618857597">မူရင်းအဖြူရောင် ချန်နယ်ပုံ</translation>
+<translation id="1576594961618857597">မူရင်းအဖြူရောင် အယ်ဗတာ</translation>
 <translation id="1576729678809834061">ဤရှာဖွေမှုရလဒ်ကို အကြောင်းကြားရန်</translation>
 <translation id="1578558981922970608">မဖြစ်မနေ ပိတ်ရန်</translation>
 <translation id="157931050206866263">မဲလ်ဝဲစကင်ဖတ်ခြင်းအကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -2135,7 +2135,7 @@
 <translation id="257088987046510401">အပြင်အဆင်များ</translation>
 <translation id="2571655996835834626">ကွတ်ကီးများ၊ JavaScript၊ ပလတ်အင်များ၊ ပထဝီတည်နေရာ၊ မိုက်ကရိုဖုန်း၊ ကင်မရာ စသည့် ဝန်ဆောင်မှုများသို့ ဝဘ်ဆိုက်များ၏ ဝင်ကြည့်ခွင့်အား ထိန်းချုပ်သည့် ဆက်တင်များကို ပြောင်းပါ။</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> သို့ ဖတ်ရန်သာလျှင် ဝင်ခွင့်ပြု၏။</translation>
-<translation id="2573276323521243649">ကိုယ်စားပြုပုံရွေးချယ်သည့် စာမျက်နှာမှ ပြန်သွားရန်</translation>
+<translation id="2573276323521243649">အယ်ဗတာရွေးချယ်သည့် စာမျက်နှာမှ ပြန်သွားရန်</translation>
 <translation id="2573417407488272418">အဆင့်မမြှင့်တင်မီ အက်ပ်နှင့် ဖိုင်များကို Files &gt; ကျွန်ုပ်၏ဖိုင်များတွင် မိတ္တူကူးပါ။</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />” အတွက် အသွင်တူခလုတ် သတ်မှတ်ခြင်း</translation>
 <translation id="2575247648642144396">လက်ရှိ စာမျက်နှာတွင် အိတ်စတန်းရှင်း လုပ်ဆောင်နိုင်စဉ်တွင် ဤအိုင်ကွန် မြင်ရပါမည်။ <ph name="EXTENSION_SHORTCUT" /> သို့မဟုတ် အိုင်ကွန်ကိုနှိပ်ကာ ဤအိတ်စတန်းရှင်းကို အသုံးပြုနိုင်ပါသည်။</translation>
@@ -3170,7 +3170,7 @@
 <translation id="3399432415385675819">အကြောင်းကြားချက်များကို ပိတ်ထားပါမည်</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ဟာ့ဇ်) - တစ်ခုနှင့်တစ်ခု ထပ်ထားသည်</translation>
 <translation id="3401484564516348917">သင့်ဘရောင်ဇာ၊ OS၊ စက်၊ ထည့်သွင်းထားသောဆော့ဖ်ဝဲ၊ မှတ်ပုံတင်ခြင်းတန်ဖိုးများနှင့် ဖိုင်များအကြောင်း အချက်အလက်များ ဖတ်ခြင်း</translation>
-<translation id="3402255108239926910">ချန်နယ်ပုံတစ်ခုရွေးပါ</translation>
+<translation id="3402255108239926910">အယ်ဗတာတစ်ခုရွေးပါ</translation>
 <translation id="3402585168444815892">'သရုပ်ပြမုဒ်' တွင် စာရင်းသွင်းနေသည်</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />၊ <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">ဤဝဘ်ဆိုက်အတွက် မည်သည့်စကားဝှက်မျှ သိမ်းမထားပါ</translation>
@@ -5512,7 +5512,7 @@
 <translation id="5225324770654022472">အက်ပ်များ၏ ဖြတ်လမ်းကို ပြပေးရန်</translation>
 <translation id="52254442782792731">လက်ရှိမြင်နိုင်မှုဆက်တင်ကို မသတ်မှတ်ရသေးပါ</translation>
 <translation id="5225463052809312700">ကင်မရာဖွင့်ရန်</translation>
-<translation id="5227679487546032910">မူရင်းရေစစ္စလီငှက်ချန်နယ်ပုံ</translation>
+<translation id="5227679487546032910">မူရင်း ရေစစ္စလီငှက်အယ်ဗတာ</translation>
 <translation id="5228245824943774148">စက် <ph name="NUM_DEVICES_CONNECTED" /> ခု ချိတ်ဆက်ထားသည်</translation>
 <translation id="5228579091201413441">စင့်က် ဖွင့်ထားရန်</translation>
 <translation id="5230190638672215545">“ươ” ရရှိရန် “uow” ဟုရိုက်ပါ</translation>
@@ -8471,7 +8471,7 @@
 <translation id="7566118625369982896">Play အက်ပ်လင့်ခ်များကို စီမံရန်</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="756809126120519699">Chrome ဒေတာကို ရှင်းလင်းလိုက်ပါပြီ</translation>
-<translation id="756876171895853918">ကိုယ်စားပြုပုံ စိတ်ကြိုက်ပြင်ရန်</translation>
+<translation id="756876171895853918">အယ်ဗတာ စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="7568790562536448087">အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="7569983096843329377">အနက်ရောင်</translation>
 <translation id="7571643774869182231">အပ်ဒိတ်အတွက် လုံလောက်သည့်နေရာလွတ် မရှိပါ</translation>
@@ -9205,7 +9205,7 @@
 <translation id="8104088837833760645">eSIM ပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="8107015733319732394">သင့် <ph name="DEVICE_TYPE" /> တွင် Google Play Store ကို ထည့်သွင်းနေပါသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="810728361871746125">မျက်နှာပြင်ပြသမှုပုံရိပ် ပြတ်သားကိန်း</translation>
-<translation id="8109109153262930486">မူရင်း ကိုယ်စားပြုပုံ</translation>
+<translation id="8109109153262930486">မူရင်း အယ်ဗတာ</translation>
 <translation id="8109991406044913868">AI ဖြင့် ဖန်တီးထားသော အပြင်အဆင်</translation>
 <translation id="8110393529211831722">စာရင်းသွင်းမှုကို ဤစက်တွင်သာ ထည့်သွင်းထားပြီး သင့်အကောင့်အောက်ရှိ အခြားစက်များနှင့် စင့်ခ်လုပ်ထားခြင်း မရှိပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">အဆက်အသွယ် စာရင်းကို ဒေါင်းလုဒ်လုပ်နေသည်...</translation>

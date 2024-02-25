@@ -295,7 +295,7 @@
 <translation id="3170673040743561620">စာရွက်စာတမ်းကို စကင်နာပေါ်တင်ပါ</translation>
 <translation id="3174321110679064523">မိုးသောက်ချိန်မှ မှောင်မိုက်ချိန်အထိ နောက်ခံ</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
-<translation id="319101249942218879">ကိုယ်စားပြုပုံ ပြောင်းလိုက်သည်</translation>
+<translation id="319101249942218879">အယ်ဗတာပုံ ပြောင်းလိုက်သည်</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
 <translation id="3201315366910775591">မျှဝေထားသော အယ်လ်ဘမ်များကို အခြားလူများက အပ်ဒိတ်လုပ်နိုင်သည်</translation>
@@ -305,7 +305,7 @@
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="324961752321393509">သင့်စီမံခန့်ခွဲသူသည် ဤအက်ပ်ကို ခွင့်မပြုပါ</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
-<translation id="3275729367986477355">ချန်နယ်ပုံ</translation>
+<translation id="3275729367986477355">အယ်ဗတာပုံ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ဖိုင် တည်းဖြတ်ရန်}other{ဖိုင်များ တည်းဖြတ်ရန်}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ကီးလမ်းညွှန်ချက်</translation>
@@ -353,7 +353,7 @@
 <translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
 <translation id="3600339377155080675">စကရင်ပွားရန်</translation>
 <translation id="3602290021589620013">ကြိုကြည့်ရန်</translation>
-<translation id="3603829704940252505">ချန်နယ်ပုံ</translation>
+<translation id="3603829704940252505">အယ်ဗတာ</translation>
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
@@ -461,7 +461,7 @@
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ပြန်စနေသည်</translation>
 <translation id="4395835743215824109">ကီးဘုတ် စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="4403262788869804671"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
-<translation id="4415951057168511744">လက်ရှိ ကိုယ်စားပြုပုံ</translation>
+<translation id="4415951057168511744">လက်ရှိ အယ်ဗတာ</translation>
 <translation id="4417830657741848074">သင့်စီမံခန့်ခွဲသူက အက်ပ်အချို့ကို အလိုအလျောက်စတင်ရန် စနစ်ထည့်သွင်းထားသည်။ ၎င်းအက်ပ်များအနက်အချို့ကို ပိတ်မည်မဟုတ်ပါ။</translation>
 <translation id="4422041425070339732">အောက်ညွှန်မြား</translation>
 <translation id="4425149324548788773">My Drive</translation>
