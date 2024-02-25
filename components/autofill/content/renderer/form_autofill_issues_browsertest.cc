@@ -209,10 +209,10 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
       </form>)";
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
-      WebFormElementFromHTML(kHtml), WebFormControlElement(),
+  FormData form_data = *form_util::ExtractFormData(
+      web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
       *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+      {form_util::ExtractOption::kValue});
 
   std::vector<blink::WebAutofillClient::FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttribute(web_frame->GetDocument(),
@@ -233,10 +233,10 @@ TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
       </form>)";
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
-      WebFormElementFromHTML(kHtml), WebFormControlElement(),
+  FormData form_data = *form_util::ExtractFormData(
+      web_frame->GetDocument(), WebFormElementFromHTML(kHtml),
       *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+      {form_util::ExtractOption::kValue});
 
   std::vector<blink::WebAutofillClient::FormIssue> form_issues =
       CheckForLabelsWithIncorrectForAttribute(web_frame->GetDocument(),

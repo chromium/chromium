@@ -459,15 +459,6 @@ void TraverseDomForFourDigitCombinations(
 
 bool IsVisibleIframeForTesting(const blink::WebElement& iframe_element);
 
-// TODO(crbug.com/1007974): There's no internal WebFormElementToFormData()
-// anymore. Revise the test to test the interface.
-std::optional<FormData> WebFormElementToFormDataForTesting(
-    const blink::WebFormElement& form_element,
-    const blink::WebFormControlElement& form_control_element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field);
-
 }  // namespace form_util
 }  // namespace autofill
 

@@ -2739,28 +2739,4 @@ bool IsVisibleIframeForTesting(const WebElement& iframe_element) {
   return IsVisibleIframe(iframe_element);
 }
 
-std::optional<FormData> WebFormElementToFormDataForTesting(  // IN-TEST
-    const WebFormElement& form_element,
-    const WebFormControlElement& form_control_element,
-    const FieldDataManager& field_data_manager,
-    DenseSet<ExtractOption> extract_options,
-    FormFieldData* field) {
-  std::optional<FormData> form =
-      ExtractFormData(form_element.GetDocument(), form_element,
-                      field_data_manager, extract_options);
-  if (!form) {
-    return std::nullopt;
-  }
-  if (!form_control_element.IsNull()) {
-    auto it = base::ranges::find(form->fields,
-                                 GetFieldRendererId(form_control_element),
-                                 &FormFieldData::renderer_id);
-    if (it == form->fields.end()) {
-      return std::nullopt;
-    }
-    *field = *it;
-  }
-  return form;
-}
-
 }  // namespace autofill::form_util

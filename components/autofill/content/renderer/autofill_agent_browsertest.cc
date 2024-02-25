@@ -583,10 +583,10 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   blink::WebVector<blink::WebFormElement> forms =
       GetMainFrame()->GetDocument().GetTopLevelForms();
   EXPECT_EQ(1U, forms.size());
-  FormData form = *form_util::WebFormElementToFormDataForTesting(
-      forms[0], blink::WebFormControlElement(),
-      *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+  FormData form =
+      *form_util::ExtractFormData(forms[0].GetDocument(), forms[0],
+                                  *base::MakeRefCounted<FieldDataManager>(),
+                                  {form_util::ExtractOption::kValue});
 
   ASSERT_TRUE(autofill_agent().focused_element().IsNull());
   autofill_agent().ApplyFormAction(mojom::ActionType::kUndo,
@@ -608,10 +608,10 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   blink::WebVector<blink::WebFormElement> forms =
       GetMainFrame()->GetDocument().GetTopLevelForms();
   ASSERT_EQ(1U, forms.size());
-  FormData form = *form_util::WebFormElementToFormDataForTesting(
-      forms[0], blink::WebFormControlElement(),
-      *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+  FormData form =
+      *form_util::ExtractFormData(forms[0].GetDocument(), forms[0],
+                                  *base::MakeRefCounted<FieldDataManager>(),
+                                  {form_util::ExtractOption::kValue});
   ASSERT_EQ(form.fields.size(), 1u);
   blink::WebFormControlElement field =
       GetWebElementById("text_id").DynamicTo<blink::WebFormControlElement>();
@@ -683,10 +683,9 @@ TEST_F(AutofillAgentTest, FormApplyFormActionUpdatesLastInteractedSavedState) {
   ASSERT_FALSE(field.IsNull());
   ASSERT_EQ("text_id", field.GetIdAttribute().Ascii());
 
-  FormData form_data = *form_util::WebFormElementToFormDataForTesting(
-      form, blink::WebFormControlElement(),
-      *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue}, nullptr);
+  FormData form_data = *form_util::ExtractFormData(
+      form.GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
+      {form_util::ExtractOption::kValue});
 
   ASSERT_EQ(1u, form_data.fields.size());
   form_data.fields[0].value = u"autofilled";
